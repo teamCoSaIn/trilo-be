@@ -1,0 +1,35 @@
+name: trilo-system
+
+
+on:
+  push:
+    branches:
+      - TRL-32__ci-cd
+  pull_request:
+    branches:
+      - TRL-32__ci-cd
+
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check Out (체크 아웃)
+        uses: actions/checkout@v3
+
+      - name: Set up JDK 17 (JDK 17 설치)
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Grant execute permission for gradlew (gradlew에 권한 부여)
+        run: chmod +x gradlew
+        shell: bash
+
+      - name: Setup Gradle (Gradle 설치)
+        uses: gradle/gradle-build-action@v2
+
+      - name: Run build with Gradle Wrapper (Gradle Wrapper로 빌드)
+        run: ./gradlew build
