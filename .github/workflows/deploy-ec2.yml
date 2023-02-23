@@ -1,12 +1,10 @@
-name: trilo-system
+name: deploy-ec2
 
 
 on:
   push:
     branches:
-      - dev
-  pull_request:
-    branches:
+      - main
       - dev
 
 
@@ -16,7 +14,7 @@ env:
 
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
@@ -29,14 +27,21 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
+      - name: Use Gradle Cache (Gradle 캐싱)
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
       - name: Grant execute permission for gradlew (gradlew에 권한 부여)
         run: chmod +x gradlew
         shell: bash
 
-      - name: Setup Gradle (Gradle 설치)
-        uses: gradle/gradle-build-action@v2
-
-      - name: Run build with Gradle Wrapper (Gradle Wrapper로 빌드)
+      - name: Build (빌드)
         run: ./gradlew build
 
       - name: Make zip file (zip 으로 압축)
