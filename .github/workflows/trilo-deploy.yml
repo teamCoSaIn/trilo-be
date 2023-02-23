@@ -4,10 +4,10 @@ name: trilo-system
 on:
   push:
     branches:
-      - TRL-32__ci-cd
+      - dev
   pull_request:
     branches:
-      - TRL-32__ci-cd
+      - dev
 
 
 env:
