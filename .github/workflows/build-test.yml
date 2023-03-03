@@ -14,7 +14,7 @@ jobs:
       - name: Check Out (체크 아웃)
         uses: actions/checkout@v3
         with:
-          token: ${{ secrets.SUBMODULE_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKENN }}
           submodules: true
 
       - name: Set up JDK 17 (JDK 17 설치)
