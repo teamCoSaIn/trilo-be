@@ -1,3 +1,4 @@
 spring:
   config:
-    import: security/application.yml
+    import:
+    - classpath: security/application.yml
