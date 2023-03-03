@@ -17,6 +17,12 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           submodules: true
 
+      - name: Update submodules
+        run: |
+          git submodule update --init --recursive
+          git submodule foreach 'git checkout main'
+          git submodule foreach 'git pull origin main'
+
       - name: Set up JDK 17 (JDK 17 설치)
         uses: actions/setup-java@v3
         with:
