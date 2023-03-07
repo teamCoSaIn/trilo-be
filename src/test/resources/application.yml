@@ -1,6 +1,29 @@
 spring:
   profiles:
     active: test
+  datasource:
+    url: jdbc:h2:mem:test;MODE=MYSQL
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+
+  h2:
+    console:
+      enabled: true
+
+  jpa:
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        # show_sql: true # sout으로 하이버네이트 실행 SQL을 남기는데 이는 아래의 spring.logging.level.org.hibernate.SQL 옵션에서 log로 대체
+        format_sql: true # sql을 로깅할 때 예쁘게 보여줌
+        dialect: org.hibernate.dialect.MySQL8Dialect
+
+logging:
+  level:
+    org.hibernate.SQL: debug # 하이버네이트 실행 SQL을 logger를 통해 남긴다.
+#    org.hibernate.type: trace # 쿼리 parameter의 값을 로그로 남김. 대체재로 p6spy가 있다. 배포환경에서는 사용하지 성능 상 문제가 있다면 사용할지 말지를 고민하는 것이 좋다.
 
 deploy-module:
   version: 0.0.3
