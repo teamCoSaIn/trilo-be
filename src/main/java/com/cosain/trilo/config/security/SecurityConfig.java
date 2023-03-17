@@ -2,6 +2,8 @@ package com.cosain.trilo.config.security;
 
 import com.cosain.trilo.config.security.handler.CustomAccessDeniedHandler;
 import com.cosain.trilo.config.security.handler.CustomAuthenticationEntryPoint;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,7 +11,10 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.RedirectStrategy;
 import org.springframework.security.web.SecurityFilterChain;
+
+import java.io.IOException;
 
 @Configuration
 @EnableWebSecurity
@@ -34,10 +39,23 @@ public class SecurityConfig {
                 .exceptionHandling(handle -> handle
                         .authenticationEntryPoint(customAuthenticationEntryPoint)
                         .accessDeniedHandler(customAccessDeniedHandler)
+                )
+                .oauth2Login(oauth2 -> oauth2
+                        .authorizationEndpoint(authorize -> authorize
+                                .baseUri("/api/auth/login")
+                                .authorizationRedirectStrategy(new CustomRedirectStrategy())
+                        )
                 );
 
 
         return http.build();
+    }
+
+    private static class CustomRedirectStrategy implements RedirectStrategy {
+        @Override
+        public void sendRedirect(HttpServletRequest request, HttpServletResponse response, String url) throws IOException {
+            response.setHeader("Auth-Url" ,url);
+        }
     }
 
 
