@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
@@ -16,11 +17,17 @@ public class SecurityConfig {
 
         http
                 .authorizeHttpRequests(request -> request
-                        .requestMatchers(HttpMethod.GET, "/deploy/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/deploy/**", "/api/**").permitAll()
                         .anyRequest().authenticated()
+                )
+                .csrf().disable()
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 );
+
 
         return http.build();
     }
+
 
 }
