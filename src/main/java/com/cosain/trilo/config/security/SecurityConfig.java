@@ -45,6 +45,9 @@ public class SecurityConfig {
                                 .baseUri("/api/auth/login")
                                 .authorizationRedirectStrategy(new CustomRedirectStrategy())
                         )
+                        .redirectionEndpoint(redirect -> redirect
+                                .baseUri("/login/oauth2/code")
+                        )
                 );
 
 
