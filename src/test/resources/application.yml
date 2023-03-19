@@ -7,6 +7,11 @@ spring:
     password:
     driver-class-name: org.h2.Driver
 
+  data:
+    redis:
+      port: 6379
+      host: localhost
+
   security:
     oauth2:
       client:
