@@ -1,12 +1,14 @@
 package com.cosain.trilo.config.security;
 
 import com.cosain.trilo.auth.infra.TokenAnalyzer;
+import com.cosain.trilo.config.security.filter.ExceptionHandlerFilter;
 import com.cosain.trilo.config.security.filter.TokenAuthenticationFilter;
 import com.cosain.trilo.config.security.handler.CustomAccessDeniedHandler;
 import com.cosain.trilo.config.security.handler.CustomAuthenticationEntryPoint;
 import com.cosain.trilo.config.security.handler.OAuthSuccessHandler;
 import com.cosain.trilo.config.security.service.CustomOAuthService;
 import com.cosain.trilo.user.domain.UserRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +34,7 @@ public class SecurityConfig {
     private final OAuthSuccessHandler oAuthSuccessHandler;
     private final CustomOAuthService customOAuthService;
 
+    private final ObjectMapper objectMapper;
     private final TokenAnalyzer tokenAnalyzer;
     private final UserRepository userRepository;
 
@@ -66,6 +69,7 @@ public class SecurityConfig {
 
                 );
 
+        http.addFilterBefore(new ExceptionHandlerFilter(objectMapper), UsernamePasswordAuthenticationFilter.class);
         http.addFilterBefore(new TokenAuthenticationFilter(tokenAnalyzer, userRepository),UsernamePasswordAuthenticationFilter.class);
 
 
