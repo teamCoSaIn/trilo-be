@@ -1,9 +1,12 @@
 package com.cosain.trilo.config.security;
 
+import com.cosain.trilo.auth.infra.TokenAnalyzer;
+import com.cosain.trilo.config.security.filter.TokenAuthenticationFilter;
 import com.cosain.trilo.config.security.handler.CustomAccessDeniedHandler;
 import com.cosain.trilo.config.security.handler.CustomAuthenticationEntryPoint;
 import com.cosain.trilo.config.security.handler.OAuthSuccessHandler;
 import com.cosain.trilo.config.security.service.CustomOAuthService;
+import com.cosain.trilo.user.domain.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +18,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.RedirectStrategy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.io.IOException;
 
@@ -27,6 +31,9 @@ public class SecurityConfig {
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
     private final OAuthSuccessHandler oAuthSuccessHandler;
     private final CustomOAuthService customOAuthService;
+
+    private final TokenAnalyzer tokenAnalyzer;
+    private final UserRepository userRepository;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
@@ -58,6 +65,8 @@ public class SecurityConfig {
                         .successHandler(oAuthSuccessHandler)
 
                 );
+
+        http.addFilterBefore(new TokenAuthenticationFilter(tokenAnalyzer, userRepository),UsernamePasswordAuthenticationFilter.class);
 
 
         return http.build();
