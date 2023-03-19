@@ -2,6 +2,7 @@ package com.cosain.trilo.config.security;
 
 import com.cosain.trilo.config.security.handler.CustomAccessDeniedHandler;
 import com.cosain.trilo.config.security.handler.CustomAuthenticationEntryPoint;
+import com.cosain.trilo.config.security.service.CustomOAuthService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,8 @@ public class SecurityConfig {
 
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
+
+    private final CustomOAuthService customOAuthService;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
@@ -48,6 +51,10 @@ public class SecurityConfig {
                         .redirectionEndpoint(redirect -> redirect
                                 .baseUri("/login/oauth2/code")
                         )
+                        .userInfoEndpoint(userInfo -> userInfo
+                                .userService(customOAuthService)
+                        )
+
                 );
 
 
