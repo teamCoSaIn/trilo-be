@@ -2,6 +2,7 @@ package com.cosain.trilo.config.security;
 
 import com.cosain.trilo.config.security.handler.CustomAccessDeniedHandler;
 import com.cosain.trilo.config.security.handler.CustomAuthenticationEntryPoint;
+import com.cosain.trilo.config.security.handler.OAuthSuccessHandler;
 import com.cosain.trilo.config.security.service.CustomOAuthService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -24,7 +25,7 @@ public class SecurityConfig {
 
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
-
+    private final OAuthSuccessHandler oAuthSuccessHandler;
     private final CustomOAuthService customOAuthService;
 
     @Bean
@@ -54,6 +55,7 @@ public class SecurityConfig {
                         .userInfoEndpoint(userInfo -> userInfo
                                 .userService(customOAuthService)
                         )
+                        .successHandler(oAuthSuccessHandler)
 
                 );
 
