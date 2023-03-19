@@ -1,6 +1,7 @@
 package com.cosain.trilo.config.security.service;
 
 import com.cosain.trilo.config.security.dto.OAuthAttributes;
+import com.cosain.trilo.config.security.dto.UserPrincipal;
 import com.cosain.trilo.user.domain.User;
 import com.cosain.trilo.user.domain.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -29,9 +30,9 @@ public class CustomOAuthService extends DefaultOAuth2UserService {
         log.info("accessToken : "+ userRequest.getAccessToken());
 
         OAuthAttributes oAuthAttributes = OAuthAttributes.of(oAuth2User, userRequest);
-        saveOrUpdateUserWithAttributes(oAuthAttributes);
+        User user = saveOrUpdateUserWithAttributes(oAuthAttributes);
 
-        return oAuth2User;
+        return UserPrincipal.from(user);
     }
 
     private User saveOrUpdateUserWithAttributes(OAuthAttributes oAuthAttributes) {
