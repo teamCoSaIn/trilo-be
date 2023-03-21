@@ -84,4 +84,4 @@ jwt:
   refresh-token-expiry: 10800000 # 3시간... ? 한달
 
 deploy-module:
-  version: 0.0.5
+  version: 0.0.6
