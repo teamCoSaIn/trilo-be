@@ -11,7 +11,7 @@ public class DeployController {
     private String version;
 
     @GetMapping("/deploy/version")
-    private String version() {
+    public String version() {
         return String.format("Project.version : %s", version);
     }
 
