@@ -47,6 +47,7 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests(request -> request
                         .requestMatchers(HttpMethod.GET, "/deploy/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/auth/reissue").permitAll()
                         .anyRequest().authenticated()
                 )
                 .csrf().disable()
