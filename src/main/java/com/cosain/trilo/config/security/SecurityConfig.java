@@ -66,7 +66,7 @@ public class SecurityConfig {
                                 .authorizationRedirectStrategy(new CustomRedirectStrategy())
                         )
                         .redirectionEndpoint(redirect -> redirect
-                                .baseUri("/login/oauth2/code")
+                                .baseUri("/api/auth/login/oauth2/code")
                         )
                         .userInfoEndpoint(userInfo -> userInfo
                                 .userService(customOAuthService)
