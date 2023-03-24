@@ -22,7 +22,7 @@ public class AuthService {
     @Transactional
     public String reissueAccessToken(String refreshToken){
         checkIfValidTokenOrThrow(refreshToken);
-        checkIfInRedisOrThrow(refreshToken);
+        checkTokenExistenceOrThrow(refreshToken);
         tokenRepository.deleteTokenBy(refreshToken);
         return tokenProvider.createAccessToken(getAuthentication());
     }
@@ -31,7 +31,7 @@ public class AuthService {
             throw new NotValidTokenException();
         }
     }
-    private void checkIfInRedisOrThrow(String refreshToken){
+    private void checkTokenExistenceOrThrow(String refreshToken){
         if(!tokenRepository.existsById(refreshToken)){
             throw new NotExistRefreshTokenException();
         }
