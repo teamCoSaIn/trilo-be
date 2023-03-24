@@ -46,7 +46,7 @@ class AuthServiceTest {
     }
 
     @Test
-    void 접근토큰_재발급시_REDIS에_재발급_토큰이_존재하지_않는다면_에러를_발생시킨다(){
+    void 접근토큰_재발급시_토큰_저장소에_재발급_토큰이_존재하지_않는다면_에러를_발생시킨다(){
         given(tokenAnalyzer.validateToken(any())).willReturn(true);
         given(tokenRepository.existsById(any())).willReturn(false);
 
