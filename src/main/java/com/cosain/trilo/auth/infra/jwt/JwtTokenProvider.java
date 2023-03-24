@@ -30,21 +30,28 @@ public class JwtTokenProvider implements TokenProvider {
     }
 
     public String createAccessToken(final Authentication authentication){
-        return createToken(authentication, accessTokenExpiryMs);
+        return createToken(getEmail(authentication), accessTokenExpiryMs);
+    }
+
+    public String createAccessToken(final String email){
+        return createToken(email, accessTokenExpiryMs);
     }
 
     public String createRefreshToken(final Authentication authentication){
-        return createToken(authentication, refreshTokenExpiryMs);
+        return createToken(getEmail(authentication), refreshTokenExpiryMs);
     }
 
-    private String createToken(final Authentication authentication,final long tokenExpiryMs){
+    private String getEmail(final Authentication authentication){
         UserPrincipal principal = (UserPrincipal) authentication.getPrincipal();
+        return principal.getEmail();
+    }
 
+    private String createToken(final String subject, final long tokenExpiryMs){
         Date nowDate = new Date();
         Date endDate = new Date(nowDate.getTime() + tokenExpiryMs);
 
         return Jwts.builder()
-                .setSubject(principal.getEmail())
+                .setSubject(subject)
                 .setIssuedAt(nowDate)
                 .setExpiration(endDate)
                 .signWith(secretKey, SignatureAlgorithm.HS256)

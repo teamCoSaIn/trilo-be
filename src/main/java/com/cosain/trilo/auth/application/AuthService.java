@@ -6,8 +6,6 @@ import com.cosain.trilo.auth.infra.TokenProvider;
 import com.cosain.trilo.common.exception.NotExistRefreshTokenException;
 import com.cosain.trilo.common.exception.NotValidTokenException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,8 +21,9 @@ public class AuthService {
     public String reissueAccessToken(String refreshToken){
         checkIfValidTokenOrThrow(refreshToken);
         checkTokenExistenceOrThrow(refreshToken);
+        String email = tokenAnalyzer.getEmailFromToken(refreshToken);
         tokenRepository.deleteTokenBy(refreshToken);
-        return tokenProvider.createAccessToken(getAuthentication());
+        return tokenProvider.createAccessToken(email);
     }
     private void checkIfValidTokenOrThrow(String refreshToken){
         if(!tokenAnalyzer.validateToken(refreshToken)){
@@ -35,8 +34,5 @@ public class AuthService {
         if(!tokenRepository.existsById(refreshToken)){
             throw new NotExistRefreshTokenException();
         }
-    }
-    private Authentication getAuthentication(){
-        return SecurityContextHolder.getContext().getAuthentication();
     }
 }

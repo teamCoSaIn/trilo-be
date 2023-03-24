@@ -13,6 +13,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 
 @ExtendWith(MockitoExtension.class)
@@ -31,8 +32,9 @@ class AuthServiceTest {
     @Test
     void ACCESS_토큰_재발급(){
         given(tokenAnalyzer.validateToken(any())).willReturn(true);
-        given(tokenProvider.createAccessToken(any())).willReturn(ACCESS_TOKEN);
         given(tokenRepository.existsById(any())).willReturn(true);
+        given(tokenAnalyzer.getEmailFromToken(any())).willReturn("email");
+        given(tokenProvider.createAccessToken(anyString())).willReturn(ACCESS_TOKEN);
 
         String accessToken = authService.reissueAccessToken(any());
         Assertions.assertThat(accessToken).isEqualTo(ACCESS_TOKEN);
