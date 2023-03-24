@@ -26,15 +26,16 @@ class AuthServiceTest {
     @Mock
     private TokenProvider tokenProvider;
 
+    private final String ACCESS_TOKEN = "slkdfjasjeoifjse.siejfoajseifjasolef.sliejfaisjelfsjefsdcv";
 
     @Test
     void ACCESS_토큰_재발급(){
         given(tokenAnalyzer.validateToken(any())).willReturn(true);
-        given(tokenProvider.createAccessToken(any())).willReturn("accessToken");
+        given(tokenProvider.createAccessToken(any())).willReturn(ACCESS_TOKEN);
         given(tokenRepository.existsById(any())).willReturn(true);
 
         String accessToken = authService.reissueAccessToken(any());
-        System.out.println(accessToken);
+        Assertions.assertThat(accessToken).isEqualTo(ACCESS_TOKEN);
     }
 
     @Test
