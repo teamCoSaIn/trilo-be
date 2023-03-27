@@ -15,6 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
@@ -47,7 +48,7 @@ class AuthServiceTest {
     void 접근토큰_재발급시_재발급_토큰이_유효하지_않다면_에러를_발생시킨다(){
         given(tokenAnalyzer.validateToken(any())).willReturn(false);
 
-        Assertions.assertThatThrownBy(() -> authService.reissueAccessToken(any())).isInstanceOf(NotValidTokenException.class);
+        assertThatThrownBy(() -> authService.reissueAccessToken(any())).isInstanceOf(NotValidTokenException.class);
     }
 
     @Test
@@ -55,7 +56,7 @@ class AuthServiceTest {
         given(tokenAnalyzer.validateToken(any())).willReturn(true);
         given(tokenRepository.existsById(any())).willReturn(false);
 
-        Assertions.assertThatThrownBy(() -> authService.reissueAccessToken(any())).isInstanceOf(NotExistRefreshTokenException.class);
+        assertThatThrownBy(() -> authService.reissueAccessToken(any())).isInstanceOf(NotExistRefreshTokenException.class);
     }
 
     @Test
@@ -78,7 +79,7 @@ class AuthServiceTest {
     void 토큰_정보_생성시_토큰이_유효하지_않다면_에러를_발생시킨다(){
         given(tokenAnalyzer.validateToken(any())).willReturn(false);
 
-        Assertions.assertThatThrownBy(() -> authService.createTokenStatus(any())).isInstanceOf(NotValidTokenException.class);
+        assertThatThrownBy(() -> authService.createTokenStatus(any())).isInstanceOf(NotValidTokenException.class);
     }
 
 }
