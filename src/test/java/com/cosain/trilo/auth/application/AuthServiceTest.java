@@ -13,8 +13,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.LocalDateTime;
-
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -63,23 +61,13 @@ class AuthServiceTest {
     void 토큰_정보_생성(){
 
         // given
-        LocalDateTime dateTime = LocalDateTime.of(2023, 4, 28, 12, 20, 49);
         given(tokenAnalyzer.validateToken(any())).willReturn(true);
-        given(tokenAnalyzer.getTokenExpiryDateTime(any())).willReturn(dateTime);
 
         // when
         RefreshTokenStatusResponse dto = authService.createTokenStatus(any());
 
         // then
-        Assertions.assertThat(dto.getExpiryDateTime()).isEqualTo(dateTime);
         Assertions.assertThat(dto.isAvailability()).isTrue();
-    }
-
-    @Test
-    void 토큰_정보_생성시_토큰이_유효하지_않다면_에러를_발생시킨다(){
-        given(tokenAnalyzer.validateToken(any())).willReturn(false);
-
-        assertThatThrownBy(() -> authService.createTokenStatus(any())).isInstanceOf(NotValidTokenException.class);
     }
 
 }

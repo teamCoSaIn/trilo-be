@@ -23,7 +23,7 @@ public class AuthRestController {
     }
 
     @GetMapping("/token/refresh-token-info")
-    public ResponseEntity<RefreshTokenStatusResponse> checkTokenStatus(@CookieValue(value = "refreshToken", required = true) String refreshToken){
+    public ResponseEntity<RefreshTokenStatusResponse> checkTokenStatus(@CookieValue(value = "refreshToken", required = false) String refreshToken){
         return ResponseEntity.ok(authService.createTokenStatus(refreshToken));
     }
 }
