@@ -70,4 +70,16 @@ class AuthServiceTest {
         Assertions.assertThat(dto.isAvailability()).isTrue();
     }
 
+    @Test
+    void 토큰_정보_생성시_토큰이_유효하지_않는다면_false를_반환한다(){
+        // given
+        given(tokenAnalyzer.validateToken(any())).willReturn(false);
+
+        // when
+        RefreshTokenStatusResponse dto = authService.createTokenStatus(any());
+
+        // then
+        Assertions.assertThat(dto.isAvailability()).isFalse();
+    }
+
 }
