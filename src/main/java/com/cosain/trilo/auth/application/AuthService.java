@@ -3,12 +3,17 @@ package com.cosain.trilo.auth.application;
 import com.cosain.trilo.auth.domain.TokenRepository;
 import com.cosain.trilo.auth.infra.TokenAnalyzer;
 import com.cosain.trilo.auth.infra.TokenProvider;
+import com.cosain.trilo.auth.presentation.dto.TokenStatusResponse;
 import com.cosain.trilo.common.exception.NotExistRefreshTokenException;
 import com.cosain.trilo.common.exception.NotValidTokenException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthService {
@@ -35,4 +40,12 @@ public class AuthService {
             throw new NotExistRefreshTokenException();
         }
     }
+
+    public TokenStatusResponse createTokenStatus(String token) {
+        boolean availability = tokenAnalyzer.validateToken(token);
+        if(!availability) throw new NotValidTokenException();
+        LocalDateTime expiryDateTime = tokenAnalyzer.getTokenExpiryDateTime(token);
+        return TokenStatusResponse.of(availability,expiryDateTime);
+    }
+
 }

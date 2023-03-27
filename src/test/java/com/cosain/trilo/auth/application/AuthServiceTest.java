@@ -3,6 +3,7 @@ package com.cosain.trilo.auth.application;
 import com.cosain.trilo.auth.domain.TokenRepository;
 import com.cosain.trilo.auth.infra.TokenAnalyzer;
 import com.cosain.trilo.auth.infra.TokenProvider;
+import com.cosain.trilo.auth.presentation.dto.TokenStatusResponse;
 import com.cosain.trilo.common.exception.NotExistRefreshTokenException;
 import com.cosain.trilo.common.exception.NotValidTokenException;
 import org.assertj.core.api.Assertions;
@@ -11,6 +12,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.time.LocalDateTime;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -54,4 +57,28 @@ class AuthServiceTest {
 
         Assertions.assertThatThrownBy(() -> authService.reissueAccessToken(any())).isInstanceOf(NotExistRefreshTokenException.class);
     }
+
+    @Test
+    void 토큰_정보_생성(){
+
+        // given
+        LocalDateTime dateTime = LocalDateTime.of(2023, 4, 28, 12, 20, 49);
+        given(tokenAnalyzer.validateToken(any())).willReturn(true);
+        given(tokenAnalyzer.getTokenExpiryDateTime(any())).willReturn(dateTime);
+
+        // when
+        TokenStatusResponse dto = authService.createTokenStatus(any());
+
+        // then
+        Assertions.assertThat(dto.getExpiryDateTime()).isEqualTo(dateTime);
+        Assertions.assertThat(dto.isAvailability()).isTrue();
+    }
+
+    @Test
+    void 토큰_정보_생성시_토큰이_유효하지_않다면_에러를_발생시킨다(){
+        given(tokenAnalyzer.validateToken(any())).willReturn(false);
+
+        Assertions.assertThatThrownBy(() -> authService.createTokenStatus(any())).isInstanceOf(NotValidTokenException.class);
+    }
+
 }

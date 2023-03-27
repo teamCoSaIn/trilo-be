@@ -47,7 +47,7 @@ public class SecurityConfig {
 
         http
                 .authorizeHttpRequests(request -> request
-                        .requestMatchers(HttpMethod.GET, "/deploy/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/deploy/**", "/api/auth/check").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/auth/reissue").permitAll()
                         .anyRequest().authenticated()
                 )
