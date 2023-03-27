@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 
 @Component
@@ -52,5 +54,11 @@ public class JwtTokenAnalyzer implements TokenAnalyzer {
         Claims claims = getClaims(token);
         Date expiration = claims.getExpiration();
         return expiration.getTime();
+    }
+
+    @Override
+    public LocalDateTime getTokenExpiryDateTime(String token) {
+        Date expiration = getClaims(token).getExpiration();
+        return expiration.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
     }
 }

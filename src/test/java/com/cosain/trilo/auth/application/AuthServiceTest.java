@@ -3,6 +3,7 @@ package com.cosain.trilo.auth.application;
 import com.cosain.trilo.auth.domain.TokenRepository;
 import com.cosain.trilo.auth.infra.TokenAnalyzer;
 import com.cosain.trilo.auth.infra.TokenProvider;
+import com.cosain.trilo.auth.presentation.dto.RefreshTokenStatusResponse;
 import com.cosain.trilo.common.exception.NotExistRefreshTokenException;
 import com.cosain.trilo.common.exception.NotValidTokenException;
 import org.assertj.core.api.Assertions;
@@ -12,6 +13,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
@@ -44,7 +46,7 @@ class AuthServiceTest {
     void 접근토큰_재발급시_재발급_토큰이_유효하지_않다면_에러를_발생시킨다(){
         given(tokenAnalyzer.validateToken(any())).willReturn(false);
 
-        Assertions.assertThatThrownBy(() -> authService.reissueAccessToken(any())).isInstanceOf(NotValidTokenException.class);
+        assertThatThrownBy(() -> authService.reissueAccessToken(any())).isInstanceOf(NotValidTokenException.class);
     }
 
     @Test
@@ -52,6 +54,32 @@ class AuthServiceTest {
         given(tokenAnalyzer.validateToken(any())).willReturn(true);
         given(tokenRepository.existsById(any())).willReturn(false);
 
-        Assertions.assertThatThrownBy(() -> authService.reissueAccessToken(any())).isInstanceOf(NotExistRefreshTokenException.class);
+        assertThatThrownBy(() -> authService.reissueAccessToken(any())).isInstanceOf(NotExistRefreshTokenException.class);
     }
+
+    @Test
+    void 토큰_정보_생성(){
+
+        // given
+        given(tokenAnalyzer.validateToken(any())).willReturn(true);
+
+        // when
+        RefreshTokenStatusResponse dto = authService.createTokenStatus(any());
+
+        // then
+        Assertions.assertThat(dto.isAvailability()).isTrue();
+    }
+
+    @Test
+    void 토큰_정보_생성시_토큰이_유효하지_않는다면_false를_반환한다(){
+        // given
+        given(tokenAnalyzer.validateToken(any())).willReturn(false);
+
+        // when
+        RefreshTokenStatusResponse dto = authService.createTokenStatus(any());
+
+        // then
+        Assertions.assertThat(dto.isAvailability()).isFalse();
+    }
+
 }
