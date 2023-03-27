@@ -60,7 +60,7 @@ class AuthRestControllerTest extends RestDocsTestSupport {
 
         given(authService.createTokenStatus(any())).willReturn(TokenStatusResponse.of(true, LocalDateTime.of(2023, 4,4,4,4,4)));
 
-        mockMvc.perform(RestDocumentationRequestBuilders.get(BASE_URL+"/check")
+        mockMvc.perform(RestDocumentationRequestBuilders.get(BASE_URL+"/token/refresh-token-info")
                         .cookie(new Cookie("refreshToken", "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzd2VldF9zbWVsbEBuYXRlLmNvbSIsImlhdCI6MTY3OTg4MjQ2NiwiZXhwIjoxNjc5ODkzMjY2fQ.v0E4tjveoiOSP2GONUvfTH8-pR_zB5A9w5l5ZNPc4Wk")))
                 .andExpect(status().isOk())
                 .andDo(restDocs.document(
@@ -73,7 +73,7 @@ class AuthRestControllerTest extends RestDocsTestSupport {
 
     @Test
     void 재발급_토큰_정보_조회_요청시_쿠키가_존재하지_않으면_400_BadRequest_에러를_발생시킨다() throws Exception{
-        mockMvc.perform(RestDocumentationRequestBuilders.get(BASE_URL+"/check"))
+        mockMvc.perform(RestDocumentationRequestBuilders.get(BASE_URL+"/token/refresh-token-info"))
                 .andExpect(status().isBadRequest());
     }
 }
