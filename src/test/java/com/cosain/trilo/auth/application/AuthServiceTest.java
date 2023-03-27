@@ -3,7 +3,7 @@ package com.cosain.trilo.auth.application;
 import com.cosain.trilo.auth.domain.TokenRepository;
 import com.cosain.trilo.auth.infra.TokenAnalyzer;
 import com.cosain.trilo.auth.infra.TokenProvider;
-import com.cosain.trilo.auth.presentation.dto.TokenStatusResponse;
+import com.cosain.trilo.auth.presentation.dto.RefreshTokenStatusResponse;
 import com.cosain.trilo.common.exception.NotExistRefreshTokenException;
 import com.cosain.trilo.common.exception.NotValidTokenException;
 import org.assertj.core.api.Assertions;
@@ -68,7 +68,7 @@ class AuthServiceTest {
         given(tokenAnalyzer.getTokenExpiryDateTime(any())).willReturn(dateTime);
 
         // when
-        TokenStatusResponse dto = authService.createTokenStatus(any());
+        RefreshTokenStatusResponse dto = authService.createTokenStatus(any());
 
         // then
         Assertions.assertThat(dto.getExpiryDateTime()).isEqualTo(dateTime);

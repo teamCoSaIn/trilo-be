@@ -1,7 +1,7 @@
 package com.cosain.trilo.auth.presentation;
 
 import com.cosain.trilo.auth.application.AuthService;
-import com.cosain.trilo.auth.presentation.dto.TokenStatusResponse;
+import com.cosain.trilo.auth.presentation.dto.RefreshTokenStatusResponse;
 import com.cosain.trilo.support.RestDocsTestSupport;
 import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.Test;
@@ -9,13 +9,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
-import org.springframework.restdocs.payload.JsonFieldType;
 
-import java.sql.Date;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-import static java.text.DateFormat.LONG;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.payload.JsonFieldType.BOOLEAN;
@@ -58,7 +54,7 @@ class AuthRestControllerTest extends RestDocsTestSupport {
     @Test
     void 재발급_토큰_정보_조회_요청() throws Exception{
 
-        given(authService.createTokenStatus(any())).willReturn(TokenStatusResponse.of(true, LocalDateTime.of(2023, 4,4,4,4,4)));
+        given(authService.createTokenStatus(any())).willReturn(RefreshTokenStatusResponse.of(true, LocalDateTime.of(2023, 4,4,4,4,4)));
 
         mockMvc.perform(RestDocumentationRequestBuilders.get(BASE_URL+"/token/refresh-token-info")
                         .cookie(new Cookie("refreshToken", "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzd2VldF9zbWVsbEBuYXRlLmNvbSIsImlhdCI6MTY3OTg4MjQ2NiwiZXhwIjoxNjc5ODkzMjY2fQ.v0E4tjveoiOSP2GONUvfTH8-pR_zB5A9w5l5ZNPc4Wk")))

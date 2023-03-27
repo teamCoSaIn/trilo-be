@@ -2,7 +2,7 @@ package com.cosain.trilo.auth.presentation;
 
 import com.cosain.trilo.auth.application.AuthService;
 import com.cosain.trilo.auth.presentation.dto.AuthResponse;
-import com.cosain.trilo.auth.presentation.dto.TokenStatusResponse;
+import com.cosain.trilo.auth.presentation.dto.RefreshTokenStatusResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +23,7 @@ public class AuthRestController {
     }
 
     @GetMapping("/token/refresh-token-info")
-    public ResponseEntity<TokenStatusResponse> checkTokenStatus(@CookieValue(value = "refreshToken", required = true) String refreshToken){
+    public ResponseEntity<RefreshTokenStatusResponse> checkTokenStatus(@CookieValue(value = "refreshToken", required = true) String refreshToken){
         return ResponseEntity.ok(authService.createTokenStatus(refreshToken));
     }
 }
