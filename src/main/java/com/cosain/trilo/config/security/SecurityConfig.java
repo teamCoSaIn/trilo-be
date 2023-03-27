@@ -1,6 +1,7 @@
 package com.cosain.trilo.config.security;
 
 import com.cosain.trilo.auth.infra.TokenAnalyzer;
+import com.cosain.trilo.config.security.dto.AuthUriResponse;
 import com.cosain.trilo.config.security.filter.ExceptionHandlerFilter;
 import com.cosain.trilo.config.security.filter.TokenAuthenticationFilter;
 import com.cosain.trilo.config.security.handler.CustomAccessDeniedHandler;
@@ -83,10 +84,10 @@ public class SecurityConfig {
         return http.build();
     }
 
-    private static class CustomRedirectStrategy implements RedirectStrategy {
+    private class CustomRedirectStrategy implements RedirectStrategy {
         @Override
         public void sendRedirect(HttpServletRequest request, HttpServletResponse response, String url) throws IOException {
-            response.setHeader("Auth-Url" ,url);
+            objectMapper.writeValue(response.getWriter(), AuthUriResponse.from(url));
         }
     }
 
