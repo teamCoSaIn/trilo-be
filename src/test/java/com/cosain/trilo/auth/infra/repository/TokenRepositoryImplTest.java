@@ -17,7 +17,6 @@ class TokenRepositoryImplTest {
     @Autowired
     RefreshTokenRepository refreshTokenRepository;
     TokenRepository tokenRepository;
-    TokenRepositoryImpl tokenRepositoryImpl;
 
 
     private static final String TOKEN = "A".repeat(30);
@@ -25,7 +24,6 @@ class TokenRepositoryImplTest {
     @BeforeEach
     void setUp(){
         tokenRepository = new TokenRepositoryImpl(logoutAccessTokenRepository, refreshTokenRepository);
-        tokenRepositoryImpl = new TokenRepositoryImpl(logoutAccessTokenRepository, refreshTokenRepository);
         refreshTokenRepository.deleteAll();
         logoutAccessTokenRepository.deleteAll();
     }
@@ -60,13 +58,4 @@ class TokenRepositoryImplTest {
         Assertions.assertThat(tokenRepository.existsLogoutAccessTokenById(TOKEN)).isTrue();
     }
 
-    @Test
-    void 재발급_토큰_저장2(){
-        // given
-        RefreshToken refreshToken = RefreshToken.of(TOKEN, 1000L);
-        // when
-        tokenRepositoryImpl.saveRefreshToken(refreshToken);
-        // then
-        Assertions.assertThat(tokenRepositoryImpl.existsRefreshTokenById(TOKEN)).isTrue();
-    }
 }
