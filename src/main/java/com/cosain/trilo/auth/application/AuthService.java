@@ -1,6 +1,6 @@
 package com.cosain.trilo.auth.application;
 
-import com.cosain.trilo.auth.domain.TokenRepository;
+import com.cosain.trilo.auth.domain.repository.TokenRepository;
 import com.cosain.trilo.auth.infra.TokenAnalyzer;
 import com.cosain.trilo.auth.infra.TokenProvider;
 import com.cosain.trilo.auth.presentation.dto.RefreshTokenStatusResponse;
@@ -25,7 +25,6 @@ public class AuthService {
         checkIfValidTokenOrThrow(refreshToken);
         checkTokenExistenceOrThrow(refreshToken);
         String email = tokenAnalyzer.getEmailFromToken(refreshToken);
-        tokenRepository.deleteTokenBy(refreshToken);
         return tokenProvider.createAccessToken(email);
     }
     private void checkIfValidTokenOrThrow(String refreshToken){
@@ -34,7 +33,7 @@ public class AuthService {
         }
     }
     private void checkTokenExistenceOrThrow(String refreshToken){
-        if(!tokenRepository.existsById(refreshToken)){
+        if(!tokenRepository.existsRefreshTokenById(refreshToken)){
             throw new NotExistRefreshTokenException();
         }
     }
