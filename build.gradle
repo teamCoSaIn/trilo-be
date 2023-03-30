@@ -63,6 +63,8 @@ dependencies {
 	// Redis
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
+	// Yaml Resource Bundle
+	implementation 'dev.akkinoc.util:yaml-resource-bundle:2.8.1'
 }
 
 test {
