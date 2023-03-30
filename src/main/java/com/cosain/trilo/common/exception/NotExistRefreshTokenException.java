@@ -1,9 +1,19 @@
 package com.cosain.trilo.common.exception;
 
-public class NotExistRefreshTokenException extends RuntimeException{
+import org.springframework.http.HttpStatus;
 
-    private final static String MESSAGE = "토큰이 존재하지 않습니다.";
-    public NotExistRefreshTokenException(){
-        super(MESSAGE);
+public class NotExistRefreshTokenException extends CustomException {
+
+    private static final String ERROR_NAME = "NotExistRefreshToken";
+    private static final HttpStatus HTTP_STATUS = HttpStatus.UNAUTHORIZED;
+
+    @Override
+    public String getErrorName() {
+        return ERROR_NAME;
+    }
+
+    @Override
+    public HttpStatus getHttpStatus() {
+        return HTTP_STATUS;
     }
 }

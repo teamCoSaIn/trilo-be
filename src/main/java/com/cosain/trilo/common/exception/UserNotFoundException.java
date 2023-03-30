@@ -1,10 +1,19 @@
 package com.cosain.trilo.common.exception;
 
-public class UserNotFoundException extends RuntimeException {
+import org.springframework.http.HttpStatus;
 
-    private static final String MESSAGE = "유저를 찾을 수 없습니다.";
+public class UserNotFoundException extends CustomException {
 
-    public UserNotFoundException() {
-        super(MESSAGE);
+    private static final String errorName = "UserNotFound";
+    private static final HttpStatus status = HttpStatus.UNAUTHORIZED;
+
+    @Override
+    public String getErrorName() {
+        return errorName;
+    }
+
+    @Override
+    public HttpStatus getHttpStatus() {
+        return status;
     }
 }

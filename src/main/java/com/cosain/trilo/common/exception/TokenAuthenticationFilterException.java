@@ -1,10 +1,24 @@
 package com.cosain.trilo.common.exception;
 
-public class TokenAuthenticationFilterException extends RuntimeException {
+import org.springframework.http.HttpStatus;
 
-    private static final String MESSAGE = "토큰 검증 과정에서 문제가 발생했습니다.";
+public class TokenAuthenticationFilterException extends CustomException {
+
+    private static final String ERROR_NAME = "TokenAuthenticationFilterError";
+    private static final HttpStatus HTTP_STATUS = HttpStatus.UNAUTHORIZED;
 
     public TokenAuthenticationFilterException(Throwable cause) {
-        super(MESSAGE, cause);
+        super(cause);
     }
+
+    @Override
+    public String getErrorName() {
+        return ERROR_NAME;
+    }
+
+    @Override
+    public HttpStatus getHttpStatus() {
+        return HTTP_STATUS;
+    }
+
 }
