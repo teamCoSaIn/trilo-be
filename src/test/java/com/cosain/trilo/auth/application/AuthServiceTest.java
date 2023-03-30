@@ -1,6 +1,7 @@
 package com.cosain.trilo.auth.application;
 
-import com.cosain.trilo.auth.domain.TokenRepository;
+import com.cosain.trilo.auth.domain.repository.TokenRepository;
+import com.cosain.trilo.auth.infra.repository.RefreshTokenRepository;
 import com.cosain.trilo.auth.infra.TokenAnalyzer;
 import com.cosain.trilo.auth.infra.TokenProvider;
 import com.cosain.trilo.auth.presentation.dto.RefreshTokenStatusResponse;
@@ -17,6 +18,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 
 @ExtendWith(MockitoExtension.class)
 class AuthServiceTest {
@@ -34,7 +36,7 @@ class AuthServiceTest {
     @Test
     void ACCESS_토큰_재발급(){
         given(tokenAnalyzer.validateToken(any())).willReturn(true);
-        given(tokenRepository.existsById(any())).willReturn(true);
+        given(tokenRepository.existsRefreshTokenById(any())).willReturn(true);
         given(tokenAnalyzer.getEmailFromToken(any())).willReturn("email");
         given(tokenProvider.createAccessToken(anyString())).willReturn(ACCESS_TOKEN);
 
@@ -52,7 +54,7 @@ class AuthServiceTest {
     @Test
     void 접근토큰_재발급시_토큰_저장소에_재발급_토큰이_존재하지_않는다면_에러를_발생시킨다(){
         given(tokenAnalyzer.validateToken(any())).willReturn(true);
-        given(tokenRepository.existsById(any())).willReturn(false);
+        given(tokenRepository.existsRefreshTokenById(any())).willReturn(false);
 
         assertThatThrownBy(() -> authService.reissueAccessToken(any())).isInstanceOf(NotExistRefreshTokenException.class);
     }
@@ -80,6 +82,19 @@ class AuthServiceTest {
 
         // then
         Assertions.assertThat(dto.isAvailability()).isFalse();
+    }
+
+    @Test
+    void 로그아웃(){
+        // given
+        given(tokenAnalyzer.getTokenRemainExpiryFrom(any())).willReturn(100000L);
+
+        // when
+        authService.logout("Bearer accessToken", anyString());
+
+        // then
+        then(tokenRepository).should().saveLogoutAccessToken(any());
+        then(tokenRepository).should().deleteRefreshTokenById(any());
     }
 
 }

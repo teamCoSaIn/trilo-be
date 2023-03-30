@@ -94,7 +94,7 @@ class JwtTokenAnalyzerTest {
         String accessToken = createAccessToken(user, 100000L, 1000000L, SECRET_KEY);
 
         // when
-        Long tokenExpiryFrom = tokenAnalyzer.getTokenExpiryFrom(accessToken);
+        Long tokenExpiryFrom = tokenAnalyzer.getTokenRemainExpiryFrom(accessToken);
 
         // then
         Assertions.assertThat(tokenExpiryFrom).isNotNull();

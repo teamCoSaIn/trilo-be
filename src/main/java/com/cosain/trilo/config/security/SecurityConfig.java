@@ -1,5 +1,6 @@
 package com.cosain.trilo.config.security;
 
+import com.cosain.trilo.auth.domain.repository.TokenRepository;
 import com.cosain.trilo.auth.infra.TokenAnalyzer;
 import com.cosain.trilo.config.security.dto.AuthUriResponse;
 import com.cosain.trilo.config.security.filter.ExceptionHandlerFilter;
@@ -37,6 +38,7 @@ public class SecurityConfig {
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
     private final OAuthSuccessHandler oAuthSuccessHandler;
     private final CustomOAuthService customOAuthService;
+    private final TokenRepository tokenRepository;
 
     private final ObjectMapper objectMapper;
     private final TokenAnalyzer tokenAnalyzer;
@@ -78,7 +80,7 @@ public class SecurityConfig {
                 );
 
         http.addFilterBefore(new ExceptionHandlerFilter(objectMapper), UsernamePasswordAuthenticationFilter.class);
-        http.addFilterBefore(new TokenAuthenticationFilter(tokenAnalyzer, userRepository),UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(new TokenAuthenticationFilter(tokenAnalyzer, userRepository, tokenRepository),UsernamePasswordAuthenticationFilter.class);
 
 
         return http.build();

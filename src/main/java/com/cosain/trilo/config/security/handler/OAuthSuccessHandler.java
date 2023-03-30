@@ -1,7 +1,7 @@
 package com.cosain.trilo.config.security.handler;
 
-import com.cosain.trilo.auth.domain.Token;
-import com.cosain.trilo.auth.domain.TokenRepository;
+import com.cosain.trilo.auth.domain.RefreshToken;
+import com.cosain.trilo.auth.domain.repository.TokenRepository;
 import com.cosain.trilo.auth.infra.TokenAnalyzer;
 import com.cosain.trilo.auth.infra.TokenProvider;
 import com.cosain.trilo.auth.presentation.dto.AuthResponse;
@@ -35,8 +35,8 @@ public class OAuthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
         String accessToken = tokenProvider.createAccessToken(authentication);
         String refreshToken = tokenProvider.createRefreshToken(authentication);
 
-        Long tokenExpiry = tokenAnalyzer.getTokenExpiryFrom(refreshToken);
-        tokenRepository.save(Token.of(refreshToken, tokenExpiry));
+        Long tokenExpiry = tokenAnalyzer.getTokenRemainExpiryFrom(refreshToken);
+        tokenRepository.saveRefreshToken(RefreshToken.of(refreshToken, tokenExpiry));
 
         CookieUtil.addAuthCookie(response, refreshToken, tokenExpiry);
         response.setStatus(HttpStatus.OK.value());

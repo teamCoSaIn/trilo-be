@@ -26,4 +26,9 @@ public class AuthRestController {
     public ResponseEntity<RefreshTokenStatusResponse> checkRefreshTokenStatus(@CookieValue(value = "refreshToken", required = false) String refreshToken){
         return ResponseEntity.ok(authService.createTokenStatus(refreshToken));
     }
+
+    @PostMapping("/logout")
+    public void logout(@RequestHeader(value = "Authorization") String authHeaderValue, @CookieValue(value = "refreshToken", required = true) String refreshToken){
+        authService.logout(authHeaderValue, refreshToken);
+    }
 }

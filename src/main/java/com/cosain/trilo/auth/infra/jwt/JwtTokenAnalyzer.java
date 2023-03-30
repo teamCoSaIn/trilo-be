@@ -50,15 +50,15 @@ public class JwtTokenAnalyzer implements TokenAnalyzer {
     }
 
     @Override
-    public Long getTokenExpiryFrom(String token) {
-        Claims claims = getClaims(token);
-        Date expiration = claims.getExpiration();
-        return expiration.getTime();
-    }
-
-    @Override
     public LocalDateTime getTokenExpiryDateTime(String token) {
         Date expiration = getClaims(token).getExpiration();
         return expiration.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+    }
+
+    @Override
+    public Long getTokenRemainExpiryFrom(String token) {
+        Claims claims = getClaims(token);
+        Date expiration = claims.getExpiration();
+        return expiration.getTime() - (new Date().getTime());
     }
 }

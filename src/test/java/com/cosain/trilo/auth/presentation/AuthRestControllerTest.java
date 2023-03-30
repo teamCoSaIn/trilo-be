@@ -4,16 +4,20 @@ import com.cosain.trilo.auth.application.AuthService;
 import com.cosain.trilo.auth.presentation.dto.RefreshTokenStatusResponse;
 import com.cosain.trilo.support.RestDocsTestSupport;
 import jakarta.servlet.http.Cookie;
+import lombok.With;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpHeaders;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
+import org.springframework.security.test.context.support.WithMockUser;
 
 import java.time.LocalDateTime;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 import static org.springframework.restdocs.payload.JsonFieldType.BOOLEAN;
 import static org.springframework.restdocs.payload.JsonFieldType.STRING;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
@@ -70,5 +74,41 @@ class AuthRestControllerTest extends RestDocsTestSupport {
     void 재발급_토큰_상태_조회_요청시_쿠키가_존재하지_않아도_정상_동작한다() throws Exception{
         mockMvc.perform(RestDocumentationRequestBuilders.get(BASE_URL+"/token/refresh-token-info"))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    @WithMockUser
+    void 로그아웃_요청() throws Exception{
+
+        mockMvc.perform(RestDocumentationRequestBuilders.post(BASE_URL + "/logout")
+                .cookie(new Cookie("refreshToken", "refreshToken"))
+                .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken"))
+                .andExpect(status().isOk())
+                .andDo(restDocs.document());
+    }
+
+    @Test
+    @WithMockUser
+    void 로그아웃_요청시_쿠키가_존재하지_않으면_400_BadRequest_에러를_발생시킨다() throws Exception{
+
+        mockMvc.perform(RestDocumentationRequestBuilders.post(BASE_URL + "/logout")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void 로그아웃_요청시_인증_헤더가_존재하지_않으면_401_Unauthorized_에러를_발생시킨다() throws Exception {
+
+        mockMvc.perform(RestDocumentationRequestBuilders.post(BASE_URL + "/logout")
+                        .cookie(new Cookie("refreshToken", "refreshToken")))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void 로그아웃_요청시_인증_헤더가_유효하지_않으면_401_Unauthorized_에러를_발생시킨다() throws Exception {
+        mockMvc.perform(RestDocumentationRequestBuilders.post(BASE_URL + "/logout")
+                        .cookie(new Cookie("refreshToken", "refreshToken"))
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken"))
+                .andExpect(status().isUnauthorized());
     }
 }
