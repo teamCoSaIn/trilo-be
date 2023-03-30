@@ -7,4 +7,5 @@ public interface TokenAnalyzer {
     String getEmailFromToken(String token);
     Long getTokenExpiryFrom(String token);
     LocalDateTime getTokenExpiryDateTime(String token);
+    Long getTokenRemainExpiryFrom(String token);
 }

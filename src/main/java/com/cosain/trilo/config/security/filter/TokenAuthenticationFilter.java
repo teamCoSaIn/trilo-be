@@ -1,5 +1,6 @@
 package com.cosain.trilo.config.security.filter;
 
+import com.cosain.trilo.auth.domain.repository.TokenRepository;
 import com.cosain.trilo.auth.infra.TokenAnalyzer;
 import com.cosain.trilo.common.exception.TokenAuthenticationFilterException;
 import com.cosain.trilo.common.exception.UserNotFoundException;
@@ -24,13 +25,15 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
     private final TokenAnalyzer tokenAnalyzer;
     private final UserRepository userRepository;
+    private final TokenRepository tokenRepository;
 
     private static final String AUTHORIZATION_HEADER = "Authorization";
     private static final String AUTH_TYPE = "Bearer ";
 
-    public TokenAuthenticationFilter(TokenAnalyzer tokenAnalyzer, UserRepository userRepository){
+    public TokenAuthenticationFilter(TokenAnalyzer tokenAnalyzer, UserRepository userRepository, TokenRepository tokenRepository){
         this.tokenAnalyzer = tokenAnalyzer;
         this.userRepository = userRepository;
+        this.tokenRepository = tokenRepository;
     }
 
     /**
@@ -44,7 +47,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
         try{
             String accessToken = getAccessTokenFromRequest(request);
-            if(tokenAnalyzer.validateToken(accessToken)){
+            if(isValidToken(accessToken)){
                 String email = tokenAnalyzer.getEmailFromToken(accessToken);
                 User user = userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException());
                 storeUserInSecurityContext(user, request);
@@ -55,6 +58,11 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
         }
 
         filterChain.doFilter(request, response);
+    }
+
+    private boolean isValidToken(String accessToken){
+        return StringUtils.hasText(accessToken) && tokenAnalyzer.validateToken(accessToken)
+                && !tokenRepository.existsLogoutAccessTokenById(accessToken);
     }
 
     private String getAccessTokenFromRequest(HttpServletRequest request){
