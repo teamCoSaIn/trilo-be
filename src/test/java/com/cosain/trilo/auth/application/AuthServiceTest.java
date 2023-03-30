@@ -18,6 +18,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 
 @ExtendWith(MockitoExtension.class)
 class AuthServiceTest {
@@ -81,6 +82,19 @@ class AuthServiceTest {
 
         // then
         Assertions.assertThat(dto.isAvailability()).isFalse();
+    }
+
+    @Test
+    void 로그아웃(){
+        // given
+        given(tokenAnalyzer.getTokenRemainExpiryFrom(any())).willReturn(100000L);
+
+        // when
+        authService.logout("Bearer accessToken", anyString());
+
+        // then
+        then(tokenRepository).should().saveLogoutAccessToken(any());
+        then(tokenRepository).should().deleteRefreshTokenById(any());
     }
 
 }
