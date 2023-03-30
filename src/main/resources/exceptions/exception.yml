@@ -1,0 +1,35 @@
+# 공통
+UnKnown:
+  code: "TempCode"
+  message: 예상치 못 한 서버 예외가 발생했습니다.
+
+
+NotImplemented:
+  code: "TempCode"
+  message: 미구현 기능입니다.
+
+
+# 인증/인가 관련
+UserNotFound:
+  code: "TempCode"
+  message: 유저를 찾을 수 없습니다.
+
+
+NotValidToken:
+  code: "TempCode"
+  message: 토큰 검증 과정에서 문제가 발생했습니다.
+
+
+NotSupportClientId:
+  code: "TempCode"
+  message: 지원하지 않는 로그인 방식입니다.
+
+
+TokenAuthenticationFilterError:
+  code: "TempCode"
+  message: 토큰 검증 과정에서 문제가 발생했습니다.
+
+
+NotExistRefreshToken:
+  code: "TempCode"
+  message: 리프레시 토큰이 존재하지 않습니다.

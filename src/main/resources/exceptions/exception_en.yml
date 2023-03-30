@@ -1,0 +1,35 @@
+# 공통
+UnKnown:
+  code: "TempCode"
+  message: UnKnown Server Error!
+
+
+NotImplemented:
+  code: "TempCode"
+  message: This operation is not implemented.
+
+
+# 인증/인가 관련
+UserNotFound:
+  code: "TempCode"
+  message: Cannot find that user.
+
+
+NotValidToken:
+  code: "TempCode"
+  message: A problem occurred during token validation.
+
+
+InvalidAuthorizationHeaderType:
+  code: "TempCode"
+  message: Authorization header type is incorrect.
+
+
+NotSupportClientId:
+  code: "TempCode"
+  message: This is an unsupported login method.
+
+
+NotExistRefreshToken:
+  code: "TempCode"
+  message: Refresh token does not exist.
