@@ -15,8 +15,7 @@ import org.springframework.web.context.WebApplicationContext;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -39,8 +38,8 @@ class SingleScheduleQueryControllerTest {
     public void findSingleSchedule_with_authorizedUser() throws Exception {
         mockMvc.perform(get("/api/schedule-places/1"))
                 .andDo(print())
-                .andExpect(content().string("[일정장소 단건 조회] This operation is not implemented."))
-                .andExpect(status().isInternalServerError());
+                .andExpect(status().isInternalServerError())
+                .andExpect(jsonPath("$.message").exists());
     }
 
     @Test

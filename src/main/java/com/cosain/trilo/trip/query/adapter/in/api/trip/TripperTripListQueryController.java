@@ -1,5 +1,6 @@
 package com.cosain.trilo.trip.query.adapter.in.api.trip;
 
+import com.cosain.trilo.common.exception.NotImplementedException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,7 +18,6 @@ public class TripperTripListQueryController {
     @GetMapping("/api/trips")
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public String findTripperTripList(@RequestParam("tripper-id") Long tripperId) {
-        log.info("tripperId = {}", tripperId);
-        return "[특정 사용자 여행 목록] This operation is not implemented.";
+        throw new NotImplementedException("특정 사용자 여행 목록 미구현");
     }
 }

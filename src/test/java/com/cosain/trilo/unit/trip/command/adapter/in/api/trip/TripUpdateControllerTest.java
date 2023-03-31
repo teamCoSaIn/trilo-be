@@ -15,8 +15,7 @@ import org.springframework.web.context.WebApplicationContext;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
 @SpringBootTest
@@ -40,8 +39,8 @@ class TripUpdateControllerTest {
     public void updateTrip_with_authorizedUser() throws Exception {
         mockMvc.perform(put("/api/trips/1"))
                 .andDo(print())
-                .andExpect(content().string("[여행 수정] This operation is not implemented."))
-                .andExpect(status().isInternalServerError());
+                .andExpect(status().isInternalServerError())
+                .andExpect(jsonPath("$.message").exists());
     }
 
     @Test
