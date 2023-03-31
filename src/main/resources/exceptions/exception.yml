@@ -9,6 +9,12 @@ NotImplemented:
   message: 미구현 기능입니다.
 
 
+# 요청 관련
+MissingRequestCookie:
+  code: "TempCode"
+  message: 요청에 필요한 쿠키가 누락 됐습니다.
+
+
 # 인증/인가 관련
 UserNotFound:
   code: "TempCode"
