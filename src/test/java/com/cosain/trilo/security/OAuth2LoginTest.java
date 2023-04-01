@@ -1,9 +1,9 @@
 package com.cosain.trilo.security;
 
+import com.cosain.trilo.config.security.SecurityConfig;
 import com.cosain.trilo.support.RestDocsTestSupport;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.payload.JsonFieldType.STRING;
@@ -11,8 +11,7 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWit
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
-@AutoConfigureMockMvc
+@WebMvcTest(SecurityConfig.class)
 public class OAuth2LoginTest extends RestDocsTestSupport{
 
     private static final String AUTH_URL_REQUEST_URL = "/api/auth/login/";
