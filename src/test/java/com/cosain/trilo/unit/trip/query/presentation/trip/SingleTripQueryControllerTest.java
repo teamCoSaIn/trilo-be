@@ -1,4 +1,4 @@
-package com.cosain.trilo.unit.trip.query.adapter.in.api.trip;
+package com.cosain.trilo.unit.trip.query.presentation.trip;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -19,8 +19,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@DisplayName("여행의 임시보관함 조회 API 테스트")
-class TripTemporaryStorageQueryControllerTest {
+@DisplayName("여행 단건 조회 API 테스트")
+class SingleTripQueryControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -35,8 +35,8 @@ class TripTemporaryStorageQueryControllerTest {
     @Test
     @DisplayName("인증된 사용자 요청 -> 미구현 500")
     @WithMockUser
-    public void findTripTemporaryStorage_with_authorizedUser() throws Exception {
-        mockMvc.perform(get("/api/trips/1/temporary-storage"))
+    public void findSingleTrip_with_authorizedUser() throws Exception {
+        mockMvc.perform(get("/api/trips/1"))
                 .andDo(print())
                 .andExpect(status().isInternalServerError())
                 .andExpect(jsonPath("$.errorCode").exists())
@@ -46,11 +46,12 @@ class TripTemporaryStorageQueryControllerTest {
     @Test
     @DisplayName("미인증 사용자 요청 -> 인증 실패 401")
     @WithAnonymousUser
-    public void findTripTemporaryStorage_with_unauthorizedUser() throws Exception {
-        mockMvc.perform(get("/api/trips/1/temporary-storage"))
+    public void findSingleTrip_with_unauthorizedUser() throws Exception {
+        mockMvc.perform(get("/api/trips/1"))
                 .andDo(print())
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.errorCode").exists())
                 .andExpect(jsonPath("$.errorMessage").exists());
     }
+
 }
