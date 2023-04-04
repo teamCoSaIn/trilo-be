@@ -14,6 +14,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -26,6 +27,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import java.io.IOException;
 
@@ -43,6 +45,9 @@ public class SecurityConfig {
     private final ObjectMapper objectMapper;
     private final TokenAnalyzer tokenAnalyzer;
     private final UserRepository userRepository;
+
+    @Qualifier("handlerExceptionResolver")
+    private final HandlerExceptionResolver resolver;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
@@ -79,7 +84,7 @@ public class SecurityConfig {
 
                 );
 
-        http.addFilterBefore(new ExceptionHandlerFilter(objectMapper), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(new ExceptionHandlerFilter(resolver), UsernamePasswordAuthenticationFilter.class);
         http.addFilterBefore(new TokenAuthenticationFilter(tokenAnalyzer, userRepository, tokenRepository),UsernamePasswordAuthenticationFilter.class);
 
 

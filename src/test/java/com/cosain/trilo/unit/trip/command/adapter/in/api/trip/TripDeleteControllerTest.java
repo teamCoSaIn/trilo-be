@@ -48,8 +48,8 @@ class TripDeleteControllerTest {
     public void deleteTrip_with_unauthorizedUser() throws Exception {
         mockMvc.perform(delete("/api/trips"))
                 .andDo(print())
-                .andExpect(content().string(""))
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.message").exists());
     }
 
 }

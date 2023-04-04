@@ -48,8 +48,8 @@ class SingleScheduleQueryControllerTest {
     public void findSingleSchedule_with_unauthorizedUser() throws Exception {
         mockMvc.perform(get("/api/schedule-places/1"))
                 .andDo(print())
-                .andExpect(content().string(""))
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.message").exists());
     }
 
 }

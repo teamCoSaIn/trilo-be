@@ -48,8 +48,8 @@ class SchedulePlaceDeleteControllerTest {
     public void deleteSchedulePlace_with_unauthorizedUser() throws Exception {
         mockMvc.perform(delete("/api/schedule-places/1"))
                 .andDo(print())
-                .andExpect(content().string(""))
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.message").exists());
     }
 
 }

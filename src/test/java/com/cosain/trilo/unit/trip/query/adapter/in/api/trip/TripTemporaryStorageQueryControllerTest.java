@@ -48,7 +48,7 @@ class TripTemporaryStorageQueryControllerTest {
     public void findTripTemporaryStorage_with_unauthorizedUser() throws Exception {
         mockMvc.perform(get("/api/trips/1/temporary-storage"))
                 .andDo(print())
-                .andExpect(content().string(""))
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.message").exists());
     }
 }

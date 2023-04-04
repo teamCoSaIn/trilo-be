@@ -49,7 +49,7 @@ class TripCreateControllerTest {
     public void createTrip_with_unauthorizedUser() throws Exception {
         mockMvc.perform(post("/api/trips"))
                 .andDo(print())
-                .andExpect(content().string(""))
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.message").exists());
     }
 }

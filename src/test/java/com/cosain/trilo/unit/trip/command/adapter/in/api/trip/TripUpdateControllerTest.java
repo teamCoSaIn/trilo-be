@@ -49,8 +49,8 @@ class TripUpdateControllerTest {
     public void updateTrip_with_unauthorizedUser() throws Exception {
         mockMvc.perform(put("/api/trips"))
                 .andDo(print())
-                .andExpect(content().string(""))
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.message").exists());
     }
 
 }

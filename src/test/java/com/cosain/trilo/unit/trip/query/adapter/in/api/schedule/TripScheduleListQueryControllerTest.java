@@ -48,7 +48,7 @@ class TripScheduleListQueryControllerTest {
     public void findTripScheduleList_with_unauthorizedUser() throws Exception {
         mockMvc.perform(get("/api/trips/1/schedules"))
                 .andDo(print())
-                .andExpect(content().string(""))
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.message").exists());
     }
 }

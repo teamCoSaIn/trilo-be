@@ -8,6 +8,8 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MissingRequestCookieException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -30,8 +32,8 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
     public ErrorResponse handleUnKnownException(Exception e) {
         log.error("예상치 못 한 예외!", e);
 
-        String errorCode = getMessage("unKnown.code");
-        String errorMessage = getMessage("unKnown.message");
+        String errorCode = getMessage("UnKnown.code");
+        String errorMessage = getMessage("UnKnown.message");
 
         return ErrorResponse.from(errorMessage);
     }
@@ -54,6 +56,31 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
         log.info("errorCode={}, errorMessage={}", errorCode, errorMessage);
         return ErrorResponse.from(errorMessage);
     }
+
+    @ExceptionHandler(AuthenticationException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ErrorResponse handleAuthenticationException(AuthenticationException e) {
+        log.error("인증 예외!", e);
+
+        String errorCode = getMessage("AuthenticationFailed.code");
+        String errorMessage = getMessage("AuthenticationFailed.message");
+
+        log.info("errorCode={}, errorMessage={}", errorCode, errorMessage);
+        return ErrorResponse.from(errorMessage);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ErrorResponse handleAccessDeniedException(AccessDeniedException e) {
+        log.error("인가 예외!", e);
+
+        String errorCode = getMessage("AccessDenied.code");
+        String errorMessage = getMessage("AccessDenied.message");
+
+        log.info("errorCode={}, errorMessage={}", errorCode, errorMessage);
+        return ErrorResponse.from(errorMessage);
+    }
+
 
     /**
      * 커스텀 예외

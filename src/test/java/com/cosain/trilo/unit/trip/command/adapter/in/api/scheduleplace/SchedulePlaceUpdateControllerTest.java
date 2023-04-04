@@ -48,8 +48,8 @@ class SchedulePlaceUpdateControllerTest {
     public void updateSchedulePlace_with_unauthorizedUser() throws Exception {
         mockMvc.perform(put("/api/schedule-places/1"))
                 .andDo(print())
-                .andExpect(content().string(""))
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.message").exists());
     }
 
 }

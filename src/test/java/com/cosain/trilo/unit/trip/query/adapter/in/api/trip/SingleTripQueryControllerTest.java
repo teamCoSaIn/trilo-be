@@ -48,8 +48,8 @@ class SingleTripQueryControllerTest {
     public void findSingleTrip_with_unauthorizedUser() throws Exception {
         mockMvc.perform(get("/api/trips/1"))
                 .andDo(print())
-                .andExpect(content().string(""))
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.message").exists());
     }
 
 }
