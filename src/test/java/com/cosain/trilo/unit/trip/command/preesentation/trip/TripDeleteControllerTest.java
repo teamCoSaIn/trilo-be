@@ -1,4 +1,4 @@
-package com.cosain.trilo.unit.trip.command.adapter.in.api.trip;
+package com.cosain.trilo.unit.trip.command.preesentation.trip;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -13,15 +13,14 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-
 @SpringBootTest
 @AutoConfigureMockMvc
-@DisplayName("여행 생성 API 테스트")
-class TripCreateControllerTest {
+@DisplayName("여행 삭제 API 테스트")
+class TripDeleteControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -36,8 +35,8 @@ class TripCreateControllerTest {
     @Test
     @DisplayName("인증된 사용자 요청 -> 미구현 500")
     @WithMockUser
-    public void createTrip_with_authorizedUser() throws Exception {
-        mockMvc.perform(post("/api/trips"))
+    public void deleteTrip_with_authorizedUser() throws Exception {
+        mockMvc.perform(delete("/api/trips/1"))
                 .andDo(print())
                 .andExpect(status().isInternalServerError())
                 .andExpect(jsonPath("$.errorCode").exists())
@@ -47,11 +46,12 @@ class TripCreateControllerTest {
     @Test
     @DisplayName("미인증 사용자 요청 -> 인증 실패 401")
     @WithAnonymousUser
-    public void createTrip_with_unauthorizedUser() throws Exception {
-        mockMvc.perform(post("/api/trips"))
+    public void deleteTrip_with_unauthorizedUser() throws Exception {
+        mockMvc.perform(delete("/api/trips"))
                 .andDo(print())
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.errorCode").exists())
                 .andExpect(jsonPath("$.errorMessage").exists());
     }
+
 }

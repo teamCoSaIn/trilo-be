@@ -1,4 +1,4 @@
-package com.cosain.trilo.unit.trip.command.adapter.in.api.scheduleplace;
+package com.cosain.trilo.unit.trip.command.preesentation.scheduleplace;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

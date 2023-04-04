@@ -1,4 +1,4 @@
-package com.cosain.trilo.unit.trip.command.adapter.in.api.trip;
+package com.cosain.trilo.unit.trip.command.preesentation.scheduleplace;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -19,8 +19,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@DisplayName("여행 삭제 API 테스트")
-class TripDeleteControllerTest {
+@DisplayName("일정장소 삭제 API 테스트")
+class SchedulePlaceDeleteControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -35,8 +35,8 @@ class TripDeleteControllerTest {
     @Test
     @DisplayName("인증된 사용자 요청 -> 미구현 500")
     @WithMockUser
-    public void deleteTrip_with_authorizedUser() throws Exception {
-        mockMvc.perform(delete("/api/trips/1"))
+    public void deleteSchedulePlace_with_authorizedUser() throws Exception {
+        mockMvc.perform(delete("/api/schedule-places/1"))
                 .andDo(print())
                 .andExpect(status().isInternalServerError())
                 .andExpect(jsonPath("$.errorCode").exists())
@@ -46,8 +46,8 @@ class TripDeleteControllerTest {
     @Test
     @DisplayName("미인증 사용자 요청 -> 인증 실패 401")
     @WithAnonymousUser
-    public void deleteTrip_with_unauthorizedUser() throws Exception {
-        mockMvc.perform(delete("/api/trips"))
+    public void deleteSchedulePlace_with_unauthorizedUser() throws Exception {
+        mockMvc.perform(delete("/api/schedule-places/1"))
                 .andDo(print())
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.errorCode").exists())

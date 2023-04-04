@@ -1,4 +1,4 @@
-package com.cosain.trilo.unit.trip.command.adapter.in.api.trip;
+package com.cosain.trilo.unit.trip.command.preesentation.trip;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

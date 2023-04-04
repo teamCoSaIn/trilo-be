@@ -1,4 +1,4 @@
-package com.cosain.trilo.trip.command.adapter.in.api.trip;
+package com.cosain.trilo.trip.command.presentation.trip;
 
 import com.cosain.trilo.common.exception.NotImplementedException;
 import com.cosain.trilo.config.security.dto.UserPrincipal;
