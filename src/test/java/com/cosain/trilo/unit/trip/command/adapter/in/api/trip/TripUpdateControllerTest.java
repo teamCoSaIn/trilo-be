@@ -40,7 +40,8 @@ class TripUpdateControllerTest {
         mockMvc.perform(put("/api/trips/1"))
                 .andDo(print())
                 .andExpect(status().isInternalServerError())
-                .andExpect(jsonPath("$.message").exists());
+                .andExpect(jsonPath("$.errorCode").exists())
+                .andExpect(jsonPath("$.errorMessage").exists());
     }
 
     @Test
@@ -50,7 +51,8 @@ class TripUpdateControllerTest {
         mockMvc.perform(put("/api/trips"))
                 .andDo(print())
                 .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("$.message").exists());
+                .andExpect(jsonPath("$.errorCode").exists())
+                .andExpect(jsonPath("$.errorMessage").exists());
     }
 
 }

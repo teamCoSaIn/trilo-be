@@ -39,7 +39,8 @@ class SingleScheduleQueryControllerTest {
         mockMvc.perform(get("/api/schedule-places/1"))
                 .andDo(print())
                 .andExpect(status().isInternalServerError())
-                .andExpect(jsonPath("$.message").exists());
+                .andExpect(jsonPath("$.errorCode").exists())
+                .andExpect(jsonPath("$.errorMessage").exists());
     }
 
     @Test
@@ -49,7 +50,8 @@ class SingleScheduleQueryControllerTest {
         mockMvc.perform(get("/api/schedule-places/1"))
                 .andDo(print())
                 .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("$.message").exists());
+                .andExpect(jsonPath("$.errorCode").exists())
+                .andExpect(jsonPath("$.errorMessage").exists());
     }
 
 }

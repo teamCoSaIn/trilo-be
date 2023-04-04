@@ -39,7 +39,8 @@ class TripScheduleListQueryControllerTest {
         mockMvc.perform(get("/api/trips/1/schedules"))
                 .andDo(print())
                 .andExpect(status().isInternalServerError())
-                .andExpect(jsonPath("$.message").exists());
+                .andExpect(jsonPath("$.errorCode").exists())
+                .andExpect(jsonPath("$.errorMessage").exists());
     }
 
     @Test
@@ -49,6 +50,7 @@ class TripScheduleListQueryControllerTest {
         mockMvc.perform(get("/api/trips/1/schedules"))
                 .andDo(print())
                 .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("$.message").exists());
+                .andExpect(jsonPath("$.errorCode").exists())
+                .andExpect(jsonPath("$.errorMessage").exists());
     }
 }

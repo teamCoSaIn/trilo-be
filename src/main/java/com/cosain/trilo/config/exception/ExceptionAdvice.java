@@ -35,7 +35,7 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
         String errorCode = getMessage("UnKnown.code");
         String errorMessage = getMessage("UnKnown.message");
 
-        return ErrorResponse.from(errorMessage);
+        return ErrorResponse.of(errorCode, errorMessage);
     }
 
     /**
@@ -54,7 +54,7 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
         String errorMessage = getMessage("MissingRequestCookie.message");
 
         log.info("errorCode={}, errorMessage={}", errorCode, errorMessage);
-        return ErrorResponse.from(errorMessage);
+        return ErrorResponse.of(errorCode, errorMessage);
     }
 
     @ExceptionHandler(AuthenticationException.class)
@@ -66,7 +66,7 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
         String errorMessage = getMessage("AuthenticationFailed.message");
 
         log.info("errorCode={}, errorMessage={}", errorCode, errorMessage);
-        return ErrorResponse.from(errorMessage);
+        return ErrorResponse.of(errorCode, errorMessage);
     }
 
     @ExceptionHandler(AccessDeniedException.class)
@@ -78,9 +78,8 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
         String errorMessage = getMessage("AccessDenied.message");
 
         log.info("errorCode={}, errorMessage={}", errorCode, errorMessage);
-        return ErrorResponse.from(errorMessage);
+        return ErrorResponse.of(errorCode, errorMessage);
     }
-
 
     /**
      * 커스텀 예외
@@ -94,7 +93,7 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
 
         log.info("errorCode={}, errorMessage={}, status={}", errorCode, errorMessage, status);
 
-        return ResponseEntity.status(status).body(ErrorResponse.from(errorMessage));
+        return ResponseEntity.status(status).body(ErrorResponse.of(errorCode, errorMessage));
     }
 
     private String getMessage(String code) {
