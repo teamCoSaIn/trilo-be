@@ -8,8 +8,22 @@ NotImplemented:
   code: "TempCode"
   message: This operation is not implemented.
 
+# 요청 관련
+MissingRequestCookie:
+  code: "TempCode"
+  message: Some cookies required for your request do not exist.
+
 
 # 인증/인가 관련
+AuthenticationFailed:
+  code: "TempCode"
+  message: Authentication failed.
+
+AccessDenied:
+  code: "TempCode"
+  message: You do not have access.
+
+
 UserNotFound:
   code: "TempCode"
   message: Cannot find that user.

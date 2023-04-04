@@ -1,8 +1,10 @@
 package com.cosain.trilo.trip.command.adapter.in.api.scheduleplace;
 
+import com.cosain.trilo.common.exception.NotImplementedException;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * 일정장소 수정
@@ -12,9 +14,7 @@ import org.springframework.web.bind.annotation.*;
 public class SchedulePlaceUpdateController {
 
     @PutMapping("/api/schedule-places/{schedulePlaceId}")
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public String updateSchedulePlace(@PathVariable Long schedulePlaceId) {
-        log.info("schedulePlaceId = {}", schedulePlaceId);
-        return "[일정장소 수정] This operation is not implemented.";
+        throw new NotImplementedException("일정장소 수정 미구현");
     }
 }

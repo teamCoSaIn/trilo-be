@@ -1,18 +1,19 @@
 package com.cosain.trilo.common.dto;
 
-import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 
 @Getter
-@Builder(access = AccessLevel.PRIVATE)
 public class ErrorResponse {
 
-    private String message;
+    private String errorCode;
+    private String errorMessage;
 
-    public static ErrorResponse from(String message){
-        return ErrorResponse.builder()
-                .message(message)
-                .build();
+    private ErrorResponse(String errorCode, String errorMessage) {
+        this.errorCode = errorCode;
+        this.errorMessage = errorMessage;
+    }
+
+    public static ErrorResponse of(String errorCode, String errorMessage){
+        return new ErrorResponse(errorCode, errorMessage);
     }
 }
