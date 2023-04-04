@@ -1,4 +1,4 @@
-package com.cosain.trilo.trip.command.adapter.in.api.scheduleplace;
+package com.cosain.trilo.trip.command.presentation.scheduleplace;
 
 import com.cosain.trilo.common.exception.NotImplementedException;
 import lombok.extern.slf4j.Slf4j;
