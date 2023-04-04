@@ -16,6 +16,16 @@ MissingRequestCookie:
 
 
 # 인증/인가 관련
+AuthenticationFailed:
+  code: "TempCode"
+  message: 인증에 실패했습니다.
+
+
+AccessDenied:
+  code: "TempCode"
+  message: 접근 권한이 없습니다.
+
+
 UserNotFound:
   code: "TempCode"
   message: 유저를 찾을 수 없습니다.
