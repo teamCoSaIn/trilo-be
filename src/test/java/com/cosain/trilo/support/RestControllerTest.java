@@ -38,7 +38,6 @@ public class RestControllerTest {
 
     @BeforeEach
     void setUp() {
-
         mockMvc = MockMvcBuilders
                 .webAppContextSetup(context)
                 .apply(springSecurity())
