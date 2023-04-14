@@ -48,4 +48,18 @@ public class Trip {
         this.status = status;
         this.tripPeriod = tripPeriod;
     }
+
+    /**
+     * 여행의 제목을 변경합니다.
+     * @param newTitle : 변경할 제목
+     * @return 제목이 기존과 달라졌는 지 여부
+     */
+    public boolean changeTitle(String newTitle) {
+        if (newTitle.equals(this.title)) {
+            return false;
+        }
+        this.title = newTitle;
+        return true;
+    }
+
 }

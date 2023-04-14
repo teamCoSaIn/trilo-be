@@ -40,4 +40,49 @@ public class TripTest {
         }
     }
 
+    @Nested
+    @DisplayName("changeTitle로 제목을 변경할 때")
+    class When_ChangeTitle_Method {
+
+        @Nested
+        @DisplayName("같은 제목으로 변경하면")
+        class Change_To_Same_Title {
+            // given
+            private final Trip trip = Trip.create("제목", 1L);
+            private final String sameTitle = "제목";
+
+            @Test
+            @DisplayName("제목이 변경되지도 않고, false가 반환된다.")
+            void it_returns_false_and_title_no_changed() {
+                // when
+                boolean changed = trip.changeTitle(sameTitle);
+
+                // then
+                assertThat(changed).isFalse();
+                assertThat(trip.getTitle()).isEqualTo("제목");
+            }
+
+        }
+
+        @Nested
+        @DisplayName("다른 제목으로 변경하면")
+        class Change_To_Different_Title {
+            // given
+            private final Trip trip = Trip.create("제목", 1L);
+            private final String newTitle = "바뀐 제목";
+
+            @Test
+            @DisplayName("제목이 변경되고, true가 반환된다.")
+            void it_returns_true_and_title_changed() {
+                // when
+                boolean changed = trip.changeTitle(newTitle);
+
+                // then
+                assertThat(changed).isTrue();
+                assertThat(trip.getTitle()).isEqualTo("바뀐 제목");
+            }
+
+        }
+    }
+
 }
