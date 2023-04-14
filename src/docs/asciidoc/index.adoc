@@ -6,3 +6,24 @@
 :toclevels: 2
 :sectlinks:
 :docinfo: shared-head
+
+== Auth API
+=== 인증 URI
+
+==== 구글 URI
+operation::o-auth2-login-test/구글_인증_url_요청[]
+
+==== 네이버 URI
+operation::o-auth2-login-test/네이버_인증_url_요청[]
+
+==== 카카오 URI
+operation::o-auth2-login-test/카카오_인증_url_요청[]
+
+=== 로그아웃
+operation::auth-rest-controller-test/로그아웃_요청[]
+
+=== 재발급 토큰 상태 조회
+operation::auth-rest-controller-test/재발급_토큰_상태_조회_요청[]
+
+=== 접긑 토큰 재발급
+operation::auth-rest-controller-test/접근토큰_재발급_요청[]

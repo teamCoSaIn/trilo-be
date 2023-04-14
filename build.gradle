@@ -79,6 +79,10 @@ asciidoctor { // 작업 구성 설정 - 알아서..
 
 }
 
+asciidoctor.doFirst {
+	delete file('src/main/resources/static/docs')
+}
+
 task copyDocument(type: Copy) { // asciidoctor 작업 : copy
 	dependsOn asciidoctor // asciidoctor 작업 이후에 동작
 

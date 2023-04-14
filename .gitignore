@@ -36,3 +36,6 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### HTML 문서 ###
+src/main/resources/static/docs/*.html

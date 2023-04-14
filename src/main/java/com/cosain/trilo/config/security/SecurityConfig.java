@@ -54,7 +54,7 @@ public class SecurityConfig {
 
         http
                 .authorizeHttpRequests(request -> request
-                        .requestMatchers(HttpMethod.GET, "/deploy/**", "/api/auth/token/refresh-token-info").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/deploy/**", "/api/auth/token/refresh-token-info", "/docs/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/auth/reissue").permitAll()
                         .anyRequest().authenticated()
                 )
