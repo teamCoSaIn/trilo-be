@@ -31,6 +31,8 @@ import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import java.io.IOException;
 
+import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
+
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -50,15 +52,20 @@ public class SecurityConfig {
     private final HandlerExceptionResolver resolver;
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         http
                 .authorizeHttpRequests(request -> request
-                        .requestMatchers(HttpMethod.GET, "/deploy/**", "/api/auth/token/refresh-token-info", "/docs/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/auth/reissue").permitAll()
+                        .requestMatchers(antMatcher("/h2-console/**")).permitAll()
+                        .requestMatchers(antMatcher(HttpMethod.GET, "/deploy/**")).permitAll()
+                        .requestMatchers(antMatcher(HttpMethod.GET, "/api/auth/token/refresh-token-info")).permitAll()
+                        .requestMatchers(antMatcher(HttpMethod.GET, "/docs/**")).permitAll()
+                        .requestMatchers(antMatcher(HttpMethod.POST, "/api/auth/reissue")).permitAll()
                         .anyRequest().authenticated()
                 )
                 .csrf().disable()
+                .headers().frameOptions().disable()
+                .and()
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
@@ -85,7 +92,7 @@ public class SecurityConfig {
                 );
 
         http.addFilterBefore(new ExceptionHandlerFilter(resolver), UsernamePasswordAuthenticationFilter.class);
-        http.addFilterBefore(new TokenAuthenticationFilter(tokenAnalyzer, userRepository, tokenRepository),UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(new TokenAuthenticationFilter(tokenAnalyzer, userRepository, tokenRepository), UsernamePasswordAuthenticationFilter.class);
 
 
         return http.build();
