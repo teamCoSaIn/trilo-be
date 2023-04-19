@@ -48,4 +48,13 @@ public class Trip {
         this.status = status;
         this.tripPeriod = tripPeriod;
     }
+
+    /**
+     * Trip의 제목을 변경합니다.
+     * @param newTitle : 변경할 제목
+     */
+    public void changeTitle(String newTitle) {
+        this.title = newTitle;
+    }
+
 }

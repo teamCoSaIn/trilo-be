@@ -40,4 +40,26 @@ public class TripTest {
         }
     }
 
+    @Nested
+    @DisplayName("여행의 제목을 changeTitle로 변경하면")
+    class When_ChangeTitle {
+
+        @Test
+        @DisplayName("새로운 title이 변경되어 적용된다.")
+        public void trip_has_changed_title() {
+            // given
+            String beforeTitle = "변경 전 제목";
+            Long tripperId = 1L;
+            Trip trip = Trip.create(beforeTitle, tripperId);
+
+            // when
+            String newTitle = "변경 후 제목";
+            trip.changeTitle(newTitle);
+
+            // then
+            assertThat(trip.getTitle()).isEqualTo("변경 후 제목");
+        }
+
+    }
+
 }
