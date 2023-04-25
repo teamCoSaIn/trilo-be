@@ -1,47 +1,55 @@
 package com.cosain.trilo.unit.trip.command.preesentation.trip;
 
-import org.junit.jupiter.api.BeforeEach;
+import com.cosain.trilo.support.RestControllerTest;
+import com.cosain.trilo.trip.command.application.command.TripUpdateCommand;
+import com.cosain.trilo.trip.command.application.usecase.TripUpdateUseCase;
+import com.cosain.trilo.trip.command.presentation.trip.TripUpdateController;
+import com.cosain.trilo.trip.command.presentation.trip.dto.TripUpdateRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithAnonymousUser;
-import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
 
-import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-
-@SpringBootTest
-@AutoConfigureMockMvc
 @DisplayName("여행 수정 API 테스트")
-class TripUpdateControllerTest {
+@WebMvcTest(TripUpdateController.class)
+class TripUpdateControllerTest extends RestControllerTest {
 
-    @Autowired
-    private MockMvc mockMvc;
+    @MockBean
+    private TripUpdateUseCase tripUpdateUseCase;
 
-    @BeforeEach
-    void setUp(WebApplicationContext context) {
-        mockMvc = MockMvcBuilders.webAppContextSetup(context)
-                .apply(springSecurity())
-                .build();
-    }
+    private final String ACCESS_TOKEN = "Bearer accessToken";
 
     @Test
-    @DisplayName("인증된 사용자 요청 -> 미구현 500")
-    @WithMockUser
+    @DisplayName("인증된 사용자 요청 -> 성공")
     public void updateTrip_with_authorizedUser() throws Exception {
-        mockMvc.perform(put("/api/trips/1"))
+
+        mockingForLoginUserAnnotation();
+        TripUpdateRequest request = new TripUpdateRequest("변경할 제목", LocalDate.of(2023, 5, 10), LocalDate.of(2023, 5, 15));
+
+        mockMvc.perform(put("/api/trips/1")
+                        .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)
+                        .content(createJson(request))
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                )
                 .andDo(print())
-                .andExpect(status().isInternalServerError())
-                .andExpect(jsonPath("$.errorCode").exists())
-                .andExpect(jsonPath("$.errorMessage").exists());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.updatedTripId").value(1L));
+
+        verify(tripUpdateUseCase).updateTrip(any(), any(), any(TripUpdateCommand.class));
     }
 
     @Test
