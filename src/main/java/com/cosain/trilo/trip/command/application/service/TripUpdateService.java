@@ -1,29 +1,46 @@
 package com.cosain.trilo.trip.command.application.service;
 
 import com.cosain.trilo.trip.command.application.command.TripUpdateCommand;
+import com.cosain.trilo.trip.command.application.exception.TripNotFoundException;
 import com.cosain.trilo.trip.command.application.usecase.TripUpdateUseCase;
+import com.cosain.trilo.trip.command.domain.entity.Day;
+import com.cosain.trilo.trip.command.domain.entity.Trip;
+import com.cosain.trilo.trip.command.domain.repository.DayRepository;
 import com.cosain.trilo.trip.command.domain.repository.TripRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class TripUpdateService implements TripUpdateUseCase {
 
     private final TripRepository tripRepository;
+    private final DayRepository dayRepository;
 
     @Override
+    @Transactional
     public void updateTrip(Long tripId, Long tripperId, TripUpdateCommand updateCommand) {
+        Trip trip = findTrip(tripId);
+        trip.changeTitle(updateCommand.getTitle());
+        tripRepository.save(trip);
 
-        //TODO: 변경하고자 하는 사용자가 Trip의 소유주와 같은 지 검증
+        List<Day> delDays = trip.getNotOverlappedDays(updateCommand.getStartDate(), updateCommand.getEndDate());
+        if(!delDays.isEmpty()) {
+            trip.deleteDays(delDays);
+            dayRepository.deleteDays(delDays);
+        }
 
-        //TODO: 제목 변경
+        List<Day> addDays = trip.updatePeriod(updateCommand.getStartDate(), updateCommand.getEndDate());
+        dayRepository.saveAll(addDays);
+    }
 
-        //TODO: 기간 변경
-
-        //TODO: 기간변경의 파급효과 -> 소속한 Day 추가/삭제
-
-        //TODO: 데이터베이스에 반영(영속성 컨텍스트의 변경감지 기능을 사용하거나, 쿼리를 작성하거나)
+    private Trip findTrip(Long tripId) {
+        return tripRepository
+                .findById(tripId)
+                .orElseThrow(() -> new TripNotFoundException("일치하는 식별자의 Trip을 찾을 수 없음"));
     }
 
 }
