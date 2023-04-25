@@ -45,14 +45,25 @@ public class Trip {
      * @return 생성된 Trip
      */
     public static Trip create(String title, Long tripperId) {
-        return new Trip(tripperId, title, TripStatus.UNDECIDED, null);
+        return Trip.builder()
+                .tripperId(tripperId)
+                .title(title)
+                .status(TripStatus.UNDECIDED)
+                .tripPeriod(null)
+                .build();
     }
 
-    private Trip(Long tripperId, String title, TripStatus status, TripPeriod tripPeriod) {
+    /**
+     * 테스트의 편의성을 위해 Builder accessLevel = PUBLIC 으로 설정
+     */
+    @Builder(access = AccessLevel.PUBLIC)
+    private Trip(Long id, Long tripperId, String title, TripStatus status, TripPeriod tripPeriod, List<Day> days) {
+        this.id = id;
         this.tripperId = tripperId;
         this.title = title;
         this.status = status;
         this.tripPeriod = tripPeriod;
+        this.days = days;
     }
 
     /**
