@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class ScheduleUpdateController {
 
-    @PutMapping("/api/schedule/{scheduleId}")
+    @PutMapping("/api/schedules/{scheduleId}")
     public String updateSchedule(@PathVariable Long scheduleId) {
         throw new NotImplementedException("일정 수정 미구현");
     }

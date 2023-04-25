@@ -21,7 +21,7 @@ class SingleScheduleQueryControllerTest extends RestControllerTest {
     @DisplayName("인증된 사용자 요청 -> 미구현 500")
     @WithMockUser
     public void findSingleSchedule_with_authorizedUser() throws Exception {
-        mockMvc.perform(get("/api/schedule/1"))
+        mockMvc.perform(get("/api/schedules/1"))
                 .andDo(print())
                 .andExpect(status().isInternalServerError())
                 .andExpect(jsonPath("$.errorCode").exists())
@@ -32,7 +32,7 @@ class SingleScheduleQueryControllerTest extends RestControllerTest {
     @DisplayName("미인증 사용자 요청 -> 인증 실패 401")
     @WithAnonymousUser
     public void findSingleSchedule_with_unauthorizedUser() throws Exception {
-        mockMvc.perform(get("/api/schedule/1"))
+        mockMvc.perform(get("/api/schedules/1"))
                 .andDo(print())
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.errorCode").exists())

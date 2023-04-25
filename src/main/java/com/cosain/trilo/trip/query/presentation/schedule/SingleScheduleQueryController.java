@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class SingleScheduleQueryController {
 
-    @GetMapping("/api/schedule/{scheduleId}")
+    @GetMapping("/api/schedules/{scheduleId}")
     public String findSingleSchedule(@PathVariable Long scheduleId) {
         throw new NotImplementedException("일정 단건 조회 미구현");
     }

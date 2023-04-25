@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class ScheduleDeleteController {
 
-    @DeleteMapping("/api/schedule/{scheduleId}")
+    @DeleteMapping("/api/schedules/{scheduleId}")
     public String deleteSchedule(@PathVariable Long scheduleId) {
         throw new NotImplementedException("일정 삭제 미구현");
     }
