@@ -1,4 +1,4 @@
-package com.cosain.trilo.trip.query.presentation.schedule;
+package com.cosain.trilo.trip.query.presentation.day;
 
 import com.cosain.trilo.common.exception.NotImplementedException;
 import lombok.extern.slf4j.Slf4j;
@@ -11,10 +11,10 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @Slf4j
 @RestController
-public class TripScheduleListQueryController {
+public class TripDayListQueryController {
 
-    @GetMapping("/api/trips/{tripId}/schedules")
-    public String findTripScheduleList(@PathVariable Long tripId) {
-        throw new NotImplementedException("여행의 일정 목록 조회 미구현");
+    @GetMapping("/api/trips/{tripId}/days")
+    public String findTripDayList(@PathVariable Long tripId) {
+        throw new NotImplementedException("여행의 Day 목록 조회 미구현");
     }
 }

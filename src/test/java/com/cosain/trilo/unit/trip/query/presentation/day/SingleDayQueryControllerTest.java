@@ -1,4 +1,4 @@
-package com.cosain.trilo.unit.trip.query.presentation.schedule;
+package com.cosain.trilo.unit.trip.query.presentation.day;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -19,8 +19,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@DisplayName("여행의 일정 목록 조회 API 테스트")
-class TripScheduleListQueryControllerTest {
+@DisplayName("Day 단건 조회 API 테스트")
+class SingleDayQueryControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -35,8 +35,8 @@ class TripScheduleListQueryControllerTest {
     @Test
     @DisplayName("인증된 사용자 요청 -> 미구현 500")
     @WithMockUser
-    public void findTripScheduleList_with_authorizedUser() throws Exception {
-        mockMvc.perform(get("/api/trips/1/schedules"))
+    public void findSingleSchedule_with_authorizedUser() throws Exception {
+        mockMvc.perform(get("/api/days/1"))
                 .andDo(print())
                 .andExpect(status().isInternalServerError())
                 .andExpect(jsonPath("$.errorCode").exists())
@@ -46,11 +46,12 @@ class TripScheduleListQueryControllerTest {
     @Test
     @DisplayName("미인증 사용자 요청 -> 인증 실패 401")
     @WithAnonymousUser
-    public void findTripScheduleList_with_unauthorizedUser() throws Exception {
-        mockMvc.perform(get("/api/trips/1/schedules"))
+    public void findSingleSchedule_with_unauthorizedUser() throws Exception {
+        mockMvc.perform(get("/api/days/1"))
                 .andDo(print())
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.errorCode").exists())
                 .andExpect(jsonPath("$.errorMessage").exists());
     }
+
 }

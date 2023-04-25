@@ -1,4 +1,4 @@
-package com.cosain.trilo.trip.command.presentation.scheduleplace;
+package com.cosain.trilo.trip.command.presentation.schedule;
 
 import com.cosain.trilo.common.exception.NotImplementedException;
 import lombok.extern.slf4j.Slf4j;
@@ -11,10 +11,10 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @Slf4j
 @RestController
-public class SchedulePlaceDeleteController {
+public class ScheduleDeleteController {
 
-    @DeleteMapping("/api/schedule-places/{schedulePlaceId}")
-    public String deleteSchedulePlace(@PathVariable Long schedulePlaceId) {
-        throw new NotImplementedException("일정장소 삭제 미구현");
+    @DeleteMapping("/api/schedule/{scheduleId}")
+    public String deleteSchedule(@PathVariable Long scheduleId) {
+        throw new NotImplementedException("일정 삭제 미구현");
     }
 }

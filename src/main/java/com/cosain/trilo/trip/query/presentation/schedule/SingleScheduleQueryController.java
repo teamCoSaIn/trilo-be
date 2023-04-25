@@ -7,13 +7,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * TODO: 일정 단건 조회
+ * TODO: 일정장소 단건 조회
  */
 @Slf4j
 @RestController
 public class SingleScheduleQueryController {
 
-    @GetMapping("/api/schedules/{scheduleId}")
+    @GetMapping("/api/schedule/{scheduleId}")
     public String findSingleSchedule(@PathVariable Long scheduleId) {
         throw new NotImplementedException("일정 단건 조회 미구현");
     }

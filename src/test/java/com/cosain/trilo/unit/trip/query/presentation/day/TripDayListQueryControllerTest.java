@@ -1,4 +1,4 @@
-package com.cosain.trilo.unit.trip.command.preesentation.scheduleplace;
+package com.cosain.trilo.unit.trip.query.presentation.day;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -13,14 +13,14 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@DisplayName("일정장소 수정 API 테스트")
-class SchedulePlaceUpdateControllerTest {
+@DisplayName("여행의 Day 목록 조회 API 테스트")
+class TripDayListQueryControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -35,8 +35,8 @@ class SchedulePlaceUpdateControllerTest {
     @Test
     @DisplayName("인증된 사용자 요청 -> 미구현 500")
     @WithMockUser
-    public void updateSchedulePlace_with_authorizedUser() throws Exception {
-        mockMvc.perform(put("/api/schedule-places/1"))
+    public void findTripDayList_with_authorizedUser() throws Exception {
+        mockMvc.perform(get("/api/trips/1/days"))
                 .andDo(print())
                 .andExpect(status().isInternalServerError())
                 .andExpect(jsonPath("$.errorCode").exists())
@@ -46,12 +46,11 @@ class SchedulePlaceUpdateControllerTest {
     @Test
     @DisplayName("미인증 사용자 요청 -> 인증 실패 401")
     @WithAnonymousUser
-    public void updateSchedulePlace_with_unauthorizedUser() throws Exception {
-        mockMvc.perform(put("/api/schedule-places/1"))
+    public void findTripDayList_with_unauthorizedUser() throws Exception {
+        mockMvc.perform(get("/api/trips/1/days"))
                 .andDo(print())
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.errorCode").exists())
                 .andExpect(jsonPath("$.errorMessage").exists());
     }
-
 }
