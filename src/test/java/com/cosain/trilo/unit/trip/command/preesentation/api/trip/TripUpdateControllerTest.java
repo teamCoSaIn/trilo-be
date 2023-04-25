@@ -1,4 +1,4 @@
-package com.cosain.trilo.unit.trip.command.preesentation.trip;
+package com.cosain.trilo.unit.trip.command.preesentation.api.trip;
 
 import com.cosain.trilo.support.RestControllerTest;
 import com.cosain.trilo.trip.command.application.command.TripUpdateCommand;

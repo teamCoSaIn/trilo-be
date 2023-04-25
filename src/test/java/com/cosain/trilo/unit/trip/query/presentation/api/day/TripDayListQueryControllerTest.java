@@ -1,36 +1,21 @@
-package com.cosain.trilo.unit.trip.query.presentation.day;
+package com.cosain.trilo.unit.trip.query.presentation.api.day;
 
-import org.junit.jupiter.api.BeforeEach;
+import com.cosain.trilo.support.RestControllerTest;
+import com.cosain.trilo.trip.query.presentation.day.TripDayListQueryController;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
 
-import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
-@AutoConfigureMockMvc
 @DisplayName("여행의 Day 목록 조회 API 테스트")
-class TripDayListQueryControllerTest {
-
-    @Autowired
-    private MockMvc mockMvc;
-
-    @BeforeEach
-    void setUp(WebApplicationContext context) {
-        mockMvc = MockMvcBuilders.webAppContextSetup(context)
-                .apply(springSecurity())
-                .build();
-    }
+@WebMvcTest(TripDayListQueryController.class)
+class TripDayListQueryControllerTest extends RestControllerTest {
 
     @Test
     @DisplayName("인증된 사용자 요청 -> 미구현 500")
