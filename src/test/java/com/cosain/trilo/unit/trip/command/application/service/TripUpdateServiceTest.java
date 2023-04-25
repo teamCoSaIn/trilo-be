@@ -18,7 +18,6 @@ import static com.cosain.trilo.fixture.TripFixture.DECIDED_TRIP;
 import static com.cosain.trilo.fixture.TripFixture.UNDECIDED_TRIP;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
@@ -33,7 +32,7 @@ public class TripUpdateServiceTest {
     private DayRepository dayRepository;
 
     @Test
-    public void 여행_상태가_UNDECIDED인_경우() throws Exception{
+    public void 여행_상태가_UNDECIDED이고_날짜와_제목을_수정할_때() throws Exception {
         // given
         TripUpdateCommand updateCommand = TripUpdateCommand.builder()
                 .title("수정할 제목")
@@ -45,15 +44,14 @@ public class TripUpdateServiceTest {
         given(tripRepository.findById(any())).willReturn(Optional.of(trip));
         // when
         tripUpdateService.updateTrip(1L, 1L, updateCommand);
-        // then
-        verify(tripRepository, times(1)).findById(anyLong());
-        verify(tripRepository, times(1)).save(trip);
-        verify(dayRepository, times(0)).deleteDays(anyList());
-        verify(dayRepository, times(1)).saveAll(anyList());
+
+        verify(tripRepository).findById(anyLong());
+        verify(dayRepository).deleteDays(anyList());
+        verify(dayRepository).saveAll(anyList());
     }
 
     @Test
-    public void 여행_상태가_DECIDED인_경우() throws Exception{
+    public void 여행_상태가_DECIDED이고_다른_제목과_기간으로_수정하는_경우() throws Exception {
         // given
         TripUpdateCommand updateCommand = TripUpdateCommand.builder()
                 .title("수정할 제목")
@@ -67,10 +65,9 @@ public class TripUpdateServiceTest {
         tripUpdateService.updateTrip(1L, 1L, updateCommand);
 
         // then
-        verify(tripRepository, times(1)).findById(anyLong());
-        verify(tripRepository, times(1)).save(trip);
-        verify(dayRepository, times(1)).deleteDays(anyList());
-        verify(dayRepository, times(1)).saveAll(anyList());
+        verify(tripRepository).findById(anyLong());
+        verify(dayRepository).deleteDays(anyList());
+        verify(dayRepository).saveAll(anyList());
     }
 
 }
