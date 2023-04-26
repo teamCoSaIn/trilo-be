@@ -147,4 +147,151 @@ public class TripPeriodTest {
             assertThat(emptyPeriod.getEndDate()).isNull();
         }
     }
+
+    @Nested
+    @DisplayName("Intersection 테스트")
+    class IntersectionTest {
+
+        @Nested
+        @DisplayName("겹치지 않는 기간 테스트")
+        class NotOverlappedPeriod {
+            @Test
+            @DisplayName("[비어있는 기간] intersection [비어있는 기간] -> [비어있는 기간]")
+            public void emptyPeriod_and_emptyPeriod_intersection() {
+                // given
+                TripPeriod period = TripPeriod.empty();
+                TripPeriod other = TripPeriod.empty();
+
+                // when
+                TripPeriod intersection = period.intersection(other);
+
+                // then
+                assertThat(intersection).isEqualTo(TripPeriod.empty());
+            }
+
+            @Test
+            @DisplayName("[비어있는 기간] intersection [비어있지 않은 기간] -> [비어있는 기간]")
+            public void emptyPeriod_and_not_emptyPeriod_intersection() {
+                // given
+                TripPeriod period = TripPeriod.empty();
+                TripPeriod other = TripPeriod.of(LocalDate.of(2023,3,1), LocalDate.of(2023,3,5));
+
+                // when
+                TripPeriod intersection = period.intersection(other);
+
+                // then
+                assertThat(intersection).isEqualTo(TripPeriod.empty());
+            }
+
+            @Test
+            @DisplayName("[비어있지 않은 기간] intersection [비어 있는 기간] -> [비어있는 기간]")
+            public void not_emptyPeriod_and_emptyPeriod_intersection() {
+                // given
+                TripPeriod period = TripPeriod.of(LocalDate.of(2023,3,1), LocalDate.of(2023,3,5));
+                TripPeriod other = TripPeriod.empty();
+
+                // when
+                TripPeriod intersection = period.intersection(other);
+
+                // then
+                assertThat(intersection).isEqualTo(TripPeriod.empty());
+            }
+
+            @Test
+            @DisplayName("[앞선 기간] intersection [늦은 기간] -> [비어있는 기간]")
+            public void beforePeriod_and_AfterPeriod_intersection() {
+                // given
+                TripPeriod beforePeriod = TripPeriod.of(LocalDate.of(2023,3,1), LocalDate.of(2023,3,5));
+                TripPeriod afterPeriod = TripPeriod.of(LocalDate.of(2023,3,6), LocalDate.of(2023,3,10));
+
+                // when
+                TripPeriod intersection = beforePeriod.intersection(afterPeriod);
+
+                // then
+                assertThat(intersection).isEqualTo(TripPeriod.empty());
+            }
+
+            @Test
+            @DisplayName("[늦은 기간] intersection [앞선 기간] -> [비어있는 기간]")
+            public void afterPeriod_and_beforePeriod_intersection() {
+                // given
+                TripPeriod afterPeriod = TripPeriod.of(LocalDate.of(2023,3,6), LocalDate.of(2023,3,10));
+                TripPeriod beforePeriod = TripPeriod.of(LocalDate.of(2023,3,1), LocalDate.of(2023,3,5));
+
+                // when
+                TripPeriod intersection = afterPeriod.intersection(beforePeriod);
+
+                // then
+                assertThat(intersection).isEqualTo(TripPeriod.empty());
+            }
+        }
+
+        @Nested
+        @DisplayName("겹치는 기간 테스트")
+        class OverlappedPeriod {
+            @Test
+            @DisplayName("뒤에서 겹치는 경우 -> 뒤에서 겹치는 구간")
+            public void back_overlapped_test() {
+                // given
+                TripPeriod period = TripPeriod.of(LocalDate.of(2023,3,1), LocalDate.of(2023,3,4));
+                TripPeriod other = TripPeriod.of(LocalDate.of(2023,3,3), LocalDate.of(2023,3,6));
+
+                // when
+                TripPeriod intersection = period.intersection(other);
+
+                // then
+                assertThat(intersection).isNotEqualTo(TripPeriod.empty());
+                assertThat(intersection.getStartDate()).isEqualTo(LocalDate.of(2023,3,3));
+                assertThat(intersection.getEndDate()).isEqualTo(LocalDate.of(2023,3,4));
+            }
+
+            @Test
+            @DisplayName("앞에서 겹치는 경우 -> 앞에서 겹치는 구간")
+            public void front_overlapped_test() {
+                // given
+                TripPeriod period = TripPeriod.of(LocalDate.of(2023,3,3), LocalDate.of(2023,3,6));
+                TripPeriod other = TripPeriod.of(LocalDate.of(2023,3,1), LocalDate.of(2023,3,4));
+
+                // when
+                TripPeriod intersection = period.intersection(other);
+
+                // then
+                assertThat(intersection).isNotEqualTo(TripPeriod.empty());
+                assertThat(intersection.getStartDate()).isEqualTo(LocalDate.of(2023,3,3));
+                assertThat(intersection.getEndDate()).isEqualTo(LocalDate.of(2023,3,4));
+            }
+
+            @Test
+            @DisplayName("[큰 기간] intersection [내부에 포함된 기간] -> [내부에 포함된 기간]")
+            public void outerPeriod_and_innerPeriod_intersection() {
+                // given
+                TripPeriod period = TripPeriod.of(LocalDate.of(2023,3,1), LocalDate.of(2023,3,7));
+                TripPeriod other = TripPeriod.of(LocalDate.of(2023,3,2), LocalDate.of(2023,3,4));
+
+                // when
+                TripPeriod intersection = period.intersection(other);
+
+                // then
+                assertThat(intersection).isNotEqualTo(TripPeriod.empty());
+                assertThat(intersection.getStartDate()).isEqualTo(LocalDate.of(2023,3,2));
+                assertThat(intersection.getEndDate()).isEqualTo(LocalDate.of(2023,3,4));
+            }
+
+            @Test
+            @DisplayName("[내부에 포함된 기간] intersection [큰 기간] -> [내부에 포함된 기간]")
+            public void innerPeriod_and_outerPeriod_intersection() {
+                // given
+                TripPeriod period = TripPeriod.of(LocalDate.of(2023,3,2), LocalDate.of(2023,3,4));
+                TripPeriod other = TripPeriod.of(LocalDate.of(2023,3,1), LocalDate.of(2023,3,7));
+
+                // when
+                TripPeriod intersection = period.intersection(other);
+
+                // then
+                assertThat(intersection).isNotEqualTo(TripPeriod.empty());
+                assertThat(intersection.getStartDate()).isEqualTo(LocalDate.of(2023,3,2));
+                assertThat(intersection.getEndDate()).isEqualTo(LocalDate.of(2023,3,4));
+            }
+        }
+    }
 }
