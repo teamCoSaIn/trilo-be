@@ -18,6 +18,7 @@ import static com.cosain.trilo.fixture.TripFixture.DECIDED_TRIP;
 import static com.cosain.trilo.fixture.TripFixture.UNDECIDED_TRIP;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
@@ -41,13 +42,14 @@ public class TripUpdateServiceTest {
                 .build();
 
         Trip trip = UNDECIDED_TRIP.create(1L, 1L, "여행 제목");
-        given(tripRepository.findById(any())).willReturn(Optional.of(trip));
+        given(tripRepository.findById(anyLong())).willReturn(Optional.of(trip));
+
         // when
         tripUpdateService.updateTrip(1L, 1L, updateCommand);
 
-        verify(tripRepository).findById(anyLong());
-        verify(dayRepository).deleteDays(anyList());
-        verify(dayRepository).saveAll(anyList());
+        verify(tripRepository, times(1)).findById(anyLong());
+        verify(dayRepository, times(0)).deleteDays(anyList());
+        verify(dayRepository, times(1)).saveAll(anyList());
     }
 
     @Test
@@ -59,15 +61,15 @@ public class TripUpdateServiceTest {
                 .endDate(LocalDate.of(2023, 5, 15))
                 .build();
         Trip trip = DECIDED_TRIP.create(1L, 1L, "여행 제목", LocalDate.of(2023, 5, 10), LocalDate.of(2023, 5, 20));
-        given(tripRepository.findById(any())).willReturn(Optional.of(trip));
+        given(tripRepository.findById(anyLong())).willReturn(Optional.of(trip));
 
         // when
         tripUpdateService.updateTrip(1L, 1L, updateCommand);
 
         // then
-        verify(tripRepository).findById(anyLong());
-        verify(dayRepository).deleteDays(anyList());
-        verify(dayRepository).saveAll(anyList());
+        verify(tripRepository, times(1)).findById(anyLong());
+        verify(dayRepository, times(1)).deleteDays(anyList());
+        verify(dayRepository, times(1)).saveAll(anyList());
     }
 
 }
