@@ -91,8 +91,10 @@ public class Trip {
      * @return ChangeTripPeriodResult
      */
     public ChangeTripPeriodResult changePeriod(TripPeriod newPeriod) {
+        TripPeriod oldPeriod = this.tripPeriod;
+
         // 기존이랑 기간이 같으면 변경 안 하고 반환
-        if (tripPeriod.equals(newPeriod)) {
+        if (oldPeriod.equals(newPeriod)) {
             return ChangeTripPeriodResult.of(Collections.emptyList(), Collections.emptyList());
         }
 
@@ -105,24 +107,27 @@ public class Trip {
         if (status == TripStatus.UNDECIDED) {
             status = TripStatus.DECIDED;
         }
-        List<Day> deleteDays = getNotOverlappedDays(newPeriod);
+        this.tripPeriod = newPeriod;
+
+        List<Day> deleteDays = getNotOverlappedDays(oldPeriod, newPeriod);
         this.days.removeAll(deleteDays);
 
-        List<Day> createdDays = getCreateDays(newPeriod);
+        List<Day> createdDays = getCreateDays(oldPeriod, newPeriod);
         this.days.addAll(createdDays);
+
         return ChangeTripPeriodResult.of(deleteDays, createdDays);
     }
 
-    public List<Day> getNotOverlappedDays(TripPeriod newPeriod) {
-        TripPeriod overlappedPeriod = tripPeriod.intersection(newPeriod);
+    private List<Day> getNotOverlappedDays(TripPeriod oldPeriod, TripPeriod newPeriod) {
+        TripPeriod overlappedPeriod = oldPeriod.intersection(newPeriod);
         return days.stream()
                 .filter(day -> !day.isIn(overlappedPeriod))
                 .toList();
     }
 
-    private List<Day> getCreateDays(TripPeriod newPeriod) {
+    private List<Day> getCreateDays(TripPeriod oldPeriod, TripPeriod newPeriod) {
         return newPeriod.dateStream()
-                .filter(date -> !tripPeriod.contains(date))
+                .filter(date -> !oldPeriod.contains(date))
                 .map(date -> Day.of(date, this))
                 .toList();
     }
