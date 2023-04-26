@@ -126,4 +126,25 @@ public class TripPeriodTest {
         }
     }
 
+    @Nested
+    @DisplayName("TripPeriod.empty() 를 통해 반환 된 TripPeriod는")
+    class EmptyTripPeriodTest {
+
+        // given
+        TripPeriod emptyPeriod = TripPeriod.empty();
+
+        @Test
+        @DisplayName("시작일이 null이다.")
+        public void emptyTripPeriodStartDate() {
+            // when & then
+            assertThat(emptyPeriod.getStartDate()).isNull();
+        }
+
+        @Test
+        @DisplayName("종료일이 null이다.")
+        public void emptyPeriodEndDate() {
+            // when & then
+            assertThat(emptyPeriod.getEndDate()).isNull();
+        }
+    }
 }
