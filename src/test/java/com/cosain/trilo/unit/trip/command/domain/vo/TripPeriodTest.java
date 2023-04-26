@@ -9,6 +9,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.time.LocalDate;
+import java.util.List;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -354,6 +356,42 @@ public class TripPeriodTest {
                 // when & then
                 assertThat(period.contains(date)).isFalse();
             }
+        }
+    }
+
+    @Nested
+    @DisplayName("DateStreamTest")
+    class DateStreamTest {
+
+        @Test
+        @DisplayName("EmptyPeriod의 dateStream은 빈 Stream이다.")
+        public void emptyPeriod_create_emptyStream() {
+            // given
+            TripPeriod tripPeriod = TripPeriod.empty();
+
+            // when
+            Stream<LocalDate> dateStream = tripPeriod.dateStream();
+
+            // then
+            List<LocalDate> dates = dateStream.toList();
+            assertThat(dates).isEmpty();
+        }
+
+        @Test
+        @DisplayName("비어있지 않은 기간의 dateStream은 시작일부터 종료일까지 날짜들의 Stream이다.")
+        public void notEmptyPeriod_create_dateStream() {
+            // given
+            TripPeriod tripPeriod = TripPeriod.of(LocalDate.of(2023,1,1), LocalDate.of(2023,1,5));
+
+            // when
+            Stream<LocalDate> dateStream = tripPeriod.dateStream();
+
+            // then
+            List<LocalDate> dates = dateStream.toList();
+            assertThat(dates).containsExactly(
+                    LocalDate.of(2023,1,1), LocalDate.of(2023,1,2),
+                    LocalDate.of(2023,1,3), LocalDate.of(2023,1,4),
+                    LocalDate.of(2023,1,5));
         }
     }
 }
