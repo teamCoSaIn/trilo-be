@@ -23,6 +23,7 @@ import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 public class TripUpdateServiceTest {
+
     @InjectMocks
     private TripUpdateService tripUpdateService;
 
@@ -42,12 +43,12 @@ public class TripUpdateServiceTest {
                 .build();
 
         Trip trip = UNDECIDED_TRIP.create(1L, 1L, "여행 제목");
-        given(tripRepository.findById(anyLong())).willReturn(Optional.of(trip));
+        given(tripRepository.findByIdWithDays(anyLong())).willReturn(Optional.of(trip));
 
         // when
         tripUpdateService.updateTrip(1L, 1L, updateCommand);
 
-        verify(tripRepository, times(1)).findById(anyLong());
+        verify(tripRepository, times(1)).findByIdWithDays(anyLong());
         verify(dayRepository, times(0)).deleteDays(anyList());
         verify(dayRepository, times(1)).saveAll(anyList());
     }
@@ -61,13 +62,13 @@ public class TripUpdateServiceTest {
                 .endDate(LocalDate.of(2023, 5, 15))
                 .build();
         Trip trip = DECIDED_TRIP.create(1L, 1L, "여행 제목", LocalDate.of(2023, 5, 10), LocalDate.of(2023, 5, 20));
-        given(tripRepository.findById(anyLong())).willReturn(Optional.of(trip));
+        given(tripRepository.findByIdWithDays(anyLong())).willReturn(Optional.of(trip));
 
         // when
         tripUpdateService.updateTrip(1L, 1L, updateCommand);
 
         // then
-        verify(tripRepository, times(1)).findById(anyLong());
+        verify(tripRepository, times(1)).findByIdWithDays(anyLong());
         verify(dayRepository, times(1)).deleteDays(anyList());
         verify(dayRepository, times(1)).saveAll(anyList());
     }
