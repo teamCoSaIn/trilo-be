@@ -2,6 +2,7 @@ package com.cosain.trilo.unit.trip.command.domain.entity;
 
 import com.cosain.trilo.trip.command.domain.entity.Day;
 import com.cosain.trilo.trip.command.domain.entity.Trip;
+import com.cosain.trilo.trip.command.domain.vo.TripPeriod;
 import com.cosain.trilo.trip.command.domain.vo.TripStatus;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -82,7 +83,8 @@ public class TripTest {
                 // given
                 Trip trip = UNDECIDED_TRIP.create(1L, 1L, "제목");
                 // when
-                List<Day> notOverlappedDays = trip.getNotOverlappedDays(LocalDate.of(2023, 5, 5), LocalDate.of(2023, 5, 10));
+                List<Day> notOverlappedDays = trip.getNotOverlappedDays(TripPeriod.of(LocalDate.of(2023, 5, 5), LocalDate.of(2023, 5, 10)));
+
                 // then
                 assertThat(notOverlappedDays).isEmpty();
             }
@@ -92,7 +94,7 @@ public class TripTest {
                 // given
                 Trip trip = DECIDED_TRIP.create(1L, 1L, "제목", LocalDate.of(2023, 5, 10), LocalDate.of(2023, 5, 13));
                 // when
-                List<Day> notOverlappedDays = trip.getNotOverlappedDays(LocalDate.of(2023, 5, 12), LocalDate.of(2023, 5, 14));
+                List<Day> notOverlappedDays = trip.getNotOverlappedDays(TripPeriod.of(LocalDate.of(2023, 5, 12), LocalDate.of(2023, 5, 14)));
                 // then
                 assertThat(notOverlappedDays.size()).isEqualTo(2);
                 assertThat(notOverlappedDays.get(0).getTripDate()).isEqualTo(LocalDate.of(2023, 5, 10));
