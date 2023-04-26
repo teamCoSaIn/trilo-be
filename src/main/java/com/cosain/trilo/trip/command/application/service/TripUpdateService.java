@@ -1,6 +1,7 @@
 package com.cosain.trilo.trip.command.application.service;
 
 import com.cosain.trilo.trip.command.application.command.TripUpdateCommand;
+import com.cosain.trilo.trip.command.application.exception.NoTripUpdateAuthorityException;
 import com.cosain.trilo.trip.command.application.exception.TripNotFoundException;
 import com.cosain.trilo.trip.command.application.usecase.TripUpdateUseCase;
 import com.cosain.trilo.trip.command.domain.dto.ChangeTripPeriodResult;
@@ -25,12 +26,19 @@ public class TripUpdateService implements TripUpdateUseCase {
     @Transactional
     public void updateTrip(Long tripId, Long tripperId, TripUpdateCommand updateCommand) {
         Trip trip = findTrip(tripId);
+        validateTripUpdateAuthority(trip, tripperId);
 
         trip.changeTitle(updateCommand.getTitle());
         ChangeTripPeriodResult result = trip.updatePeriod(updateCommand.getStartDate(), updateCommand.getEndDate());
 
         deleteUnnecessaryDays(result.getDeletedDays());
         saveCreatedDays(result.getCreatedDays());
+    }
+
+    private void validateTripUpdateAuthority(Trip trip, Long tripperId) {
+        if (!trip.getTripperId().equals(tripperId)) {
+            throw new NoTripUpdateAuthorityException("여행을 수정할 권한이 없는 사람이 수정하려고 시도함");
+        }
     }
 
     private Trip findTrip(Long tripId) {
