@@ -29,7 +29,7 @@ public class TripUpdateService implements TripUpdateUseCase {
         validateTripUpdateAuthority(trip, tripperId);
 
         trip.changeTitle(updateCommand.getTitle());
-        ChangeTripPeriodResult result = trip.updatePeriod(updateCommand.getTripPeriod().getStartDate(), updateCommand.getTripPeriod().getEndDate());
+        ChangeTripPeriodResult result = trip.updatePeriod(updateCommand.getTripPeriod());
 
         deleteUnnecessaryDays(result.getDeletedDays());
         saveCreatedDays(result.getCreatedDays());
