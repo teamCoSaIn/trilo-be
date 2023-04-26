@@ -90,7 +90,7 @@ public class Trip {
      * @param newPeriod
      * @return ChangeTripPeriodResult
      */
-    public ChangeTripPeriodResult updatePeriod(TripPeriod newPeriod) {
+    public ChangeTripPeriodResult changePeriod(TripPeriod newPeriod) {
         // 기존이랑 기간이 같으면 변경 안 하고 반환
         if (tripPeriod.equals(newPeriod)) {
             return ChangeTripPeriodResult.of(Collections.emptyList(), Collections.emptyList());
