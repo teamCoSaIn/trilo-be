@@ -27,3 +27,8 @@ operation::auth-rest-controller-test/재발급_토큰_상태_조회_요청[]
 
 === 접긑 토큰 재발급
 operation::auth-rest-controller-test/접근토큰_재발급_요청[]
+
+== Trip API
+
+=== Trip 생성
+operation::trip-create-controller-docs-test/여행_생성_요청[]
