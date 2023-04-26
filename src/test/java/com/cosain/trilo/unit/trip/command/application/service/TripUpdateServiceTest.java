@@ -41,7 +41,7 @@ public class TripUpdateServiceTest {
                 .endDate(LocalDate.of(2023, 5, 15))
                 .build();
 
-        Trip trip = UNDECIDED_TRIP.create(1L, 1L, "여행 제목");
+        Trip trip = UNDECIDED_TRIP.createUndecided(1L, 1L, "여행 제목");
         given(tripRepository.findById(any())).willReturn(Optional.of(trip));
         // when
         tripUpdateService.updateTrip(1L, 1L, updateCommand);
@@ -60,7 +60,7 @@ public class TripUpdateServiceTest {
                 .startDate(LocalDate.of(2023, 5, 5))
                 .endDate(LocalDate.of(2023, 5, 15))
                 .build();
-        Trip trip = DECIDED_TRIP.create(1L, 1L, "여행 제목", LocalDate.of(2023, 5, 10), LocalDate.of(2023, 5, 20));
+        Trip trip = DECIDED_TRIP.createDecided(1L, 1L, "여행 제목", LocalDate.of(2023, 5, 10), LocalDate.of(2023, 5, 20));
         given(tripRepository.findById(any())).willReturn(Optional.of(trip));
 
         // when

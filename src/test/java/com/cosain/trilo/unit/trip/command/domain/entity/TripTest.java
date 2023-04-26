@@ -80,7 +80,7 @@ public class TripTest {
             @DisplayName("빈 리스트를 반환한다.(겹치지 않는 날짜가 없으므로)")
             public void it_returns_empty_list() {
                 // given
-                Trip trip = UNDECIDED_TRIP.create(1L, 1L, "제목");
+                Trip trip = UNDECIDED_TRIP.createUndecided(1L, 1L, "제목");
                 // when
                 List<Day> notOverlappedDays = trip.getNotOverlappedDays(LocalDate.of(2023, 5, 5), LocalDate.of(2023, 5, 10));
                 // then
@@ -90,7 +90,7 @@ public class TripTest {
             @Test
             public void 겹치지_않는_Day_리스트_가져올_때_DECIDED_상태인_경우() {
                 // given
-                Trip trip = DECIDED_TRIP.create(1L, 1L, "제목", LocalDate.of(2023, 5, 10), LocalDate.of(2023, 5, 13));
+                Trip trip = DECIDED_TRIP.createDecided(1L, 1L, "제목", LocalDate.of(2023, 5, 10), LocalDate.of(2023, 5, 13));
                 // when
                 List<Day> notOverlappedDays = trip.getNotOverlappedDays(LocalDate.of(2023, 5, 12), LocalDate.of(2023, 5, 14));
                 // then

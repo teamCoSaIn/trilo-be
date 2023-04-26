@@ -21,7 +21,8 @@ public enum TripFixture {
         this.status = status;
     }
 
-    public Trip create(Long id, Long tripperId, String title){
+    public Trip createUndecided(Long id, Long tripperId, String title){
+        if(this.status.equals(TripStatus.DECIDED)) throw new IllegalArgumentException("status 가 DECIDED 일 경우 startDate와 endDate를 지정해주어야 합니다.");
         return Trip.builder()
                 .id(id)
                 .tripperId(tripperId)
@@ -30,8 +31,16 @@ public enum TripFixture {
                 .build();
     }
 
-    public Trip create(Long id, Long tripperId, String title, LocalDate startDate, LocalDate endDate){
-        List<Day> days = createDays(startDate, endDate, this.create(id, tripperId, title));
+    public Trip createDecided(Long id, Long tripperId, String title, LocalDate startDate, LocalDate endDate){
+        if(this.status.equals(TripStatus.UNDECIDED)) throw new IllegalArgumentException("status 가 UNDECIDED 일 경우 startDate와 endDate를 지정해 줄 수 없습니다.");
+        Trip trip = Trip.builder()
+                .id(id)
+                .tripperId(tripperId)
+                .title(title)
+                .status(this.status)
+                .build();
+        List<Day> days = createDays(startDate, endDate, trip);
+
         return Trip.builder()
                 .id(id)
                 .tripperId(tripperId)
@@ -42,13 +51,6 @@ public enum TripFixture {
                 .build();
     }
 
-    public Trip create(Long tripperId, String title, LocalDate startDate, LocalDate endDate){
-        return Trip.builder()
-                .tripperId(tripperId)
-                .title(title)
-                .tripPeriod(TripPeriod.of(startDate, endDate))
-                .build();
-    }
 
     private List<Day> createDays(LocalDate startDate, LocalDate endDate, Trip trip){
         List<Day> days = new ArrayList<>();
