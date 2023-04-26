@@ -2,6 +2,7 @@ package com.cosain.trilo.unit.trip.command.application.service;
 
 import com.cosain.trilo.trip.command.application.command.TripUpdateCommand;
 import com.cosain.trilo.trip.command.application.exception.NoTripUpdateAuthorityException;
+import com.cosain.trilo.trip.command.application.exception.TripNotFoundException;
 import com.cosain.trilo.trip.command.application.service.TripUpdateService;
 import com.cosain.trilo.trip.command.domain.entity.Trip;
 import com.cosain.trilo.trip.command.domain.repository.DayRepository;
@@ -28,6 +29,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
+@DisplayName("[TripCommand] TripUpdateService 테스트")
 public class TripUpdateServiceTest {
 
     @InjectMocks
@@ -38,6 +40,23 @@ public class TripUpdateServiceTest {
 
     @Mock
     private DayRepository dayRepository;
+
+    @Test
+    @DisplayName("존재하지 않는 여행을 수정하려 하면, TripNotFoundException 발생")
+    public void if_update_not_exist_trip_then_it_throws_TripNotFoundException() {
+        // given
+        TripUpdateCommand updateCommand =
+                TripUpdateCommand.of(
+                        "수정할 제목",
+                        TripPeriod.of(LocalDate.of(2023,5,5), LocalDate.of(2023, 5, 15))
+                );
+        given(tripRepository.findByIdWithDays(anyLong())).willReturn(Optional.empty());
+
+        // when & then
+        assertThatThrownBy(() -> tripUpdateService.updateTrip(1L, 1L, updateCommand))
+                .isInstanceOf(TripNotFoundException.class);
+        verify(tripRepository).findByIdWithDays(anyLong());
+    }
 
     @Test
     public void 여행_상태가_UNDECIDED이고_날짜와_제목을_수정할_때() throws Exception {
