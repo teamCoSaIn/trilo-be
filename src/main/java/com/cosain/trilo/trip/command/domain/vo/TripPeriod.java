@@ -1,5 +1,6 @@
 package com.cosain.trilo.trip.command.domain.vo;
 
+import com.cosain.trilo.trip.command.domain.exception.InvalidPeriodException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.*;
@@ -22,11 +23,15 @@ public class TripPeriod {
     private LocalDate endDate;
 
     public static TripPeriod of(LocalDate startDate, LocalDate endDate) {
-        // 둘 다 null이 들어왔을 때
         if (startDate == null && endDate == null) {
-            return empty();
+            return EMPTY_PERIOD;
         }
-        //TODO: TripPeriod 생성 검증로직 추가 -> 도메인 규칙 방어
+        if ((startDate != null && endDate == null) || (startDate == null && endDate != null)) {
+            throw new InvalidPeriodException("시작일 또는 종료일 어느 한 쪽만 null일 수 없습니다.");
+        }
+        if (endDate.isBefore(startDate)) {
+            throw new InvalidPeriodException("종료일이 시작일보다 앞섭니다.");
+        }
         return new TripPeriod(startDate, endDate);
     }
 
