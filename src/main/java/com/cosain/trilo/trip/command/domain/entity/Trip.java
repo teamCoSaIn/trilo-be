@@ -50,7 +50,7 @@ public class Trip {
                 .tripperId(tripperId)
                 .title(title)
                 .status(TripStatus.UNDECIDED)
-                .tripPeriod(null)
+                .tripPeriod(TripPeriod.empty())
                 .build();
     }
 
