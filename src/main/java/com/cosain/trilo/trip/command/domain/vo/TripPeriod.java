@@ -46,4 +46,26 @@ public class TripPeriod {
     public static TripPeriod empty() {
         return EMPTY_PERIOD;
     }
+
+    /**
+     * 겹치는 기간을 반환합니다.
+     * @param other
+     * @return
+     */
+    public TripPeriod intersection(TripPeriod other) {
+        return hasNoIntersection(other)
+                ? empty()
+                : calculateIntersectionPeriod(other);
+    }
+
+    private boolean hasNoIntersection(TripPeriod other) {
+        return this.equals(empty()) || other.equals(empty()) || this.startDate.isAfter(other.endDate) || this.endDate.isBefore(other.startDate);
+    }
+
+    private TripPeriod calculateIntersectionPeriod(TripPeriod other) {
+        LocalDate newStartDate = this.startDate.isAfter(other.startDate) ? this.startDate : other.startDate;
+        LocalDate newEndDate = this.endDate.isBefore(other.endDate) ? this.endDate : other.endDate;
+        return TripPeriod.of(newStartDate, newEndDate);
+    }
+
 }
