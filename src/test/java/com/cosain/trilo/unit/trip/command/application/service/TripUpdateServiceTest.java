@@ -1,10 +1,13 @@
 package com.cosain.trilo.unit.trip.command.application.service;
 
 import com.cosain.trilo.trip.command.application.command.TripUpdateCommand;
+import com.cosain.trilo.trip.command.application.exception.NoTripUpdateAuthorityException;
 import com.cosain.trilo.trip.command.application.service.TripUpdateService;
 import com.cosain.trilo.trip.command.domain.entity.Trip;
 import com.cosain.trilo.trip.command.domain.repository.DayRepository;
 import com.cosain.trilo.trip.command.domain.repository.TripRepository;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -16,7 +19,9 @@ import java.util.Optional;
 
 import static com.cosain.trilo.fixture.TripFixture.DECIDED_TRIP;
 import static com.cosain.trilo.fixture.TripFixture.UNDECIDED_TRIP;
-import static org.mockito.ArgumentMatchers.*;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -72,6 +77,31 @@ public class TripUpdateServiceTest {
         verify(tripRepository, times(1)).findByIdWithDays(anyLong());
         verify(dayRepository, times(1)).deleteDays(anyList());
         verify(dayRepository, times(1)).saveAll(anyList());
+    }
+
+    @Nested
+    @DisplayName("여행의 소유자가 아닌 사람이 여행을 수정하려 하면")
+    class When_update_tripper_not_equals_trip_owner {
+
+        @Test
+        @DisplayName("NoTripUpdateAuthorityException이 발생한다.")
+        void it_throws_NoTripUpdateAuthorityException() {
+            // given
+            TripUpdateCommand updateCommand = TripUpdateCommand.builder()
+                    .title("수정할 제목")
+                    .startDate(LocalDate.of(2023, 5, 5))
+                    .endDate(LocalDate.of(2023, 5, 15))
+                    .build();
+            Trip trip = UNDECIDED_TRIP.create(1L, 1L, "여행 제목");
+            given(tripRepository.findByIdWithDays(anyLong())).willReturn(Optional.of(trip));
+
+            // when & then
+            assertThatThrownBy(() -> tripUpdateService.updateTrip(1L, 2L, updateCommand))
+                    .isInstanceOf(NoTripUpdateAuthorityException.class);
+
+            verify(tripRepository, times(1)).findByIdWithDays(anyLong());
+        }
+
     }
 
 }
