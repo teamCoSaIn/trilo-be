@@ -28,6 +28,7 @@ public enum TripFixture {
                 .tripperId(tripperId)
                 .title(title)
                 .status(this.status)
+                .tripPeriod(TripPeriod.empty())
                 .build();
     }
 
