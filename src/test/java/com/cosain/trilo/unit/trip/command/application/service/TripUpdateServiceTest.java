@@ -6,6 +6,7 @@ import com.cosain.trilo.trip.command.application.service.TripUpdateService;
 import com.cosain.trilo.trip.command.domain.entity.Trip;
 import com.cosain.trilo.trip.command.domain.repository.DayRepository;
 import com.cosain.trilo.trip.command.domain.repository.TripRepository;
+import com.cosain.trilo.trip.command.domain.vo.TripPeriod;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -41,11 +42,11 @@ public class TripUpdateServiceTest {
     @Test
     public void 여행_상태가_UNDECIDED이고_날짜와_제목을_수정할_때() throws Exception {
         // given
-        TripUpdateCommand updateCommand = TripUpdateCommand.builder()
-                .title("수정할 제목")
-                .startDate(LocalDate.of(2023, 5, 5))
-                .endDate(LocalDate.of(2023, 5, 15))
-                .build();
+        TripUpdateCommand updateCommand =
+                TripUpdateCommand.of(
+                        "수정할 제목",
+                        TripPeriod.of(LocalDate.of(2023,5,5), LocalDate.of(2023, 5, 15))
+                );
 
         Trip trip = UNDECIDED_TRIP.createUndecided(1L, 1L, "여행 제목");
         given(tripRepository.findByIdWithDays(anyLong())).willReturn(Optional.of(trip));
@@ -62,11 +63,11 @@ public class TripUpdateServiceTest {
     @Test
     public void 여행_상태가_DECIDED이고_다른_제목과_기간으로_수정하는_경우() throws Exception {
         // given
-        TripUpdateCommand updateCommand = TripUpdateCommand.builder()
-                .title("수정할 제목")
-                .startDate(LocalDate.of(2023, 5, 5))
-                .endDate(LocalDate.of(2023, 5, 15))
-                .build();
+        TripUpdateCommand updateCommand =
+                TripUpdateCommand.of(
+                        "수정할 제목",
+                        TripPeriod.of(LocalDate.of(2023,5,5), LocalDate.of(2023, 5, 15))
+                );
         Trip trip = DECIDED_TRIP.createDecided(1L, 1L, "여행 제목", LocalDate.of(2023, 5, 10), LocalDate.of(2023, 5, 20));
         given(tripRepository.findByIdWithDays(anyLong())).willReturn(Optional.of(trip));
 
@@ -87,12 +88,12 @@ public class TripUpdateServiceTest {
         @DisplayName("NoTripUpdateAuthorityException이 발생한다.")
         void it_throws_NoTripUpdateAuthorityException() {
             // given
-            TripUpdateCommand updateCommand = TripUpdateCommand.builder()
-                    .title("수정할 제목")
-                    .startDate(LocalDate.of(2023, 5, 5))
-                    .endDate(LocalDate.of(2023, 5, 15))
-                    .build();
-            Trip trip = UNDECIDED_TRIP.create(1L, 1L, "여행 제목");
+            TripUpdateCommand updateCommand =
+                    TripUpdateCommand.of(
+                            "수정할 제목",
+                            TripPeriod.of(LocalDate.of(2023,5,5), LocalDate.of(2023, 5, 15))
+                    );
+            Trip trip = UNDECIDED_TRIP.createUndecided(1L, 1L, "여행 제목");
             given(tripRepository.findByIdWithDays(anyLong())).willReturn(Optional.of(trip));
 
             // when & then
