@@ -5,6 +5,8 @@ import com.cosain.trilo.trip.command.domain.vo.TripPeriod;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.time.LocalDate;
 
@@ -174,7 +176,7 @@ public class TripPeriodTest {
             public void emptyPeriod_and_not_emptyPeriod_intersection() {
                 // given
                 TripPeriod period = TripPeriod.empty();
-                TripPeriod other = TripPeriod.of(LocalDate.of(2023,3,1), LocalDate.of(2023,3,5));
+                TripPeriod other = TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 5));
 
                 // when
                 TripPeriod intersection = period.intersection(other);
@@ -187,7 +189,7 @@ public class TripPeriodTest {
             @DisplayName("[비어있지 않은 기간] intersection [비어 있는 기간] -> [비어있는 기간]")
             public void not_emptyPeriod_and_emptyPeriod_intersection() {
                 // given
-                TripPeriod period = TripPeriod.of(LocalDate.of(2023,3,1), LocalDate.of(2023,3,5));
+                TripPeriod period = TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 5));
                 TripPeriod other = TripPeriod.empty();
 
                 // when
@@ -201,8 +203,8 @@ public class TripPeriodTest {
             @DisplayName("[앞선 기간] intersection [늦은 기간] -> [비어있는 기간]")
             public void beforePeriod_and_AfterPeriod_intersection() {
                 // given
-                TripPeriod beforePeriod = TripPeriod.of(LocalDate.of(2023,3,1), LocalDate.of(2023,3,5));
-                TripPeriod afterPeriod = TripPeriod.of(LocalDate.of(2023,3,6), LocalDate.of(2023,3,10));
+                TripPeriod beforePeriod = TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 5));
+                TripPeriod afterPeriod = TripPeriod.of(LocalDate.of(2023, 3, 6), LocalDate.of(2023, 3, 10));
 
                 // when
                 TripPeriod intersection = beforePeriod.intersection(afterPeriod);
@@ -215,8 +217,8 @@ public class TripPeriodTest {
             @DisplayName("[늦은 기간] intersection [앞선 기간] -> [비어있는 기간]")
             public void afterPeriod_and_beforePeriod_intersection() {
                 // given
-                TripPeriod afterPeriod = TripPeriod.of(LocalDate.of(2023,3,6), LocalDate.of(2023,3,10));
-                TripPeriod beforePeriod = TripPeriod.of(LocalDate.of(2023,3,1), LocalDate.of(2023,3,5));
+                TripPeriod afterPeriod = TripPeriod.of(LocalDate.of(2023, 3, 6), LocalDate.of(2023, 3, 10));
+                TripPeriod beforePeriod = TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 5));
 
                 // when
                 TripPeriod intersection = afterPeriod.intersection(beforePeriod);
@@ -233,64 +235,124 @@ public class TripPeriodTest {
             @DisplayName("뒤에서 겹치는 경우 -> 뒤에서 겹치는 구간")
             public void back_overlapped_test() {
                 // given
-                TripPeriod period = TripPeriod.of(LocalDate.of(2023,3,1), LocalDate.of(2023,3,4));
-                TripPeriod other = TripPeriod.of(LocalDate.of(2023,3,3), LocalDate.of(2023,3,6));
+                TripPeriod period = TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 4));
+                TripPeriod other = TripPeriod.of(LocalDate.of(2023, 3, 3), LocalDate.of(2023, 3, 6));
 
                 // when
                 TripPeriod intersection = period.intersection(other);
 
                 // then
                 assertThat(intersection).isNotEqualTo(TripPeriod.empty());
-                assertThat(intersection.getStartDate()).isEqualTo(LocalDate.of(2023,3,3));
-                assertThat(intersection.getEndDate()).isEqualTo(LocalDate.of(2023,3,4));
+                assertThat(intersection.getStartDate()).isEqualTo(LocalDate.of(2023, 3, 3));
+                assertThat(intersection.getEndDate()).isEqualTo(LocalDate.of(2023, 3, 4));
             }
 
             @Test
             @DisplayName("앞에서 겹치는 경우 -> 앞에서 겹치는 구간")
             public void front_overlapped_test() {
                 // given
-                TripPeriod period = TripPeriod.of(LocalDate.of(2023,3,3), LocalDate.of(2023,3,6));
-                TripPeriod other = TripPeriod.of(LocalDate.of(2023,3,1), LocalDate.of(2023,3,4));
+                TripPeriod period = TripPeriod.of(LocalDate.of(2023, 3, 3), LocalDate.of(2023, 3, 6));
+                TripPeriod other = TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 4));
 
                 // when
                 TripPeriod intersection = period.intersection(other);
 
                 // then
                 assertThat(intersection).isNotEqualTo(TripPeriod.empty());
-                assertThat(intersection.getStartDate()).isEqualTo(LocalDate.of(2023,3,3));
-                assertThat(intersection.getEndDate()).isEqualTo(LocalDate.of(2023,3,4));
+                assertThat(intersection.getStartDate()).isEqualTo(LocalDate.of(2023, 3, 3));
+                assertThat(intersection.getEndDate()).isEqualTo(LocalDate.of(2023, 3, 4));
             }
 
             @Test
             @DisplayName("[큰 기간] intersection [내부에 포함된 기간] -> [내부에 포함된 기간]")
             public void outerPeriod_and_innerPeriod_intersection() {
                 // given
-                TripPeriod period = TripPeriod.of(LocalDate.of(2023,3,1), LocalDate.of(2023,3,7));
-                TripPeriod other = TripPeriod.of(LocalDate.of(2023,3,2), LocalDate.of(2023,3,4));
+                TripPeriod period = TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 7));
+                TripPeriod other = TripPeriod.of(LocalDate.of(2023, 3, 2), LocalDate.of(2023, 3, 4));
 
                 // when
                 TripPeriod intersection = period.intersection(other);
 
                 // then
                 assertThat(intersection).isNotEqualTo(TripPeriod.empty());
-                assertThat(intersection.getStartDate()).isEqualTo(LocalDate.of(2023,3,2));
-                assertThat(intersection.getEndDate()).isEqualTo(LocalDate.of(2023,3,4));
+                assertThat(intersection.getStartDate()).isEqualTo(LocalDate.of(2023, 3, 2));
+                assertThat(intersection.getEndDate()).isEqualTo(LocalDate.of(2023, 3, 4));
             }
 
             @Test
             @DisplayName("[내부에 포함된 기간] intersection [큰 기간] -> [내부에 포함된 기간]")
             public void innerPeriod_and_outerPeriod_intersection() {
                 // given
-                TripPeriod period = TripPeriod.of(LocalDate.of(2023,3,2), LocalDate.of(2023,3,4));
-                TripPeriod other = TripPeriod.of(LocalDate.of(2023,3,1), LocalDate.of(2023,3,7));
+                TripPeriod period = TripPeriod.of(LocalDate.of(2023, 3, 2), LocalDate.of(2023, 3, 4));
+                TripPeriod other = TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 7));
 
                 // when
                 TripPeriod intersection = period.intersection(other);
 
                 // then
                 assertThat(intersection).isNotEqualTo(TripPeriod.empty());
-                assertThat(intersection.getStartDate()).isEqualTo(LocalDate.of(2023,3,2));
-                assertThat(intersection.getEndDate()).isEqualTo(LocalDate.of(2023,3,4));
+                assertThat(intersection.getStartDate()).isEqualTo(LocalDate.of(2023, 3, 2));
+                assertThat(intersection.getEndDate()).isEqualTo(LocalDate.of(2023, 3, 4));
+            }
+        }
+
+    }
+
+    @Nested
+    @DisplayName("contains 메서드 테스트")
+    class ContainsTest {
+
+        @Nested
+        @DisplayName("비어있는 TripPeriod일 때")
+        class When_Period_isEmpty {
+
+            @ParameterizedTest
+            @DisplayName("false 반환")
+            @ValueSource(strings = {"1970-01-01", "2022-12-19", "2023-04-02", "2023-04-03", "2024-03-17", "2033-07-18"})
+            public void it_returns_false(String dateString) {
+                //given
+                TripPeriod period = TripPeriod.empty();
+                LocalDate date = LocalDate.parse(dateString);
+
+                // when & then
+                assertThat(period.contains(date)).isFalse();
+            }
+        }
+
+        @Nested
+        @DisplayName("비어있지 않은 TripPeriod일 때")
+        class When_Period_isNotEmpty {
+            // common given
+            TripPeriod period = TripPeriod.of(LocalDate.of(2023, 4, 2), LocalDate.of(2023, 4, 5));
+
+            @ParameterizedTest
+            @DisplayName("지정 기간 이전 날짜의 경우 false 반환")
+            @ValueSource(strings = {"1970-01-01", "2022-12-19", "2023-02-28", "2023-04-01"})
+            public void before_date_will_return_false(String dateString) {
+                LocalDate date = LocalDate.parse(dateString);
+
+                // when & then
+                assertThat(period.contains(date)).isFalse();
+            }
+
+            @ParameterizedTest
+            @DisplayName("지정 기간 사이 날짜의 경우 true 반환")
+            @ValueSource(strings = {"2023-04-02", "2023-04-03", "2023-04-04", "2023-04-05"})
+            public void between_date_will_return_true(String dateString) {
+                LocalDate date = LocalDate.parse(dateString);
+
+                // when & then
+                assertThat(period.contains(date)).isTrue();
+            }
+
+            @ParameterizedTest
+            @DisplayName("지정 기간 이후 날짜의 경우 true 반환")
+            @ValueSource(strings = {"2023-04-06", "2023-04-07", "2024-03-17", "2033-07-18"})
+            public void after_date_will_return_false(String dateString) {
+                LocalDate date = LocalDate.parse(dateString);
+
+                // when & then
+                assertThat(period.contains(date)).isFalse();
             }
         }
     }

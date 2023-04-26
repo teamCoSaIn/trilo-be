@@ -6,6 +6,7 @@ import jakarta.persistence.Embeddable;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.stream.DoubleStream;
 
 @Getter
 @ToString(of = {"startDate", "endDate"})
@@ -68,4 +69,8 @@ public class TripPeriod {
         return TripPeriod.of(newStartDate, newEndDate);
     }
 
+    public boolean contains(LocalDate date) {
+        return !this.equals(empty()) &&
+                (date.isEqual(startDate) || (date.isAfter(startDate) && date.isBefore(endDate)) || date.isEqual(endDate));
+    }
 }
