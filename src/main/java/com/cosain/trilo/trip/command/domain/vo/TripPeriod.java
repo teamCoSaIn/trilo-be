@@ -6,7 +6,8 @@ import jakarta.persistence.Embeddable;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.util.stream.DoubleStream;
+import java.time.temporal.ChronoUnit;
+import java.util.stream.Stream;
 
 @Getter
 @ToString(of = {"startDate", "endDate"})
@@ -50,6 +51,7 @@ public class TripPeriod {
 
     /**
      * 겹치는 기간을 반환합니다.
+     *
      * @param other
      * @return
      */
@@ -72,5 +74,18 @@ public class TripPeriod {
     public boolean contains(LocalDate date) {
         return !this.equals(empty()) &&
                 (date.isEqual(startDate) || (date.isAfter(startDate) && date.isBefore(endDate)) || date.isEqual(endDate));
+    }
+
+    /**
+     * 해당 기간에 속하는 날짜들을 Stream으로 반환합니다.
+     *
+     * @return
+     */
+    public Stream<LocalDate> dateStream() {
+        if (this.equals(EMPTY_PERIOD)) {
+            return Stream.empty();
+        }
+        return Stream.iterate(startDate, d -> d.plusDays(1))
+                .limit(ChronoUnit.DAYS.between(startDate, endDate) + 1);
     }
 }
