@@ -32,3 +32,6 @@ operation::auth-rest-controller-test/접근토큰_재발급_요청[]
 
 === Trip 생성
 operation::trip-create-controller-docs-test/여행_생성_요청[]
+
+=== Trip 수정
+operation::trip-update-controller-docs-test/여행_수정_요청[]
