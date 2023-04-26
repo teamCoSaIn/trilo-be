@@ -34,7 +34,7 @@ public class TripUpdateService implements TripUpdateUseCase {
     }
 
     private Trip findTrip(Long tripId) {
-        return tripRepository.findById(tripId)
+        return tripRepository.findByIdWithDays(tripId)
                 .orElseThrow(() -> new TripNotFoundException("일치하는 식별자의 Trip을 찾을 수 없음"));
     }
 
