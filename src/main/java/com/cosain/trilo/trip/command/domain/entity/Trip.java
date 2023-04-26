@@ -109,27 +109,27 @@ public class Trip {
         }
         this.tripPeriod = newPeriod;
 
-        List<Day> deleteDays = getNotOverlappedDays(oldPeriod, newPeriod);
-        this.days.removeAll(deleteDays);
-
-        List<Day> createdDays = getCreateDays(oldPeriod, newPeriod);
-        this.days.addAll(createdDays);
-
-        return ChangeTripPeriodResult.of(deleteDays, createdDays);
+        List<Day> deletedDays = deleteUnnecessaryDays(oldPeriod, newPeriod);
+        List<Day> createdDays = addNewDays(oldPeriod, newPeriod);
+        return ChangeTripPeriodResult.of(deletedDays, createdDays);
     }
 
-    private List<Day> getNotOverlappedDays(TripPeriod oldPeriod, TripPeriod newPeriod) {
+    private List<Day> deleteUnnecessaryDays(TripPeriod oldPeriod, TripPeriod newPeriod) {
         TripPeriod overlappedPeriod = oldPeriod.intersection(newPeriod);
-        return days.stream()
+        List<Day> deleteDays = days.stream()
                 .filter(day -> !day.isIn(overlappedPeriod))
                 .toList();
+        this.days.removeAll(deleteDays);
+        return deleteDays;
     }
 
-    private List<Day> getCreateDays(TripPeriod oldPeriod, TripPeriod newPeriod) {
-        return newPeriod.dateStream()
+    private List<Day> addNewDays(TripPeriod oldPeriod, TripPeriod newPeriod) {
+        List<Day> newDays = newPeriod.dateStream()
                 .filter(date -> !oldPeriod.contains(date))
                 .map(date -> Day.of(date, this))
                 .toList();
+        this.days.addAll(newDays);
+        return newDays;
     }
 
 }
