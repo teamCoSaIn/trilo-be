@@ -72,6 +72,7 @@ spring:
         # show_sql: true # sout으로 하이버네이트 실행 SQL을 남기는데 이는 아래의 spring.logging.level.org.hibernate.SQL 옵션에서 log로 대체
         format_sql: true # sql을 로깅할 때 예쁘게 보여줌
         dialect: org.hibernate.dialect.MySQL8Dialect
+        create_empty_composites.enabled: true
 
 logging:
   level:
@@ -84,4 +85,4 @@ jwt:
   refresh-token-expiry: 10800000 # 3시간... ? 한달
 
 deploy-module:
-  version: 0.0.6
+  version: 0.0.7

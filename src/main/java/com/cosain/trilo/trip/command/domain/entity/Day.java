@@ -1,5 +1,6 @@
 package com.cosain.trilo.trip.command.domain.entity;
 
+import com.cosain.trilo.trip.command.domain.vo.TripPeriod;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -39,4 +40,12 @@ public class Day {
         this.trip = trip;
     }
 
+    /**
+     * Day가 지정 TripPeriod에 속하는 지 여부를 반환합니다.
+     * @param tripPeriod : 기간
+     * @return 소속 여부
+     */
+    public boolean isIn(TripPeriod tripPeriod) {
+        return tripPeriod.contains(tripDate);
+    }
 }

@@ -2,6 +2,8 @@ package com.cosain.trilo.unit.trip.command.domain.entity;
 
 import com.cosain.trilo.trip.command.domain.entity.Day;
 import com.cosain.trilo.trip.command.domain.entity.Trip;
+import com.cosain.trilo.trip.command.domain.exception.EmptyPeriodUpdateException;
+import com.cosain.trilo.trip.command.domain.vo.TripPeriod;
 import com.cosain.trilo.trip.command.domain.vo.TripStatus;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -13,6 +15,7 @@ import java.util.List;
 import static com.cosain.trilo.fixture.TripFixture.DECIDED_TRIP;
 import static com.cosain.trilo.fixture.TripFixture.UNDECIDED_TRIP;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DisplayName("[TripCommand] Trip 테스트")
 public class TripTest {
@@ -69,36 +72,480 @@ public class TripTest {
     }
 
     @Nested
-    @DisplayName("'getNotOverlappedDays 로 겹치지 않는 날짜를 가져올 때")
-    class When_getNotOverlappedDays {
+    @DisplayName("ChangePeriod 테스트")
+    class ChangePeriodTest {
 
         @Nested
-        @DisplayName("Trip 상태가 UNDECIDED일 경우")
-        class if_trip_status_is_undecided {
+        @DisplayName("UNDECIDED 상태 여행을 수정할 때")
+        class Case_Change_UNDECIDED_Trip {
 
-            @Test
-            @DisplayName("빈 리스트를 반환한다.(겹치지 않는 날짜가 없으므로)")
-            public void it_returns_empty_list() {
+            // common given
+            private Trip undecidedTrip = UNDECIDED_TRIP.createUndecided(1L, 1L, "여행 제목");
+
+            @Nested
+            @DisplayName("비어있는 기간으로 변경하면")
+            class If_Change_To_EmptyPeriod {
                 // given
-                Trip trip = UNDECIDED_TRIP.createUndecided(1L, 1L, "제목");
-                // when
-                List<Day> notOverlappedDays = trip.getNotOverlappedDays(LocalDate.of(2023, 5, 5), LocalDate.of(2023, 5, 10));
-                // then
-                assertThat(notOverlappedDays).isEmpty();
+                TripPeriod emptyPeriod = TripPeriod.empty();
+
+                @Test
+                @DisplayName("삭제된 날짜가 없다. (원래 Day가 없었고, 변경이 없었으므로)")
+                public void there_are_no_deletedDays() {
+                    // when
+                    var changePeriodResult = undecidedTrip.changePeriod(emptyPeriod);
+
+                    // then
+                    List<Day> deletedDays = changePeriodResult.getDeletedDays();
+                    assertThat(deletedDays).isEmpty();
+                }
+
+                @Test
+                @DisplayName("생성된 날짜가 없다.")
+                public void there_are_no_createdDays() {
+                    // when
+                    var changePeriodResult = undecidedTrip.changePeriod(emptyPeriod);
+
+                    // then
+                    List<Day> createdDays = changePeriodResult.getCreatedDays();
+                    assertThat(createdDays).isEmpty();
+                }
+
+                @Test
+                @DisplayName("Trip이 가진 Days는 여전히 비어있다.")
+                public void trip_still_has_noDays() {
+                    // when
+                    undecidedTrip.changePeriod(emptyPeriod);
+
+                    // then
+                    assertThat(undecidedTrip.getDays()).isEmpty();
+                }
+
+                @Test
+                @DisplayName("Trip은 여전히 Undecided 상태이다.")
+                public void trip_status_is_still_undecided() {
+                    // when
+                    undecidedTrip.changePeriod(emptyPeriod);
+
+                    // then
+                    assertThat(undecidedTrip.getStatus()).isSameAs(TripStatus.UNDECIDED);
+                }
+
+                @Test
+                @DisplayName("Trip의 기간은 여전히 비어있는 기간이다.")
+                public void trip_period_is_still_emptyPeriod() {
+                    // when
+                    undecidedTrip.changePeriod(emptyPeriod);
+
+                    // then
+                    assertThat(undecidedTrip.getTripPeriod()).isEqualTo(TripPeriod.empty());
+                }
             }
 
-            @Test
-            public void 겹치지_않는_Day_리스트_가져올_때_DECIDED_상태인_경우() {
+            @Nested
+            @DisplayName("비어있지 않은 기간으로 변경하면")
+            class If_Change_To_NotEmptyPeriod {
                 // given
-                Trip trip = DECIDED_TRIP.createDecided(1L, 1L, "제목", LocalDate.of(2023, 5, 10), LocalDate.of(2023, 5, 13));
-                // when
-                List<Day> notOverlappedDays = trip.getNotOverlappedDays(LocalDate.of(2023, 5, 12), LocalDate.of(2023, 5, 14));
-                // then
-                assertThat(notOverlappedDays.size()).isEqualTo(2);
-                assertThat(notOverlappedDays.get(0).getTripDate()).isEqualTo(LocalDate.of(2023, 5, 10));
-                assertThat(notOverlappedDays.get(notOverlappedDays.size() - 1).getTripDate()).isEqualTo(LocalDate.of(2023, 5, 11));
+                TripPeriod newPeriod = TripPeriod.of(LocalDate.of(2023, 1, 1), LocalDate.of(2023, 1, 3));
+
+                @Test
+                @DisplayName("삭제된 날짜가 없다. (원래 Day가 없었으므로)")
+                public void there_are_no_deletedDays() {
+                    // when
+                    var changePeriodResult = undecidedTrip.changePeriod(newPeriod);
+
+                    // then
+                    List<Day> deletedDays = changePeriodResult.getDeletedDays();
+                    assertThat(deletedDays).isEmpty();
+                }
+
+                @Test
+                @DisplayName("새로 Day들이 생성된다")
+                public void then_newDays_created() {
+                    // when
+                    var changePeriodResult = undecidedTrip.changePeriod(newPeriod);
+
+                    // then
+                    List<Day> createdDays = changePeriodResult.getCreatedDays();
+                    assertThat(createdDays).map(Day::getTripDate).containsExactly(LocalDate.of(2023, 1, 1), LocalDate.of(2023, 1, 2), LocalDate.of(2023, 1, 3));
+                }
+
+                @Test
+                @DisplayName("Trip은 새로 생긴 날짜들을 가진다.")
+                public void trip_still_has_newDays() {
+                    // when
+                    undecidedTrip.changePeriod(newPeriod);
+
+
+                    // then
+                    assertThat(undecidedTrip.getDays()).map(Day::getTripDate).containsExactly(LocalDate.of(2023, 1, 1), LocalDate.of(2023, 1, 2), LocalDate.of(2023, 1, 3));
+                }
+
+                @Test
+                @DisplayName("Trip은 decided 상태로 변경된다.")
+                public void trip_status_is_changed_to_decided() {
+                    // when
+                    undecidedTrip.changePeriod(newPeriod);
+
+                    // then
+                    assertThat(undecidedTrip.getStatus()).isSameAs(TripStatus.DECIDED);
+                }
+
+                @Test
+                @DisplayName("Trip의 기간은 새로운 기간으로 변경된 상태다.")
+                public void trip_period_is_equalTo_newPeriod() {
+                    // when
+                    undecidedTrip.changePeriod(newPeriod);
+
+                    // then
+                    assertThat(undecidedTrip.getTripPeriod()).isEqualTo(newPeriod);
+                }
+            }
+        }
+
+        @Nested
+        @DisplayName("DECIDED 상태 여행을 수정할 때")
+        class Case_Change_DECIDED_Trip {
+
+            @Test
+            @DisplayName("빈 기간으로 수정하면 EmptyPeriodUpdateException이 발생한다.")
+            public void if_change_to_emptyPeriod_then_it_throws_EmptyPeriodUpdateException() {
+                // given
+                Trip decidedTrip = DECIDED_TRIP.createDecided(1L, 1L, "여행 제목", LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 5));
+                TripPeriod emptyPeriod = TripPeriod.empty();
+
+                // when & then
+                assertThatThrownBy(() -> decidedTrip.changePeriod(emptyPeriod)).isInstanceOf(EmptyPeriodUpdateException.class);
+            }
+
+            @Nested
+            @DisplayName("겹치지 않는 기간으로 수정하면")
+            class If_Change_To_NotOverlappedPeriod {
+
+                // given
+                Trip decidedTrip = DECIDED_TRIP.createDecided(1L, 1L, "여행 제목", LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 5));
+                TripPeriod notOverlappedPeriod = TripPeriod.of(LocalDate.of(2023, 3, 6), LocalDate.of(2023, 3, 10));
+
+                @Test
+                @DisplayName("기존 기간의 Day들이 삭제된다")
+                public void previous_days_is_deleted() {
+                    // when
+                    var changePeriodResult = decidedTrip.changePeriod(notOverlappedPeriod);
+
+                    // then
+                    List<Day> deletedDays = changePeriodResult.getDeletedDays();
+                    assertThat(deletedDays).map(Day::getTripDate).containsExactly(
+                            LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 2),
+                            LocalDate.of(2023, 3, 3), LocalDate.of(2023, 3, 4),
+                            LocalDate.of(2023, 3, 5));
+                }
+
+                @Test
+                @DisplayName("새로운 기간의 Day들이 모두 생성된다.")
+                public void newPeriod_days_are_all_created() {
+                    // when
+                    var changePeriodResult = decidedTrip.changePeriod(notOverlappedPeriod);
+
+                    // then
+                    List<Day> createdDays = changePeriodResult.getCreatedDays();
+                    assertThat(createdDays).map(Day::getTripDate).containsExactly(
+                            LocalDate.of(2023, 3, 6), LocalDate.of(2023, 3, 7),
+                            LocalDate.of(2023, 3, 8), LocalDate.of(2023, 3, 9),
+                            LocalDate.of(2023, 3, 10));
+                }
+
+                @Test
+                @DisplayName("Trip은 새로운 기간의 Day들만 가진다")
+                public void trip_has_new_Days_only() {
+                    // when
+                    decidedTrip.changePeriod(notOverlappedPeriod);
+
+                    // then
+                    assertThat(decidedTrip.getDays()).map(Day::getTripDate).containsExactly(
+                            LocalDate.of(2023, 3, 6), LocalDate.of(2023, 3, 7),
+                            LocalDate.of(2023, 3, 8), LocalDate.of(2023, 3, 9),
+                            LocalDate.of(2023, 3, 10));
+                }
+
+
+                @Test
+                @DisplayName("Trip은 여전히 decided 상태이다.")
+                public void trip_status_is_still_decided() {
+                    // when
+                    decidedTrip.changePeriod(notOverlappedPeriod);
+
+                    // then
+                    assertThat(decidedTrip.getStatus()).isSameAs(TripStatus.DECIDED);
+                }
+
+                @Test
+                @DisplayName("Trip의 기간은 새로 지정한 기간으로 변한다")
+                public void trip_period_is_changed_to_newPeriod() {
+                    // when
+                    decidedTrip.changePeriod(notOverlappedPeriod);
+
+                    // then
+                    assertThat(decidedTrip.getTripPeriod()).isEqualTo(notOverlappedPeriod);
+                }
+            }
+
+            @Nested
+            @DisplayName("겹치는 기간으로 변경 테스트")
+            class OverlappedPeriodChangeTest {
+
+                @Nested
+                @DisplayName("뒤에서 겹치는 기간으로 수정하면")
+                class If_Change_to_back_overlapped_period {
+
+                    // given
+                    Trip decidedTrip = DECIDED_TRIP.createDecided(1L, 1L, "여행 제목", LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 5));
+                    TripPeriod backOverlappedPeriod = TripPeriod.of(LocalDate.of(2023, 3, 4), LocalDate.of(2023, 3, 7));
+
+                    @Test
+                    @DisplayName("앞의 겹치지 않는 Day들이 삭제된다")
+                    public void not_Overlapped_days_are_deleted() {
+                        var changePeriodResult = decidedTrip.changePeriod(backOverlappedPeriod);
+
+                        // then
+                        List<Day> deletedDays = changePeriodResult.getDeletedDays();
+                        assertThat(deletedDays).map(Day::getTripDate).containsExactly(
+                                LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 2),
+                                LocalDate.of(2023, 3, 3));
+                    }
+
+                    @Test
+                    @DisplayName("새로 추가된 날짜의 Day들이 생성된다.")
+                    public void new_added_days_are_all_created() {
+                        // when
+                        var changePeriodResult = decidedTrip.changePeriod(backOverlappedPeriod);
+
+                        // then
+                        List<Day> createdDays = changePeriodResult.getCreatedDays();
+                        assertThat(createdDays).map(Day::getTripDate).containsExactly(LocalDate.of(2023, 3, 6), LocalDate.of(2023, 3, 7));
+                    }
+
+                    @Test
+                    @DisplayName("Trip은 새로 변경된 기간의 Day들만 가진다.")
+                    public void trip_has_newPeriod_Days_only() {
+                        // when
+                        decidedTrip.changePeriod(backOverlappedPeriod);
+
+                        // then
+                        assertThat(decidedTrip.getDays()).map(Day::getTripDate).containsExactly(
+                                LocalDate.of(2023, 3, 4), LocalDate.of(2023, 3, 5),
+                                LocalDate.of(2023, 3, 6), LocalDate.of(2023, 3, 7));
+                    }
+
+                    @Test
+                    @DisplayName("Trip은 여전히 decided 상태이다.")
+                    public void trip_status_is_still_decided() {
+                        // when
+                        decidedTrip.changePeriod(backOverlappedPeriod);
+
+                        // then
+                        assertThat(decidedTrip.getStatus()).isSameAs(TripStatus.DECIDED);
+                    }
+
+                    @Test
+                    @DisplayName("Trip의 기간은 새로 지정한 기간으로 변한다")
+                    public void trip_period_is_changed_to_newPeriod() {
+                        // when
+                        decidedTrip.changePeriod(backOverlappedPeriod);
+
+                        // then
+                        assertThat(decidedTrip.getTripPeriod()).isEqualTo(backOverlappedPeriod);
+                    }
+
+                }
+
+                @Nested
+                @DisplayName("앞에서 겹치는 기간으로 수정하면")
+                class If_Change_to_front_overlapped_period {
+
+                    // given
+                    Trip decidedTrip = DECIDED_TRIP.createDecided(1L, 1L, "여행 제목", LocalDate.of(2023, 3, 4), LocalDate.of(2023, 3, 7));
+                    TripPeriod frontOverlappedPeriod = TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 5));
+
+                    @Test
+                    @DisplayName("뒤의 겹치지 않는 Day들이 삭제된다")
+                    public void not_Overlapped_days_are_deleted() {
+                        var changePeriodResult = decidedTrip.changePeriod(frontOverlappedPeriod);
+
+                        // then
+                        List<Day> deletedDays = changePeriodResult.getDeletedDays();
+                        assertThat(deletedDays).map(Day::getTripDate).containsExactly(LocalDate.of(2023, 3, 6), LocalDate.of(2023, 3, 7));
+                    }
+
+                    @Test
+                    @DisplayName("새로 추가된 날짜의 Day들이 생성된다.")
+                    public void new_added_days_are_all_created() {
+                        // when
+                        var changePeriodResult = decidedTrip.changePeriod(frontOverlappedPeriod);
+
+                        // then
+                        List<Day> createdDays = changePeriodResult.getCreatedDays();
+                        assertThat(createdDays).map(Day::getTripDate).containsExactly(
+                                LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 2), LocalDate.of(2023, 3, 3));
+                    }
+
+                    @Test
+                    @DisplayName("Trip은 새로 변경된 기간의 Day들만 가진다.")
+                    public void trip_has_newPeriod_Days_only() {
+                        // when
+                        decidedTrip.changePeriod(frontOverlappedPeriod);
+
+                        // then
+                        assertThat(decidedTrip.getDays()).map(Day::getTripDate).containsExactlyInAnyOrder(
+                                LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 2),
+                                LocalDate.of(2023, 3, 3), LocalDate.of(2023, 3, 4),
+                                LocalDate.of(2023, 3, 5));
+                    }
+
+                    @Test
+                    @DisplayName("Trip은 여전히 decided 상태이다.")
+                    public void trip_status_is_still_decided() {
+                        // when
+                        decidedTrip.changePeriod(frontOverlappedPeriod);
+
+                        // then
+                        assertThat(decidedTrip.getStatus()).isSameAs(TripStatus.DECIDED);
+                    }
+
+                    @Test
+                    @DisplayName("Trip의 기간은 새로 지정한 기간으로 변한다")
+                    public void trip_period_is_changed_to_newPeriod() {
+                        // when
+                        decidedTrip.changePeriod(frontOverlappedPeriod);
+
+                        // then
+                        assertThat(decidedTrip.getTripPeriod()).isEqualTo(frontOverlappedPeriod);
+                    }
+                }
+
+                @Nested
+                @DisplayName("내부에 포함된 기간으로 수정하면")
+                class If_Change_to_inner_overlapped_period {
+                    // given
+                    Trip decidedTrip = DECIDED_TRIP.createDecided(1L, 1L, "여행 제목", LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 6));
+                    TripPeriod innerOverlappedPeriod = TripPeriod.of(LocalDate.of(2023, 3, 2), LocalDate.of(2023, 3, 4));
+
+                    @Test
+                    @DisplayName("겹치지 않는 Day들이 삭제된다")
+                    public void not_Overlapped_days_are_deleted() {
+                        var changePeriodResult = decidedTrip.changePeriod(innerOverlappedPeriod);
+
+                        // then
+                        List<Day> deletedDays = changePeriodResult.getDeletedDays();
+                        assertThat(deletedDays).map(Day::getTripDate).containsExactlyInAnyOrder(
+                                LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 5), LocalDate.of(2023, 3, 6));
+                    }
+
+                    @Test
+                    @DisplayName("새로 추가된 날짜가 없다.(내부에 포함된 작은 기간으로 줄였으므로)")
+                    public void no_day_created() {
+                        // when
+                        var changePeriodResult = decidedTrip.changePeriod(innerOverlappedPeriod);
+
+                        // then
+                        List<Day> createdDays = changePeriodResult.getCreatedDays();
+                        assertThat(createdDays).isEmpty();
+                    }
+
+                    @Test
+                    @DisplayName("Trip은 새로 변경된 기간의 Day들만 가진다.")
+                    public void trip_has_newPeriod_Days_only() {
+                        // when
+                        decidedTrip.changePeriod(innerOverlappedPeriod);
+
+                        // then
+                        assertThat(decidedTrip.getDays()).map(Day::getTripDate).containsExactlyInAnyOrder(
+                                LocalDate.of(2023, 3, 2), LocalDate.of(2023, 3, 3),
+                                LocalDate.of(2023, 3, 4));
+                    }
+
+                    @Test
+                    @DisplayName("Trip은 여전히 decided 상태이다.")
+                    public void trip_status_is_still_decided() {
+                        // when
+                        decidedTrip.changePeriod(innerOverlappedPeriod);
+
+                        // then
+                        assertThat(decidedTrip.getStatus()).isSameAs(TripStatus.DECIDED);
+                    }
+
+                    @Test
+                    @DisplayName("Trip의 기간은 새로 지정한 기간으로 변한다")
+                    public void trip_period_is_changed_to_newPeriod() {
+                        // when
+                        decidedTrip.changePeriod(innerOverlappedPeriod);
+
+                        // then
+                        assertThat(decidedTrip.getTripPeriod()).isEqualTo(innerOverlappedPeriod);
+                    }
+                }
+
+                @Nested
+                @DisplayName("기존 기간을 포함한 외부의 더 큰 기간으로 수정하면")
+                class If_Change_to_outer_overlapped_period {
+                    // given
+                    Trip decidedTrip = DECIDED_TRIP.createDecided(1L, 1L, "여행 제목", LocalDate.of(2023, 3, 2), LocalDate.of(2023, 3, 4));
+                    TripPeriod outerOverlappedPeriod = TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 6));
+
+                    @Test
+                    @DisplayName("삭제되는 Day가 없다.(더 기존의 Day를 포함한 큰 기간으로 변경하므로)")
+                    public void no_day_created() {
+                        var changePeriodResult = decidedTrip.changePeriod(outerOverlappedPeriod);
+
+                        // then
+                        List<Day> deletedDays = changePeriodResult.getDeletedDays();
+                        assertThat(deletedDays).isEmpty();
+                    }
+
+                    @Test
+                    @DisplayName("새로 추가되는 날짜에 해당되는 Day들이 추가된다.")
+                    public void new_added_days_are_all_created() {
+                        // when
+                        var changePeriodResult = decidedTrip.changePeriod(outerOverlappedPeriod);
+
+                        // then
+                        List<Day> createdDays = changePeriodResult.getCreatedDays();
+                        assertThat(createdDays).map(Day::getTripDate)
+                                .containsExactly(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 5), LocalDate.of(2023, 3, 6));
+                    }
+
+                    @Test
+                    @DisplayName("Trip은 기존의 것을 포함하여 새로운 기간의 모든 Day들을 가진다.")
+                    public void trip_has_newPeriod_All() {
+                        // when
+                        decidedTrip.changePeriod(outerOverlappedPeriod);
+
+                        // then
+                        assertThat(decidedTrip.getDays()).map(Day::getTripDate).containsExactlyInAnyOrder(
+                                LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 2),
+                                LocalDate.of(2023, 3, 3), LocalDate.of(2023, 3, 4),
+                                LocalDate.of(2023, 3, 5), LocalDate.of(2023, 3, 6));
+                    }
+
+                    @Test
+                    @DisplayName("Trip은 여전히 decided 상태이다.")
+                    public void trip_status_is_still_decided() {
+                        // when
+                        decidedTrip.changePeriod(outerOverlappedPeriod);
+
+                        // then
+                        assertThat(decidedTrip.getStatus()).isSameAs(TripStatus.DECIDED);
+                    }
+
+                    @Test
+                    @DisplayName("Trip의 기간은 새로 지정한 기간으로 변한다")
+                    public void trip_period_is_changed_to_newPeriod() {
+                        // when
+                        decidedTrip.changePeriod(outerOverlappedPeriod);
+
+                        // then
+                        assertThat(decidedTrip.getTripPeriod()).isEqualTo(outerOverlappedPeriod);
+                    }
+                }
             }
         }
     }
-
 }

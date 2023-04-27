@@ -22,10 +22,6 @@ public class TripUpdateRequest {
     }
 
     public TripUpdateCommand toCommand() {
-        return TripUpdateCommand.builder()
-                .title(title)
-                .startDate(startDate)
-                .endDate(endDate)
-                .build();
+        return TripUpdateCommand.of(title, startDate, endDate);
     }
 }

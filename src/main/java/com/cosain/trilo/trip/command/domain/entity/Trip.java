@@ -1,13 +1,18 @@
 package com.cosain.trilo.trip.command.domain.entity;
 
+import com.cosain.trilo.trip.command.domain.dto.ChangeTripPeriodResult;
+import com.cosain.trilo.trip.command.domain.exception.EmptyPeriodUpdateException;
 import com.cosain.trilo.trip.command.domain.vo.TripPeriod;
 import com.cosain.trilo.trip.command.domain.vo.TripStatus;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Getter
@@ -36,11 +41,12 @@ public class Trip {
     private TripPeriod tripPeriod;
 
     @OneToMany(mappedBy = "trip")
-    private List<Day> days = new ArrayList<>();
+    private final List<Day> days = new ArrayList<>();
 
     /**
      * 여행(Trip)을 최초로 생성합니다. 최초 생성된 Trip은 UNDECIDED 상태입니다.
-     * @param title: 여행의 제목
+     *
+     * @param title:    여행의 제목
      * @param tripperId : 여행자의 식별자
      * @return 생성된 Trip
      */
@@ -49,7 +55,7 @@ public class Trip {
                 .tripperId(tripperId)
                 .title(title)
                 .status(TripStatus.UNDECIDED)
-                .tripPeriod(null)
+                .tripPeriod(TripPeriod.empty())
                 .build();
     }
 
@@ -63,81 +69,67 @@ public class Trip {
         this.title = title;
         this.status = status;
         this.tripPeriod = tripPeriod;
-        this.days = days;
+
+        if (days != null) {
+            this.days.addAll(days);
+        }
     }
 
     /**
      * Trip의 제목을 변경합니다.
+     *
      * @param newTitle : 변경할 제목
      */
     public void changeTitle(String newTitle) {
         this.title = newTitle;
     }
 
-    public List<Day> getNotOverlappedDays(LocalDate startDate, LocalDate endDate){
-        if(status.equals(TripStatus.UNDECIDED)) return new ArrayList<>(); // 기간이 안정해진 상태
-        // 기간이 이미 잡혀있는 상태에서, 둘다 null인 날짜를 전달해서 겹치지 않는 날짜를 얻으려는 시도를 함
-
-        List<Day> removeDays = new ArrayList<>();
-        for (Day day : days) {
-            LocalDate date = day.getTripDate();
-            if (date.isBefore(startDate) || date.isAfter(endDate)) {
-                removeDays.add(day);
-            }
-        }
-        return removeDays;
-    }
-
     /**
-     * 전달된 Day들을 Trip에서 제거합니다.
-     * @param delDays
+     * 기간을 변경합니다. 이에 따라 삭제되는 날짜와, 생성되는 날짜들을 각각 리스트로 반환합니다.
+     *
+     * @param newPeriod
+     * @return ChangeTripPeriodResult
      */
-    public void deleteDays(List<Day> delDays) {
-        days.removeAll(delDays);
-    }
+    public ChangeTripPeriodResult changePeriod(TripPeriod newPeriod) {
+        TripPeriod oldPeriod = this.tripPeriod;
 
-    /**
-     * Trip의 기간을 변경하고,
-     * @param startDate
-     * @param endDate
-     * @return
-     */
-    public List<Day> updatePeriod(LocalDate startDate, LocalDate endDate){
-
-        List<Day> days = new ArrayList<>();
-        if(status.equals(TripStatus.UNDECIDED) || !isOverlapped(startDate, endDate)){
-            days = createDays(startDate, endDate);
-        }else{
-            if(startDate.isBefore(tripPeriod.getStartDate())){
-                days.addAll(createDays(startDate, tripPeriod.getStartDate().minusDays(1)));
-            }
-
-            if(endDate.isAfter(tripPeriod.getEndDate())){
-                days.addAll(createDays(tripPeriod.getEndDate().plusDays(1), endDate));
-            }
+        // 기존이랑 기간이 같으면 변경 안 하고 반환
+        if (oldPeriod.equals(newPeriod)) {
+            return ChangeTripPeriodResult.of(Collections.emptyList(), Collections.emptyList());
         }
 
-        this.tripPeriod = TripPeriod.of(startDate, endDate);
-        this.status = TripStatus.DECIDED;
-        return days;
-    }
-
-
-    private boolean isOverlapped(LocalDate startDate, LocalDate endDate){
-        if(startDate.isAfter(tripPeriod.getEndDate()) || endDate.isBefore(tripPeriod.getStartDate())) return false;
-        return true;
-    }
-
-    private List<Day> createDays(LocalDate startDate, LocalDate endDate){
-        List<Day> days = new ArrayList<>();
-        LocalDate currendDate = startDate;
-
-        while(!currendDate.isAfter(endDate)){
-            days.add(Day.of(currendDate, this));
-            currendDate = currendDate.plusDays(1);
+        // 이미 기간이 정해졌는데, 빈 기간으로 변경하려 할 때
+        if (status.equals(TripStatus.DECIDED) && newPeriod.equals(TripPeriod.empty())) {
+            throw new EmptyPeriodUpdateException("여행기간이 정해진 상태에서 빈 기간으로 변경하려고 시도함");
         }
 
-        return days;
+        // 여기서부터 기간 실제 변경 발생
+        if (status == TripStatus.UNDECIDED) {
+            status = TripStatus.DECIDED;
+        }
+        this.tripPeriod = newPeriod;
+
+        List<Day> deletedDays = deleteUnnecessaryDays(oldPeriod, newPeriod);
+        List<Day> createdDays = addNewDays(oldPeriod, newPeriod);
+        return ChangeTripPeriodResult.of(deletedDays, createdDays);
+    }
+
+    private List<Day> deleteUnnecessaryDays(TripPeriod oldPeriod, TripPeriod newPeriod) {
+        TripPeriod overlappedPeriod = oldPeriod.intersection(newPeriod);
+        List<Day> deleteDays = days.stream()
+                .filter(day -> !day.isIn(overlappedPeriod))
+                .toList();
+        this.days.removeAll(deleteDays);
+        return deleteDays;
+    }
+
+    private List<Day> addNewDays(TripPeriod oldPeriod, TripPeriod newPeriod) {
+        List<Day> newDays = newPeriod.dateStream()
+                .filter(date -> !oldPeriod.contains(date))
+                .map(date -> Day.of(date, this))
+                .toList();
+        this.days.addAll(newDays);
+        return newDays;
     }
 
 }

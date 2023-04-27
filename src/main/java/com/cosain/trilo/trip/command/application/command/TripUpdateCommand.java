@@ -1,7 +1,6 @@
 package com.cosain.trilo.trip.command.application.command;
 
-import lombok.AccessLevel;
-import lombok.Builder;
+import com.cosain.trilo.trip.command.domain.vo.TripPeriod;
 import lombok.Getter;
 
 import java.time.LocalDate;
@@ -10,14 +9,14 @@ import java.time.LocalDate;
 public class TripUpdateCommand {
 
     private String title;
-    private LocalDate startDate;
-    private LocalDate endDate;
+    private TripPeriod tripPeriod;
 
-    @Builder(access = AccessLevel.PUBLIC)
-    private TripUpdateCommand(String title, LocalDate startDate, LocalDate endDate) {
-        this.title = title;
-        this.startDate = startDate;
-        this.endDate = endDate;
+    public static TripUpdateCommand of(String title, LocalDate startDate, LocalDate endDate) {
+        return new TripUpdateCommand(title, TripPeriod.of(startDate, endDate));
     }
 
+    private TripUpdateCommand(String title, TripPeriod tripPeriod) {
+        this.title = title;
+        this.tripPeriod = tripPeriod;
+    }
 }

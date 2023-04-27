@@ -1,12 +1,14 @@
 package com.cosain.trilo.trip.command.application.service;
 
 import com.cosain.trilo.trip.command.application.command.TripUpdateCommand;
+import com.cosain.trilo.trip.command.application.exception.NoTripUpdateAuthorityException;
 import com.cosain.trilo.trip.command.application.exception.TripNotFoundException;
 import com.cosain.trilo.trip.command.application.usecase.TripUpdateUseCase;
 import com.cosain.trilo.trip.command.domain.entity.Day;
 import com.cosain.trilo.trip.command.domain.entity.Trip;
 import com.cosain.trilo.trip.command.domain.repository.DayRepository;
 import com.cosain.trilo.trip.command.domain.repository.TripRepository;
+import com.cosain.trilo.trip.command.domain.vo.TripPeriod;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,23 +26,34 @@ public class TripUpdateService implements TripUpdateUseCase {
     @Transactional
     public void updateTrip(Long tripId, Long tripperId, TripUpdateCommand updateCommand) {
         Trip trip = findTrip(tripId);
+        validateTripUpdateAuthority(trip, tripperId);
+
         trip.changeTitle(updateCommand.getTitle());
-        tripRepository.save(trip);
-
-        List<Day> delDays = trip.getNotOverlappedDays(updateCommand.getStartDate(), updateCommand.getEndDate());
-        if(!delDays.isEmpty()) {
-            trip.deleteDays(delDays);
-            dayRepository.deleteDays(delDays);
-        }
-
-        List<Day> addDays = trip.updatePeriod(updateCommand.getStartDate(), updateCommand.getEndDate());
-        dayRepository.saveAll(addDays);
+        changePeriod(trip, updateCommand.getTripPeriod());
     }
 
     private Trip findTrip(Long tripId) {
-        return tripRepository
-                .findById(tripId)
+        return tripRepository.findByIdWithDays(tripId)
                 .orElseThrow(() -> new TripNotFoundException("일치하는 식별자의 Trip을 찾을 수 없음"));
+    }
+
+    private void validateTripUpdateAuthority(Trip trip, Long tripperId) {
+        if (!trip.getTripperId().equals(tripperId)) {
+            throw new NoTripUpdateAuthorityException("여행을 수정할 권한이 없는 사람이 수정하려고 시도함");
+        }
+    }
+
+    private void changePeriod(Trip trip, TripPeriod newPeriod) {
+        var changePeriodResult = trip.changePeriod(newPeriod);
+        List<Day> deletedDays = changePeriodResult.getDeletedDays();
+        List<Day> createdDays = changePeriodResult.getCreatedDays();
+
+        if (!deletedDays.isEmpty()) {
+            dayRepository.deleteDays(deletedDays);
+        }
+        if (!createdDays.isEmpty()) {
+            dayRepository.saveAll(createdDays);
+        }
     }
 
 }

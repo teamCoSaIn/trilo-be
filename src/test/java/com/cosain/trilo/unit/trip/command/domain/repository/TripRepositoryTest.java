@@ -3,8 +3,10 @@ package com.cosain.trilo.unit.trip.command.domain.repository;
 import com.cosain.trilo.trip.command.domain.entity.Day;
 import com.cosain.trilo.trip.command.domain.entity.Trip;
 import com.cosain.trilo.trip.command.domain.repository.TripRepository;
-import lombok.extern.slf4j.Slf4j;
+import com.cosain.trilo.trip.command.domain.vo.TripPeriod;
+import com.cosain.trilo.trip.command.domain.vo.TripStatus;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -42,29 +44,60 @@ public class TripRepositoryTest {
         assertThat(findTrip.getTripPeriod()).isEqualTo(trip.getTripPeriod());
     }
 
-    @Test
-    @DirtiesContext
-    void findByIdWithDaysTest(){
-        // given
-        Trip trip = Trip.create("제목", 1L);
-        em.persist(trip);
-        Day day1 = Day.of(LocalDate.of(2023, 5, 1), trip);
-        Day day2 = Day.of(LocalDate.of(2023, 5, 2), trip);
-        Day day3 = Day.of(LocalDate.of(2023, 5, 3), trip);
+    @Nested
+    @DisplayName("findByIdWithDays")
+    class FindByIdWithDaysTest {
 
-        em.persist(day1);
-        em.persist(day2);
-        em.persist(day3);
+        @Test
+        @DirtiesContext
+        @DisplayName("UnDecided 상태의 Trip을 조회하면 여행만 조회된다.")
+        public void findUndecidedTripTest() {
+            // given
+            Trip trip = Trip.create("제목", 1L);
+            em.persist(trip);
 
-        em.flush();
-        em.clear();
+            em.clear();
 
-        // when
-        Trip findTrip = tripRepository.findByIdWithDays(trip.getId()).get();
+            // when
+            Trip findTrip = tripRepository.findByIdWithDays(trip.getId()).get();
 
-        // then
-        assertThat(findTrip.getTitle()).isEqualTo(trip.getTitle());
-        assertThat(findTrip.getId()).isEqualTo(trip.getId());
-        assertThat(findTrip.getDays().size()).isEqualTo(3);
+            // then
+            assertThat(findTrip.getTitle()).isEqualTo(trip.getTitle());
+            assertThat(findTrip.getId()).isEqualTo(trip.getId());
+            assertThat(findTrip.getDays()).isEmpty();
+        }
+
+        @Test
+        @DirtiesContext
+        @DisplayName("Day를 가지고 있는 Trip을 조회하면 Trip이 Day들을 가진 채 조회된다.")
+        void if_trip_has_days_then_trip_and_its_trip_found(){
+            // given
+            Trip trip = Trip.builder()
+                    .tripperId(1L)
+                    .tripPeriod(TripPeriod.of(LocalDate.of(2023,5,1), LocalDate.of(2023,5,3)))
+                    .status(TripStatus.DECIDED)
+                    .build();
+
+            em.persist(trip);
+
+            Day day1 = Day.of(LocalDate.of(2023, 5, 1), trip);
+            Day day2 = Day.of(LocalDate.of(2023, 5, 2), trip);
+            Day day3 = Day.of(LocalDate.of(2023, 5, 3), trip);
+
+            em.persist(day1);
+            em.persist(day2);
+            em.persist(day3);
+
+            em.clear();
+
+            // when
+            Trip findTrip = tripRepository.findByIdWithDays(trip.getId()).get();
+
+            // then
+            assertThat(findTrip.getTitle()).isEqualTo(trip.getTitle());
+            assertThat(findTrip.getId()).isEqualTo(trip.getId());
+            assertThat(findTrip.getDays()).map(Day::getTripDate).containsExactly(
+                    LocalDate.of(2023,5,1), LocalDate.of(2023,5,2), LocalDate.of(2023,5,3));
+        }
     }
 }
