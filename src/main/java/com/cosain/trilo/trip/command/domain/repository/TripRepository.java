@@ -10,7 +10,7 @@ import java.util.Optional;
 public interface TripRepository extends JpaRepository<Trip, Long> {
 
     @Query("SELECT t" +
-            " FROM Trip as t JOIN FETCH t.days" +
+            " FROM Trip as t LEFT JOIN FETCH t.days" +
             " WHERE t.id = :id")
     Optional<Trip> findByIdWithDays(@Param("id") Long tripId);
 }
