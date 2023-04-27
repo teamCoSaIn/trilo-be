@@ -1,7 +1,6 @@
 package com.cosain.trilo.trip.command.presentation.trip.dto;
 
 import com.cosain.trilo.trip.command.application.command.TripUpdateCommand;
-import com.cosain.trilo.trip.command.domain.vo.TripPeriod;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,6 +22,6 @@ public class TripUpdateRequest {
     }
 
     public TripUpdateCommand toCommand() {
-        return TripUpdateCommand.of(title, TripPeriod.of(startDate, endDate));
+        return TripUpdateCommand.of(title, startDate, endDate);
     }
 }
