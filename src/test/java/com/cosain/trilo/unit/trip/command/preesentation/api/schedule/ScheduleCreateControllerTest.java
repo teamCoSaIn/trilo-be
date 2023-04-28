@@ -78,7 +78,6 @@ class ScheduleCreateControllerTest extends RestControllerTest {
         mockMvc.perform(post("/api/schedules")
                         .content(createJson(request))
                         .characterEncoding(StandardCharsets.UTF_8)
-                        .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                 )
                 .andDo(print())
