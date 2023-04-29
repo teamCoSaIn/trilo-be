@@ -100,4 +100,28 @@ public class TripRepositoryTest {
                     LocalDate.of(2023,5,1), LocalDate.of(2023,5,2), LocalDate.of(2023,5,3));
         }
     }
+
+    @Test
+    @DirtiesContext
+    @DisplayName("delete 테스트")
+    public void deleteTest() {
+        // given
+        Trip trip = Trip.builder()
+                .tripperId(1L)
+                .title("여행 제목")
+                .status(TripStatus.DECIDED)
+                .tripPeriod(TripPeriod.of(LocalDate.of(2023,3,1), LocalDate.of(2023,3,3)))
+                .build();
+
+        em.persist(trip);
+
+        // when
+        tripRepository.delete(trip);
+        em.flush();
+        em.clear();
+
+        // then
+        Trip findTrip = tripRepository.findById(trip.getId()).orElse(null);
+        assertThat(findTrip).isNull();
+    }
 }
