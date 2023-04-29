@@ -1,20 +1,31 @@
 package com.cosain.trilo.trip.command.presentation.schedule;
 
-import com.cosain.trilo.common.exception.NotImplementedException;
+import com.cosain.trilo.common.LoginUser;
+import com.cosain.trilo.trip.command.application.command.ScheduleUpdateCommand;
+import com.cosain.trilo.trip.command.application.usecase.ScheduleUpdateUseCase;
+import com.cosain.trilo.trip.command.presentation.schedule.dto.ScheduleUpdateRequest;
+import com.cosain.trilo.trip.command.presentation.schedule.dto.ScheduleUpdateResponse;
+import com.cosain.trilo.user.domain.User;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 
-/**
- * 일정장소 수정
- */
 @Slf4j
 @RestController
+@RequiredArgsConstructor
 public class ScheduleUpdateController {
 
+    private final ScheduleUpdateUseCase scheduleUpdateUseCase;
+
     @PutMapping("/api/schedules/{scheduleId}")
-    public String updateSchedule(@PathVariable Long scheduleId) {
-        throw new NotImplementedException("일정 수정 미구현");
+    @ResponseStatus(HttpStatus.OK)
+    public ScheduleUpdateResponse updateSchedule(@LoginUser User user, @PathVariable Long scheduleId, @RequestBody ScheduleUpdateRequest scheduleUpdateRequest) {
+        Long tripperId = user.getId();
+
+        ScheduleUpdateCommand scheduleUpdateCommand = scheduleUpdateRequest.toCommand();
+        Long updatedScheduleId = scheduleUpdateUseCase.updateSchedule(tripperId, scheduleId, scheduleUpdateCommand);
+
+        return ScheduleUpdateResponse.from(updatedScheduleId);
     }
 }
