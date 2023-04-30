@@ -49,7 +49,7 @@ class ScheduleUpdateControllerTest extends RestControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding(StandardCharsets.UTF_8))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.updatedScheduleId").value(1L))
+                .andExpect(jsonPath("$.scheduleId").value(1L))
                 .andDo(print());
 
         verify(scheduleUpdateUseCase).updateSchedule(anyLong(),any(),any());

@@ -4,11 +4,11 @@ import lombok.Getter;
 
 @Getter
 public class ScheduleUpdateResponse {
-    private Long updatedScheduleId;
+    private Long scheduleId;
     public static ScheduleUpdateResponse from(Long scheduleId){
         return new ScheduleUpdateResponse(scheduleId);
     }
     private ScheduleUpdateResponse(Long scheduleId){
-        this.updatedScheduleId = scheduleId;
+        this.scheduleId = scheduleId;
     }
 }
