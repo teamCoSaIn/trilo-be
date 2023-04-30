@@ -1,6 +1,7 @@
 package com.cosain.trilo.unit.trip.command.preesentation.api.schedule;
 
 import com.cosain.trilo.support.RestControllerTest;
+import com.cosain.trilo.trip.command.application.command.ScheduleUpdateCommand;
 import com.cosain.trilo.trip.command.application.usecase.ScheduleUpdateUseCase;
 import com.cosain.trilo.trip.command.presentation.schedule.ScheduleUpdateController;
 import com.cosain.trilo.trip.command.presentation.schedule.dto.ScheduleUpdateRequest;
@@ -40,7 +41,7 @@ class ScheduleUpdateControllerTest extends RestControllerTest {
         mockingForLoginUserAnnotation();
         ScheduleUpdateRequest scheduleUpdateRequest = new ScheduleUpdateRequest("수정할 제목", "수정할 내용");
 
-        given(scheduleUpdateUseCase.updateSchedule(anyLong(),any(),any())).willReturn(1L);
+        given(scheduleUpdateUseCase.updateSchedule(anyLong(),any(),any(ScheduleUpdateCommand.class))).willReturn(1L);
 
         // when & then
         mockMvc.perform(put("/api/schedules/1")
@@ -52,7 +53,7 @@ class ScheduleUpdateControllerTest extends RestControllerTest {
                 .andExpect(jsonPath("$.scheduleId").value(1L))
                 .andDo(print());
 
-        verify(scheduleUpdateUseCase).updateSchedule(anyLong(),any(),any());
+        verify(scheduleUpdateUseCase).updateSchedule(anyLong(),any(),any(ScheduleUpdateCommand.class));
     }
 
     @Test
