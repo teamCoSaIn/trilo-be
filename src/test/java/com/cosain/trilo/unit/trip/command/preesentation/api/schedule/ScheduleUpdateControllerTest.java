@@ -40,7 +40,7 @@ class ScheduleUpdateControllerTest extends RestControllerTest {
         mockingForLoginUserAnnotation();
         ScheduleUpdateRequest scheduleUpdateRequest = new ScheduleUpdateRequest("수정할 제목", "수정할 내용");
 
-        given(scheduleUpdateUseCase.updateSchedule(any(), anyLong(), any())).willReturn(1L);
+        given(scheduleUpdateUseCase.updateSchedule(anyLong(),any(),any())).willReturn(1L);
 
         // when & then
         mockMvc.perform(put("/api/schedules/1")
@@ -52,7 +52,7 @@ class ScheduleUpdateControllerTest extends RestControllerTest {
                 .andExpect(jsonPath("$.updatedScheduleId").value(1L))
                 .andDo(print());
 
-        verify(scheduleUpdateUseCase).updateSchedule(any(), anyLong(), any());
+        verify(scheduleUpdateUseCase).updateSchedule(anyLong(),any(),any());
     }
 
     @Test

@@ -15,7 +15,7 @@ public class ScheduleUpdateService implements ScheduleUpdateUseCase {
 
     private final ScheduleRepository scheduleRepository;
     @Override
-    public Long updateSchedule(Long tripperId, Long scheduleId, ScheduleUpdateCommand scheduleUpdateCommand) {
+    public Long updateSchedule(Long scheduleId, Long tripperId, ScheduleUpdateCommand scheduleUpdateCommand) {
 
         Schedule schedule = findSchedule(scheduleId);
         validateScheduleUpdateAuthority(schedule, tripperId);

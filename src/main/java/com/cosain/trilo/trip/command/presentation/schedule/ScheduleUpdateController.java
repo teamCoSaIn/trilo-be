@@ -24,7 +24,7 @@ public class ScheduleUpdateController {
         Long tripperId = user.getId();
 
         ScheduleUpdateCommand scheduleUpdateCommand = scheduleUpdateRequest.toCommand();
-        Long updatedScheduleId = scheduleUpdateUseCase.updateSchedule(tripperId, scheduleId, scheduleUpdateCommand);
+        Long updatedScheduleId = scheduleUpdateUseCase.updateSchedule(scheduleId,tripperId, scheduleUpdateCommand);
 
         return ScheduleUpdateResponse.from(updatedScheduleId);
     }
