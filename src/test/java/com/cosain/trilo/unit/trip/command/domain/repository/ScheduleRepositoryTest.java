@@ -70,6 +70,38 @@ public class ScheduleRepositoryTest {
         assertThat(findSchedule.getPlace()).isEqualTo(schedule.getPlace());
     }
 
+
+    @Test
+    @DirtiesContext
+    @DisplayName("delete로 일정을 삭제하면, 해당 일정이 삭제된다.")
+    void deleteTest() {
+        // given
+        Trip trip = Trip.builder()
+                .tripperId(1L)
+                .title("여행 제목")
+                .status(TripStatus.DECIDED)
+                .tripPeriod(TripPeriod.of(LocalDate.of(2023,3,1), LocalDate.of(2023,3,1)))
+                .build();
+
+        em.persist(trip);
+
+        Day day = Day.of(LocalDate.of(2023,3,1), trip);
+        em.persist(day);
+
+        Schedule schedule = Schedule.create(day, trip, "일정1", Place.of("place-id1", "광안리 해수욕장", Coordinate.of(35.1551, 129.1220)));
+        em.persist(schedule);
+
+        // when
+        scheduleRepository.delete(schedule);
+        em.flush();
+        em.clear();
+
+        // then
+        Schedule findSchedule = scheduleRepository.findById(schedule.getId()).orElse(null);
+        assertThat(findSchedule).isNull();
+    }
+
+
     @Test
     @DirtiesContext
     @DisplayName("deleteAllByTripId로 일정을 삭제하면, 해당 여행의 모든 일정들이 삭제된다.")
