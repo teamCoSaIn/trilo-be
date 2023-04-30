@@ -19,6 +19,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import java.time.LocalDate;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.as;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
@@ -139,6 +140,43 @@ public class ScheduleRepositoryTest {
         // then
         List<Schedule> findSchedules = scheduleRepository.findAllById(List.of(schedule1.getId(), schedule2.getId(), schedule3.getId()));
         assertThat(findSchedules).isEmpty();
+    }
+
+
+    @Test
+    @DirtiesContext
+    @DisplayName("findByIdWithTrip으로 일정을 조회하면 해당 일정만 조회된다.(여행도 같이 묶여서 조회됨)")
+    void findByIdWithTripTest() {
+        // given
+        Trip trip = Trip.builder()
+                .tripperId(1L)
+                .title("여행 제목")
+                .status(TripStatus.DECIDED)
+                .tripPeriod(TripPeriod.of(LocalDate.of(2023,3,1), LocalDate.of(2023,3,1)))
+                .build();
+        em.persist(trip);
+
+        Day day = Day.of(LocalDate.of(2023,3,1), trip);
+        em.persist(day);
+
+        Schedule schedule1 = Schedule.create(day, trip, "일정1", Place.of("place-id1", "광안리 해수욕장1", Coordinate.of(35.1551, 129.1220)));
+        Schedule schedule2 = Schedule.create(day, trip, "일정2", Place.of("place-id2", "광안리 해수욕장2", Coordinate.of(35.1551, 129.1220)));
+        Schedule schedule3 = Schedule.create(day, trip, "일정3", Place.of("place-id3", "광안리 해수욕장3", Coordinate.of(35.1551, 129.1220)));
+
+        em.persist(schedule1);
+        em.persist(schedule2);
+        em.persist(schedule3);
+        em.flush();
+        em.clear();
+
+        // when
+        Schedule findSchedule = scheduleRepository.findByIdWithTrip(schedule2.getId()).get();
+
+        // then
+        assertThat(findSchedule.getId()).isEqualTo(schedule2.getId());
+        assertThat(findSchedule.getTrip().getId()).isEqualTo(trip.getId());
+        assertThat(findSchedule.getTitle()).isEqualTo(schedule2.getTitle());
+        assertThat(findSchedule.getPlace()).isEqualTo(schedule2.getPlace());
     }
 
 }
