@@ -8,6 +8,7 @@ import com.cosain.trilo.trip.command.domain.entity.Schedule;
 import com.cosain.trilo.trip.command.domain.repository.ScheduleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -15,6 +16,7 @@ public class ScheduleUpdateService implements ScheduleUpdateUseCase {
 
     private final ScheduleRepository scheduleRepository;
     @Override
+    @Transactional
     public Long updateSchedule(Long scheduleId, Long tripperId, ScheduleUpdateCommand scheduleUpdateCommand) {
 
         Schedule schedule = findSchedule(scheduleId);
