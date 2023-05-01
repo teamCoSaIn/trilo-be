@@ -53,4 +53,11 @@ public class Schedule {
         this.content = content;
         this.place = place;
     }
+
+    public void changeTitle(String title){
+        this.title = title;
+    }
+    public void changeContent(String content){
+        this.content = content;
+    }
 }

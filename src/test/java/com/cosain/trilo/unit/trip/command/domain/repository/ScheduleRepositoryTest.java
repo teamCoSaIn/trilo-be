@@ -32,6 +32,31 @@ public class ScheduleRepositoryTest {
     @Autowired
     private TestEntityManager em;
 
+    @Test
+    @DirtiesContext
+    @DisplayName("Schedule 조회 시 Trip과 함께 조회")
+    void findByIdWithTripTest(){
+        // given
+        Trip trip = Trip.create("제목", 1L);
+        em.persist(trip);
+
+        Day day = Day.of(LocalDate.of(2023, 5, 4), trip);
+        em.persist(day);
+
+        Schedule schedule = Schedule.create(day, trip, "제목", Place.of("google-map-dkjfse", "장소 이름", Coordinate.of(23.23, 23.23)));
+        em.persist(schedule);
+
+        em.flush();
+        em.clear();
+
+        // when
+        Schedule findSchedule = scheduleRepository.findByIdWithTrip(schedule.getId()).get();
+
+        // then
+        assertThat(findSchedule.getTrip().getTripperId()).isEqualTo(trip.getTripperId());
+
+    }
+
 
     @Test
     @DirtiesContext
