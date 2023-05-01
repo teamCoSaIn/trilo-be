@@ -17,6 +17,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.annotation.DirtiesContext;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -93,4 +94,44 @@ public class ScheduleRepositoryTest {
         assertThat(findSchedule.getContent()).isEqualTo(schedule.getContent());
         assertThat(findSchedule.getPlace()).isEqualTo(schedule.getPlace());
     }
+
+    @Test
+    @DirtiesContext
+    @DisplayName("deleteAllByTripId로 일정을 삭제하면, 해당 여행의 모든 일정들이 삭제된다.")
+    void deleteAllByTripIdTest() {
+        // given
+        Trip trip = Trip.builder()
+                .tripperId(1L)
+                .title("여행 제목")
+                .status(TripStatus.DECIDED)
+                .tripPeriod(TripPeriod.of(LocalDate.of(2023,3,1), LocalDate.of(2023,3,3)))
+                .build();
+
+        em.persist(trip);
+
+        Day day1 = Day.of(LocalDate.of(2023,3,1), trip);
+        Day day2 = Day.of(LocalDate.of(2023,3,2), trip);
+        Day day3 = Day.of(LocalDate.of(2023,3,3), trip);
+
+        em.persist(day1);
+        em.persist(day2);
+        em.persist(day3);
+
+        Schedule schedule1 = Schedule.create(day1, trip, "일정1", Place.of("place-id1", "광안리 해수욕장", Coordinate.of(35.1551, 129.1220)));
+        Schedule schedule2 = Schedule.create(day2, trip, "일정2", Place.of("place-id2", "광화문 광장", Coordinate.of(37.5748, 126.9767)));
+        Schedule schedule3 = Schedule.create(day3, trip, "일정3", Place.of("place-id3", "도쿄 타워", Coordinate.of(35.3931, 139.4443)));
+
+        em.persist(schedule1);
+        em.persist(schedule2);
+        em.persist(schedule3);
+
+        // when
+        scheduleRepository.deleteAllByTripId(trip.getId());
+        em.clear();
+
+        // then
+        List<Schedule> findSchedules = scheduleRepository.findAllById(List.of(schedule1.getId(), schedule2.getId(), schedule3.getId()));
+        assertThat(findSchedules).isEmpty();
+    }
+
 }
