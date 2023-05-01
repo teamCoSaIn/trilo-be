@@ -25,13 +25,11 @@ public class ScheduleUpdateService implements ScheduleUpdateUseCase {
         schedule.changeTitle(scheduleUpdateCommand.getTitle());
         schedule.changeContent(scheduleUpdateCommand.getContent());
 
-        scheduleRepository.save(schedule);
-
         return schedule.getId();
     }
 
     private Schedule findSchedule(Long scheduleId) {
-        return scheduleRepository.findById(scheduleId).orElseThrow(() -> new ScheduleNotFoundException("일정이 존재하지 않습니다."));
+        return scheduleRepository.findByIdWithTrip(scheduleId).orElseThrow(() -> new ScheduleNotFoundException("일정이 존재하지 않습니다."));
     }
 
     private void validateScheduleUpdateAuthority(Schedule schedule, Long tripperId){
