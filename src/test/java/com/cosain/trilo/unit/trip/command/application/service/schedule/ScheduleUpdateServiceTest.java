@@ -43,13 +43,12 @@ public class ScheduleUpdateServiceTest {
                 .content("원래 내용")
                 .build();
 
-        given(scheduleRepository.findById(anyLong())).willReturn(Optional.of(schedule));
+        given(scheduleRepository.findByIdWithTrip(anyLong())).willReturn(Optional.of(schedule));
         // when
         scheduleUpdateService.updateSchedule(1L, 1L, command);
 
         // then
-        verify(scheduleRepository).findById(anyLong());
-        verify(scheduleRepository).save(any(Schedule.class));
+        verify(scheduleRepository).findByIdWithTrip(anyLong());
     }
 
     @Test
@@ -64,7 +63,7 @@ public class ScheduleUpdateServiceTest {
                 .content("원래 내용")
                 .build();
 
-        given(scheduleRepository.findById(anyLong())).willReturn(Optional.of(schedule));
+        given(scheduleRepository.findByIdWithTrip(anyLong())).willReturn(Optional.of(schedule));
         // when & then
         Assertions.assertThatThrownBy(() -> scheduleUpdateService.updateSchedule(1L, 1L, command))
                 .isInstanceOf(NoScheduleUpdateAuthorityException.class);
@@ -75,7 +74,7 @@ public class ScheduleUpdateServiceTest {
     public void when_no_schedule_test(){
         // given
         ScheduleUpdateCommand command = ScheduleUpdateCommand.of("변경할 제목", "변경할 내용");
-        given(scheduleRepository.findById(anyLong())).willReturn(Optional.empty());
+        given(scheduleRepository.findByIdWithTrip(anyLong())).willReturn(Optional.empty());
 
         // when & then
         Assertions.assertThatThrownBy(() -> scheduleUpdateService.updateSchedule(1L, 1L, command))
