@@ -5,11 +5,22 @@ import org.springframework.http.HttpStatus;
 
 public class ScheduleNotFoundException extends CustomException {
 
-    private static final String ERROR_NAME = "ScheduleNotFoundException";
+    private static final String ERROR_NAME = "ScheduleNotFound";
     private static final HttpStatus HTTP_STATUS = HttpStatus.NOT_FOUND;
+
+    public ScheduleNotFoundException() {
+    }
 
     public ScheduleNotFoundException(String debugMessage) {
         super(debugMessage);
+    }
+
+    public ScheduleNotFoundException(Throwable cause) {
+        super(cause);
+    }
+
+    public ScheduleNotFoundException(String debugMessage, Throwable cause) {
+        super(debugMessage, cause);
     }
 
     @Override
