@@ -65,6 +65,12 @@ dependencies {
 
 	// Yaml Resource Bundle
 	implementation 'dev.akkinoc.util:yaml-resource-bundle:2.8.1'
+
+	// QueryDSL
+	implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
+	annotationProcessor 'com.querydsl:querydsl-apt:5.0.0:jakarta'
+	annotationProcessor "jakarta.annotation:jakarta.annotation-api"
+	annotationProcessor "jakarta.persistence:jakarta.persistence-api"
 }
 
 test {
@@ -92,4 +98,19 @@ task copyDocument(type: Copy) { // asciidoctor 작업 : copy
 
 build { // copyDocument 작업 이후 build
 	dependsOn copyDocument
+}
+
+// QueryDSL
+def querydslDir = "$buildDir/generated/querydsl"
+
+sourceSets {
+	main.java.srcDirs += [ querydslDir ]
+}
+
+tasks.withType(JavaCompile) {
+	options.annotationProcessorGeneratedSourcesDirectory = file(querydslDir)
+}
+
+clean.doLast {
+	file(querydslDir).deleteDir()
 }
