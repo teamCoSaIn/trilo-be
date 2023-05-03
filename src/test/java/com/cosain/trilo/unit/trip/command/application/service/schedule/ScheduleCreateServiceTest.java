@@ -11,6 +11,7 @@ import com.cosain.trilo.trip.command.domain.repository.ScheduleRepository;
 import com.cosain.trilo.trip.command.domain.repository.TripRepository;
 import com.cosain.trilo.trip.command.domain.vo.Coordinate;
 import com.cosain.trilo.trip.command.domain.vo.Place;
+import com.cosain.trilo.trip.command.domain.vo.ScheduleIndex;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -49,7 +50,7 @@ public class ScheduleCreateServiceTest {
         Long tripperId = 1L;
         Trip trip = Trip.create("제목", tripperId);
         Day day = Day.of(LocalDate.of(2023, 4, 5), trip);
-        Schedule schedule = Schedule.create(day, trip, "제목", Place.of("장소 식별자", "장소 이름", Coordinate.of(23.21, 23.24)));
+        Schedule schedule = Schedule.create(day, trip, "제목", Place.of("장소 식별자", "장소 이름", Coordinate.of(23.21, 23.24)), ScheduleIndex.of(1000));
 
         ScheduleCreateCommand scheduleCreateCommand = ScheduleCreateCommand.of(1L, 1L, "제목", "내용", "장소 식별자", 23.21, 23.24);
         given(scheduleRepository.save(any(Schedule.class))).willReturn(schedule);
