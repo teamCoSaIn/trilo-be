@@ -11,13 +11,9 @@ import com.cosain.trilo.trip.command.domain.entity.Trip;
 import com.cosain.trilo.trip.command.domain.repository.DayRepository;
 import com.cosain.trilo.trip.command.domain.repository.ScheduleRepository;
 import com.cosain.trilo.trip.command.domain.repository.TripRepository;
-import com.cosain.trilo.trip.command.domain.vo.ScheduleIndex;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 
 @RequiredArgsConstructor
 @Service
@@ -37,12 +33,8 @@ public class ScheduleCreateService implements ScheduleCreateUseCase {
         Trip trip = findTrip(createCommand.getTripId());
         validateCreateAuthority(trip, tripperId);
 
-        // TODO: Schedule 생성의 책임을 Trip 및 Day에게 위임
-        // Schedule 생성 시 create를 통해 생성하는데, 컴파일 에러를 막기 위해 임시방편으로 현재 시각의 EpochSecond를 이용해 랜덤 순서값을 부여하도록 했다.
-        Schedule schedule = Schedule.create(day, trip, createCommand.getTitle(), createCommand.getPlace(), ScheduleIndex.of(LocalDateTime.now().toEpochSecond(ZoneOffset.UTC)%1_000_000_000));
-
+        Schedule schedule = makeSchedule(trip, day, createCommand);
         scheduleRepository.save(schedule);
-
         return schedule.getId();
     }
 
@@ -58,6 +50,10 @@ public class ScheduleCreateService implements ScheduleCreateUseCase {
         if(!trip.getTripperId().equals(tripperId)){
             throw new NoScheduleCreateAuthorityException("여행의 소유주가 아닌 사람이, 일정을 생성하려고 함");
         }
+    }
+
+    private Schedule makeSchedule(Trip trip, Day day, ScheduleCreateCommand createCommand) {
+        return trip.createSchedule(day, createCommand.getTitle(), createCommand.getPlace());
     }
 
 }

@@ -2,6 +2,8 @@ package com.cosain.trilo.trip.command.domain.entity;
 
 import com.cosain.trilo.trip.command.domain.dto.ChangeTripPeriodResult;
 import com.cosain.trilo.trip.command.domain.exception.EmptyPeriodUpdateException;
+import com.cosain.trilo.trip.command.domain.vo.Place;
+import com.cosain.trilo.trip.command.domain.vo.ScheduleIndex;
 import com.cosain.trilo.trip.command.domain.vo.TripPeriod;
 import com.cosain.trilo.trip.command.domain.vo.TripStatus;
 import jakarta.persistence.*;
@@ -12,6 +14,8 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.annotations.Where;
 
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -142,4 +146,7 @@ public class Trip {
         return newDays;
     }
 
+    public Schedule createSchedule(Day day, String title, Place place) {
+        return Schedule.create(day, this, title, place, ScheduleIndex.of(LocalDateTime.now().toEpochSecond(ZoneOffset.UTC)%1_000_000_000));
+    }
 }
