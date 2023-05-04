@@ -10,6 +10,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.annotations.Where;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -43,6 +44,11 @@ public class Trip {
     @OneToMany(mappedBy = "trip")
     private final List<Day> days = new ArrayList<>();
 
+    @OneToMany(mappedBy = "trip")
+    @Where(clause = "day_id is NULL")
+    @OrderBy("scheduleIndex.value asc")
+    private final List<Schedule> temporaryStorage = new ArrayList<>();
+
     /**
      * 여행(Trip)을 최초로 생성합니다. 최초 생성된 Trip은 UNDECIDED 상태입니다.
      *
@@ -63,7 +69,7 @@ public class Trip {
      * 테스트의 편의성을 위해 Builder accessLevel = PUBLIC 으로 설정
      */
     @Builder(access = AccessLevel.PUBLIC)
-    private Trip(Long id, Long tripperId, String title, TripStatus status, TripPeriod tripPeriod, List<Day> days) {
+    private Trip(Long id, Long tripperId, String title, TripStatus status, TripPeriod tripPeriod, List<Day> days, List<Schedule> temporaryStorage) {
         this.id = id;
         this.tripperId = tripperId;
         this.title = title;
@@ -72,6 +78,10 @@ public class Trip {
 
         if (days != null) {
             this.days.addAll(days);
+        }
+
+        if (temporaryStorage != null) {
+            this.temporaryStorage.addAll(temporaryStorage);
         }
     }
 

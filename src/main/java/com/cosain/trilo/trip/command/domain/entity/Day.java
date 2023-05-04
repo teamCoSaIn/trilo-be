@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @ToString(of = {"id", "tripDate"})
@@ -27,6 +29,10 @@ public class Day {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "trip_id")
     private Trip trip;
+
+    @OneToMany(mappedBy = "day")
+    @OrderBy("scheduleIndex.value asc")
+    private List<Schedule> schedules = new ArrayList<>();
 
     /**
      * 비즈니스 코드에서 Day 생성은 Trip 에서만 할 수 있다.

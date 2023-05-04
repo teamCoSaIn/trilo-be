@@ -4,10 +4,7 @@ import com.cosain.trilo.trip.command.domain.entity.Day;
 import com.cosain.trilo.trip.command.domain.entity.Schedule;
 import com.cosain.trilo.trip.command.domain.entity.Trip;
 import com.cosain.trilo.trip.command.domain.repository.ScheduleRepository;
-import com.cosain.trilo.trip.command.domain.vo.Coordinate;
-import com.cosain.trilo.trip.command.domain.vo.Place;
-import com.cosain.trilo.trip.command.domain.vo.TripPeriod;
-import com.cosain.trilo.trip.command.domain.vo.TripStatus;
+import com.cosain.trilo.trip.command.domain.vo.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -88,7 +85,7 @@ public class ScheduleRepositoryTest {
         Day day = Day.of(LocalDate.of(2023,3,1), trip);
         em.persist(day);
 
-        Schedule schedule = Schedule.create(day, trip, "일정1", Place.of("place-id1", "광안리 해수욕장", Coordinate.of(35.1551, 129.1220)));
+        Schedule schedule = Schedule.create(day, trip, "일정1", Place.of("place-id1", "광안리 해수욕장", Coordinate.of(35.1551, 129.1220)), ScheduleIndex.of(1000));
         em.persist(schedule);
 
         // when
@@ -124,9 +121,9 @@ public class ScheduleRepositoryTest {
         em.persist(day2);
         em.persist(day3);
 
-        Schedule schedule1 = Schedule.create(day1, trip, "일정1", Place.of("place-id1", "광안리 해수욕장", Coordinate.of(35.1551, 129.1220)));
-        Schedule schedule2 = Schedule.create(day2, trip, "일정2", Place.of("place-id2", "광화문 광장", Coordinate.of(37.5748, 126.9767)));
-        Schedule schedule3 = Schedule.create(day3, trip, "일정3", Place.of("place-id3", "도쿄 타워", Coordinate.of(35.3931, 139.4443)));
+        Schedule schedule1 = Schedule.create(day1, trip, "일정1", Place.of("place-id1", "광안리 해수욕장", Coordinate.of(35.1551, 129.1220)), ScheduleIndex.of(1000));
+        Schedule schedule2 = Schedule.create(day2, trip, "일정2", Place.of("place-id2", "광화문 광장", Coordinate.of(37.5748, 126.9767)), ScheduleIndex.of(1000));
+        Schedule schedule3 = Schedule.create(day3, trip, "일정3", Place.of("place-id3", "도쿄 타워", Coordinate.of(35.3931, 139.4443)), ScheduleIndex.of(1000));
 
         em.persist(schedule1);
         em.persist(schedule2);
@@ -158,9 +155,9 @@ public class ScheduleRepositoryTest {
         Day day = Day.of(LocalDate.of(2023,3,1), trip);
         em.persist(day);
 
-        Schedule schedule1 = Schedule.create(day, trip, "일정1", Place.of("place-id1", "광안리 해수욕장1", Coordinate.of(35.1551, 129.1220)));
-        Schedule schedule2 = Schedule.create(day, trip, "일정2", Place.of("place-id2", "광안리 해수욕장2", Coordinate.of(35.1551, 129.1220)));
-        Schedule schedule3 = Schedule.create(day, trip, "일정3", Place.of("place-id3", "광안리 해수욕장3", Coordinate.of(35.1551, 129.1220)));
+        Schedule schedule1 = Schedule.create(day, trip, "일정1", Place.of("place-id1", "광안리 해수욕장1", Coordinate.of(35.1551, 129.1220)), ScheduleIndex.of(1000));
+        Schedule schedule2 = Schedule.create(day, trip, "일정2", Place.of("place-id2", "광안리 해수욕장2", Coordinate.of(35.1551, 129.1220)), ScheduleIndex.of(2000));
+        Schedule schedule3 = Schedule.create(day, trip, "일정3", Place.of("place-id3", "광안리 해수욕장3", Coordinate.of(35.1551, 129.1220)), ScheduleIndex.of(3000));
 
         em.persist(schedule1);
         em.persist(schedule2);

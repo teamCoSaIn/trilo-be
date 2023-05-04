@@ -1,10 +1,10 @@
 package com.cosain.trilo.unit.trip.command.domain.repository;
 
 import com.cosain.trilo.trip.command.domain.entity.Day;
+import com.cosain.trilo.trip.command.domain.entity.Schedule;
 import com.cosain.trilo.trip.command.domain.entity.Trip;
 import com.cosain.trilo.trip.command.domain.repository.TripRepository;
-import com.cosain.trilo.trip.command.domain.vo.TripPeriod;
-import com.cosain.trilo.trip.command.domain.vo.TripStatus;
+import com.cosain.trilo.trip.command.domain.vo.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -15,6 +15,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.annotation.DirtiesContext;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -29,19 +30,49 @@ public class TripRepositoryTest {
     @Autowired
     private TestEntityManager em;
 
-    @Test
-    @DirtiesContext
-    @DisplayName("Trip을 저장하고 같은 식별자로 찾으면 같은 Trip이 찾아진다.")
-    void saveTest() {
-        Trip trip = Trip.create("제목", 1L);
-        tripRepository.save(trip);
+    @Nested
+    @DisplayName("Trip 저장 후 FindById로 조회")
+    class saveAndFindByIdTest {
 
-        em.clear();
+        @Test
+        @DisplayName("같은 id로 조회하면 같은 여행이 찾아진다.")
+        void successTest() {
+            Trip trip = Trip.create("제목", 1L);
+            tripRepository.save(trip);
 
-        Trip findTrip = tripRepository.findById(trip.getId()).get();
-        assertThat(findTrip.getId()).isEqualTo(trip.getId());
-        assertThat(findTrip.getTripperId()).isEqualTo(trip.getTripperId());
-        assertThat(findTrip.getTripPeriod()).isEqualTo(trip.getTripPeriod());
+            em.clear();
+
+            Trip findTrip = tripRepository.findById(trip.getId()).get();
+            assertThat(findTrip.getId()).isEqualTo(trip.getId());
+            assertThat(findTrip.getTripperId()).isEqualTo(trip.getTripperId());
+            assertThat(findTrip.getTripPeriod()).isEqualTo(trip.getTripPeriod());
+        }
+
+        @Test
+        @DisplayName("임시보관함을 지연로딩(기본 양방향 매핑)하여 얻어오면, 순서대로 요소들이 가져와진다.")
+        void lazy_loading_TemporaryStorage() {
+            // given
+            Trip trip = Trip.create("제목", 1L);
+            tripRepository.save(trip);
+
+            Schedule schedule1 = Schedule.create(null, trip, "일정1", Place.of("place-id1", "광안리 해수욕장111", Coordinate.of(35.1551, 129.1220)), ScheduleIndex.of(3000L));
+            Schedule schedule2 = Schedule.create(null, trip, "일정2", Place.of("place-id2", "광안리 해수욕장222", Coordinate.of(35.1551, 129.1220)), ScheduleIndex.of(5000L));
+            Schedule schedule3 = Schedule.create(null, trip, "일정3", Place.of("place-id3", "광안리 해수욕장333", Coordinate.of(35.1551, 129.1220)), ScheduleIndex.of(-1000L));
+
+            em.persist(schedule1);
+            em.persist(schedule2);
+            em.persist(schedule3);
+
+            em.clear();
+
+            // when
+            Trip findTrip = tripRepository.findById(trip.getId()).get();
+            List<Schedule> temporaryStorage = findTrip.getTemporaryStorage();
+
+            // then
+            assertThat(temporaryStorage).map(Schedule::getScheduleIndex)
+                    .containsExactly(ScheduleIndex.of(-1000L), ScheduleIndex.of(3000L), ScheduleIndex.of(5000L));
+        }
     }
 
     @Nested
