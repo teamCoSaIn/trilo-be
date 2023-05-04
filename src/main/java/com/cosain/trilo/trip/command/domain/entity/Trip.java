@@ -14,8 +14,6 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.annotations.Where;
 
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -147,6 +145,23 @@ public class Trip {
     }
 
     public Schedule createSchedule(Day day, String title, Place place) {
-        return Schedule.create(day, this, title, place, ScheduleIndex.of(LocalDateTime.now().toEpochSecond(ZoneOffset.UTC)%1_000_000_000));
+        return (day == null)
+                ? makeTemporaryStorageSchedule(title, place)
+                : makeDaySchedule(day, title, place);
+    }
+    private Schedule makeTemporaryStorageSchedule(String title, Place place) {
+        Schedule schedule = Schedule.create(null, this, title, place, generateNextTemporaryStorageScheduleIndex());
+        temporaryStorage.add(schedule);
+        return schedule;
+    }
+
+    private ScheduleIndex generateNextTemporaryStorageScheduleIndex() {
+        return (temporaryStorage.isEmpty())
+                ? ScheduleIndex.ZERO_INDEX
+                : temporaryStorage.get(temporaryStorage.size() - 1).getScheduleIndex().generateNextIndex();
+    }
+
+    private Schedule makeDaySchedule(Day day, String title, Place place) {
+        return day.createSchedule(title, place);
     }
 }

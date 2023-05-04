@@ -39,7 +39,9 @@ public class ScheduleCreateService implements ScheduleCreateUseCase {
     }
 
     private Day findDay(Long dayId){
-        return dayRepository.findById(dayId).orElseThrow(() -> new DayNotFoundException("Schedule을 Day에 넣으려고 했는데, 해당하는 Day가 존재하지 않음."));
+        return (dayId == null)
+                ? null
+                : dayRepository.findById(dayId).orElseThrow(() -> new DayNotFoundException("Schedule을 Day에 넣으려고 했는데, 해당하는 Day가 존재하지 않음."));
     }
 
     private Trip findTrip(Long tripId){

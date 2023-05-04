@@ -1,5 +1,7 @@
 package com.cosain.trilo.trip.command.domain.entity;
 
+import com.cosain.trilo.trip.command.domain.vo.Place;
+import com.cosain.trilo.trip.command.domain.vo.ScheduleIndex;
 import com.cosain.trilo.trip.command.domain.vo.TripPeriod;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -53,5 +55,17 @@ public class Day {
      */
     public boolean isIn(TripPeriod tripPeriod) {
         return tripPeriod.contains(tripDate);
+    }
+
+    public Schedule createSchedule(String title, Place place) {
+        Schedule schedule = Schedule.create(this, trip, title, place, generateNextScheduleIndex());
+        schedules.add(schedule);
+        return schedule;
+    }
+
+    private ScheduleIndex generateNextScheduleIndex() {
+        return (schedules.isEmpty())
+                ? ScheduleIndex.ZERO_INDEX
+                : schedules.get(schedules.size() - 1).getScheduleIndex().generateNextIndex();
     }
 }
