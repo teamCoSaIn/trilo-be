@@ -1,13 +1,24 @@
 package com.cosain.trilo.unit.trip.query.presentation.api.trip;
 
 import com.cosain.trilo.support.RestControllerTest;
+import com.cosain.trilo.trip.query.application.usecase.TripDetailSearchUseCase;
 import com.cosain.trilo.trip.query.presentation.trip.SingleTripQueryController;
+import com.cosain.trilo.trip.query.presentation.trip.dto.TripDetailResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithAnonymousUser;
-import org.springframework.security.test.context.support.WithMockUser;
 
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -17,15 +28,32 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(SingleTripQueryController.class)
 class SingleTripQueryControllerTest extends RestControllerTest {
 
+    @MockBean
+    private TripDetailSearchUseCase tripDetailSearchUseCase;
+    private final String ACCESS_TOKEN = "Bearer accessToken";
+
     @Test
-    @DisplayName("인증된 사용자 요청 -> 미구현 500")
-    @WithMockUser
+    @DisplayName("인증된 사용자의 요청 -> 여행 단건 정보 조회")
     public void findSingleTrip_with_authorizedUser() throws Exception {
-        mockMvc.perform(get("/api/trips/1"))
-                .andDo(print())
-                .andExpect(status().isInternalServerError())
-                .andExpect(jsonPath("$.errorCode").exists())
-                .andExpect(jsonPath("$.errorMessage").exists());
+        // given
+        mockingForLoginUserAnnotation();
+        TripDetailResponse responseDto = TripDetailResponse.of(1L, "여행 제목", "DECIDED", LocalDate.of(2023, 5, 10), LocalDate.of(2023, 5, 15));
+        given(tripDetailSearchUseCase.searchTripDetail(anyLong(), any())).willReturn(responseDto);
+
+        // when & then
+        mockMvc.perform(get("/api/trips/1")
+                        .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.tripId").value(responseDto.getTripId()))
+                .andExpect(jsonPath("$.title").value(responseDto.getTitle()))
+                .andExpect(jsonPath("$.status").value(responseDto.getStatus()))
+                .andExpect(jsonPath("$.startDate").value(responseDto.getStartDate().toString()))
+                .andExpect(jsonPath("$.endDate").value(responseDto.getEndDate().toString()));
+
+
+        verify(tripDetailSearchUseCase).searchTripDetail(anyLong(), any());
     }
 
     @Test
