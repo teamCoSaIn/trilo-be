@@ -39,7 +39,7 @@ public class ScheduleRepositoryTest {
                 .tripperId(1L)
                 .title("여행 제목")
                 .status(TripStatus.DECIDED)
-                .tripPeriod(TripPeriod.of(LocalDate.of(2023,3,1), LocalDate.of(2023,3,1)))
+                .tripPeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 1)))
                 .build();
 
         em.persist(trip);
@@ -77,15 +77,15 @@ public class ScheduleRepositoryTest {
                 .tripperId(1L)
                 .title("여행 제목")
                 .status(TripStatus.DECIDED)
-                .tripPeriod(TripPeriod.of(LocalDate.of(2023,3,1), LocalDate.of(2023,3,1)))
+                .tripPeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 1)))
                 .build();
 
         em.persist(trip);
 
-        Day day = Day.of(LocalDate.of(2023,3,1), trip);
+        Day day = Day.of(LocalDate.of(2023, 3, 1), trip);
         em.persist(day);
 
-        Schedule schedule = Schedule.create(day, trip, "일정1", Place.of("place-id1", "광안리 해수욕장", Coordinate.of(35.1551, 129.1220)), ScheduleIndex.of(1000));
+        Schedule schedule = trip.createSchedule(day, "일정1", Place.of("place-id1", "광안리 해수욕장", Coordinate.of(35.1551, 129.1220)));
         em.persist(schedule);
 
         // when
@@ -108,22 +108,22 @@ public class ScheduleRepositoryTest {
                 .tripperId(1L)
                 .title("여행 제목")
                 .status(TripStatus.DECIDED)
-                .tripPeriod(TripPeriod.of(LocalDate.of(2023,3,1), LocalDate.of(2023,3,3)))
+                .tripPeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 3)))
                 .build();
 
         em.persist(trip);
 
-        Day day1 = Day.of(LocalDate.of(2023,3,1), trip);
-        Day day2 = Day.of(LocalDate.of(2023,3,2), trip);
-        Day day3 = Day.of(LocalDate.of(2023,3,3), trip);
+        Day day1 = Day.of(LocalDate.of(2023, 3, 1), trip);
+        Day day2 = Day.of(LocalDate.of(2023, 3, 2), trip);
+        Day day3 = Day.of(LocalDate.of(2023, 3, 3), trip);
 
         em.persist(day1);
         em.persist(day2);
         em.persist(day3);
 
-        Schedule schedule1 = Schedule.create(day1, trip, "일정1", Place.of("place-id1", "광안리 해수욕장", Coordinate.of(35.1551, 129.1220)), ScheduleIndex.of(1000));
-        Schedule schedule2 = Schedule.create(day2, trip, "일정2", Place.of("place-id2", "광화문 광장", Coordinate.of(37.5748, 126.9767)), ScheduleIndex.of(1000));
-        Schedule schedule3 = Schedule.create(day3, trip, "일정3", Place.of("place-id3", "도쿄 타워", Coordinate.of(35.3931, 139.4443)), ScheduleIndex.of(1000));
+        Schedule schedule1 = trip.createSchedule(day1, "일정1", Place.of("place-id1", "광안리 해수욕장", Coordinate.of(35.1551, 129.1220)));
+        Schedule schedule2 = trip.createSchedule(day2, "일정2", Place.of("place-id2", "광화문 광장", Coordinate.of(37.5748, 126.9767)));
+        Schedule schedule3 = trip.createSchedule(day3, "일정3", Place.of("place-id3", "도쿄 타워", Coordinate.of(35.3931, 139.4443)));
 
         em.persist(schedule1);
         em.persist(schedule2);
@@ -148,16 +148,16 @@ public class ScheduleRepositoryTest {
                 .tripperId(1L)
                 .title("여행 제목")
                 .status(TripStatus.DECIDED)
-                .tripPeriod(TripPeriod.of(LocalDate.of(2023,3,1), LocalDate.of(2023,3,1)))
+                .tripPeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 1)))
                 .build();
         em.persist(trip);
 
-        Day day = Day.of(LocalDate.of(2023,3,1), trip);
+        Day day = Day.of(LocalDate.of(2023, 3, 1), trip);
         em.persist(day);
 
-        Schedule schedule1 = Schedule.create(day, trip, "일정1", Place.of("place-id1", "광안리 해수욕장1", Coordinate.of(35.1551, 129.1220)), ScheduleIndex.of(1000));
-        Schedule schedule2 = Schedule.create(day, trip, "일정2", Place.of("place-id2", "광안리 해수욕장2", Coordinate.of(35.1551, 129.1220)), ScheduleIndex.of(2000));
-        Schedule schedule3 = Schedule.create(day, trip, "일정3", Place.of("place-id3", "광안리 해수욕장3", Coordinate.of(35.1551, 129.1220)), ScheduleIndex.of(3000));
+        Schedule schedule1 = trip.createSchedule(day,  "일정1", Place.of("place-id1", "광안리 해수욕장1", Coordinate.of(35.1551, 129.1220)));
+        Schedule schedule2 = trip.createSchedule(day,  "일정2", Place.of("place-id2", "광안리 해수욕장2", Coordinate.of(35.1551, 129.1220)));
+        Schedule schedule3 = trip.createSchedule(day, "일정3", Place.of("place-id3", "광안리 해수욕장3", Coordinate.of(35.1551, 129.1220)));
 
         em.persist(schedule1);
         em.persist(schedule2);

@@ -40,7 +40,7 @@ public class Schedule {
     @Embedded
     private ScheduleIndex scheduleIndex;
 
-    public static Schedule create(Day day, Trip trip, String title, Place place, ScheduleIndex scheduleIndex) {
+    static Schedule create(Day day, Trip trip, String title, Place place, ScheduleIndex scheduleIndex) {
         return Schedule.builder()
                 .day(day)
                 .trip(trip)

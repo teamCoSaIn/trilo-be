@@ -57,7 +57,7 @@ public class Day {
         return tripPeriod.contains(tripDate);
     }
 
-    public Schedule createSchedule(String title, Place place) {
+    Schedule createSchedule(String title, Place place) {
         Schedule schedule = Schedule.create(this, trip, title, place, generateNextScheduleIndex());
         schedules.add(schedule);
         return schedule;
