@@ -4,11 +4,13 @@ import com.cosain.trilo.trip.command.domain.entity.Day;
 import com.cosain.trilo.trip.command.domain.entity.Schedule;
 import com.cosain.trilo.trip.command.domain.entity.Trip;
 import com.cosain.trilo.trip.command.domain.exception.EmptyPeriodUpdateException;
+import com.cosain.trilo.trip.command.domain.exception.InvalidTripDayException;
 import com.cosain.trilo.trip.command.domain.exception.ScheduleIndexRangeException;
 import com.cosain.trilo.trip.command.domain.vo.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.springframework.cglib.core.Local;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -596,13 +598,67 @@ public class TripTest {
         @Nested
         class Case_DaySchedule {
 
+            @DisplayName("소속된 Day가 아닌 곳에 Day를 생성하라고 요청할 경우 InvalidTripDayException 발생")
+            @Test
+            public void when_trip_not_contains_day_then_it_throws_InvalidTripDayException() {
+                // given
+                Trip trip = Trip.builder()
+                        .id(1L)
+                        .tripperId(1L)
+                        .title("여행 제목1")
+                        .status(TripStatus.DECIDED)
+                        .tripPeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 1)))
+                        .build();
+
+                Day validDay = Day.builder()
+                        .id(1L)
+                        .tripDate(LocalDate.of(2023, 3,1))
+                        .trip(trip)
+                        .build();
+
+                trip.getDays().add(validDay);
+
+                Trip otherTrip = Trip.builder()
+                        .id(2L)
+                        .tripperId(2L)
+                        .title("여행제목2")
+                        .status(TripStatus.DECIDED)
+                        .tripPeriod(TripPeriod.of(LocalDate.of(2023,3,2), LocalDate.of(2023,3,2)))
+                        .build();
+                Day otherTripDay = Day.builder()
+                        .id(2L)
+                        .tripDate(LocalDate.of(2023, 3,2))
+                        .trip(otherTrip)
+                        .build();
+
+                otherTrip.getDays().add(otherTripDay);
+
+                // when & then
+                assertThatThrownBy(() -> trip.createSchedule(otherTripDay, "일정 제목", Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523))))
+                        .isInstanceOf(InvalidTripDayException.class);
+            }
+
             @DisplayName("인덱스가 최대 범위를 벗어나면, ScheduleIndexRangeException 발생")
             @Test
             public void when_new_index_range_is_over_max_index_value_then_it_throws_ScheduleIndexRangeException() {
-                Trip trip = Trip.create("여행 제목", 1L);
-                trip.changePeriod(TripPeriod.of(LocalDate.of(2023,3,1), LocalDate.of(2023, 3, 1)));
+                Trip trip = Trip.builder()
+                        .id(1L)
+                        .tripperId(1L)
+                        .title("여행 제목1")
+                        .status(TripStatus.DECIDED)
+                        .tripPeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 1)))
+                        .build();
+                trip.changePeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 1)));
 
-                Day day = trip.getDays().get(0);
+
+                Day day = Day.builder()
+                        .id(1L)
+                        .tripDate(LocalDate.of(2023, 3,1))
+                        .trip(trip)
+                        .build();
+
+                trip.getDays().add(day);
+
 
                 Schedule schedule1 = Schedule.builder()
                         .day(day)
@@ -623,10 +679,21 @@ public class TripTest {
             @DisplayName("인덱스가 최대 범위를 벗어나지 않으면, 정상적으로 다음 순서의 Schedule 생성됨")
             @Test
             public void successTest() {
-                Trip trip = Trip.create("여행 제목", 1L);
-                trip.changePeriod(TripPeriod.of(LocalDate.of(2023,3,1), LocalDate.of(2023, 3, 1)));
+                Trip trip = Trip.builder()
+                        .id(1L)
+                        .tripperId(1L)
+                        .title("여행 제목1")
+                        .status(TripStatus.DECIDED)
+                        .tripPeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 1)))
+                        .build();
 
-                Day day = trip.getDays().get(0);
+                Day day = Day.builder()
+                        .id(1L)
+                        .tripDate(LocalDate.of(2023, 3,1))
+                        .trip(trip)
+                        .build();
+
+                trip.getDays().add(day);
 
                 Schedule schedule1 = trip.createSchedule(day, "일정 제목1", Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
                 Schedule schedule2 = trip.createSchedule(day, "일정 제목2", Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
