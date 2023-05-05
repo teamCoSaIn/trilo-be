@@ -1,5 +1,6 @@
 package com.cosain.trilo.unit.trip.command.application.service.schedule;
 
+import com.cosain.trilo.fixture.TripFixture;
 import com.cosain.trilo.trip.command.application.command.ScheduleCreateCommand;
 import com.cosain.trilo.trip.command.application.exception.NoScheduleCreateAuthorityException;
 import com.cosain.trilo.trip.command.application.service.ScheduleCreateService;
@@ -9,24 +10,23 @@ import com.cosain.trilo.trip.command.domain.entity.Trip;
 import com.cosain.trilo.trip.command.domain.repository.DayRepository;
 import com.cosain.trilo.trip.command.domain.repository.ScheduleRepository;
 import com.cosain.trilo.trip.command.domain.repository.TripRepository;
-import com.cosain.trilo.trip.command.domain.vo.Coordinate;
-import com.cosain.trilo.trip.command.domain.vo.Place;
-import com.cosain.trilo.trip.command.domain.vo.ScheduleIndex;
+import com.cosain.trilo.trip.command.domain.vo.*;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.cglib.core.Local;
 
 import java.time.LocalDate;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class ScheduleCreateServiceTest {
@@ -43,32 +43,257 @@ public class ScheduleCreateServiceTest {
     @Mock
     private TripRepository tripRepository;
 
-    @Test
-    @DisplayName("호출이 제대로 이루어지는지 테스트")
-    public void create_schedule_called_test(){
-        // given
-        Long tripperId = 1L;
-        Trip trip = Trip.create("제목", tripperId);
-        Day day = Day.of(LocalDate.of(2023, 4, 5), trip);
-        Schedule schedule = trip.createSchedule(day, "제목", Place.of("장소 식별자", "장소 이름", Coordinate.of(23.21, 23.24)));
+    @Nested
+    @DisplayName("Day에 일정을 생성할 때")
+    class Case_CreateDaySchedule {
 
-        ScheduleCreateCommand scheduleCreateCommand = ScheduleCreateCommand.of(1L, 1L, "제목", "내용", "장소 식별자", 23.21, 23.24);
-        given(scheduleRepository.save(any(Schedule.class))).willReturn(schedule);
-        given(dayRepository.findById(anyLong())).willReturn(Optional.of(day));
-        given(tripRepository.findById(anyLong())).willReturn(Optional.of(trip));
+        @Test
+        @DisplayName("범위를 넘기지 않을 때, 리포지토리 호출이 한번씩만 이루어지는지 테스트")
+        public void when_there_is_no_scheduleIndexRangeException_repository_is_called_only_once() {
+            // given
+            Long tripperId = 1L;
+            Long tripId = 2L;
+            Long dayId = 3L;
 
-        // when
-        scheduleCreateService.createSchedule(tripperId, scheduleCreateCommand);
+            Trip trip = Trip.builder()
+                    .id(tripId)
+                    .tripperId(tripperId)
+                    .title("여행 제목")
+                    .status(TripStatus.DECIDED)
+                    .tripPeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 1)))
+                    .build();
 
-        // then
-        verify(scheduleRepository).save(any());
-        verify(dayRepository).findById(anyLong());
-        verify(tripRepository).findById(anyLong());
+            Day day = Day.builder()
+                    .id(dayId)
+                    .tripDate(LocalDate.of(2023, 3, 1))
+                    .trip(trip)
+                    .build();
+
+            trip.getDays().add(day);
+
+            ScheduleCreateCommand scheduleCreateCommand = ScheduleCreateCommand.of(dayId, tripId, "일정 제목", "장소식별자", "장소명", 23.21, 23.24);
+
+            Schedule createdSchedule = Schedule.builder()
+                    .id(1L)
+                    .day(day)
+                    .trip(trip)
+                    .title("일정 제목")
+                    .place(Place.of("장소 식별자", "장소명", Coordinate.of(23.21, 23.24)))
+                    .scheduleIndex(ScheduleIndex.ZERO_INDEX)
+                    .build();
+
+            given(dayRepository.findById(eq(dayId))).willReturn(Optional.of(day));
+            given(tripRepository.findById(eq(tripId))).willReturn(Optional.of(trip));
+            given(scheduleRepository.save(any(Schedule.class))).willReturn(createdSchedule);
+
+            // when
+            scheduleCreateService.createSchedule(tripperId, scheduleCreateCommand);
+
+            // then
+            verify(dayRepository, times(1)).findById(eq(dayId));
+            verify(tripRepository, times(1)).findById(eq(tripId));
+            verify(scheduleRepository, times(0)).relocateDaySchedules(eq(tripId), eq(dayId));
+            verify(scheduleRepository, times(1)).save(any(Schedule.class));
+        }
+
+        @Test
+        @DisplayName("범위를 넘길 때, 리포지토리 호출이 한번씩만 이루어지는지 테스트")
+        public void when_day_scheduleIndex_is_over_limit_then_relocate_called() {
+            // given
+            Long tripperId = 1L;
+            Long tripId = 2L;
+            Long dayId = 3L;
+
+            Trip beforeTrip = Trip.builder()
+                    .id(tripId)
+                    .tripperId(tripperId)
+                    .title("여행 제목")
+                    .status(TripStatus.DECIDED)
+                    .tripPeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 1)))
+                    .build();
+
+            Day beforeDay = Day.builder()
+                    .id(dayId)
+                    .tripDate(LocalDate.of(2023, 3, 1))
+                    .trip(beforeTrip)
+                    .build();
+
+
+            Schedule beforeSchedule = Schedule.builder()
+                    .id(1L)
+                    .day(beforeDay)
+                    .trip(beforeTrip)
+                    .title("제목")
+                    .place(Place.of("장소식별자", "장소명", Coordinate.of(23.21, 23.24)))
+                    .scheduleIndex(ScheduleIndex.of(ScheduleIndex.MAX_INDEX_VALUE))
+                    .build();
+            beforeDay.getSchedules().add(beforeSchedule);
+            beforeTrip.getDays().add(beforeDay);
+
+            ScheduleCreateCommand scheduleCreateCommand = ScheduleCreateCommand.of(dayId, tripId, "일정 제목", "장소식별자", "장소명", 23.21, 23.24);
+
+
+            Trip rediscoveredTrip = Trip.builder()
+                    .id(tripId)
+                    .tripperId(tripperId)
+                    .title("여행 제목")
+                    .status(TripStatus.DECIDED)
+                    .tripPeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 1)))
+                    .build();
+
+            Day rediscoveredDay = Day.builder()
+                    .id(dayId)
+                    .tripDate(LocalDate.of(2023, 3, 1))
+                    .trip(rediscoveredTrip)
+                    .build();
+
+            Schedule rediscoveredBeforeSchedule = Schedule.builder()
+                    .id(1L)
+                    .day(rediscoveredDay)
+                    .trip(rediscoveredTrip)
+                    .title("제목")
+                    .place(Place.of("장소식별자", "장소명", Coordinate.of(23.21, 23.24)))
+                    .scheduleIndex(ScheduleIndex.ZERO_INDEX)
+                    .build();
+
+            rediscoveredDay.getSchedules().add(rediscoveredBeforeSchedule);
+            rediscoveredTrip.getDays().add(rediscoveredDay);
+
+            Schedule createdSchedule = Schedule.builder()
+                    .id(2L)
+                    .day(rediscoveredDay)
+                    .trip(rediscoveredTrip)
+                    .title("일정 제목")
+                    .place(Place.of("장소 식별자", "장소명", Coordinate.of(23.21, 23.24)))
+                    .scheduleIndex(ScheduleIndex.of(ScheduleIndex.DEFAULT_SEQUENCE_GAP))
+                    .build();
+
+            when(dayRepository.findById(eq(dayId)))
+                    .thenReturn(Optional.of(beforeDay))
+                    .thenReturn(Optional.of(rediscoveredDay));
+
+            when(tripRepository.findById(eq(tripId)))
+                    .thenReturn(Optional.of(beforeTrip))
+                    .thenReturn(Optional.of(rediscoveredTrip));
+
+            given(scheduleRepository.relocateDaySchedules(eq(tripId), eq(dayId))).willReturn(1);
+            given(scheduleRepository.save(any(Schedule.class))).willReturn(createdSchedule);
+
+            // when
+            scheduleCreateService.createSchedule(tripperId, scheduleCreateCommand);
+
+            // then
+            verify(dayRepository, times(2)).findById(eq(dayId));
+            verify(tripRepository, times(2)).findById(eq(tripId));
+            verify(scheduleRepository, times(1)).relocateDaySchedules(eq(tripId), eq(dayId));
+            verify(scheduleRepository, times(1)).save(any(Schedule.class));
+        }
+    }
+
+    @Nested
+    @DisplayName("임시보관함에 일정을 생성할 때")
+    class Case_Create_To_TemporaryStorage {
+
+        @Test
+        @DisplayName("범위를 넘기지 않을 때, 리포지토리 호출이 한번씩만 이루어지는지 테스트")
+        public void when_there_is_no_scheduleIndexRangeException_repository_is_called_only_once() {
+            // given
+            Long tripperId = 1L;
+            Long tripId = 2L;
+
+            Trip trip = Trip.builder()
+                    .id(tripId)
+                    .tripperId(tripperId)
+                    .title("여행 제목")
+                    .status(TripStatus.DECIDED)
+                    .tripPeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 1)))
+                    .build();
+
+            ScheduleCreateCommand scheduleCreateCommand = ScheduleCreateCommand.of(null, tripId, "일정 제목", "장소식별자", "장소명", 23.21, 23.24);
+
+            Schedule createdSchedule = Schedule.builder()
+                    .id(1L)
+                    .day(null)
+                    .trip(trip)
+                    .title("일정 제목")
+                    .place(Place.of("장소 식별자", "장소명", Coordinate.of(23.21, 23.24)))
+                    .scheduleIndex(ScheduleIndex.ZERO_INDEX)
+                    .build();
+
+            given(tripRepository.findById(eq(tripId))).willReturn(Optional.of(trip));
+            given(scheduleRepository.save(any(Schedule.class))).willReturn(createdSchedule);
+
+            // when
+            scheduleCreateService.createSchedule(tripperId, scheduleCreateCommand);
+
+            // then
+            verify(dayRepository, times(0)).findById(isNull());
+            verify(tripRepository, times(1)).findById(eq(tripId));
+            verify(scheduleRepository, times(0)).relocateDaySchedules(eq(tripId), isNull());
+            verify(scheduleRepository, times(1)).save(any(Schedule.class));
+        }
+
+        @Test
+        @DisplayName("임시보관함에서 일정의 순서가 범위를 벗어날 경우 재배치 기능이 호출되는 지 여부 테스트")
+        public void when_temporaryStorage_Schedule_is_over_limit_then_relocate_called() {
+            // given
+            Long tripperId = 1L;
+            Long tripId = 1L;
+            Trip trip = TripFixture.UNDECIDED_TRIP.createUndecided(tripId, tripperId, "제목");
+
+            Schedule beforeSchedule = Schedule.builder()
+                    .id(1L)
+                    .day(null)
+                    .trip(trip)
+                    .title("제목")
+                    .place(Place.of("장소식별자", "장소명", Coordinate.of(23.21, 23.24)))
+                    .scheduleIndex(ScheduleIndex.of(ScheduleIndex.MAX_INDEX_VALUE))
+                    .build();
+            trip.getTemporaryStorage().add(beforeSchedule);
+
+            Trip rediscoveredTrip = TripFixture.UNDECIDED_TRIP.createUndecided(tripId, tripperId, "제목");
+            Schedule relocatedSchedule = Schedule.builder()
+                    .id(1L)
+                    .day(null)
+                    .trip(trip)
+                    .title("제목")
+                    .place(Place.of("장소식별자", "장소명", Coordinate.of(23.21, 23.24)))
+                    .scheduleIndex(ScheduleIndex.ZERO_INDEX)
+                    .build();
+            rediscoveredTrip.getTemporaryStorage().add(relocatedSchedule);
+
+            ScheduleCreateCommand scheduleCreateCommand = ScheduleCreateCommand.of(null, tripId, "일정제목2", "장소식별자2", "장소이름2", 19.18, 27.15);
+
+            Schedule newSchedule = Schedule.builder()
+                    .id(2L)
+                    .day(null)
+                    .trip(trip)
+                    .title("일정제목2")
+                    .place(Place.of("장소식별자2", "장소이름2", Coordinate.of(19.18, 27.15)))
+                    .scheduleIndex(ScheduleIndex.of(ScheduleIndex.DEFAULT_SEQUENCE_GAP))
+                    .build();
+
+            when(tripRepository.findById(eq(tripId)))
+                    .thenReturn(Optional.of(trip))
+                    .thenReturn(Optional.of(rediscoveredTrip));
+            given(scheduleRepository.relocateDaySchedules(eq(tripId), isNull())).willReturn(1);
+            given(scheduleRepository.save(any(Schedule.class))).willReturn(newSchedule);
+
+            // when
+            scheduleCreateService.createSchedule(tripperId, scheduleCreateCommand);
+
+            // then
+            verify(dayRepository, times(0)).findById(isNull());
+            verify(tripRepository, times(2)).findById(eq(tripId));
+            verify(scheduleRepository, times(1)).relocateDaySchedules(eq(tripId), isNull());
+            verify(scheduleRepository, times(1)).save(any(Schedule.class));
+        }
+
     }
 
     @Test
     @DisplayName("권한 없는 사람이 Schedule을 생성하면, NoScheduleCreateAuthortyException이 발생한다.")
-    public void when_no_authority_tripper_create_schedule_it_throws_NoScheduleCreateAuthorityException(){
+    public void when_no_authority_tripper_create_schedule_it_throws_NoScheduleCreateAuthorityException() {
         // given
         Long noAuthorityTripperId = 2L;
 

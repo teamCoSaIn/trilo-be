@@ -8,6 +8,7 @@ import com.cosain.trilo.trip.command.application.usecase.ScheduleCreateUseCase;
 import com.cosain.trilo.trip.command.domain.entity.Day;
 import com.cosain.trilo.trip.command.domain.entity.Schedule;
 import com.cosain.trilo.trip.command.domain.entity.Trip;
+import com.cosain.trilo.trip.command.domain.exception.ScheduleIndexRangeException;
 import com.cosain.trilo.trip.command.domain.repository.DayRepository;
 import com.cosain.trilo.trip.command.domain.repository.ScheduleRepository;
 import com.cosain.trilo.trip.command.domain.repository.TripRepository;
@@ -26,14 +27,22 @@ public class ScheduleCreateService implements ScheduleCreateUseCase {
     @Override
     @Transactional
     public Long createSchedule(Long tripperId, ScheduleCreateCommand createCommand) {
-        /**
-         * TODO : 임시보관함 고려해서 수정하기
-         */
-        Day day = findDay(createCommand.getDayId());
-        Trip trip = findTrip(createCommand.getTripId());
+        Long dayId = createCommand.getDayId();
+        Long tripId = createCommand.getTripId();
+
+        Day day = findDay(dayId);
+        Trip trip = findTrip(tripId);
         validateCreateAuthority(trip, tripperId);
 
-        Schedule schedule = makeSchedule(trip, day, createCommand);
+        Schedule schedule;
+        try {
+            schedule = trip.createSchedule(day, createCommand.getTitle(), createCommand.getPlace());
+        } catch (ScheduleIndexRangeException e) {
+            scheduleRepository.relocateDaySchedules(tripId, dayId);
+            trip = findTrip(trip.getId());
+            day = findDay(dayId);
+            schedule =  trip.createSchedule(day, createCommand.getTitle(), createCommand.getPlace());
+        }
         scheduleRepository.save(schedule);
         return schedule.getId();
     }
@@ -52,10 +61,6 @@ public class ScheduleCreateService implements ScheduleCreateUseCase {
         if(!trip.getTripperId().equals(tripperId)){
             throw new NoScheduleCreateAuthorityException("여행의 소유주가 아닌 사람이, 일정을 생성하려고 함");
         }
-    }
-
-    private Schedule makeSchedule(Trip trip, Day day, ScheduleCreateCommand createCommand) {
-        return trip.createSchedule(day, createCommand.getTitle(), createCommand.getPlace());
     }
 
 }

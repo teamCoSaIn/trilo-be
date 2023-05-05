@@ -4,10 +4,7 @@ import com.cosain.trilo.trip.command.domain.vo.Place;
 import com.cosain.trilo.trip.command.domain.vo.ScheduleIndex;
 import com.cosain.trilo.trip.command.domain.vo.TripPeriod;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -34,18 +31,26 @@ public class Day {
 
     @OneToMany(mappedBy = "day")
     @OrderBy("scheduleIndex.value asc")
-    private List<Schedule> schedules = new ArrayList<>();
+    private final List<Schedule> schedules = new ArrayList<>();
 
     /**
      * 비즈니스 코드에서 Day 생성은 Trip 에서만 할 수 있다.
      */
-    public static Day of(LocalDate date, Trip trip){
-        return new Day(date, trip);
+    public static Day of(LocalDate tripDate, Trip trip){
+        return Day.builder()
+                .tripDate(tripDate)
+                .trip(trip)
+                .build();
     }
 
-    private Day(LocalDate date, Trip trip) {
-        this.tripDate = date;
+    @Builder(access = AccessLevel.PUBLIC)
+    private Day(Long id, LocalDate tripDate, Trip trip, List<Schedule> schedules) {
+        this.id = id;
+        this.tripDate = tripDate;
         this.trip = trip;
+        if (schedules != null) {
+            this.schedules.addAll(schedules);
+        }
     }
 
     /**
