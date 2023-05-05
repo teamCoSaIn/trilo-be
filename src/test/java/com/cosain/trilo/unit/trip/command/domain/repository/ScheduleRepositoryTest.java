@@ -1,5 +1,6 @@
 package com.cosain.trilo.unit.trip.command.domain.repository;
 
+import com.cosain.trilo.support.RepositoryTest;
 import com.cosain.trilo.trip.command.domain.entity.Day;
 import com.cosain.trilo.trip.command.domain.entity.Schedule;
 import com.cosain.trilo.trip.command.domain.entity.Trip;
@@ -8,8 +9,6 @@ import com.cosain.trilo.trip.command.domain.vo.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.annotation.DirtiesContext;
 
@@ -18,8 +17,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@DataJpaTest
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@RepositoryTest
 @DisplayName("[TripCommand] ScheduleRepository 테스트")
 public class ScheduleRepositoryTest {
 

@@ -1,18 +1,16 @@
-package com.cosain.trilo.trip.query.infra.repository.trip;
+package com.cosain.trilo.trip.query.infra.repository.trip.jpa;
 
 import com.cosain.trilo.trip.query.infra.dto.QTripDetail;
 import com.cosain.trilo.trip.query.infra.dto.TripDetail;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
 import static com.cosain.trilo.trip.command.domain.entity.QTrip.trip;
 
-@Repository
 @RequiredArgsConstructor
-public class TripQueryDslRepository {
+public class TripQueryJpaRepositoryImpl implements TripQueryJpaRepositoryCustom{
 
     private final JPAQueryFactory query;
 
