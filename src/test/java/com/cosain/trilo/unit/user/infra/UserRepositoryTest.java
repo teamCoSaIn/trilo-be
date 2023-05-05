@@ -1,19 +1,17 @@
 package com.cosain.trilo.unit.user.infra;
 
+import com.cosain.trilo.support.RepositoryTest;
 import com.cosain.trilo.user.domain.User;
 import com.cosain.trilo.user.domain.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import static com.cosain.trilo.fixture.UserFixture.KAKAO_MEMBER;
 
 @Slf4j
-@DataJpaTest
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@RepositoryTest
 class UserRepositoryTest {
 
     @Autowired
