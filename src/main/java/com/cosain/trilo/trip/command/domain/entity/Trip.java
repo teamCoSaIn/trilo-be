@@ -2,6 +2,9 @@ package com.cosain.trilo.trip.command.domain.entity;
 
 import com.cosain.trilo.trip.command.domain.dto.ChangeTripPeriodResult;
 import com.cosain.trilo.trip.command.domain.exception.EmptyPeriodUpdateException;
+import com.cosain.trilo.trip.command.domain.exception.InvalidTripDayException;
+import com.cosain.trilo.trip.command.domain.vo.Place;
+import com.cosain.trilo.trip.command.domain.vo.ScheduleIndex;
 import com.cosain.trilo.trip.command.domain.vo.TripPeriod;
 import com.cosain.trilo.trip.command.domain.vo.TripStatus;
 import jakarta.persistence.*;
@@ -142,4 +145,28 @@ public class Trip {
         return newDays;
     }
 
+    public Schedule createSchedule(Day day, String title, Place place) {
+        return (day == null)
+                ? makeTemporaryStorageSchedule(title, place)
+                : makeDaySchedule(day, title, place);
+    }
+    private Schedule makeTemporaryStorageSchedule(String title, Place place) {
+        Schedule schedule = Schedule.create(null, this, title, place, generateNextTemporaryStorageScheduleIndex());
+        temporaryStorage.add(schedule);
+        return schedule;
+    }
+
+    private ScheduleIndex generateNextTemporaryStorageScheduleIndex() {
+        return (temporaryStorage.isEmpty())
+                ? ScheduleIndex.ZERO_INDEX
+                : temporaryStorage.get(temporaryStorage.size() - 1).getScheduleIndex().generateNextIndex();
+    }
+
+    private Schedule makeDaySchedule(Day day, String title, Place place) {
+        if (!this.id.equals(day.getTrip().id)) {
+            throw new InvalidTripDayException("해당 day는 Trip의 Day가 아님");
+        }
+
+        return day.createSchedule(title, place);
+    }
 }

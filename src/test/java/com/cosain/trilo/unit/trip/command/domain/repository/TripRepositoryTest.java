@@ -53,9 +53,30 @@ public class TripRepositoryTest {
             Trip trip = Trip.create("제목", 1L);
             tripRepository.save(trip);
 
-            Schedule schedule1 = Schedule.create(null, trip, "일정1", Place.of("place-id1", "광안리 해수욕장111", Coordinate.of(35.1551, 129.1220)), ScheduleIndex.of(3000L));
-            Schedule schedule2 = Schedule.create(null, trip, "일정2", Place.of("place-id2", "광안리 해수욕장222", Coordinate.of(35.1551, 129.1220)), ScheduleIndex.of(5000L));
-            Schedule schedule3 = Schedule.create(null, trip, "일정3", Place.of("place-id3", "광안리 해수욕장333", Coordinate.of(35.1551, 129.1220)), ScheduleIndex.of(-1000L));
+            Schedule schedule1 = Schedule.builder()
+                    .day(null)
+                    .trip(trip)
+                    .title("일정1")
+                    .place(Place.of("place-id1", "광안리 해수욕장111", Coordinate.of(35.1551, 129.1220)))
+                    .scheduleIndex(ScheduleIndex.of(30_000_000L))
+                    .build();
+
+            Schedule schedule2 = Schedule.builder()
+                    .day(null)
+                    .trip(trip)
+                    .title("일정2")
+                    .place(Place.of("place-id2", "광안리 해수욕장222", Coordinate.of(35.1551, 129.1220)))
+                    .scheduleIndex(ScheduleIndex.of(50_000_000L))
+                    .build();
+
+
+            Schedule schedule3 = Schedule.builder()
+                    .day(null)
+                    .trip(trip)
+                    .title("일정3")
+                    .place(Place.of("place-id3", "광안리 해수욕장333", Coordinate.of(35.1551, 129.1220)))
+                    .scheduleIndex(ScheduleIndex.of(-10_000_000L))
+                    .build();
 
             em.persist(schedule1);
             em.persist(schedule2);
@@ -69,7 +90,7 @@ public class TripRepositoryTest {
 
             // then
             assertThat(temporaryStorage).map(Schedule::getScheduleIndex)
-                    .containsExactly(ScheduleIndex.of(-1000L), ScheduleIndex.of(3000L), ScheduleIndex.of(5000L));
+                    .containsExactly(ScheduleIndex.of(-10_000_000L), ScheduleIndex.of(30_000_000L), ScheduleIndex.of(50_000_000L));
         }
     }
 

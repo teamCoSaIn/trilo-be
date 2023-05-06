@@ -1,13 +1,16 @@
 package com.cosain.trilo.unit.trip.command.domain.entity;
 
 import com.cosain.trilo.trip.command.domain.entity.Day;
+import com.cosain.trilo.trip.command.domain.entity.Schedule;
 import com.cosain.trilo.trip.command.domain.entity.Trip;
 import com.cosain.trilo.trip.command.domain.exception.EmptyPeriodUpdateException;
-import com.cosain.trilo.trip.command.domain.vo.TripPeriod;
-import com.cosain.trilo.trip.command.domain.vo.TripStatus;
+import com.cosain.trilo.trip.command.domain.exception.InvalidTripDayException;
+import com.cosain.trilo.trip.command.domain.exception.ScheduleIndexRangeException;
+import com.cosain.trilo.trip.command.domain.vo.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.springframework.cglib.core.Local;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -548,4 +551,157 @@ public class TripTest {
             }
         }
     }
+
+    @Nested
+    @DisplayName("CreateSchedule 테스트")
+    class CreateScheduleTest {
+
+        @DisplayName("임시보관함에 일정을 새로 추가할 경우")
+        @Nested
+        class Case_TemporaryStorage {
+
+            @DisplayName("인덱스가 최대 범위를 벗어나면, ScheduleIndexRangeException 발생")
+            @Test
+            public void when_new_index_range_is_over_max_index_value_then_it_throws_ScheduleIndexRangeException() {
+                Trip trip = Trip.create("여행 제목", 1L);
+
+                Schedule schedule1 = Schedule.builder()
+                        .day(null)
+                        .trip(trip)
+                        .title("일정 제목1")
+                        .place(Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)))
+                        .scheduleIndex(ScheduleIndex.of(ScheduleIndex.MAX_INDEX_VALUE))
+                        .build();
+
+                trip.getTemporaryStorage().add(schedule1); // 원래 이 방식을 통해 추가하는 것은 도메인 규칙에 어긋나지만 범위를 벗어나는 테스트를 하기 위함.
+
+                // when & then
+                assertThatThrownBy(() ->
+                        trip.createSchedule(null, "일정제목2", Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523))))
+                        .isInstanceOf(ScheduleIndexRangeException.class);
+            }
+
+            @DisplayName("인덱스가 최대 범위를 벗어나지 않으면, 정상적으로 다음 순서의 Schedule 생성됨")
+            @Test
+            public void successTest() {
+                Trip trip = Trip.create("여행 제목", 1L);
+
+                Schedule schedule1 = trip.createSchedule(null, "일정 제목1", Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule2 = trip.createSchedule(null, "일정 제목2", Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
+
+                assertThat(schedule1.getScheduleIndex()).isEqualTo(ScheduleIndex.ZERO_INDEX);
+                assertThat(schedule2.getScheduleIndex()).isEqualTo(ScheduleIndex.of(ScheduleIndex.DEFAULT_SEQUENCE_GAP));
+            }
+        }
+
+        @DisplayName("특정 Day에 일정을 새로 추가할 경우")
+        @Nested
+        class Case_DaySchedule {
+
+            @DisplayName("소속된 Day가 아닌 곳에 Day를 생성하라고 요청할 경우 InvalidTripDayException 발생")
+            @Test
+            public void when_trip_not_contains_day_then_it_throws_InvalidTripDayException() {
+                // given
+                Trip trip = Trip.builder()
+                        .id(1L)
+                        .tripperId(1L)
+                        .title("여행 제목1")
+                        .status(TripStatus.DECIDED)
+                        .tripPeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 1)))
+                        .build();
+
+                Day validDay = Day.builder()
+                        .id(1L)
+                        .tripDate(LocalDate.of(2023, 3,1))
+                        .trip(trip)
+                        .build();
+
+                trip.getDays().add(validDay);
+
+                Trip otherTrip = Trip.builder()
+                        .id(2L)
+                        .tripperId(2L)
+                        .title("여행제목2")
+                        .status(TripStatus.DECIDED)
+                        .tripPeriod(TripPeriod.of(LocalDate.of(2023,3,2), LocalDate.of(2023,3,2)))
+                        .build();
+                Day otherTripDay = Day.builder()
+                        .id(2L)
+                        .tripDate(LocalDate.of(2023, 3,2))
+                        .trip(otherTrip)
+                        .build();
+
+                otherTrip.getDays().add(otherTripDay);
+
+                // when & then
+                assertThatThrownBy(() -> trip.createSchedule(otherTripDay, "일정 제목", Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523))))
+                        .isInstanceOf(InvalidTripDayException.class);
+            }
+
+            @DisplayName("인덱스가 최대 범위를 벗어나면, ScheduleIndexRangeException 발생")
+            @Test
+            public void when_new_index_range_is_over_max_index_value_then_it_throws_ScheduleIndexRangeException() {
+                Trip trip = Trip.builder()
+                        .id(1L)
+                        .tripperId(1L)
+                        .title("여행 제목1")
+                        .status(TripStatus.DECIDED)
+                        .tripPeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 1)))
+                        .build();
+                trip.changePeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 1)));
+
+
+                Day day = Day.builder()
+                        .id(1L)
+                        .tripDate(LocalDate.of(2023, 3,1))
+                        .trip(trip)
+                        .build();
+
+                trip.getDays().add(day);
+
+
+                Schedule schedule1 = Schedule.builder()
+                        .day(day)
+                        .trip(trip)
+                        .title("일정 제목1")
+                        .place(Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)))
+                        .scheduleIndex(ScheduleIndex.of(ScheduleIndex.MAX_INDEX_VALUE))
+                        .build();
+
+                day.getSchedules().add(schedule1); // 원래 이 방식을 통해 추가하는 것은 도메인 규칙에 어긋나지만 범위를 벗어나는 테스트를 하기 위함.
+
+                // when & then
+                assertThatThrownBy(() ->
+                        trip.createSchedule(day, "일정제목2", Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523))))
+                        .isInstanceOf(ScheduleIndexRangeException.class);
+            }
+
+            @DisplayName("인덱스가 최대 범위를 벗어나지 않으면, 정상적으로 다음 순서의 Schedule 생성됨")
+            @Test
+            public void successTest() {
+                Trip trip = Trip.builder()
+                        .id(1L)
+                        .tripperId(1L)
+                        .title("여행 제목1")
+                        .status(TripStatus.DECIDED)
+                        .tripPeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 1)))
+                        .build();
+
+                Day day = Day.builder()
+                        .id(1L)
+                        .tripDate(LocalDate.of(2023, 3,1))
+                        .trip(trip)
+                        .build();
+
+                trip.getDays().add(day);
+
+                Schedule schedule1 = trip.createSchedule(day, "일정 제목1", Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule2 = trip.createSchedule(day, "일정 제목2", Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
+
+                assertThat(schedule1.getScheduleIndex()).isEqualTo(ScheduleIndex.ZERO_INDEX);
+                assertThat(schedule2.getScheduleIndex()).isEqualTo(ScheduleIndex.of(ScheduleIndex.DEFAULT_SEQUENCE_GAP));
+            }
+        }
+    }
+
 }
