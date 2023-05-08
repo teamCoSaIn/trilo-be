@@ -5,6 +5,8 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.*;
 
+import java.math.BigInteger;
+
 @Getter
 @ToString(of = {"value"})
 @EqualsAndHashCode(of = {"value"})
@@ -43,6 +45,20 @@ public class ScheduleIndex {
      */
     public ScheduleIndex generateBeforeIndex() {
         return ScheduleIndex.of(value - DEFAULT_SEQUENCE_GAP);
+    }
+
+
+    /**
+     * 중간 인덱스 생성
+     * @param other : 다른 대상 인덱스
+     * @return : 자기 자신과 다른 대상 인덱스의 중간 위치에 대응되는 인덱스
+     */
+    public ScheduleIndex mid(ScheduleIndex other) {
+        BigInteger value1 = BigInteger.valueOf(this.value);
+        BigInteger value2 = BigInteger.valueOf(other.value);
+
+        long midValue = value1.add(value2).divide(BigInteger.TWO).longValue();
+        return ScheduleIndex.of(midValue);
     }
 
 }
