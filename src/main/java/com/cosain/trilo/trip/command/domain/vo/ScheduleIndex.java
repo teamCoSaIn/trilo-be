@@ -36,4 +36,13 @@ public class ScheduleIndex {
         return ScheduleIndex.of(value + DEFAULT_SEQUENCE_GAP);
     }
 
+
+    /**
+     * 자기 자신의 앞에 새로 인덱스를 생성합니다.
+     * @return 앞에 오는 인덱스
+     */
+    public ScheduleIndex generateBeforeIndex() {
+        return ScheduleIndex.of(value - DEFAULT_SEQUENCE_GAP);
+    }
+
 }

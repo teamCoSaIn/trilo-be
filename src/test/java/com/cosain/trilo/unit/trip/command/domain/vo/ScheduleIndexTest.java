@@ -73,4 +73,29 @@ public class ScheduleIndexTest {
 
     }
 
+    @Nested
+    @DisplayName("generateBeforeIndex 테스트")
+    class generateBeforeIndexTest {
+
+        @Test
+        @DisplayName("생성되는 순서가 범위를 벗어나는 경우 예외 발생")
+        public void when_generatedIndex_is_too_small_index_then_it_throws_ScheduleIndexRangeException() {
+            ScheduleIndex index = ScheduleIndex.of(ScheduleIndex.MIN_INDEX_VALUE);
+
+            assertThatThrownBy(index::generateBeforeIndex)
+                    .isInstanceOf(ScheduleIndexRangeException.class);
+        }
+
+
+        @Test
+        @DisplayName("다음에 오는 인덱스가 최솟값의 범위보다 크거나 같을 경우 정상적으로 인덱스 생성")
+        public void successfully_generate_nextIndex() {
+            ScheduleIndex index = ScheduleIndex.of(ScheduleIndex.MIN_INDEX_VALUE + ScheduleIndex.DEFAULT_SEQUENCE_GAP);
+
+            ScheduleIndex generatedIndex = index.generateBeforeIndex();
+            assertThat(generatedIndex.getValue()).isEqualTo(ScheduleIndex.MIN_INDEX_VALUE);
+        }
+
+    }
+
 }
