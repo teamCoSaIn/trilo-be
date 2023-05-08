@@ -4,6 +4,8 @@ import com.cosain.trilo.trip.query.domain.repository.TripQueryRepository;
 import com.cosain.trilo.trip.query.infra.dto.TripDetail;
 import com.cosain.trilo.trip.query.infra.repository.trip.jpa.TripQueryJpaRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
@@ -17,5 +19,10 @@ public class TripQueryRepositoryImpl implements TripQueryRepository {
     @Override
     public Optional<TripDetail> findTripDetailByTripId(Long tripId) {
         return tripQueryJpaRepository.findTripDetailById(tripId);
+    }
+
+    @Override
+    public Slice<TripDetail> findTripDetailListByTripperId(Long tripperId, Pageable pageable) {
+        return tripQueryJpaRepository.findTripDetailListByTripperId(tripperId, pageable);
     }
 }

@@ -2,8 +2,12 @@ package com.cosain.trilo.trip.query.infra.repository.trip.jpa;
 
 import com.cosain.trilo.trip.query.infra.dto.QTripDetail;
 import com.cosain.trilo.trip.query.infra.dto.TripDetail;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 
 import java.util.Optional;
 
@@ -30,5 +34,21 @@ public class TripQueryJpaRepositoryImpl implements TripQueryJpaRepositoryCustom{
                 .from(trip)
                 .where(trip.id.eq(tripId))
                 .fetchOne());
+    }
+
+    @Override
+    public Slice<TripDetail> findTripDetailListByTripperId(Long tripperId, Pageable pageable) {
+        JPAQuery<TripDetail> jpaQuery = query.select(new QTripDetail(trip.id, trip.tripperId, trip.title, trip.status, trip.tripPeriod.startDate, trip.tripPeriod.endDate))
+                .from(trip)
+                .where(trip.tripperId.eq(tripperId))
+                .orderBy(trip.id.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize());
+
+        long totalCount = query.from(trip)
+                .where(trip.tripperId.eq(tripperId))
+                .fetchCount();
+
+        return new PageImpl<>(jpaQuery.fetch(), pageable, totalCount);
     }
 }
