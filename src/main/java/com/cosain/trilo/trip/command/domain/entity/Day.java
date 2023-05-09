@@ -11,6 +11,7 @@ import lombok.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Getter
 @ToString(of = {"id", "tripDate"})
@@ -119,7 +120,7 @@ public class Day {
      * @return
      */
     private boolean isSamePositionMove(Schedule schedule, int targetOrder) {
-        return schedule.getDay().equals(this) && (targetOrder == schedules.indexOf(schedule) || targetOrder == schedules.indexOf(schedule) + 1);
+        return Objects.equals(this, schedule.getDay()) && (targetOrder == schedules.indexOf(schedule) || targetOrder == schedules.indexOf(schedule) + 1);
     }
 
     /**
