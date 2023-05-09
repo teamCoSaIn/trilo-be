@@ -4,6 +4,7 @@ import com.cosain.trilo.trip.command.domain.entity.Day;
 import com.cosain.trilo.trip.command.domain.entity.Schedule;
 import com.cosain.trilo.trip.command.domain.entity.Trip;
 import com.cosain.trilo.trip.command.domain.exception.EmptyPeriodUpdateException;
+import com.cosain.trilo.trip.command.domain.exception.InvalidScheduleMoveTargetOrderException;
 import com.cosain.trilo.trip.command.domain.exception.InvalidTripDayException;
 import com.cosain.trilo.trip.command.domain.exception.ScheduleIndexRangeException;
 import com.cosain.trilo.trip.command.domain.vo.*;
@@ -721,6 +722,19 @@ public class TripTest {
         @DisplayName("임시보관함에서 임시보관함으로 옮길 떄")
         class Case_From_TemporaryStorage_To_TemporaryStorage {
 
+            @DisplayName("targetOrder가 0보다 작으면 InvalidScheduleMoveTargetOrderException 발생")
+            @Test
+            public void when_targetOrder_is_under_zero_then_it_throws_InvalidScheduleMoveTargetOrderException() {
+                // given
+                Trip trip = Trip.create("여행제목", 1L);
+                Day day = null;
+                Schedule schedule = trip.createSchedule(day, "일정제목",Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
+
+                // when & then
+                assertThatThrownBy(()-> trip.moveSchedule(schedule, day, -1))
+                        .isInstanceOf(InvalidScheduleMoveTargetOrderException.class);
+            }
+
         }
 
         @Nested
@@ -747,6 +761,21 @@ public class TripTest {
                         .isInstanceOf(InvalidTripDayException.class);
             }
 
+            @DisplayName("targetOrder가 0보다 작으면 InvalidScheduleMoveTargetOrderException 발생")
+            @Test
+            public void when_targetOrder_is_under_zero_then_it_throws_InvalidScheduleMoveTargetOrderException() {
+                // given
+                Trip trip = Trip.create("여행제목", 1L);
+                trip.changePeriod(TripPeriod.of(LocalDate.of(2023,3,1), LocalDate.of(2023,3,1)));
+                Day beforeDay = null;
+                Schedule schedule = trip.createSchedule(beforeDay, "일정제목",Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
+
+                Day targetDay = trip.getDays().get(0);
+
+                // when & then
+                assertThatThrownBy(()-> trip.moveSchedule(schedule, targetDay, -1))
+                        .isInstanceOf(InvalidScheduleMoveTargetOrderException.class);
+            }
         }
 
         @Nested
@@ -771,12 +800,43 @@ public class TripTest {
                         .isInstanceOf(InvalidTripDayException.class);
             }
 
+
+            @DisplayName("targetOrder가 0보다 작으면 InvalidScheduleMoveTargetOrderException 발생")
+            @Test
+            public void when_targetOrder_is_under_zero_then_it_throws_InvalidScheduleMoveTargetOrderException() {
+                // given
+                Trip trip = Trip.create("여행제목", 1L);
+                trip.changePeriod(TripPeriod.of(LocalDate.of(2023,3,1), LocalDate.of(2023,3,2)));
+                Day beforeDay = trip.getDays().get(0);
+                Schedule schedule = trip.createSchedule(beforeDay, "일정제목",Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
+
+                Day targetDay = trip.getDays().get(1);
+
+                // when & then
+                assertThatThrownBy(()-> trip.moveSchedule(schedule, targetDay, -1))
+                        .isInstanceOf(InvalidScheduleMoveTargetOrderException.class);
+            }
         }
 
         @Nested
         @DisplayName("Day에서 임시보관함으로 옮길 때")
         class Case_From_Day_To_TemporaryStorage {
 
+            @DisplayName("targetOrder가 0보다 작으면 InvalidScheduleMoveTargetOrderException 발생")
+            @Test
+            public void when_targetOrder_is_under_zero_then_it_throws_InvalidScheduleMoveTargetOrderException() {
+                // given
+                Trip trip = Trip.create("여행제목", 1L);
+                trip.changePeriod(TripPeriod.of(LocalDate.of(2023,3,1), LocalDate.of(2023,3,1)));
+                Day beforeDay = trip.getDays().get(0);
+                Schedule schedule = trip.createSchedule(beforeDay, "일정제목",Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
+
+                Day targetDay = null;
+
+                // when & then
+                assertThatThrownBy(()-> trip.moveSchedule(schedule, targetDay, -1))
+                        .isInstanceOf(InvalidScheduleMoveTargetOrderException.class);
+            }
         }
     }
 }
