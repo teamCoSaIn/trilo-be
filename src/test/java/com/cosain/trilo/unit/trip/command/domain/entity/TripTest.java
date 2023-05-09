@@ -3,10 +3,7 @@ package com.cosain.trilo.unit.trip.command.domain.entity;
 import com.cosain.trilo.trip.command.domain.entity.Day;
 import com.cosain.trilo.trip.command.domain.entity.Schedule;
 import com.cosain.trilo.trip.command.domain.entity.Trip;
-import com.cosain.trilo.trip.command.domain.exception.EmptyPeriodUpdateException;
-import com.cosain.trilo.trip.command.domain.exception.InvalidScheduleMoveTargetOrderException;
-import com.cosain.trilo.trip.command.domain.exception.InvalidTripDayException;
-import com.cosain.trilo.trip.command.domain.exception.ScheduleIndexRangeException;
+import com.cosain.trilo.trip.command.domain.exception.*;
 import com.cosain.trilo.trip.command.domain.vo.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -704,16 +701,6 @@ public class TripTest {
         }
     }
 
-
-    /**
-     * TODO
-     * 임시보관함 -> 임시보관함(같은 곳) // 임시보관함 -> Day(다른 곳) // Day -> 임시보관함 // Day -> Day(같은 곳)
-     * - targetOrder가 음수일 경우
-     * - targetOrder가 인덱스 범위를 벗어나는 경우
-     * - targetOrder가 자기 자신일 경우 변경 없음
-     * -
-     */
-
     @Nested
     @DisplayName("MoveSchedule 테스트")
     class MoveScheduleTest {
@@ -900,6 +887,68 @@ public class TripTest {
                 assertThatThrownBy(() -> trip.moveSchedule(schedule2, day, 0))
                         .isInstanceOf(ScheduleIndexRangeException.class);
             }
+
+            @DisplayName("targetOrder가 다른 일정의 순서이고, 해당 순서 앞과 간격이 충분하면 중간 인덱스가 부여된다.")
+            @Test
+            public void testMiddleInsert_Success() {
+                Trip trip = Trip.create("여행제목", 1L);
+                Day day = null;
+
+                Schedule schedule1 = trip.createSchedule(day, "일정제목1", Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule2 = trip.createSchedule(day, "일정제목2", Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule3 = trip.createSchedule(day, "일정제목3", Place.of("place-id333", "place 이름333", Coordinate.of(37.72221, 137.86523)));
+
+                // when
+                trip.moveSchedule(schedule1, day, 2);
+
+                // then
+                List<Schedule> temporaryStorage = trip.getTemporaryStorage();
+                assertThat(temporaryStorage.size()).isEqualTo(3);
+                assertThat(temporaryStorage).containsExactlyInAnyOrder(schedule1, schedule2, schedule3);
+                assertThat(schedule1.getScheduleIndex()).isEqualTo(schedule2.getScheduleIndex().mid(schedule3.getScheduleIndex()));
+                assertThat(schedule2.getScheduleIndex()).isEqualTo(ScheduleIndex.of(ScheduleIndex.DEFAULT_SEQUENCE_GAP));
+                assertThat(schedule3.getScheduleIndex()).isEqualTo(ScheduleIndex.of(ScheduleIndex.DEFAULT_SEQUENCE_GAP * 2));
+            }
+
+            @DisplayName("targetOrder가 다른 일정의 순서이고, 해당 순서 앞과 간격이 충분하지 않으면 MidScheduleIndexConflictException 발생")
+            @Test
+            public void testMiddleInsert_Failure() {
+                Trip trip = Trip.create("여행제목", 1L);
+                Day day = null;
+
+                Schedule schedule1 = Schedule.builder()
+                        .day(day)
+                        .trip(trip)
+                        .title("일정제목1")
+                        .place(Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)))
+                        .scheduleIndex(ScheduleIndex.ZERO_INDEX)
+                        .build();
+
+                Schedule schedule2 = Schedule.builder()
+                        .day(day)
+                        .trip(trip)
+                        .title("일정제목2")
+                        .place(Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)))
+                        .scheduleIndex(ScheduleIndex.of(10))
+                        .build();
+
+                Schedule schedule3 = Schedule.builder()
+                        .day(day)
+                        .trip(trip)
+                        .title("일정제목3")
+                        .place(Place.of("place-id333", "place 이름333", Coordinate.of(37.72221, 137.86523)))
+                        .scheduleIndex(ScheduleIndex.of(11))
+                        .build();
+
+                trip.getTemporaryStorage().add(schedule1);
+                trip.getTemporaryStorage().add(schedule2);
+                trip.getTemporaryStorage().add(schedule3);
+
+
+                // when & then
+                assertThatThrownBy(() -> trip.moveSchedule(schedule1, day, 2))
+                        .isInstanceOf(MidScheduleIndexConflictException.class);
+            }
         }
 
         @Nested
@@ -1078,6 +1127,77 @@ public class TripTest {
                 // when & then
                 assertThatThrownBy(() -> trip.moveSchedule(schedule1, targetDay, 0))
                         .isInstanceOf(ScheduleIndexRangeException.class);
+            }
+
+            @DisplayName("targetOrder가 다른 일정의 순서이고, 해당 순서 앞과 간격이 충분하면 중간 인덱스가 부여된다.")
+            @Test
+            public void testMiddleInsert_Success() {
+                Trip trip = Trip.create("여행제목", 1L);
+                trip.changePeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 1)));
+
+                Day beforeDay = null;
+                Day targetDay = trip.getDays().get(0);
+
+                Schedule schedule1 = trip.createSchedule(beforeDay, "일정제목1", Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule2 = trip.createSchedule(targetDay, "일정제목2", Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule3 = trip.createSchedule(targetDay, "일정제목3", Place.of("place-id333", "place 이름333", Coordinate.of(37.72221, 137.86523)));
+
+                // when
+                trip.moveSchedule(schedule1, targetDay, 1);
+
+                // then
+                List<Schedule> temporaryStorage = trip.getTemporaryStorage();
+                List<Schedule> schedules = targetDay.getSchedules();
+
+                assertThat(temporaryStorage).isEmpty();
+                assertThat(schedules.size()).isEqualTo(3);
+                assertThat(schedules).containsExactlyInAnyOrder(schedule1, schedule2, schedule3);
+                assertThat(schedule1.getScheduleIndex()).isEqualTo(schedule2.getScheduleIndex().mid(schedule3.getScheduleIndex()));
+                assertThat(schedule2.getScheduleIndex()).isEqualTo(ScheduleIndex.ZERO_INDEX);
+                assertThat(schedule3.getScheduleIndex()).isEqualTo(ScheduleIndex.of(ScheduleIndex.DEFAULT_SEQUENCE_GAP));
+            }
+
+            @DisplayName("targetOrder가 다른 일정의 순서이고, 해당 순서 앞과 간격이 충분하지 않으면 MidScheduleIndexConflictException 발생")
+            @Test
+            public void testMiddleInsert_Failure() {
+                Trip trip = Trip.create("여행제목", 1L);
+                trip.changePeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 1)));
+
+                Day beforeDay = null;
+                Day targetDay = trip.getDays().get(0);
+
+                Schedule schedule1 = Schedule.builder()
+                        .day(beforeDay)
+                        .trip(trip)
+                        .title("일정제목1")
+                        .place(Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)))
+                        .scheduleIndex(ScheduleIndex.ZERO_INDEX)
+                        .build();
+
+                Schedule schedule2 = Schedule.builder()
+                        .day(targetDay)
+                        .trip(trip)
+                        .title("일정제목2")
+                        .place(Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)))
+                        .scheduleIndex(ScheduleIndex.of(10))
+                        .build();
+
+                Schedule schedule3 = Schedule.builder()
+                        .day(targetDay)
+                        .trip(trip)
+                        .title("일정제목3")
+                        .place(Place.of("place-id333", "place 이름333", Coordinate.of(37.72221, 137.86523)))
+                        .scheduleIndex(ScheduleIndex.of(11))
+                        .build();
+
+                trip.getTemporaryStorage().add(schedule1);
+                targetDay.getSchedules().add(schedule2);
+                targetDay.getSchedules().add(schedule3);
+
+
+                // when & then
+                assertThatThrownBy(() -> trip.moveSchedule(schedule1, targetDay, 1))
+                        .isInstanceOf(MidScheduleIndexConflictException.class);
             }
         }
 
@@ -1307,6 +1427,77 @@ public class TripTest {
                 assertThatThrownBy(() -> trip.moveSchedule(schedule1, targetDay, 0))
                         .isInstanceOf(ScheduleIndexRangeException.class);
             }
+
+            @DisplayName("targetOrder가 다른 일정의 순서이고, 해당 순서 앞과 간격이 충분하면 중간 인덱스가 부여된다.")
+            @Test
+            public void testMiddleInsert_Success() {
+                Trip trip = Trip.create("여행제목", 1L);
+                trip.changePeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 2)));
+
+                Day beforeDay = trip.getDays().get(0);
+                Day targetDay = trip.getDays().get(1);
+
+                Schedule schedule1 = trip.createSchedule(beforeDay, "일정제목1", Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule2 = trip.createSchedule(targetDay, "일정제목2", Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule3 = trip.createSchedule(targetDay, "일정제목3", Place.of("place-id333", "place 이름333", Coordinate.of(37.72221, 137.86523)));
+
+                // when
+                trip.moveSchedule(schedule1, targetDay, 1);
+
+                // then
+                List<Schedule> temporaryStorage = trip.getTemporaryStorage();
+                List<Schedule> schedules = targetDay.getSchedules();
+
+                assertThat(temporaryStorage).isEmpty();
+                assertThat(schedules.size()).isEqualTo(3);
+                assertThat(schedules).containsExactlyInAnyOrder(schedule1, schedule2, schedule3);
+                assertThat(schedule1.getScheduleIndex()).isEqualTo(schedule2.getScheduleIndex().mid(schedule3.getScheduleIndex()));
+                assertThat(schedule2.getScheduleIndex()).isEqualTo(ScheduleIndex.ZERO_INDEX);
+                assertThat(schedule3.getScheduleIndex()).isEqualTo(ScheduleIndex.of(ScheduleIndex.DEFAULT_SEQUENCE_GAP));
+            }
+
+            @DisplayName("targetOrder가 다른 일정의 순서이고, 해당 순서 앞과 간격이 충분하지 않으면 MidScheduleIndexConflictException 발생")
+            @Test
+            public void testMiddleInsert_Failure() {
+                Trip trip = Trip.create("여행제목", 1L);
+                trip.changePeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 2)));
+
+                Day beforeDay = trip.getDays().get(0);
+                Day targetDay = trip.getDays().get(1);
+
+                Schedule schedule1 = Schedule.builder()
+                        .day(beforeDay)
+                        .trip(trip)
+                        .title("일정제목1")
+                        .place(Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)))
+                        .scheduleIndex(ScheduleIndex.ZERO_INDEX)
+                        .build();
+
+                Schedule schedule2 = Schedule.builder()
+                        .day(targetDay)
+                        .trip(trip)
+                        .title("일정제목2")
+                        .place(Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)))
+                        .scheduleIndex(ScheduleIndex.of(10))
+                        .build();
+
+                Schedule schedule3 = Schedule.builder()
+                        .day(targetDay)
+                        .trip(trip)
+                        .title("일정제목3")
+                        .place(Place.of("place-id333", "place 이름333", Coordinate.of(37.72221, 137.86523)))
+                        .scheduleIndex(ScheduleIndex.of(11))
+                        .build();
+
+                trip.getTemporaryStorage().add(schedule1);
+                targetDay.getSchedules().add(schedule2);
+                targetDay.getSchedules().add(schedule3);
+
+
+                // when & then
+                assertThatThrownBy(() -> trip.moveSchedule(schedule1, targetDay, 1))
+                        .isInstanceOf(MidScheduleIndexConflictException.class);
+            }
         }
 
         @Nested
@@ -1465,6 +1656,78 @@ public class TripTest {
                 // when & then
                 assertThatThrownBy(() -> trip.moveSchedule(schedule1, targetDay, 0))
                         .isInstanceOf(ScheduleIndexRangeException.class);
+            }
+
+            @DisplayName("targetOrder가 다른 일정의 순서이고, 해당 순서 앞과 간격이 충분하면 중간 인덱스가 부여된다.")
+            @Test
+            public void testMiddleInsert_Success() {
+                Trip trip = Trip.create("여행제목", 1L);
+                trip.changePeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 1)));
+
+                Day beforeDay = trip.getDays().get(0);
+                Day targetDay = null;
+
+                Schedule schedule1 = trip.createSchedule(beforeDay, "일정제목1", Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule2 = trip.createSchedule(targetDay, "일정제목2", Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule3 = trip.createSchedule(targetDay, "일정제목3", Place.of("place-id333", "place 이름333", Coordinate.of(37.72221, 137.86523)));
+
+                // when
+                trip.moveSchedule(schedule1, targetDay, 1);
+
+                // then
+                List<Schedule> schedules = beforeDay.getSchedules();
+                List<Schedule> temporaryStorage = trip.getTemporaryStorage();
+
+                assertThat(schedules).isEmpty();
+                assertThat(temporaryStorage.size()).isEqualTo(3);
+                assertThat(temporaryStorage).containsExactlyInAnyOrder(schedule1, schedule2, schedule3);
+                assertThat(schedule1.getScheduleIndex()).isEqualTo(schedule2.getScheduleIndex().mid(schedule3.getScheduleIndex()));
+                assertThat(schedule2.getScheduleIndex()).isEqualTo(ScheduleIndex.ZERO_INDEX);
+                assertThat(schedule3.getScheduleIndex()).isEqualTo(ScheduleIndex.of(ScheduleIndex.DEFAULT_SEQUENCE_GAP));
+            }
+
+            @DisplayName("targetOrder가 다른 일정의 순서이고, 해당 순서 앞과 간격이 충분하지 않으면 MidScheduleIndexConflictException 발생")
+            @Test
+            public void testMiddleInsert_Failure() {
+                Trip trip = Trip.create("여행제목", 1L);
+                trip.changePeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 1)));
+
+                Day beforeDay = trip.getDays().get(0);
+                Day targetDay = null;
+
+
+                Schedule schedule1 = Schedule.builder()
+                        .day(beforeDay)
+                        .trip(trip)
+                        .title("일정제목1")
+                        .place(Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)))
+                        .scheduleIndex(ScheduleIndex.ZERO_INDEX)
+                        .build();
+
+                Schedule schedule2 = Schedule.builder()
+                        .day(targetDay)
+                        .trip(trip)
+                        .title("일정제목2")
+                        .place(Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)))
+                        .scheduleIndex(ScheduleIndex.of(10))
+                        .build();
+
+                Schedule schedule3 = Schedule.builder()
+                        .day(targetDay)
+                        .trip(trip)
+                        .title("일정제목3")
+                        .place(Place.of("place-id333", "place 이름333", Coordinate.of(37.72221, 137.86523)))
+                        .scheduleIndex(ScheduleIndex.of(11))
+                        .build();
+
+                beforeDay.getSchedules().add(schedule1);
+                trip.getTemporaryStorage().add(schedule2);
+                trip.getTemporaryStorage().add(schedule3);
+
+
+                // when & then
+                assertThatThrownBy(() -> trip.moveSchedule(schedule1, targetDay, 1))
+                        .isInstanceOf(MidScheduleIndexConflictException.class);
             }
         }
     }
