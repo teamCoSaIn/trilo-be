@@ -149,6 +149,7 @@ public class Trip {
                 ? makeTemporaryStorageSchedule(title, place)
                 : makeDaySchedule(day, title, place);
     }
+
     private Schedule makeTemporaryStorageSchedule(String title, Place place) {
         Schedule schedule = Schedule.create(null, this, title, place, generateNextTemporaryStorageScheduleIndex());
         temporaryStorage.add(schedule);
@@ -201,20 +202,19 @@ public class Trip {
 
     /**
      * Schedule을 임시보관함의 지정 순서로 이동시킵니다.
+     *
      * @param schedule
      * @param targetOrder
      */
     private void moveScheduleToTemporaryStorage(Schedule schedule, int targetOrder) {
-        // 일단 앞에서 Schedule이 Trip과 관련된 Schedule이라는 것은 검증 됨
-        // TODO: 임시보관함과 Day에서 동일한 로직이 중복됨 -> 리팩터링을 해야할 것인가
         if (targetOrder < 0 || targetOrder > this.temporaryStorage.size()) {
             throw new InvalidScheduleMoveTargetOrderException("일정을 지정 위치로 옮기려 시도했으나, 유효한 순서 범위를 벗어남");
         }
-        if (targetOrder == this.temporaryStorage.size()) {
-            moveScheduleToTemporaryStorageTail(schedule);
+        if (isSamePositionMove(schedule, targetOrder)) {
             return;
         }
-        if (this.temporaryStorage.get(targetOrder).equals(schedule)) {
+        if (targetOrder == this.temporaryStorage.size()) {
+            moveScheduleToTemporaryStorageTail(schedule);
             return;
         }
         if (targetOrder == 0) {
@@ -222,6 +222,17 @@ public class Trip {
             return;
         }
         moveScheduleToTemporaryStorageMiddle(schedule, targetOrder);
+    }
+
+    /**
+     * 스케쥴을 옮길 때 대상이 되는 순서로 옮길 경우, 기존과 상대적 순서가 똑같은 지 여부를 확인합니다. 예를 들어 임시보관함 1번 위치에 있던 일정을
+     * 1번 위치에 옮기거나, 2번 위치로 옮기는 경우는 결국 기존과 상대적 순서가 같습니다.
+     * @param schedule
+     * @param targetOrder
+     * @return
+     */
+    private boolean isSamePositionMove(Schedule schedule, int targetOrder) {
+        return schedule.getDay() == null && (targetOrder == temporaryStorage.indexOf(schedule) || targetOrder == temporaryStorage.indexOf(schedule) + 1);
     }
 
     /**

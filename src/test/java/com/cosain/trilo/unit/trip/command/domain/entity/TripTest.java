@@ -11,7 +11,6 @@ import com.cosain.trilo.trip.command.domain.vo.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.cglib.core.Local;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -750,6 +749,54 @@ public class TripTest {
                         .isInstanceOf(InvalidScheduleMoveTargetOrderException.class);
             }
 
+            @DisplayName("임시보관함 내에서, 자신의 기존 순서로 이동할 경우, 아무런 변화도 일어나지 않는다.")
+            @Test
+            public void when_move_to_same_position_then_nothing_changed() {
+                Trip trip = Trip.create("여행제목", 1L);
+                Day day = null;
+
+                Schedule schedule1 = trip.createSchedule(day, "일정제목1",Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule2 = trip.createSchedule(day, "일정제목2",Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
+
+                // when
+                trip.moveSchedule(schedule2, day, 1);
+
+                // then
+                List<Schedule> temporaryStorage = trip.getTemporaryStorage();
+                Schedule firstSchedule = temporaryStorage.get(0);
+                Schedule secondSchedule = temporaryStorage.get(1);
+
+                assertThat(temporaryStorage.size()).isEqualTo(2);
+                assertThat(firstSchedule).isEqualTo(schedule1);
+                assertThat(firstSchedule.getScheduleIndex()).isEqualTo(ScheduleIndex.ZERO_INDEX);
+                assertThat(secondSchedule).isEqualTo(schedule2);
+                assertThat(secondSchedule.getScheduleIndex()).isEqualTo(ScheduleIndex.of(ScheduleIndex.DEFAULT_SEQUENCE_GAP));
+            }
+
+            @DisplayName("임시보관함 내에 기존의 순서 다음으로 이동시키려 할 경우, 아무런 변화도 일어나지 않는다.")
+            @Test
+            public void when_move_to_after_currentOrder_then_nothing_changed() {
+                Trip trip = Trip.create("여행제목", 1L);
+                Day day = null;
+
+                Schedule schedule1 = trip.createSchedule(day, "일정제목1",Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule2 = trip.createSchedule(day, "일정제목2",Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
+
+                // when
+                trip.moveSchedule(schedule2, day, 2);
+
+                // then
+                List<Schedule> temporaryStorage = trip.getTemporaryStorage();
+                Schedule firstSchedule = temporaryStorage.get(0);
+                Schedule secondSchedule = temporaryStorage.get(1);
+
+                assertThat(temporaryStorage.size()).isEqualTo(2);
+                assertThat(firstSchedule).isEqualTo(schedule1);
+                assertThat(firstSchedule.getScheduleIndex()).isEqualTo(ScheduleIndex.ZERO_INDEX);
+                assertThat(secondSchedule).isEqualTo(schedule2);
+                assertThat(secondSchedule.getScheduleIndex()).isEqualTo(ScheduleIndex.of(ScheduleIndex.DEFAULT_SEQUENCE_GAP));
+            }
+
         }
 
         @Nested
@@ -864,6 +911,56 @@ public class TripTest {
                 // when & then
                 assertThatThrownBy(()-> trip.moveSchedule(schedule1, targetDay, 2))
                         .isInstanceOf(InvalidScheduleMoveTargetOrderException.class);
+            }
+
+            @DisplayName("같은 Day의 기존의 순서로 이동할 경우, 아무런 변화도 일어나지 않는다.")
+            @Test
+            public void when_move_to_same_day_and_same_position_then_nothing_changed() {
+                Trip trip = Trip.create("여행제목", 1L);
+                trip.changePeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023,3,1)));
+                Day day = trip.getDays().get(0);
+
+                Schedule schedule1 = trip.createSchedule(day, "일정제목1",Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule2 = trip.createSchedule(day, "일정제목2",Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
+
+                // when
+                trip.moveSchedule(schedule2, day, 1);
+
+                // then
+                List<Schedule> schedules = day.getSchedules();
+                Schedule firstSchedule = schedules.get(0);
+                Schedule secondSchedule = schedules.get(1);
+
+                assertThat(schedules.size()).isEqualTo(2);
+                assertThat(firstSchedule).isEqualTo(schedule1);
+                assertThat(firstSchedule.getScheduleIndex()).isEqualTo(ScheduleIndex.ZERO_INDEX);
+                assertThat(secondSchedule).isEqualTo(schedule2);
+                assertThat(secondSchedule.getScheduleIndex()).isEqualTo(ScheduleIndex.of(ScheduleIndex.DEFAULT_SEQUENCE_GAP));
+            }
+
+            @DisplayName("같은 Day의 기존의 순서 다음으로 이동시키려 할 경우, 아무런 변화도 일어나지 않는다.")
+            @Test
+            public void when_move_to_same_day_and_after_currentOrder_then_nothing_changed() {
+                Trip trip = Trip.create("여행제목", 1L);
+                trip.changePeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023,3,1)));
+                Day day = trip.getDays().get(0);
+
+                Schedule schedule1 = trip.createSchedule(day, "일정제목1",Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule2 = trip.createSchedule(day, "일정제목2",Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
+
+                // when
+                trip.moveSchedule(schedule2, day, 2);
+
+                // then
+                List<Schedule> schedules = day.getSchedules();
+                Schedule firstSchedule = schedules.get(0);
+                Schedule secondSchedule = schedules.get(1);
+
+                assertThat(schedules.size()).isEqualTo(2);
+                assertThat(firstSchedule).isEqualTo(schedule1);
+                assertThat(firstSchedule.getScheduleIndex()).isEqualTo(ScheduleIndex.ZERO_INDEX);
+                assertThat(secondSchedule).isEqualTo(schedule2);
+                assertThat(secondSchedule.getScheduleIndex()).isEqualTo(ScheduleIndex.of(ScheduleIndex.DEFAULT_SEQUENCE_GAP));
             }
         }
 

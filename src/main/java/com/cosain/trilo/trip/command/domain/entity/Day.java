@@ -97,11 +97,11 @@ public class Day {
         if (targetOrder < 0 || targetOrder > this.schedules.size()) {
             throw new InvalidScheduleMoveTargetOrderException("일정을 지정 위치로 옮기려 시도했으나, 유효한 순서 범위를 벗어남");
         }
-        if (targetOrder == this.schedules.size()) {
-            moveScheduleToTail(schedule);
+        if (isSamePositionMove(schedule, targetOrder)) {
             return;
         }
-        if (this.schedules.get(targetOrder).equals(schedule)) {
+        if (targetOrder == this.schedules.size()) {
+            moveScheduleToTail(schedule);
             return;
         }
         if (targetOrder == 0) {
@@ -109,6 +109,17 @@ public class Day {
             return;
         }
         moveScheduleToMiddle(schedule, targetOrder);
+    }
+
+    /**
+     * 스케쥴을 옮길 때 대상이 되는 순서로 옮길 경우, 기존과 상대적 순서가 똑같은 지 여부를 확인합니다. 예를 들어 Day의 Schedules 상에서 1번 위치에 있던 일정을
+     * 1번 위치에 옮기거나, 2번 위치로 옮기는 경우는 결국 기존과 상대적 순서가 같습니다.
+     * @param schedule
+     * @param targetOrder
+     * @return
+     */
+    private boolean isSamePositionMove(Schedule schedule, int targetOrder) {
+        return schedule.getDay().equals(this) && (targetOrder == schedules.indexOf(schedule) || targetOrder == schedules.indexOf(schedule) + 1);
     }
 
     /**
