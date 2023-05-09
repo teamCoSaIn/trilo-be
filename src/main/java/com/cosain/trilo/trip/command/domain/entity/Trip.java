@@ -1,8 +1,7 @@
 package com.cosain.trilo.trip.command.domain.entity;
 
 import com.cosain.trilo.trip.command.domain.dto.ChangeTripPeriodResult;
-import com.cosain.trilo.trip.command.domain.exception.EmptyPeriodUpdateException;
-import com.cosain.trilo.trip.command.domain.exception.InvalidTripDayException;
+import com.cosain.trilo.trip.command.domain.exception.*;
 import com.cosain.trilo.trip.command.domain.vo.Place;
 import com.cosain.trilo.trip.command.domain.vo.ScheduleIndex;
 import com.cosain.trilo.trip.command.domain.vo.TripPeriod;
@@ -163,7 +162,7 @@ public class Trip {
     }
 
     private Schedule makeDaySchedule(Day day, String title, Place place) {
-        if (!this.id.equals(day.getTrip().id)) {
+        if (!day.getTrip().equals(this)) {
             throw new InvalidTripDayException("해당 day는 Trip의 Day가 아님");
         }
 
