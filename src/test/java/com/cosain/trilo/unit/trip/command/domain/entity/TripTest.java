@@ -11,6 +11,7 @@ import com.cosain.trilo.trip.command.domain.vo.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.springframework.cglib.core.Local;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -735,6 +736,20 @@ public class TripTest {
                         .isInstanceOf(InvalidScheduleMoveTargetOrderException.class);
             }
 
+            @DisplayName("targetOrder가 임시보관함 크기를 넘어가는 경우 InvalidScheduleMoveTargetOrderException 발생")
+            @Test
+            public void when_targetOrder_is_over_temporary_storage_max_size_then_it_throws_InvalidScheduleMoveTargetOrderException() {
+                Trip trip = Trip.create("여행제목", 1L);
+                Day day = null;
+
+                Schedule schedule1 = trip.createSchedule(day, "일정제목",Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule2 = trip.createSchedule(day, "일정제목",Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
+
+                // when & then
+                assertThatThrownBy(()-> trip.moveSchedule(schedule1, day, 3))
+                        .isInstanceOf(InvalidScheduleMoveTargetOrderException.class);
+            }
+
         }
 
         @Nested
@@ -776,6 +791,23 @@ public class TripTest {
                 assertThatThrownBy(()-> trip.moveSchedule(schedule, targetDay, -1))
                         .isInstanceOf(InvalidScheduleMoveTargetOrderException.class);
             }
+
+            @DisplayName("targetOrder가 Schedules 크기를 넘어가는 경우 InvalidScheduleMoveTargetOrderException 발생")
+            @Test
+            public void when_targetOrder_is_over_day_schedules_max_size_then_it_throws_InvalidScheduleMoveTargetOrderException() {
+                Trip trip = Trip.create("여행제목", 1L);
+                trip.changePeriod(TripPeriod.of(LocalDate.of(2023,3,1), LocalDate.of(2023,3,1)));
+
+                Day beforeDay = null;
+                Schedule schedule1 = trip.createSchedule(beforeDay, "일정제목",Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
+
+                Day targetDay = trip.getDays().get(0);
+                Schedule schedule2 = trip.createSchedule(targetDay, "일정제목2" ,Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
+
+                // when & then
+                assertThatThrownBy(()-> trip.moveSchedule(schedule1, targetDay, 2))
+                        .isInstanceOf(InvalidScheduleMoveTargetOrderException.class);
+            }
         }
 
         @Nested
@@ -800,7 +832,6 @@ public class TripTest {
                         .isInstanceOf(InvalidTripDayException.class);
             }
 
-
             @DisplayName("targetOrder가 0보다 작으면 InvalidScheduleMoveTargetOrderException 발생")
             @Test
             public void when_targetOrder_is_under_zero_then_it_throws_InvalidScheduleMoveTargetOrderException() {
@@ -814,6 +845,24 @@ public class TripTest {
 
                 // when & then
                 assertThatThrownBy(()-> trip.moveSchedule(schedule, targetDay, -1))
+                        .isInstanceOf(InvalidScheduleMoveTargetOrderException.class);
+            }
+
+            @DisplayName("targetOrder가 Schedules 크기를 넘어가는 경우 InvalidScheduleMoveTargetOrderException 발생")
+            @Test
+            public void when_targetOrder_is_over_day_schedules_max_size_then_it_throws_InvalidScheduleMoveTargetOrderException() {
+                Trip trip = Trip.create("여행제목", 1L);
+                trip.changePeriod(TripPeriod.of(LocalDate.of(2023,3,1), LocalDate.of(2023,3,2)));
+
+                Day beforeDay = trip.getDays().get(0);
+                Schedule schedule1 = trip.createSchedule(beforeDay, "일정제목",Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
+
+
+                Day targetDay = trip.getDays().get(1);
+                Schedule schedule2 = trip.createSchedule(targetDay, "일정제목2" ,Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
+
+                // when & then
+                assertThatThrownBy(()-> trip.moveSchedule(schedule1, targetDay, 2))
                         .isInstanceOf(InvalidScheduleMoveTargetOrderException.class);
             }
         }
@@ -835,6 +884,22 @@ public class TripTest {
 
                 // when & then
                 assertThatThrownBy(()-> trip.moveSchedule(schedule, targetDay, -1))
+                        .isInstanceOf(InvalidScheduleMoveTargetOrderException.class);
+            }
+
+            @DisplayName("targetOrder가 임시보관함 크기를 넘어가는 경우 InvalidScheduleMoveTargetOrderException 발생")
+            @Test
+            public void when_targetOrder_is_over_temporary_storage_max_size_then_it_throws_InvalidScheduleMoveTargetOrderException() {
+                Trip trip = Trip.create("여행제목", 1L);
+                trip.changePeriod(TripPeriod.of(LocalDate.of(2023,3,1), LocalDate.of(2023,3,1)));
+                Day beforeDay = trip.getDays().get(0);
+                Day targetDay = null;
+
+                Schedule schedule1 = trip.createSchedule(beforeDay, "일정제목",Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule2 = trip.createSchedule(targetDay, "일정제목",Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
+
+                // when & then
+                assertThatThrownBy(()-> trip.moveSchedule(schedule1, targetDay, 2))
                         .isInstanceOf(InvalidScheduleMoveTargetOrderException.class);
             }
         }
