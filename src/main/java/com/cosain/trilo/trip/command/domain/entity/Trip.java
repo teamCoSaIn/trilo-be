@@ -168,4 +168,118 @@ public class Trip {
 
         return day.createSchedule(title, place);
     }
+
+    /**
+     * Schedule을 지정한 Day의 지정한 순서로 이동합니다. 이때, 지정한 Day가 null이면 임시보관함으로 이동합니다. 같은 Day를 지정하면
+     * 같은 곳 안에서 순서 변경이 일어납니다.
+     * @param schedule
+     * @param targetDay
+     * @param targetOrder
+     */
+    public void moveSchedule(Schedule schedule, Day targetDay, int targetOrder) {
+        validateTripDayRelationShipShip(targetDay);
+        if (targetDay == null) {
+            moveScheduleToTemporaryStorage(schedule, targetOrder);
+            return;
+        }
+        targetDay.moveSchedule(schedule, targetOrder);
+    }
+
+    /**
+     * Trip에 Day가 속해있는 지 검증합니다.
+     * @param day
+     */
+
+    private void validateTripDayRelationShipShip(Day day) {
+        if (day == null) {
+            return;
+        }
+        if (!day.getTrip().equals(this)) {
+            throw new InvalidTripDayException("해당 Day는 Trip의 Day가 아님");
+        }
+    }
+
+    /**
+     * Schedule을 임시보관함의 지정 순서로 이동시킵니다.
+     * @param schedule
+     * @param targetOrder
+     */
+    private void moveScheduleToTemporaryStorage(Schedule schedule, int targetOrder) {
+        // 일단 앞에서 Schedule이 Trip과 관련된 Schedule이라는 것은 검증 됨
+        // TODO: 임시보관함과 Day에서 동일한 로직이 중복됨 -> 리팩터링을 해야할 것인가
+        if (targetOrder < 0 || targetOrder > this.temporaryStorage.size()) {
+            throw new InvalidScheduleMoveTargetOrderException("일정을 지정 위치로 옮기려 시도했으나, 유효한 순서 범위를 벗어남");
+        }
+        if (targetOrder == this.temporaryStorage.size()) {
+            moveScheduleToTemporaryStorageTail(schedule);
+            return;
+        }
+        if (this.temporaryStorage.get(targetOrder).equals(schedule)) {
+            return;
+        }
+        if (targetOrder == 0) {
+            moveScheduleToTemporaryStorageHead(schedule);
+            return;
+        }
+        moveScheduleToTemporaryStorageMiddle(schedule, targetOrder);
+    }
+
+    /**
+     * 지정 Schedule을 임시보관함의 제일 앞에 둡니다.
+     * @param schedule
+     */
+    private void moveScheduleToTemporaryStorageHead(Schedule schedule) {
+        ScheduleIndex newScheduleIndex = generateTemporaryStorageHeadIndex();
+
+        schedule.changePosition(null, newScheduleIndex);
+        this.temporaryStorage.add(schedule);
+    }
+
+    /**
+     * 지정 Schedule을 임시보관함의 제일 뒤에 둡니다.
+     * @param schedule
+     */
+    private void moveScheduleToTemporaryStorageTail(Schedule schedule) {
+        ScheduleIndex newScheduleIndex = generateNextTemporaryStorageScheduleIndex();
+
+        schedule.changePosition(null, newScheduleIndex);
+        this.temporaryStorage.add(schedule);
+    }
+
+    /**
+     * 지정 Schedule을 임시보관함의 지정 순서에 중간삽입합니다. 그 순서에 있던 일정은 뒤로 밀려납니다.
+     * @param schedule
+     * @param targetOrder
+     */
+    private void moveScheduleToTemporaryStorageMiddle(Schedule schedule, int targetOrder) {
+        ScheduleIndex destinationOrderScheduleIndex = temporaryStorage.get(targetOrder).getScheduleIndex();
+        ScheduleIndex previousOrderScheduleIndex = temporaryStorage.get(targetOrder - 1).getScheduleIndex();
+
+        ScheduleIndex newScheduleIndex = destinationOrderScheduleIndex.mid(previousOrderScheduleIndex);
+
+        if (newScheduleIndex.equals(destinationOrderScheduleIndex) || newScheduleIndex.equals(previousOrderScheduleIndex)) {
+            throw new MidScheduleIndexConflictException("중간 삽입 인덱스 충돌 발생 -> 인덱스 재정렬 필요");
+        }
+
+        schedule.changePosition(null, newScheduleIndex);
+        this.temporaryStorage.add(schedule);
+    }
+
+    /**
+     * 임시보관함의 제일 앞 인덱스보다 한 단계 더 앞선 인덱스를 만듭니다.
+     * @return
+     */
+    private ScheduleIndex generateTemporaryStorageHeadIndex() {
+        return (temporaryStorage.isEmpty())
+                ? ScheduleIndex.ZERO_INDEX
+                : temporaryStorage.get(0).getScheduleIndex().generateBeforeIndex();
+    }
+
+    /**
+     * 지정 Schedule을 임시보관함 컬렉션에서 분리합니다.
+     * @param schedule
+     */
+    void detachScheduleFromTemporaryStorage(Schedule schedule) {
+        this.temporaryStorage.remove(schedule);
+    }
 }
