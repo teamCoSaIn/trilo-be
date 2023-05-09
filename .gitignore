@@ -39,3 +39,6 @@ out/
 
 ### HTML 문서 ###
 src/main/resources/static/docs/*.html
+
+# Ignore generated files
+src/main/generated/
