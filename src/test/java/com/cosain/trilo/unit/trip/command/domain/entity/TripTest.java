@@ -10,7 +10,6 @@ import com.cosain.trilo.trip.command.domain.vo.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.cglib.core.Local;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -704,4 +703,80 @@ public class TripTest {
         }
     }
 
+
+    /**
+     * TODO
+     * 임시보관함 -> 임시보관함(같은 곳) // 임시보관함 -> Day(다른 곳) // Day -> 임시보관함 // Day -> Day(같은 곳)
+     * - targetOrder가 음수일 경우
+     * - targetOrder가 인덱스 범위를 벗어나는 경우
+     * - targetOrder가 자기 자신일 경우 변경 없음
+     * -
+     */
+
+    @Nested
+    @DisplayName("MoveSchedule 테스트")
+    class MoveScheduleTest {
+
+        @Nested
+        @DisplayName("임시보관함에서 임시보관함으로 옮길 떄")
+        class Case_From_TemporaryStorage_To_TemporaryStorage {
+
+        }
+
+        @Nested
+        @DisplayName("임시보관함에서 어떤 Day로 옮길 때")
+        class Case_From_TemporaryStorage_To_Day {
+
+            @Test
+            @DisplayName("targetDay가 Trip의 Day가 아니면, InvalidTripDayException 발생")
+            public void when_targetDay_is_not_in_trip_then_it_throws_InvalidTripDayException() {
+                // given
+                Trip trip = Trip.create("여행제목", 1L);
+
+                Trip otherTrip = Trip.create("다른 여행 제목", 1L);
+                otherTrip.changePeriod(TripPeriod.of(LocalDate.of(2023,4,1), LocalDate.of(2023,4,1)));
+
+                Day beforeDay = null;
+                Schedule schedule = trip.createSchedule(beforeDay, "일정제목",Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
+
+                Day targetDay = otherTrip.getDays().get(0);
+
+
+                // when & then
+                assertThatThrownBy(()-> trip.moveSchedule(schedule, targetDay, 0))
+                        .isInstanceOf(InvalidTripDayException.class);
+            }
+
+        }
+
+        @Nested
+        @DisplayName("Day에서 Day로 옮길 때")
+        class Case_From_Day_To_Day {
+
+            @Test
+            @DisplayName("targetDay가 Trip의 Day가 아니면, InvalidTripDayException 발생")
+            public void when_targetDay_is_not_in_trip_then_it_throws_InvalidTripDayException() {
+                // given
+                Trip trip = Trip.create("여행제목", 1L);
+                trip.changePeriod(TripPeriod.of(LocalDate.of(2023,3,1), LocalDate.of(2023,3,2)));
+                Day beforeDay = trip.getDays().get(0);
+                Schedule schedule = trip.createSchedule(beforeDay, "여행 제목", Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
+
+                Trip otherTrip = Trip.create("다른 여행 제목", 1L);
+                otherTrip.changePeriod(TripPeriod.of(LocalDate.of(2023,4,1), LocalDate.of(2023,4,1)));
+                Day targetDay = otherTrip.getDays().get(0);
+
+                // when & then
+                assertThatThrownBy(()-> trip.moveSchedule(schedule, targetDay, 0))
+                        .isInstanceOf(InvalidTripDayException.class);
+            }
+
+        }
+
+        @Nested
+        @DisplayName("Day에서 임시보관함으로 옮길 때")
+        class Case_From_Day_To_TemporaryStorage {
+
+        }
+    }
 }
