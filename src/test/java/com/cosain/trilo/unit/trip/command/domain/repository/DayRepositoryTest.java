@@ -7,6 +7,7 @@ import com.cosain.trilo.trip.command.domain.repository.DayRepository;
 import com.cosain.trilo.trip.command.domain.vo.TripPeriod;
 import com.cosain.trilo.trip.command.domain.vo.TripStatus;
 import jakarta.persistence.EntityManager;
+import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,6 +20,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@Slf4j
 @RepositoryTest
 public class DayRepositoryTest {
 
@@ -27,6 +29,36 @@ public class DayRepositoryTest {
 
     @Autowired
     private EntityManager em;
+
+    @Test
+    @DisplayName("findBYWithTripTest - 같이 가져온 Trip이 실제 Trip 클래스인지 함께 검증")
+    public void findByIdWithTripTest() {
+        // given
+        Trip trip = Trip.builder()
+                .tripperId(1L)
+                .title("여행 제목")
+                .status(TripStatus.DECIDED)
+                .tripPeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 1)))
+                .build();
+        em.persist(trip);
+
+        Day day = Day.of(LocalDate.of(2023, 3, 1), trip);
+        em.persist(day);
+
+        em.flush();
+        em.clear();
+
+        // when
+        Day findDay = dayRepository.findByIdWithTrip(day.getId()).get();
+
+        // then
+        Trip findDayTrip = findDay.getTrip();
+
+        assertThat(findDay.getId()).isEqualTo(day.getId());
+        assertThat(findDay.getTripDate()).isEqualTo(day.getTripDate());
+        assertThat(findDayTrip.getId()).isEqualTo(trip.getId());
+        assertThat(findDayTrip.getClass()).isSameAs(Trip.class);
+    }
 
     @Test
     void deleteDaysTest() {
