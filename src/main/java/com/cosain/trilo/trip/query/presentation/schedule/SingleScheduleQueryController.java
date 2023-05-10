@@ -1,5 +1,6 @@
 package com.cosain.trilo.trip.query.presentation.schedule;
 
+import com.cosain.trilo.trip.query.application.dto.ScheduleDetailDto;
 import com.cosain.trilo.trip.query.application.usecase.ScheduleDetailSearchUseCase;
 import com.cosain.trilo.trip.query.presentation.schedule.dto.ScheduleDetailResponse;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,7 @@ public class SingleScheduleQueryController {
     @GetMapping("/api/schedules/{scheduleId}")
     @ResponseStatus(HttpStatus.OK)
     public ScheduleDetailResponse findSingleSchedule(@PathVariable Long scheduleId) {
-        return scheduleDetailSearchUseCase.searchScheduleDetail(scheduleId);
+        ScheduleDetailDto scheduleDetailDto = scheduleDetailSearchUseCase.searchScheduleDetail(scheduleId);
+        return ScheduleDetailResponse.from(scheduleDetailDto);
     }
 }

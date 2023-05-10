@@ -1,7 +1,9 @@
 package com.cosain.trilo.unit.trip.query.presentation.api.schedule;
 
 import com.cosain.trilo.support.RestControllerTest;
+import com.cosain.trilo.trip.query.application.dto.ScheduleDetailDto;
 import com.cosain.trilo.trip.query.application.usecase.ScheduleDetailSearchUseCase;
+import com.cosain.trilo.trip.query.infra.dto.ScheduleDetail;
 import com.cosain.trilo.trip.query.presentation.schedule.SingleScheduleQueryController;
 import com.cosain.trilo.trip.query.presentation.schedule.dto.ScheduleDetailResponse;
 import org.junit.jupiter.api.DisplayName;
@@ -36,20 +38,20 @@ class SingleScheduleQueryControllerTest extends RestControllerTest {
     public void findSingleSchedule_with_authorizedUser() throws Exception {
 
         mockingForLoginUserAnnotation();
-        ScheduleDetailResponse response = ScheduleDetailResponse.of(1L, 1L, "제목", "여행장소", 12.12, 13.13, 1L, "내용");
-        given(scheduleDetailSearchUseCase.searchScheduleDetail(anyLong())).willReturn(response);
+        ScheduleDetailDto dto = ScheduleDetailDto.from(new ScheduleDetail(1L, 1L, "제목", "장소 이름 ", 23.32, 23.342, 1L, "내용"));
+        given(scheduleDetailSearchUseCase.searchScheduleDetail(anyLong())).willReturn(dto);
 
         mockMvc.perform(get("/api/schedules/1")
                         .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.scheduleId").value(response.getScheduleId()))
-                .andExpect(jsonPath("$.content").value(response.getContent()))
-                .andExpect(jsonPath("$.title").value(response.getTitle()))
-                .andExpect(jsonPath("$.dayId").value(response.getDayId()))
-                .andExpect(jsonPath("$.latitude").value(response.getLatitude()))
-                .andExpect(jsonPath("$.longitude").value(response.getLongitude()));
+                .andExpect(jsonPath("$.scheduleId").value(dto.getScheduleId()))
+                .andExpect(jsonPath("$.content").value(dto.getContent()))
+                .andExpect(jsonPath("$.title").value(dto.getTitle()))
+                .andExpect(jsonPath("$.dayId").value(dto.getDayId()))
+                .andExpect(jsonPath("$.latitude").value(dto.getLatitude()))
+                .andExpect(jsonPath("$.longitude").value(dto.getLongitude()));
 
     }
 
