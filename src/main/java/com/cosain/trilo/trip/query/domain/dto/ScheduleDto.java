@@ -1,13 +1,12 @@
-package com.cosain.trilo.trip.query.application.dto;
+package com.cosain.trilo.trip.query.domain.dto;
 
 import com.cosain.trilo.trip.query.infra.dto.ScheduleDetail;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 
-import static lombok.AccessLevel.*;
-
 @Getter
-public class ScheduleDetailDto {
+public class ScheduleDto {
     private long scheduleId;
     private long dayId;
     private String title;
@@ -17,8 +16,8 @@ public class ScheduleDetailDto {
     private long order;
     private String content;
 
-    @Builder(access = PRIVATE)
-    private ScheduleDetailDto(long scheduleId, long dayId, String title, String placeName, double latitude, double longitude, long order, String content) {
+    @Builder(access = AccessLevel.PRIVATE)
+    private ScheduleDto(long scheduleId, long dayId, String title, String placeName, double latitude, double longitude, long order, String content) {
         this.scheduleId = scheduleId;
         this.dayId = dayId;
         this.title = title;
@@ -29,8 +28,8 @@ public class ScheduleDetailDto {
         this.content = content;
     }
 
-    public static ScheduleDetailDto from(ScheduleDetail scheduleDetail){
-        return ScheduleDetailDto.builder()
+    public static ScheduleDto from(ScheduleDetail scheduleDetail){
+        return ScheduleDto.builder()
                 .scheduleId(scheduleDetail.getScheduleId())
                 .dayId(scheduleDetail.getDayId())
                 .title(scheduleDetail.getTitle())

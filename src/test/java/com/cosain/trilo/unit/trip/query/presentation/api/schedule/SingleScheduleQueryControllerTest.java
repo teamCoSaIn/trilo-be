@@ -1,11 +1,11 @@
 package com.cosain.trilo.unit.trip.query.presentation.api.schedule;
 
 import com.cosain.trilo.support.RestControllerTest;
-import com.cosain.trilo.trip.query.application.dto.ScheduleDetailDto;
+import com.cosain.trilo.trip.query.application.dto.ScheduleResult;
 import com.cosain.trilo.trip.query.application.usecase.ScheduleDetailSearchUseCase;
+import com.cosain.trilo.trip.query.domain.dto.ScheduleDto;
 import com.cosain.trilo.trip.query.infra.dto.ScheduleDetail;
 import com.cosain.trilo.trip.query.presentation.schedule.SingleScheduleQueryController;
-import com.cosain.trilo.trip.query.presentation.schedule.dto.ScheduleDetailResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -13,7 +13,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithAnonymousUser;
-import org.springframework.security.test.context.support.WithMockUser;
 
 import java.nio.charset.StandardCharsets;
 
@@ -38,7 +37,7 @@ class SingleScheduleQueryControllerTest extends RestControllerTest {
     public void findSingleSchedule_with_authorizedUser() throws Exception {
 
         mockingForLoginUserAnnotation();
-        ScheduleDetailDto dto = ScheduleDetailDto.from(new ScheduleDetail(1L, 1L, "제목", "장소 이름 ", 23.32, 23.342, 1L, "내용"));
+        ScheduleResult dto = ScheduleResult.from(ScheduleDto.from(new ScheduleDetail(1L, 1L, "제목", "장소 이름", 23.23, 23.23, 1L, "내용")));
         given(scheduleDetailSearchUseCase.searchScheduleDetail(anyLong())).willReturn(dto);
 
         mockMvc.perform(get("/api/schedules/1")

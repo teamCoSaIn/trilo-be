@@ -1,6 +1,6 @@
 package com.cosain.trilo.trip.query.presentation.schedule.dto;
 
-import com.cosain.trilo.trip.query.application.dto.ScheduleDetailDto;
+import com.cosain.trilo.trip.query.application.dto.ScheduleResult;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -15,16 +15,16 @@ public class ScheduleDetailResponse {
     private long order;
     private String content;
 
-    public static ScheduleDetailResponse from(ScheduleDetailDto scheduleDetailDto){
+    public static ScheduleDetailResponse from(ScheduleResult scheduleResult){
         return ScheduleDetailResponse.builder()
-                .scheduleId(scheduleDetailDto.getScheduleId())
-                .dayId(scheduleDetailDto.getDayId())
-                .title(scheduleDetailDto.getTitle())
-                .placeName(scheduleDetailDto.getPlaceName())
-                .latitude(scheduleDetailDto.getLatitude())
-                .longitude(scheduleDetailDto.getLongitude())
-                .order(scheduleDetailDto.getOrder())
-                .content(scheduleDetailDto.getContent())
+                .scheduleId(scheduleResult.getScheduleId())
+                .dayId(scheduleResult.getDayId())
+                .title(scheduleResult.getTitle())
+                .placeName(scheduleResult.getPlaceName())
+                .latitude(scheduleResult.getLatitude())
+                .longitude(scheduleResult.getLongitude())
+                .order(scheduleResult.getOrder())
+                .content(scheduleResult.getContent())
                 .build();
     }
 
