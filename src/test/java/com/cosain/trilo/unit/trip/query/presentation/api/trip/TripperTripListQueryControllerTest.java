@@ -3,6 +3,8 @@ package com.cosain.trilo.unit.trip.query.presentation.api.trip;
 
 import com.cosain.trilo.support.RestControllerTest;
 import com.cosain.trilo.trip.command.domain.vo.TripStatus;
+import com.cosain.trilo.trip.query.application.dto.TripPageResult;
+import com.cosain.trilo.trip.query.application.dto.TripResult;
 import com.cosain.trilo.trip.query.application.usecase.TripListSearchUseCase;
 import com.cosain.trilo.trip.query.domain.dto.TripDto;
 import com.cosain.trilo.trip.query.infra.dto.TripDetail;
@@ -45,11 +47,12 @@ class TripperTripListQueryControllerTest extends RestControllerTest {
 
         mockingForLoginUserAnnotation();
 
-        TripDetailResponse dto1 = TripDetailResponse.from(TripDto.from(new TripDetail(1L, 1L, "여행 제목 1", TripStatus.DECIDED, LocalDate.of(2023, 3, 4), LocalDate.of(2023, 4, 1))));
-        TripDetailResponse dto2 = TripDetailResponse.from(TripDto.from(new TripDetail(23L, 1L, "여행 제목 2", TripStatus.DECIDED, LocalDate.of(2023, 4, 4), LocalDate.of(2023, 5, 1))));
-        TripDetailResponse dto3 = TripDetailResponse.from(TripDto.from(new TripDetail(43L, 1L, "여행 제목 3", TripStatus.DECIDED, LocalDate.of(2023, 5, 4), LocalDate.of(2023, 6, 1))));
-        TripPageResponse tripPageResponse = TripPageResponse.of(List.of(dto1, dto2, dto3), true);
-        given(tripListSearchUseCase.searchTripDetails(eq(1L), any(Pageable.class))).willReturn(tripPageResponse);
+        TripResult tripResult1 = TripResult.from(TripDto.from(new TripDetail(1L, 1L, "제목 1", TripStatus.DECIDED, LocalDate.of(2023, 3,4), LocalDate.of(2023, 4, 1))));
+        TripResult tripResult2 = TripResult.from(TripDto.from(new TripDetail(2L, 1L, "제목 2", TripStatus.UNDECIDED, null, null)));
+        TripResult tripResult3 = TripResult.from(TripDto.from(new TripDetail(3L, 1L, "제목 3", TripStatus.DECIDED, LocalDate.of(2023, 4,4), LocalDate.of(2023, 4, 5))));
+
+        TripPageResult tripPageResult = TripPageResult.of(List.of(tripResult1, tripResult2, tripResult3), true);
+        given(tripListSearchUseCase.searchTripDetails(eq(1L), any(Pageable.class))).willReturn(tripPageResult);
 
         mockMvc.perform(get("/api/trips?tripper-id=1")
                         .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)

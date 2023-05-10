@@ -1,5 +1,6 @@
 package com.cosain.trilo.trip.query.application.service;
 
+import com.cosain.trilo.trip.query.application.dto.TripResult;
 import com.cosain.trilo.trip.query.application.exception.TripNotFoundException;
 import com.cosain.trilo.trip.query.application.exception.NoTripDetailSearchAuthorityException;
 import com.cosain.trilo.trip.query.application.usecase.TripDetailSearchUseCase;
@@ -20,11 +21,11 @@ public class TripDetailSearchService implements TripDetailSearchUseCase {
     private final TripQueryRepository tripQueryRepository;
 
     @Override
-    public TripDetailResponse searchTripDetail(Long tripId, Long tripperId) {
+    public TripResult searchTripDetail(Long tripId, Long tripperId) {
 
         TripDto tripDto = findTripDetail(tripId);
         validateTripDetailQueryAuthority(tripDto, tripperId);
-        return TripDetailResponse.from(tripDto);
+        return TripResult.from(tripDto);
     }
 
     private TripDto findTripDetail(Long tripId){

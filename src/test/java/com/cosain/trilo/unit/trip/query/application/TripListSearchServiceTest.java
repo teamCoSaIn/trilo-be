@@ -1,6 +1,7 @@
 package com.cosain.trilo.unit.trip.query.application;
 
 import com.cosain.trilo.trip.command.domain.vo.TripStatus;
+import com.cosain.trilo.trip.query.application.dto.TripPageResult;
 import com.cosain.trilo.trip.query.application.exception.TripperNotFoundException;
 import com.cosain.trilo.trip.query.application.service.TripListSearchService;
 import com.cosain.trilo.trip.query.domain.dto.TripDto;
@@ -57,14 +58,14 @@ public class TripListSearchServiceTest {
         given(tripQueryRepository.findTripDetailListByTripperId(tripperId, pageable)).willReturn(tripDtos);
 
         // when
-        TripPageResponse tripPageResponse = tripListSearchService.searchTripDetails(tripperId, pageable);
+        TripPageResult tripPageResult = tripListSearchService.searchTripDetails(tripperId, pageable);
 
         // then
-        assertThat(tripPageResponse).isNotNull();
-        assertThat(tripPageResponse.getTrips()).hasSize(2);
-        assertThat(tripPageResponse.getTrips().get(0).getTitle()).isEqualTo(tripDetail1.getTitle());
-        assertThat(tripPageResponse.getTrips().get(1).getTitle()).isEqualTo(tripDetail2.getTitle());
-        assertThat(tripPageResponse.isHasNext()).isFalse();
+        assertThat(tripPageResult).isNotNull();
+        assertThat(tripPageResult.getTrips()).hasSize(2);
+        assertThat(tripPageResult.getTrips().get(0).getTitle()).isEqualTo(tripDetail1.getTitle());
+        assertThat(tripPageResult.getTrips().get(1).getTitle()).isEqualTo(tripDetail2.getTitle());
+        assertThat(tripPageResult.isHasNext()).isFalse();
 
     }
 

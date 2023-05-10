@@ -1,6 +1,7 @@
 package com.cosain.trilo.unit.trip.query.application;
 
 import com.cosain.trilo.trip.command.domain.vo.TripStatus;
+import com.cosain.trilo.trip.query.application.dto.TripResult;
 import com.cosain.trilo.trip.query.application.exception.NoTripDetailSearchAuthorityException;
 import com.cosain.trilo.trip.query.application.exception.TripNotFoundException;
 import com.cosain.trilo.trip.query.application.service.TripDetailSearchService;
@@ -43,14 +44,14 @@ public class TripDetailSearchServiceTest {
         given(tripQueryRepository.findTripDetailByTripId(anyLong())).willReturn(Optional.of(tripDto));
 
         // when
-        TripDetailResponse tripDetailResponse = tripDetailSearchService.searchTripDetail(1L, 1L);
+        TripResult tripResult = tripDetailSearchService.searchTripDetail(1L, 1L);
 
         // then
         verify(tripQueryRepository).findTripDetailByTripId(anyLong());
-        assertThat(tripDetailResponse.getTripId()).isEqualTo(tripDetail.getId());
-        assertThat(tripDetailResponse.getStatus()).isEqualTo(tripDetail.getStatus());
-        assertThat(tripDetailResponse.getStartDate()).isEqualTo(tripDetail.getStartDate());
-        assertThat(tripDetailResponse.getEndDate()).isEqualTo(tripDetail.getEndDate());
+        assertThat(tripResult.getId()).isEqualTo(tripDetail.getId());
+        assertThat(tripResult.getStatus()).isEqualTo(tripDetail.getStatus());
+        assertThat(tripResult.getStartDate()).isEqualTo(tripDetail.getStartDate());
+        assertThat(tripResult.getEndDate()).isEqualTo(tripDetail.getEndDate());
     }
 
     @Test
