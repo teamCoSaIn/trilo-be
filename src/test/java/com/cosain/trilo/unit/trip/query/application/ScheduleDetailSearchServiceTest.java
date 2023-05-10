@@ -15,6 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 
@@ -39,7 +40,16 @@ public class ScheduleDetailSearchServiceTest {
         ScheduleDetailResponse scheduleDetailResponse = scheduleDetailSearchService.searchScheduleDetail(anyLong());
 
         // then
-        Assertions.assertThat(scheduleDetailResponse.getScheduleId()).isEqualTo(scheduleDetail.getScheduleId());
+        assertThat(scheduleDetailResponse.getScheduleId()).isEqualTo(scheduleDetail.getScheduleId());
+        assertThat(scheduleDetailResponse.getDayId()).isEqualTo(scheduleDetail.getDayId());
+        assertThat(scheduleDetailResponse.getContent()).isEqualTo(scheduleDetail.getContent());
+        assertThat(scheduleDetailResponse.getTitle()).isEqualTo(scheduleDetail.getTitle());
+        assertThat(scheduleDetailResponse.getLatitude()).isEqualTo(scheduleDetail.getLatitude());
+        assertThat(scheduleDetailResponse.getLongitude()).isEqualTo(scheduleDetail.getLongitude());
+        assertThat(scheduleDetailResponse.getOrder()).isEqualTo(scheduleDetail.getOrder());
+        assertThat(scheduleDetailResponse.getPlaceName()).isEqualTo(scheduleDetail.getPlaceName());
+
+
 
     }
 
