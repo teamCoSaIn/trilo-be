@@ -2,8 +2,8 @@ package com.cosain.trilo.trip.query.application.service;
 
 import com.cosain.trilo.trip.query.application.exception.TripperNotFoundException;
 import com.cosain.trilo.trip.query.application.usecase.TripListSearchUseCase;
+import com.cosain.trilo.trip.query.domain.dto.TripDto;
 import com.cosain.trilo.trip.query.domain.repository.TripQueryRepository;
-import com.cosain.trilo.trip.query.infra.dto.TripDetail;
 import com.cosain.trilo.trip.query.presentation.trip.dto.TripDetailResponse;
 import com.cosain.trilo.trip.query.presentation.trip.dto.TripPageResponse;
 import com.cosain.trilo.user.domain.UserRepository;
@@ -30,7 +30,7 @@ public class TripListSearchService implements TripListSearchUseCase {
     public TripPageResponse searchTripDetails(Long tripperId, Pageable pageable) {
 
         verifyTripperExists(tripperId);
-        Slice<TripDetail> tripDetailList = findTripDetailList(tripperId, pageable);
+        Slice<TripDto> tripDetailList = findTripDetailList(tripperId, pageable);
         return TripPageResponse.of(mapToTripDetailResponse(tripDetailList), tripDetailList.hasNext());
     }
 
@@ -38,14 +38,14 @@ public class TripListSearchService implements TripListSearchUseCase {
         userRepository.findById(tripperId).orElseThrow(TripperNotFoundException::new);
     }
 
-    private Slice<TripDetail> findTripDetailList(Long tripperId, Pageable pageable){
+    private Slice<TripDto> findTripDetailList(Long tripperId, Pageable pageable){
         return tripQueryRepository.findTripDetailListByTripperId(tripperId, pageable);
     }
 
-    private List<TripDetailResponse> mapToTripDetailResponse(Slice<TripDetail> tripDetailList){
-        return tripDetailList.getContent()
+    private List<TripDetailResponse> mapToTripDetailResponse(Slice<TripDto> tripDtos){
+        return tripDtos.getContent()
                 .stream()
-                .map(tripDetail -> TripDetailResponse.of(tripDetail.getId(), tripDetail.getTitle(), tripDetail.getStatus(), tripDetail.getStartDate(), tripDetail.getEndDate()))
+                .map(tripDto -> TripDetailResponse.from(tripDto))
                 .collect(Collectors.toList());
     }
 }

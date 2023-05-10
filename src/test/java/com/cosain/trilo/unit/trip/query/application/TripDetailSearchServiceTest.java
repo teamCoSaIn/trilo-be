@@ -4,6 +4,7 @@ import com.cosain.trilo.trip.command.domain.vo.TripStatus;
 import com.cosain.trilo.trip.query.application.exception.NoTripDetailSearchAuthorityException;
 import com.cosain.trilo.trip.query.application.exception.TripNotFoundException;
 import com.cosain.trilo.trip.query.application.service.TripDetailSearchService;
+import com.cosain.trilo.trip.query.domain.dto.TripDto;
 import com.cosain.trilo.trip.query.domain.repository.TripQueryRepository;
 import com.cosain.trilo.trip.query.infra.dto.TripDetail;
 import com.cosain.trilo.trip.query.presentation.trip.dto.TripDetailResponse;
@@ -38,7 +39,8 @@ public class TripDetailSearchServiceTest {
     void called_test(){
         // given
         TripDetail tripDetail = new TripDetail(1L, 1L, "제목", TripStatus.DECIDED, LocalDate.of(2023, 5, 10), LocalDate.of(2023, 5, 15));
-        given(tripQueryRepository.findTripDetailByTripId(anyLong())).willReturn(Optional.of(tripDetail));
+        TripDto tripDto = TripDto.from(tripDetail);
+        given(tripQueryRepository.findTripDetailByTripId(anyLong())).willReturn(Optional.of(tripDto));
 
         // when
         TripDetailResponse tripDetailResponse = tripDetailSearchService.searchTripDetail(1L, 1L);
@@ -57,7 +59,8 @@ public class TripDetailSearchServiceTest {
 
         // given
         TripDetail tripDetail = new TripDetail(1L, 1L, "제목", TripStatus.DECIDED, LocalDate.of(2023, 5, 10), LocalDate.of(2023, 5, 15));
-        given(tripQueryRepository.findTripDetailByTripId(anyLong())).willReturn(Optional.of(tripDetail));
+        TripDto tripDto = TripDto.from(tripDetail);
+        given(tripQueryRepository.findTripDetailByTripId(anyLong())).willReturn(Optional.of(tripDto));
 
         // when && then
         assertThatThrownBy(() -> tripDetailSearchService.searchTripDetail(1L, 2L))
