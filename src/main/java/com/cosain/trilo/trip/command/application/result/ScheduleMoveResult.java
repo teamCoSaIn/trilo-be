@@ -22,6 +22,9 @@ public class ScheduleMoveResult {
                 .build();
     }
 
+    /**
+     * 테스트의 편의성을 위해 Builder accessLevel = PUBLIC 으로 설정
+     */
     @Builder(access = AccessLevel.PUBLIC)
     private ScheduleMoveResult(Long scheduleId, Long beforeDayId, Long afterDayId, boolean positionChanged) {
         this.scheduleId = scheduleId;

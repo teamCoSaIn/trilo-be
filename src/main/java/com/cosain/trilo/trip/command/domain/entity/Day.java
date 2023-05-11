@@ -47,6 +47,9 @@ public class Day {
                 .build();
     }
 
+    /**
+     * 테스트의 편의성을 위해 Builder accessLevel = PUBLIC 으로 설정
+     */
     @Builder(access = AccessLevel.PUBLIC)
     private Day(Long id, LocalDate tripDate, Trip trip, List<Schedule> schedules) {
         this.id = id;
