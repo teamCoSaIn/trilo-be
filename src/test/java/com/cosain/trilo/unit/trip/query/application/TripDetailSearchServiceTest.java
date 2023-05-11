@@ -1,9 +1,11 @@
 package com.cosain.trilo.unit.trip.query.application;
 
 import com.cosain.trilo.trip.command.domain.vo.TripStatus;
+import com.cosain.trilo.trip.query.application.dto.TripResult;
 import com.cosain.trilo.trip.query.application.exception.NoTripDetailSearchAuthorityException;
 import com.cosain.trilo.trip.query.application.exception.TripNotFoundException;
 import com.cosain.trilo.trip.query.application.service.TripDetailSearchService;
+import com.cosain.trilo.trip.query.domain.dto.TripDto;
 import com.cosain.trilo.trip.query.domain.repository.TripQueryRepository;
 import com.cosain.trilo.trip.query.infra.dto.TripDetail;
 import com.cosain.trilo.trip.query.presentation.trip.dto.TripDetailResponse;
@@ -38,17 +40,18 @@ public class TripDetailSearchServiceTest {
     void called_test(){
         // given
         TripDetail tripDetail = new TripDetail(1L, 1L, "제목", TripStatus.DECIDED, LocalDate.of(2023, 5, 10), LocalDate.of(2023, 5, 15));
-        given(tripQueryRepository.findTripDetailByTripId(anyLong())).willReturn(Optional.of(tripDetail));
+        TripDto tripDto = TripDto.from(tripDetail);
+        given(tripQueryRepository.findTripDetailByTripId(anyLong())).willReturn(Optional.of(tripDto));
 
         // when
-        TripDetailResponse tripDetailResponse = tripDetailSearchService.searchTripDetail(1L, 1L);
+        TripResult tripResult = tripDetailSearchService.searchTripDetail(1L, 1L);
 
         // then
         verify(tripQueryRepository).findTripDetailByTripId(anyLong());
-        assertThat(tripDetailResponse.getTripId()).isEqualTo(tripDetail.getId());
-        assertThat(tripDetailResponse.getStatus()).isEqualTo(tripDetail.getStatus());
-        assertThat(tripDetailResponse.getStartDate()).isEqualTo(tripDetail.getStartDate());
-        assertThat(tripDetailResponse.getEndDate()).isEqualTo(tripDetail.getEndDate());
+        assertThat(tripResult.getId()).isEqualTo(tripDetail.getId());
+        assertThat(tripResult.getStatus()).isEqualTo(tripDetail.getStatus());
+        assertThat(tripResult.getStartDate()).isEqualTo(tripDetail.getStartDate());
+        assertThat(tripResult.getEndDate()).isEqualTo(tripDetail.getEndDate());
     }
 
     @Test
@@ -57,7 +60,8 @@ public class TripDetailSearchServiceTest {
 
         // given
         TripDetail tripDetail = new TripDetail(1L, 1L, "제목", TripStatus.DECIDED, LocalDate.of(2023, 5, 10), LocalDate.of(2023, 5, 15));
-        given(tripQueryRepository.findTripDetailByTripId(anyLong())).willReturn(Optional.of(tripDetail));
+        TripDto tripDto = TripDto.from(tripDetail);
+        given(tripQueryRepository.findTripDetailByTripId(anyLong())).willReturn(Optional.of(tripDto));
 
         // when && then
         assertThatThrownBy(() -> tripDetailSearchService.searchTripDetail(1L, 2L))

@@ -1,8 +1,10 @@
 package com.cosain.trilo.unit.trip.query.application;
 
 import com.cosain.trilo.trip.command.domain.vo.TripStatus;
+import com.cosain.trilo.trip.query.application.dto.TripPageResult;
 import com.cosain.trilo.trip.query.application.exception.TripperNotFoundException;
 import com.cosain.trilo.trip.query.application.service.TripListSearchService;
+import com.cosain.trilo.trip.query.domain.dto.TripDto;
 import com.cosain.trilo.trip.query.domain.repository.TripQueryRepository;
 import com.cosain.trilo.trip.query.infra.dto.TripDetail;
 import com.cosain.trilo.trip.query.presentation.trip.dto.TripPageResponse;
@@ -47,20 +49,23 @@ public class TripListSearchServiceTest {
         Pageable pageable = PageRequest.of(0, 10);
         TripDetail tripDetail1 = new TripDetail(1L, tripperId, "여행 1", TripStatus.DECIDED, LocalDate.now(), LocalDate.now());
         TripDetail tripDetail2 = new TripDetail(2L, tripperId, "여행 2", TripStatus.UNDECIDED, LocalDate.now(), LocalDate.now());
-        Slice<TripDetail> tripDetailSlice = new PageImpl<>(List.of(tripDetail1, tripDetail2), pageable, 2L);
+        TripDto tripDto1 = TripDto.from(tripDetail1);
+        TripDto tripDto2 = TripDto.from(tripDetail2);
+
+        PageImpl<TripDto> tripDtos = new PageImpl<>(List.of(tripDto1, tripDto2), pageable, 2L);
 
         given(userRepository.findById(eq(1L))).willReturn(Optional.of(KAKAO_MEMBER.create()));
-        given(tripQueryRepository.findTripDetailListByTripperId(tripperId, pageable)).willReturn(tripDetailSlice);
+        given(tripQueryRepository.findTripDetailListByTripperId(tripperId, pageable)).willReturn(tripDtos);
 
         // when
-        TripPageResponse tripPageResponse = tripListSearchService.searchTripDetails(tripperId, pageable);
+        TripPageResult tripPageResult = tripListSearchService.searchTripDetails(tripperId, pageable);
 
         // then
-        assertThat(tripPageResponse).isNotNull();
-        assertThat(tripPageResponse.getTrips()).hasSize(2);
-        assertThat(tripPageResponse.getTrips().get(0).getTitle()).isEqualTo(tripDetail1.getTitle());
-        assertThat(tripPageResponse.getTrips().get(1).getTitle()).isEqualTo(tripDetail2.getTitle());
-        assertThat(tripPageResponse.isHasNext()).isFalse();
+        assertThat(tripPageResult).isNotNull();
+        assertThat(tripPageResult.getTrips()).hasSize(2);
+        assertThat(tripPageResult.getTrips().get(0).getTitle()).isEqualTo(tripDetail1.getTitle());
+        assertThat(tripPageResult.getTrips().get(1).getTitle()).isEqualTo(tripDetail2.getTitle());
+        assertThat(tripPageResult.isHasNext()).isFalse();
 
     }
 

@@ -1,6 +1,7 @@
 package com.cosain.trilo.trip.query.presentation.trip;
 
 import com.cosain.trilo.common.LoginUser;
+import com.cosain.trilo.trip.query.application.dto.TripResult;
 import com.cosain.trilo.trip.query.application.usecase.TripDetailSearchUseCase;
 import com.cosain.trilo.trip.query.presentation.trip.dto.TripDetailResponse;
 import com.cosain.trilo.user.domain.User;
@@ -24,6 +25,7 @@ public class SingleTripQueryController {
 
         Long tripperId = user.getId();
 
-        return tripDetailSearchUseCase.searchTripDetail(tripId, tripperId);
+        TripResult tripResult = tripDetailSearchUseCase.searchTripDetail(tripId, tripperId);
+        return TripDetailResponse.from(tripResult);
     }
 }

@@ -1,10 +1,11 @@
 package com.cosain.trilo.trip.query.application.service;
 
+import com.cosain.trilo.trip.query.application.dto.TripPageResult;
+import com.cosain.trilo.trip.query.application.dto.TripResult;
 import com.cosain.trilo.trip.query.application.exception.TripperNotFoundException;
 import com.cosain.trilo.trip.query.application.usecase.TripListSearchUseCase;
+import com.cosain.trilo.trip.query.domain.dto.TripDto;
 import com.cosain.trilo.trip.query.domain.repository.TripQueryRepository;
-import com.cosain.trilo.trip.query.infra.dto.TripDetail;
-import com.cosain.trilo.trip.query.presentation.trip.dto.TripDetailResponse;
 import com.cosain.trilo.trip.query.presentation.trip.dto.TripPageResponse;
 import com.cosain.trilo.user.domain.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -27,25 +28,26 @@ public class TripListSearchService implements TripListSearchUseCase {
     private final UserRepository userRepository;
 
     @Override
-    public TripPageResponse searchTripDetails(Long tripperId, Pageable pageable) {
+    public TripPageResult searchTripDetails(Long tripperId, Pageable pageable) {
 
         verifyTripperExists(tripperId);
-        Slice<TripDetail> tripDetailList = findTripDetailList(tripperId, pageable);
-        return TripPageResponse.of(mapToTripDetailResponse(tripDetailList), tripDetailList.hasNext());
+        Slice<TripDto> tripDtos = findTripDtos(tripperId, pageable);
+        List<TripResult> tripResults = mapToTripResults(tripDtos);
+        return TripPageResult.of(tripResults, tripDtos.hasNext());
     }
 
     private void verifyTripperExists(Long tripperId){
         userRepository.findById(tripperId).orElseThrow(TripperNotFoundException::new);
     }
 
-    private Slice<TripDetail> findTripDetailList(Long tripperId, Pageable pageable){
+    private Slice<TripDto> findTripDtos(Long tripperId, Pageable pageable){
         return tripQueryRepository.findTripDetailListByTripperId(tripperId, pageable);
     }
 
-    private List<TripDetailResponse> mapToTripDetailResponse(Slice<TripDetail> tripDetailList){
-        return tripDetailList.getContent()
+    private List<TripResult> mapToTripResults(Slice<TripDto> tripDtos){
+        return tripDtos.getContent()
                 .stream()
-                .map(tripDetail -> TripDetailResponse.of(tripDetail.getId(), tripDetail.getTitle(), tripDetail.getStatus(), tripDetail.getStartDate(), tripDetail.getEndDate()))
+                .map(tripDto -> TripResult.from(tripDto))
                 .collect(Collectors.toList());
     }
 }
