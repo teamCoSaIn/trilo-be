@@ -50,6 +50,9 @@ public class Schedule {
                 .build();
     }
 
+    /**
+     * 테스트의 편의성을 위해 Builder accessLevel = PUBLIC 으로 설정
+     */
     @Builder(access = AccessLevel.PUBLIC)
     private Schedule(Long id, Day day, Trip trip, String title, String content, Place place, ScheduleIndex scheduleIndex) {
         this.id = id;
@@ -66,5 +69,28 @@ public class Schedule {
     }
     public void changeContent(String content){
         this.content = content;
+    }
+
+    /**
+     * 일정의 day와 ScheduleIndex를 변경합니다.
+     * 기존의 day 또는 임시보관함이 있으면 해당 Day와 관계를 끊고 새로운 day 또는 임시보관함과 관계를 맺습니다.
+     * @param changeDay
+     * @param changeScheduleIndex
+     */
+    void changePosition(Day changeDay, ScheduleIndex changeScheduleIndex) {
+        detachFromDayOrTemporaryStorage();
+        this.day = changeDay;
+        this.scheduleIndex = changeScheduleIndex;
+    }
+
+    /**
+     * 자신이 속했던 Day 또는, 임시보관함에서 Schedule 자신을 끊어냅니다.
+     */
+    private void detachFromDayOrTemporaryStorage() {
+        if (day == null) {
+            trip.detachScheduleFromTemporaryStorage(this);
+            return;
+        }
+        day.detachSchedule(this);
     }
 }

@@ -19,6 +19,9 @@ public class ScheduleCreateRequest {
     private double latitude;
     private double longitude;
 
+    /**
+     * 테스트의 편의성을 위해 Builder accessLevel = PUBLIC 으로 설정
+     */
     @Builder(access = AccessLevel.PUBLIC)
     private ScheduleCreateRequest(Long dayId, Long tripId, String title, String placeId, String placeName, double latitude, double longitude) {
         this.dayId = dayId;

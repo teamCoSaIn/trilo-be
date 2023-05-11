@@ -73,4 +73,91 @@ public class ScheduleIndexTest {
 
     }
 
+    @Nested
+    @DisplayName("generateBeforeIndex 테스트")
+    class generateBeforeIndexTest {
+
+        @Test
+        @DisplayName("생성되는 순서가 범위를 벗어나는 경우 예외 발생")
+        public void when_generatedIndex_is_too_small_index_then_it_throws_ScheduleIndexRangeException() {
+            ScheduleIndex index = ScheduleIndex.of(ScheduleIndex.MIN_INDEX_VALUE);
+
+            assertThatThrownBy(index::generateBeforeIndex)
+                    .isInstanceOf(ScheduleIndexRangeException.class);
+        }
+
+
+        @Test
+        @DisplayName("다음에 오는 인덱스가 최솟값의 범위보다 크거나 같을 경우 정상적으로 인덱스 생성")
+        public void successfully_generate_nextIndex() {
+            ScheduleIndex index = ScheduleIndex.of(ScheduleIndex.MIN_INDEX_VALUE + ScheduleIndex.DEFAULT_SEQUENCE_GAP);
+
+            ScheduleIndex generatedIndex = index.generateBeforeIndex();
+            assertThat(generatedIndex.getValue()).isEqualTo(ScheduleIndex.MIN_INDEX_VALUE);
+        }
+
+    }
+
+    @Nested
+    @DisplayName("Mid 메서드를 통해 중간 인덱스 생성되는 지 테스트")
+    class MidTest {
+
+        @Test
+        @DisplayName("1, 5 -> 3")
+        public void one_and_five_returns_three() {
+            // given
+            ScheduleIndex index1 = ScheduleIndex.of(1);
+            ScheduleIndex index2 = ScheduleIndex.of(5);
+
+            // when
+            ScheduleIndex midIndex = index1.mid(index2);
+
+            // then
+            assertThat(midIndex).isEqualTo(ScheduleIndex.of(3));
+        }
+
+        @Test
+        @DisplayName("(최대 인덱스 -2) , (최대 인덱스) -> (최댓인덱스 -1)")
+        public void max_minus_two_and_max_returns_max_minus_one() {
+            // given
+            ScheduleIndex index1 = ScheduleIndex.of(ScheduleIndex.MAX_INDEX_VALUE - 2);
+            ScheduleIndex index2 = ScheduleIndex.of(ScheduleIndex.MAX_INDEX_VALUE);
+
+            // when
+            ScheduleIndex midIndex = index1.mid(index2);
+
+            // then
+            assertThat(midIndex).isEqualTo(ScheduleIndex.of(ScheduleIndex.MAX_INDEX_VALUE - 1));
+        }
+
+        @Test
+        @DisplayName("(최소 인덱스) , (최대 인덱스) -> 0")
+        public void max_and_min_returns_zero() {
+            // given
+            ScheduleIndex index1 = ScheduleIndex.of(ScheduleIndex.MAX_INDEX_VALUE);
+            ScheduleIndex index2 = ScheduleIndex.of(ScheduleIndex.MIN_INDEX_VALUE);
+
+            // when
+            ScheduleIndex midIndex = index1.mid(index2);
+
+            // then
+            assertThat(midIndex).isEqualTo(ScheduleIndex.ZERO_INDEX);
+        }
+
+        @Test
+        @DisplayName("3, 4 -> 3")
+        public void three_and_four_returns_three() {
+            // given
+            ScheduleIndex index1 = ScheduleIndex.of(3);
+            ScheduleIndex index2 = ScheduleIndex.of(4);
+
+            // when
+            ScheduleIndex midIndex = index1.mid(index2);
+
+            // then
+            assertThat(midIndex).isEqualTo(ScheduleIndex.of(3));
+        }
+
+    }
+
 }
