@@ -4,6 +4,7 @@ import com.cosain.trilo.trip.command.application.command.ScheduleMoveCommand;
 import com.cosain.trilo.trip.command.application.exception.DayNotFoundException;
 import com.cosain.trilo.trip.command.application.exception.NoScheduleMoveAuthorityException;
 import com.cosain.trilo.trip.command.application.exception.ScheduleNotFoundException;
+import com.cosain.trilo.trip.command.application.result.ScheduleMoveResult;
 import com.cosain.trilo.trip.command.application.service.ScheduleMoveService;
 import com.cosain.trilo.trip.command.domain.entity.Day;
 import com.cosain.trilo.trip.command.domain.entity.Schedule;
@@ -22,10 +23,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.LocalDate;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.Mockito.*;
 
 @Slf4j
@@ -104,7 +105,7 @@ public class ScheduleMoveServiceTest {
         verify(dayRepository).findByIdWithTrip(eq(notExistTargetDayId));
     }
 
-    @DisplayName("권한이 없는 사람이 이동을 시도하면 NoTripMoveAotu 발생")
+    @DisplayName("권한이 없는 사람이 이동을 시도하면 NoScheduleMoveAuthorityException 발생")
     @Test
     public void noTripMoveMoveAuthorityTripperTest() {
         // given
@@ -196,10 +197,14 @@ public class ScheduleMoveServiceTest {
         given(scheduleRepository.findByIdWithTrip(eq(scheduleId))).willReturn(Optional.of(schedule));
         given(dayRepository.findByIdWithTrip(eq(targetDayId))).willReturn(Optional.of(day));
 
-        scheduleMoveService.moveSchedule(scheduleId, tripperId, moveCommand);
+        // when
+        ScheduleMoveResult scheduleMoveResult = scheduleMoveService.moveSchedule(scheduleId, tripperId, moveCommand);
 
 
-        // when & then
+        // then
+        assertThat(scheduleMoveResult.getBeforeDayId()).isEqualTo(null);
+        assertThat(scheduleMoveResult.getAfterDayId()).isEqualTo(targetDayId);
+        assertThat(scheduleMoveResult.isPositionChanged()).isEqualTo(true);
         verify(scheduleRepository, times(1)).findByIdWithTrip(eq(scheduleId));
         verify(dayRepository, times(1)).findByIdWithTrip(eq(targetDayId));
         verify(scheduleRepository, times(0)).relocateDaySchedules(eq(tripId), eq(targetDayId));
@@ -292,8 +297,13 @@ public class ScheduleMoveServiceTest {
 
         given(scheduleRepository.relocateDaySchedules(eq(tripId), eq(targetDayId))).willReturn(1);
 
-        scheduleMoveService.moveSchedule(scheduleId, tripperId, moveCommand);
+        // when
+        ScheduleMoveResult scheduleMoveResult = scheduleMoveService.moveSchedule(scheduleId, tripperId, moveCommand);
 
+        // then
+        assertThat(scheduleMoveResult.getBeforeDayId()).isEqualTo(null);
+        assertThat(scheduleMoveResult.getAfterDayId()).isEqualTo(targetDayId);
+        assertThat(scheduleMoveResult.isPositionChanged()).isEqualTo(true);
         verify(scheduleRepository, times(2)).findByIdWithTrip(eq(scheduleId));
         verify(dayRepository, times(2)).findByIdWithTrip(eq(targetDayId));
         verify(scheduleRepository, times(1)).relocateDaySchedules(eq(tripId), eq(targetDayId));
@@ -386,8 +396,13 @@ public class ScheduleMoveServiceTest {
 
         given(scheduleRepository.relocateDaySchedules(eq(tripId), eq(targetDayId))).willReturn(1);
 
-        scheduleMoveService.moveSchedule(scheduleId, tripperId, moveCommand);
+        // when
+        ScheduleMoveResult scheduleMoveResult = scheduleMoveService.moveSchedule(scheduleId, tripperId, moveCommand);
 
+        // then
+        assertThat(scheduleMoveResult.getBeforeDayId()).isEqualTo(null);
+        assertThat(scheduleMoveResult.getAfterDayId()).isEqualTo(targetDayId);
+        assertThat(scheduleMoveResult.isPositionChanged()).isEqualTo(true);
         verify(scheduleRepository, times(2)).findByIdWithTrip(eq(scheduleId));
         verify(dayRepository, times(2)).findByIdWithTrip(eq(targetDayId));
         verify(scheduleRepository, times(1)).relocateDaySchedules(eq(tripId), eq(targetDayId));
@@ -498,8 +513,13 @@ public class ScheduleMoveServiceTest {
 
         given(scheduleRepository.relocateDaySchedules(eq(tripId), eq(targetDayId))).willReturn(1);
 
-        scheduleMoveService.moveSchedule(scheduleId, tripperId, moveCommand);
+        // when
+        ScheduleMoveResult scheduleMoveResult = scheduleMoveService.moveSchedule(scheduleId, tripperId, moveCommand);
 
+        // then
+        assertThat(scheduleMoveResult.getBeforeDayId()).isEqualTo(null);
+        assertThat(scheduleMoveResult.getAfterDayId()).isEqualTo(targetDayId);
+        assertThat(scheduleMoveResult.isPositionChanged()).isEqualTo(true);
         verify(scheduleRepository, times(2)).findByIdWithTrip(eq(scheduleId));
         verify(dayRepository, times(2)).findByIdWithTrip(eq(targetDayId));
         verify(scheduleRepository, times(1)).relocateDaySchedules(eq(tripId), eq(targetDayId));

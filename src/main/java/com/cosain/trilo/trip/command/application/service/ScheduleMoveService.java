@@ -4,7 +4,9 @@ import com.cosain.trilo.trip.command.application.command.ScheduleMoveCommand;
 import com.cosain.trilo.trip.command.application.exception.DayNotFoundException;
 import com.cosain.trilo.trip.command.application.exception.NoScheduleMoveAuthorityException;
 import com.cosain.trilo.trip.command.application.exception.ScheduleNotFoundException;
+import com.cosain.trilo.trip.command.application.result.ScheduleMoveResult;
 import com.cosain.trilo.trip.command.application.usecase.ScheduleMoveUseCase;
+import com.cosain.trilo.trip.command.domain.dto.ScheduleMoveDto;
 import com.cosain.trilo.trip.command.domain.entity.Day;
 import com.cosain.trilo.trip.command.domain.entity.Schedule;
 import com.cosain.trilo.trip.command.domain.entity.Trip;
@@ -25,7 +27,7 @@ public class ScheduleMoveService implements ScheduleMoveUseCase {
 
     @Override
     @Transactional
-    public void moveSchedule(Long scheduleId, Long moveTripperId, ScheduleMoveCommand moveCommand) {
+    public ScheduleMoveResult moveSchedule(Long scheduleId, Long moveTripperId, ScheduleMoveCommand moveCommand) {
         Schedule schedule = findSchedule(scheduleId);
         Day targetDay = findDay(moveCommand.getTargetDayId());
 
@@ -33,16 +35,18 @@ public class ScheduleMoveService implements ScheduleMoveUseCase {
 
         validateScheduleMoveAuthority(trip, moveTripperId);
 
+        ScheduleMoveDto moveDto;
         try {
-            trip.moveSchedule(schedule, targetDay, moveCommand.getTargetOrder());
+            moveDto = trip.moveSchedule(schedule, targetDay, moveCommand.getTargetOrder());
         } catch (MidScheduleIndexConflictException | ScheduleIndexRangeException e) {
             scheduleRepository.relocateDaySchedules(trip.getId(), targetDay.getId());
             schedule = findSchedule(scheduleId);
             targetDay = findDay(moveCommand.getTargetDayId());
 
             trip = schedule.getTrip();
-            trip.moveSchedule(schedule, targetDay, moveCommand.getTargetOrder());
+            moveDto = trip.moveSchedule(schedule, targetDay, moveCommand.getTargetOrder());
         }
+        return ScheduleMoveResult.from(moveDto);
     }
 
 

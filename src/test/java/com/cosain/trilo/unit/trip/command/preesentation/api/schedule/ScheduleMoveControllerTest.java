@@ -3,6 +3,7 @@ package com.cosain.trilo.unit.trip.command.preesentation.api.schedule;
 
 import com.cosain.trilo.support.RestControllerTest;
 import com.cosain.trilo.trip.command.application.command.ScheduleMoveCommand;
+import com.cosain.trilo.trip.command.application.result.ScheduleMoveResult;
 import com.cosain.trilo.trip.command.application.usecase.ScheduleMoveUseCase;
 import com.cosain.trilo.trip.command.presentation.schedule.ScheduleMoveController;
 import com.cosain.trilo.trip.command.presentation.schedule.dto.ScheduleMoveRequest;
@@ -19,6 +20,7 @@ import java.nio.charset.StandardCharsets;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
@@ -44,8 +46,16 @@ public class ScheduleMoveControllerTest extends RestControllerTest {
         Long targetDayId = 2L;
         int targetOrder = 3;
 
+        ScheduleMoveResult moveResult = ScheduleMoveResult.builder()
+                .scheduleId(scheduleId)
+                .beforeDayId(1L)
+                .afterDayId(targetDayId)
+                .positionChanged(true)
+                .build();
+
         ScheduleMoveRequest request = new ScheduleMoveRequest(targetDayId, targetOrder);
-        willDoNothing().given(scheduleMoveUseCase).moveSchedule(eq(scheduleId), any(), any(ScheduleMoveCommand.class));
+        given(scheduleMoveUseCase.moveSchedule(eq(scheduleId), any(), any(ScheduleMoveCommand.class)))
+                .willReturn(moveResult);
 
         mockMvc.perform(patch("/api/schedules/" + scheduleId)
                         .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)
