@@ -39,7 +39,7 @@ public class ScheduleMoveService implements ScheduleMoveUseCase {
         try {
             moveDto = trip.moveSchedule(schedule, targetDay, moveCommand.getTargetOrder());
         } catch (MidScheduleIndexConflictException | ScheduleIndexRangeException e) {
-            scheduleRepository.relocateDaySchedules(trip.getId(), targetDay.getId());
+            scheduleRepository.relocateDaySchedules(trip.getId(), moveCommand.getTargetDayId());
             schedule = findSchedule(scheduleId);
             targetDay = findDay(moveCommand.getTargetDayId());
 
