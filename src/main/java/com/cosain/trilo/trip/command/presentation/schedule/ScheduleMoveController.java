@@ -2,6 +2,7 @@ package com.cosain.trilo.trip.command.presentation.schedule;
 
 import com.cosain.trilo.common.LoginUser;
 import com.cosain.trilo.trip.command.application.command.ScheduleMoveCommand;
+import com.cosain.trilo.trip.command.application.result.ScheduleMoveResult;
 import com.cosain.trilo.trip.command.application.usecase.ScheduleMoveUseCase;
 import com.cosain.trilo.trip.command.presentation.schedule.dto.ScheduleMoveRequest;
 import com.cosain.trilo.trip.command.presentation.schedule.dto.ScheduleMoveResponse;
@@ -24,8 +25,8 @@ public class ScheduleMoveController {
         Long moveTripperId = user.getId();
 
         ScheduleMoveCommand scheduleMoveCommand = scheduleMoveRequest.toCommand();
-        scheduleMoveUseCase.moveSchedule(scheduleId, moveTripperId, scheduleMoveCommand);
+        ScheduleMoveResult scheduleMoveResult = scheduleMoveUseCase.moveSchedule(scheduleId, moveTripperId, scheduleMoveCommand);
 
-        return ScheduleMoveResponse.from(scheduleId);
+        return ScheduleMoveResponse.from(scheduleMoveResult);
     }
 }

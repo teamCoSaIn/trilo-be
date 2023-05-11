@@ -65,7 +65,10 @@ public class ScheduleMoveControllerTest extends RestControllerTest {
                 )
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.scheduleId").value(scheduleId));
+                .andExpect(jsonPath("$.scheduleId").value(scheduleId))
+                .andExpect(jsonPath("$.beforeDayId").value(moveResult.getBeforeDayId()))
+                .andExpect(jsonPath("$.afterDayId").value(moveResult.getAfterDayId()))
+                .andExpect(jsonPath("$.positionChanged").value(moveResult.isPositionChanged()));
 
         verify(scheduleMoveUseCase).moveSchedule(eq(scheduleId), any(), any(ScheduleMoveCommand.class));
     }
