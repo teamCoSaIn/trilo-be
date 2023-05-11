@@ -1,5 +1,6 @@
 package com.cosain.trilo.unit.trip.command.domain.entity;
 
+import com.cosain.trilo.trip.command.domain.dto.ScheduleMoveDto;
 import com.cosain.trilo.trip.command.domain.entity.Day;
 import com.cosain.trilo.trip.command.domain.entity.Schedule;
 import com.cosain.trilo.trip.command.domain.entity.Trip;
@@ -746,7 +747,7 @@ public class TripTest {
                 Schedule schedule2 = trip.createSchedule(day, "일정제목2", Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
 
                 // when
-                trip.moveSchedule(schedule2, day, 1);
+                ScheduleMoveDto scheduleMoveDto = trip.moveSchedule(schedule2, day, 1);
 
                 // then
                 List<Schedule> temporaryStorage = trip.getTemporaryStorage();
@@ -758,6 +759,9 @@ public class TripTest {
                 assertThat(firstSchedule.getScheduleIndex()).isEqualTo(ScheduleIndex.ZERO_INDEX);
                 assertThat(secondSchedule).isEqualTo(schedule2);
                 assertThat(secondSchedule.getScheduleIndex()).isEqualTo(ScheduleIndex.of(ScheduleIndex.DEFAULT_SEQUENCE_GAP));
+                assertThat(scheduleMoveDto.getBeforeDayId()).isEqualTo(null);
+                assertThat(scheduleMoveDto.getAfterDayId()).isEqualTo(null);
+                assertThat(scheduleMoveDto.isPositionChanged()).isEqualTo(false);
             }
 
             @DisplayName("임시보관함 내에 기존의 순서 다음으로 이동시키려 할 경우, 아무런 변화도 일어나지 않는다.")
@@ -770,7 +774,7 @@ public class TripTest {
                 Schedule schedule2 = trip.createSchedule(day, "일정제목2", Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
 
                 // when
-                trip.moveSchedule(schedule2, day, 2);
+                ScheduleMoveDto scheduleMoveDto = trip.moveSchedule(schedule2, day, 2);
 
                 // then
                 List<Schedule> temporaryStorage = trip.getTemporaryStorage();
@@ -782,6 +786,9 @@ public class TripTest {
                 assertThat(firstSchedule.getScheduleIndex()).isEqualTo(ScheduleIndex.ZERO_INDEX);
                 assertThat(secondSchedule).isEqualTo(schedule2);
                 assertThat(secondSchedule.getScheduleIndex()).isEqualTo(ScheduleIndex.of(ScheduleIndex.DEFAULT_SEQUENCE_GAP));
+                assertThat(scheduleMoveDto.getBeforeDayId()).isEqualTo(null);
+                assertThat(scheduleMoveDto.getAfterDayId()).isEqualTo(null);
+                assertThat(scheduleMoveDto.isPositionChanged()).isEqualTo(false);
             }
 
             @DisplayName("targetOrder가 임시보관함 크기와 똑같은 값이고, 끝 ScheduleIndex 범위가 안전하면 맨 뒤로 이동한다.")
@@ -794,7 +801,7 @@ public class TripTest {
                 Schedule schedule2 = trip.createSchedule(day, "일정제목2", Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
 
                 // when
-                trip.moveSchedule(schedule1, day, 2);
+                ScheduleMoveDto scheduleMoveDto = trip.moveSchedule(schedule1, day, 2);
 
                 // then
                 List<Schedule> temporaryStorage = trip.getTemporaryStorage();
@@ -803,6 +810,9 @@ public class TripTest {
                 assertThat(temporaryStorage).containsExactlyInAnyOrder(schedule1, schedule2);
                 assertThat(schedule1.getScheduleIndex()).isEqualTo(ScheduleIndex.of(ScheduleIndex.DEFAULT_SEQUENCE_GAP * 2));
                 assertThat(schedule2.getScheduleIndex()).isEqualTo(ScheduleIndex.of(ScheduleIndex.DEFAULT_SEQUENCE_GAP));
+                assertThat(scheduleMoveDto.getBeforeDayId()).isEqualTo(null);
+                assertThat(scheduleMoveDto.getAfterDayId()).isEqualTo(null);
+                assertThat(scheduleMoveDto.isPositionChanged()).isEqualTo(true);
             }
 
             @DisplayName("targetOrder가 임시보관함 크기와 똑같은 값이고, 끝 ScheduleIndex 범위가 안전하지 않으면 ScheduleIndexRangeException 발생")
@@ -846,7 +856,7 @@ public class TripTest {
                 Schedule schedule2 = trip.createSchedule(day, "일정제목2", Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
 
                 // when
-                trip.moveSchedule(schedule2, day, 0);
+                ScheduleMoveDto scheduleMoveDto = trip.moveSchedule(schedule2, day, 0);
 
                 // then
                 List<Schedule> temporaryStorage = trip.getTemporaryStorage();
@@ -855,6 +865,9 @@ public class TripTest {
                 assertThat(temporaryStorage).containsExactlyInAnyOrder(schedule1, schedule2);
                 assertThat(schedule1.getScheduleIndex()).isEqualTo(ScheduleIndex.ZERO_INDEX);
                 assertThat(schedule2.getScheduleIndex()).isEqualTo(ScheduleIndex.of(-ScheduleIndex.DEFAULT_SEQUENCE_GAP));
+                assertThat(scheduleMoveDto.getBeforeDayId()).isEqualTo(null);
+                assertThat(scheduleMoveDto.getAfterDayId()).isEqualTo(null);
+                assertThat(scheduleMoveDto.isPositionChanged()).isEqualTo(true);
             }
 
             @DisplayName("targetOrder가 0이고, 맨 앞 ScheduleIndex 범위가 안전하지 않으면 ScheduleIndexRangeException 발생")
@@ -899,7 +912,7 @@ public class TripTest {
                 Schedule schedule3 = trip.createSchedule(day, "일정제목3", Place.of("place-id333", "place 이름333", Coordinate.of(37.72221, 137.86523)));
 
                 // when
-                trip.moveSchedule(schedule1, day, 2);
+                ScheduleMoveDto scheduleMoveDto = trip.moveSchedule(schedule1, day, 2);
 
                 // then
                 List<Schedule> temporaryStorage = trip.getTemporaryStorage();
@@ -908,6 +921,9 @@ public class TripTest {
                 assertThat(schedule1.getScheduleIndex()).isEqualTo(schedule2.getScheduleIndex().mid(schedule3.getScheduleIndex()));
                 assertThat(schedule2.getScheduleIndex()).isEqualTo(ScheduleIndex.of(ScheduleIndex.DEFAULT_SEQUENCE_GAP));
                 assertThat(schedule3.getScheduleIndex()).isEqualTo(ScheduleIndex.of(ScheduleIndex.DEFAULT_SEQUENCE_GAP * 2));
+                assertThat(scheduleMoveDto.getBeforeDayId()).isEqualTo(null);
+                assertThat(scheduleMoveDto.getAfterDayId()).isEqualTo(null);
+                assertThat(scheduleMoveDto.isPositionChanged()).isEqualTo(true);
             }
 
             @DisplayName("targetOrder가 다른 일정의 순서이고, 해당 순서 앞과 간격이 충분하지 않으면 MidScheduleIndexConflictException 발생")
@@ -1022,7 +1038,7 @@ public class TripTest {
                 Schedule schedule2 = trip.createSchedule(targetDay, "일정제목2", Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
 
                 // when
-                trip.moveSchedule(schedule1, targetDay, 1);
+                ScheduleMoveDto scheduleMoveDto = trip.moveSchedule(schedule1, targetDay, 1);
 
                 // then
                 List<Schedule> temporaryStorage = trip.getTemporaryStorage();
@@ -1033,6 +1049,9 @@ public class TripTest {
                 assertThat(schedules).containsExactlyInAnyOrder(schedule1, schedule2);
                 assertThat(schedule1.getScheduleIndex()).isEqualTo(ScheduleIndex.of(ScheduleIndex.DEFAULT_SEQUENCE_GAP));
                 assertThat(schedule2.getScheduleIndex()).isEqualTo(ScheduleIndex.ZERO_INDEX);
+                assertThat(scheduleMoveDto.getBeforeDayId()).isEqualTo(null);
+                assertThat(scheduleMoveDto.getAfterDayId()).isEqualTo(targetDay.getId());
+                assertThat(scheduleMoveDto.isPositionChanged()).isEqualTo(true);
             }
 
             @DisplayName("targetOrder가 Schedules 크기와 똑같은 값이고, 끝 ScheduleIndex 범위가 안전하지 않으면 ScheduleIndexRangeException 발생")
@@ -1082,7 +1101,7 @@ public class TripTest {
                 Schedule schedule2 = trip.createSchedule(targetDay, "일정제목2", Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
 
                 // when
-                trip.moveSchedule(schedule1, targetDay, 0);
+                ScheduleMoveDto scheduleMoveDto = trip.moveSchedule(schedule1, targetDay, 0);
 
                 // then
                 List<Schedule> temporaryStorage = trip.getTemporaryStorage();
@@ -1093,6 +1112,9 @@ public class TripTest {
                 assertThat(schedules).containsExactlyInAnyOrder(schedule1, schedule2);
                 assertThat(schedule1.getScheduleIndex()).isEqualTo(ScheduleIndex.of(-ScheduleIndex.DEFAULT_SEQUENCE_GAP));
                 assertThat(schedule2.getScheduleIndex()).isEqualTo(ScheduleIndex.ZERO_INDEX);
+                assertThat(scheduleMoveDto.getBeforeDayId()).isEqualTo(null);
+                assertThat(scheduleMoveDto.getAfterDayId()).isEqualTo(targetDay.getId());
+                assertThat(scheduleMoveDto.isPositionChanged()).isEqualTo(true);
             }
 
             @DisplayName("targetOrder가 0이고, 맨 앞 ScheduleIndex 범위가 안전하지 않으면 ScheduleIndexRangeException 발생")
@@ -1143,7 +1165,7 @@ public class TripTest {
                 Schedule schedule3 = trip.createSchedule(targetDay, "일정제목3", Place.of("place-id333", "place 이름333", Coordinate.of(37.72221, 137.86523)));
 
                 // when
-                trip.moveSchedule(schedule1, targetDay, 1);
+                ScheduleMoveDto scheduleMoveDto = trip.moveSchedule(schedule1, targetDay, 1);
 
                 // then
                 List<Schedule> temporaryStorage = trip.getTemporaryStorage();
@@ -1155,6 +1177,9 @@ public class TripTest {
                 assertThat(schedule1.getScheduleIndex()).isEqualTo(schedule2.getScheduleIndex().mid(schedule3.getScheduleIndex()));
                 assertThat(schedule2.getScheduleIndex()).isEqualTo(ScheduleIndex.ZERO_INDEX);
                 assertThat(schedule3.getScheduleIndex()).isEqualTo(ScheduleIndex.of(ScheduleIndex.DEFAULT_SEQUENCE_GAP));
+                assertThat(scheduleMoveDto.getBeforeDayId()).isEqualTo(null);
+                assertThat(scheduleMoveDto.getAfterDayId()).isEqualTo(targetDay.getId());
+                assertThat(scheduleMoveDto.isPositionChanged()).isEqualTo(true);
             }
 
             @DisplayName("targetOrder가 다른 일정의 순서이고, 해당 순서 앞과 간격이 충분하지 않으면 MidScheduleIndexConflictException 발생")
@@ -1268,7 +1293,7 @@ public class TripTest {
                 Schedule schedule2 = trip.createSchedule(day, "일정제목2", Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
 
                 // when
-                trip.moveSchedule(schedule2, day, 1);
+                ScheduleMoveDto scheduleMoveDto = trip.moveSchedule(schedule2, day, 1);
 
                 // then
                 List<Schedule> schedules = day.getSchedules();
@@ -1280,6 +1305,9 @@ public class TripTest {
                 assertThat(firstSchedule.getScheduleIndex()).isEqualTo(ScheduleIndex.ZERO_INDEX);
                 assertThat(secondSchedule).isEqualTo(schedule2);
                 assertThat(secondSchedule.getScheduleIndex()).isEqualTo(ScheduleIndex.of(ScheduleIndex.DEFAULT_SEQUENCE_GAP));
+                assertThat(scheduleMoveDto.getBeforeDayId()).isEqualTo(day.getId());
+                assertThat(scheduleMoveDto.getAfterDayId()).isEqualTo(day.getId());
+                assertThat(scheduleMoveDto.isPositionChanged()).isEqualTo(false);
             }
 
             @DisplayName("같은 Day의 기존의 순서 다음으로 이동시키려 할 경우, 아무런 변화도 일어나지 않는다.")
@@ -1293,7 +1321,7 @@ public class TripTest {
                 Schedule schedule2 = trip.createSchedule(day, "일정제목2", Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
 
                 // when
-                trip.moveSchedule(schedule2, day, 2);
+                ScheduleMoveDto scheduleMoveDto = trip.moveSchedule(schedule2, day, 2);
 
                 // then
                 List<Schedule> schedules = day.getSchedules();
@@ -1305,6 +1333,9 @@ public class TripTest {
                 assertThat(firstSchedule.getScheduleIndex()).isEqualTo(ScheduleIndex.ZERO_INDEX);
                 assertThat(secondSchedule).isEqualTo(schedule2);
                 assertThat(secondSchedule.getScheduleIndex()).isEqualTo(ScheduleIndex.of(ScheduleIndex.DEFAULT_SEQUENCE_GAP));
+                assertThat(scheduleMoveDto.getBeforeDayId()).isEqualTo(day.getId());
+                assertThat(scheduleMoveDto.getAfterDayId()).isEqualTo(day.getId());
+                assertThat(scheduleMoveDto.isPositionChanged()).isEqualTo(false);
             }
 
 
@@ -1321,7 +1352,7 @@ public class TripTest {
                 Schedule schedule2 = trip.createSchedule(targetDay, "일정제목2", Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
 
                 // when
-                trip.moveSchedule(schedule1, targetDay, 1);
+                ScheduleMoveDto scheduleMoveDto = trip.moveSchedule(schedule1, targetDay, 1);
 
                 // then
                 List<Schedule> beforeDaySchedules = beforeDay.getSchedules();
@@ -1332,6 +1363,9 @@ public class TripTest {
                 assertThat(targetDaySchedules).containsExactlyInAnyOrder(schedule1, schedule2);
                 assertThat(schedule1.getScheduleIndex()).isEqualTo(ScheduleIndex.of(ScheduleIndex.DEFAULT_SEQUENCE_GAP));
                 assertThat(schedule2.getScheduleIndex()).isEqualTo(ScheduleIndex.ZERO_INDEX);
+                assertThat(scheduleMoveDto.getBeforeDayId()).isEqualTo(beforeDay.getId());
+                assertThat(scheduleMoveDto.getAfterDayId()).isEqualTo(targetDay.getId());
+                assertThat(scheduleMoveDto.isPositionChanged()).isEqualTo(true);
             }
 
             @DisplayName("targetOrder가 Schedules 크기와 똑같은 값이고, 끝 ScheduleIndex 범위가 안전하지 않으면 ScheduleIndexRangeException 발생")
@@ -1381,7 +1415,7 @@ public class TripTest {
                 Schedule schedule2 = trip.createSchedule(targetDay, "일정제목2", Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
 
                 // when
-                trip.moveSchedule(schedule1, targetDay, 0);
+                ScheduleMoveDto scheduleMoveDto = trip.moveSchedule(schedule1, targetDay, 0);
 
                 // then
                 List<Schedule> beforeDaySchedules = beforeDay.getSchedules();
@@ -1392,6 +1426,9 @@ public class TripTest {
                 assertThat(targetDaySchedules).containsExactlyInAnyOrder(schedule1, schedule2);
                 assertThat(schedule1.getScheduleIndex()).isEqualTo(ScheduleIndex.of(-ScheduleIndex.DEFAULT_SEQUENCE_GAP));
                 assertThat(schedule2.getScheduleIndex()).isEqualTo(ScheduleIndex.ZERO_INDEX);
+                assertThat(scheduleMoveDto.getBeforeDayId()).isEqualTo(beforeDay.getId());
+                assertThat(scheduleMoveDto.getAfterDayId()).isEqualTo(targetDay.getId());
+                assertThat(scheduleMoveDto.isPositionChanged()).isEqualTo(true);
             }
 
             @DisplayName("targetOrder가 0이고, 맨 앞 ScheduleIndex 범위가 안전하지 않으면 ScheduleIndexRangeException 발생")
@@ -1442,7 +1479,7 @@ public class TripTest {
                 Schedule schedule3 = trip.createSchedule(targetDay, "일정제목3", Place.of("place-id333", "place 이름333", Coordinate.of(37.72221, 137.86523)));
 
                 // when
-                trip.moveSchedule(schedule1, targetDay, 1);
+                ScheduleMoveDto scheduleMoveDto = trip.moveSchedule(schedule1, targetDay, 1);
 
                 // then
                 List<Schedule> temporaryStorage = trip.getTemporaryStorage();
@@ -1454,6 +1491,9 @@ public class TripTest {
                 assertThat(schedule1.getScheduleIndex()).isEqualTo(schedule2.getScheduleIndex().mid(schedule3.getScheduleIndex()));
                 assertThat(schedule2.getScheduleIndex()).isEqualTo(ScheduleIndex.ZERO_INDEX);
                 assertThat(schedule3.getScheduleIndex()).isEqualTo(ScheduleIndex.of(ScheduleIndex.DEFAULT_SEQUENCE_GAP));
+                assertThat(scheduleMoveDto.getBeforeDayId()).isEqualTo(beforeDay.getId());
+                assertThat(scheduleMoveDto.getAfterDayId()).isEqualTo(targetDay.getId());
+                assertThat(scheduleMoveDto.isPositionChanged()).isEqualTo(true);
             }
 
             @DisplayName("targetOrder가 다른 일정의 순서이고, 해당 순서 앞과 간격이 충분하지 않으면 MidScheduleIndexConflictException 발생")
@@ -1550,7 +1590,7 @@ public class TripTest {
                 Schedule schedule2 = trip.createSchedule(targetDay, "일정제목2", Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
 
                 // when
-                trip.moveSchedule(schedule1, targetDay, 1);
+                ScheduleMoveDto scheduleMoveDto = trip.moveSchedule(schedule1, targetDay, 1);
 
                 // then
                 List<Schedule> beforeDaySchedules = beforeDay.getSchedules();
@@ -1561,6 +1601,9 @@ public class TripTest {
                 assertThat(temporaryStorage).containsExactlyInAnyOrder(schedule1, schedule2);
                 assertThat(schedule1.getScheduleIndex()).isEqualTo(ScheduleIndex.of(ScheduleIndex.DEFAULT_SEQUENCE_GAP));
                 assertThat(schedule2.getScheduleIndex()).isEqualTo(ScheduleIndex.ZERO_INDEX);
+                assertThat(scheduleMoveDto.getBeforeDayId()).isEqualTo(beforeDay.getId());
+                assertThat(scheduleMoveDto.getAfterDayId()).isEqualTo(null);
+                assertThat(scheduleMoveDto.isPositionChanged()).isEqualTo(true);
             }
 
             @DisplayName("targetOrder가 임시보관함 크기와 똑같은 값이고, 끝 ScheduleIndex 범위가 안전하지 않으면 ScheduleIndexRangeException 발생")
@@ -1611,7 +1654,7 @@ public class TripTest {
                 Schedule schedule2 = trip.createSchedule(targetDay, "일정제목2", Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
 
                 // when
-                trip.moveSchedule(schedule1, targetDay, 0);
+                ScheduleMoveDto scheduleMoveDto = trip.moveSchedule(schedule1, targetDay, 0);
 
                 // then
                 List<Schedule> beforeDaySchedules = beforeDay.getSchedules();
@@ -1622,6 +1665,9 @@ public class TripTest {
                 assertThat(temporaryStorage).containsExactlyInAnyOrder(schedule1, schedule2);
                 assertThat(schedule1.getScheduleIndex()).isEqualTo(ScheduleIndex.of(-ScheduleIndex.DEFAULT_SEQUENCE_GAP));
                 assertThat(schedule2.getScheduleIndex()).isEqualTo(ScheduleIndex.ZERO_INDEX);
+                assertThat(scheduleMoveDto.getBeforeDayId()).isEqualTo(beforeDay.getId());
+                assertThat(scheduleMoveDto.getAfterDayId()).isEqualTo(null);
+                assertThat(scheduleMoveDto.isPositionChanged()).isEqualTo(true);
             }
 
             @DisplayName("targetOrder가 0이고, 끝 ScheduleIndex 범위가 안전하지 않으면 ScheduleIndexRangeException 발생")
@@ -1672,7 +1718,7 @@ public class TripTest {
                 Schedule schedule3 = trip.createSchedule(targetDay, "일정제목3", Place.of("place-id333", "place 이름333", Coordinate.of(37.72221, 137.86523)));
 
                 // when
-                trip.moveSchedule(schedule1, targetDay, 1);
+                ScheduleMoveDto scheduleMoveDto = trip.moveSchedule(schedule1, targetDay, 1);
 
                 // then
                 List<Schedule> schedules = beforeDay.getSchedules();
@@ -1684,6 +1730,9 @@ public class TripTest {
                 assertThat(schedule1.getScheduleIndex()).isEqualTo(schedule2.getScheduleIndex().mid(schedule3.getScheduleIndex()));
                 assertThat(schedule2.getScheduleIndex()).isEqualTo(ScheduleIndex.ZERO_INDEX);
                 assertThat(schedule3.getScheduleIndex()).isEqualTo(ScheduleIndex.of(ScheduleIndex.DEFAULT_SEQUENCE_GAP));
+                assertThat(scheduleMoveDto.getBeforeDayId()).isEqualTo(beforeDay.getId());
+                assertThat(scheduleMoveDto.getAfterDayId()).isEqualTo(null);
+                assertThat(scheduleMoveDto.isPositionChanged()).isEqualTo(true);
             }
 
             @DisplayName("targetOrder가 다른 일정의 순서이고, 해당 순서 앞과 간격이 충분하지 않으면 MidScheduleIndexConflictException 발생")

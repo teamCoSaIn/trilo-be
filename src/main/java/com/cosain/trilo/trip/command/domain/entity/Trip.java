@@ -1,6 +1,7 @@
 package com.cosain.trilo.trip.command.domain.entity;
 
 import com.cosain.trilo.trip.command.domain.dto.ChangeTripPeriodResult;
+import com.cosain.trilo.trip.command.domain.dto.ScheduleMoveDto;
 import com.cosain.trilo.trip.command.domain.exception.*;
 import com.cosain.trilo.trip.command.domain.vo.Place;
 import com.cosain.trilo.trip.command.domain.vo.ScheduleIndex;
@@ -177,13 +178,11 @@ public class Trip {
      * @param targetDay
      * @param targetOrder
      */
-    public void moveSchedule(Schedule schedule, Day targetDay, int targetOrder) {
+    public ScheduleMoveDto moveSchedule(Schedule schedule, Day targetDay, int targetOrder) {
         validateTripDayRelationShipShip(targetDay);
-        if (targetDay == null) {
-            moveScheduleToTemporaryStorage(schedule, targetOrder);
-            return;
-        }
-        targetDay.moveSchedule(schedule, targetOrder);
+        return (targetDay == null)
+                ? moveScheduleToTemporaryStorage(schedule, targetOrder)
+                : targetDay.moveSchedule(schedule, targetOrder);
     }
 
     /**
@@ -206,22 +205,24 @@ public class Trip {
      * @param schedule
      * @param targetOrder
      */
-    private void moveScheduleToTemporaryStorage(Schedule schedule, int targetOrder) {
+    private ScheduleMoveDto moveScheduleToTemporaryStorage(Schedule schedule, int targetOrder) {
         if (targetOrder < 0 || targetOrder > this.temporaryStorage.size()) {
             throw new InvalidScheduleMoveTargetOrderException("일정을 지정 위치로 옮기려 시도했으나, 유효한 순서 범위를 벗어남");
         }
+        Day beforeDay = schedule.getDay();
         if (isSamePositionMove(schedule, targetOrder)) {
-            return;
+            return ScheduleMoveDto.ofNotPositionChanged(schedule.getId(), beforeDay);
         }
         if (targetOrder == this.temporaryStorage.size()) {
             moveScheduleToTemporaryStorageTail(schedule);
-            return;
+            return ScheduleMoveDto.ofPositionChanged(schedule.getId(), beforeDay, null);
         }
         if (targetOrder == 0) {
             moveScheduleToTemporaryStorageHead(schedule);
-            return;
+            return ScheduleMoveDto.ofPositionChanged(schedule.getId(), beforeDay, null);
         }
         moveScheduleToTemporaryStorageMiddle(schedule, targetOrder);
+        return ScheduleMoveDto.ofPositionChanged(schedule.getId(), beforeDay, null);
     }
 
     /**

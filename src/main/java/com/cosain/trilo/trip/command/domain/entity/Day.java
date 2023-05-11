@@ -1,5 +1,6 @@
 package com.cosain.trilo.trip.command.domain.entity;
 
+import com.cosain.trilo.trip.command.domain.dto.ScheduleMoveDto;
 import com.cosain.trilo.trip.command.domain.exception.InvalidScheduleMoveTargetOrderException;
 import com.cosain.trilo.trip.command.domain.exception.MidScheduleIndexConflictException;
 import com.cosain.trilo.trip.command.domain.vo.Place;
@@ -92,24 +93,26 @@ public class Day {
      * @param schedule
      * @param targetOrder
      */
-    void moveSchedule(Schedule schedule, int targetOrder) {
+    ScheduleMoveDto moveSchedule(Schedule schedule, int targetOrder) {
         // 일단 앞에서 Schedule이 Trip과 관련된 Schedule이라는 것은 검증 됨
         // TODO: 임시보관함과 Day에서 동일한 로직이 중복됨 -> 리팩터링을 해야할 것인가
         if (targetOrder < 0 || targetOrder > this.schedules.size()) {
             throw new InvalidScheduleMoveTargetOrderException("일정을 지정 위치로 옮기려 시도했으나, 유효한 순서 범위를 벗어남");
         }
+        Day beforeDay = schedule.getDay();
         if (isSamePositionMove(schedule, targetOrder)) {
-            return;
+            return ScheduleMoveDto.ofNotPositionChanged(schedule.getId(), beforeDay);
         }
         if (targetOrder == this.schedules.size()) {
             moveScheduleToTail(schedule);
-            return;
+            return ScheduleMoveDto.ofPositionChanged(schedule.getId(), beforeDay, this);
         }
         if (targetOrder == 0) {
             moveScheduleToHead(schedule);
-            return;
+            return ScheduleMoveDto.ofPositionChanged(schedule.getId(), beforeDay, this);
         }
         moveScheduleToMiddle(schedule, targetOrder);
+        return ScheduleMoveDto.ofPositionChanged(schedule.getId(), beforeDay, this);
     }
 
     /**
