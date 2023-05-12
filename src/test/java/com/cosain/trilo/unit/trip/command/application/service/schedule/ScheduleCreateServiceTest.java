@@ -82,7 +82,7 @@ public class ScheduleCreateServiceTest {
                     .scheduleIndex(ScheduleIndex.ZERO_INDEX)
                     .build();
 
-            given(dayRepository.findById(eq(dayId))).willReturn(Optional.of(day));
+            given(dayRepository.findByIdWithTrip(eq(dayId))).willReturn(Optional.of(day));
             given(tripRepository.findById(eq(tripId))).willReturn(Optional.of(trip));
             given(scheduleRepository.save(any(Schedule.class))).willReturn(createdSchedule);
 
@@ -90,7 +90,7 @@ public class ScheduleCreateServiceTest {
             scheduleCreateService.createSchedule(tripperId, scheduleCreateCommand);
 
             // then
-            verify(dayRepository, times(1)).findById(eq(dayId));
+            verify(dayRepository, times(1)).findByIdWithTrip(eq(dayId));
             verify(tripRepository, times(1)).findById(eq(tripId));
             verify(scheduleRepository, times(0)).relocateDaySchedules(eq(tripId), eq(dayId));
             verify(scheduleRepository, times(1)).save(any(Schedule.class));
@@ -168,7 +168,7 @@ public class ScheduleCreateServiceTest {
                     .scheduleIndex(ScheduleIndex.of(ScheduleIndex.DEFAULT_SEQUENCE_GAP))
                     .build();
 
-            when(dayRepository.findById(eq(dayId)))
+            when(dayRepository.findByIdWithTrip(eq(dayId)))
                     .thenReturn(Optional.of(beforeDay))
                     .thenReturn(Optional.of(rediscoveredDay));
 
@@ -183,7 +183,7 @@ public class ScheduleCreateServiceTest {
             scheduleCreateService.createSchedule(tripperId, scheduleCreateCommand);
 
             // then
-            verify(dayRepository, times(2)).findById(eq(dayId));
+            verify(dayRepository, times(2)).findByIdWithTrip(eq(dayId));
             verify(tripRepository, times(2)).findById(eq(tripId));
             verify(scheduleRepository, times(1)).relocateDaySchedules(eq(tripId), eq(dayId));
             verify(scheduleRepository, times(1)).save(any(Schedule.class));
@@ -227,7 +227,7 @@ public class ScheduleCreateServiceTest {
             scheduleCreateService.createSchedule(tripperId, scheduleCreateCommand);
 
             // then
-            verify(dayRepository, times(0)).findById(isNull());
+            verify(dayRepository, times(0)).findByIdWithTrip(isNull());
             verify(tripRepository, times(1)).findById(eq(tripId));
             verify(scheduleRepository, times(0)).relocateDaySchedules(eq(tripId), isNull());
             verify(scheduleRepository, times(1)).save(any(Schedule.class));
@@ -283,7 +283,7 @@ public class ScheduleCreateServiceTest {
             scheduleCreateService.createSchedule(tripperId, scheduleCreateCommand);
 
             // then
-            verify(dayRepository, times(0)).findById(isNull());
+            verify(dayRepository, times(0)).findByIdWithTrip(isNull());
             verify(tripRepository, times(2)).findById(eq(tripId));
             verify(scheduleRepository, times(1)).relocateDaySchedules(eq(tripId), isNull());
             verify(scheduleRepository, times(1)).save(any(Schedule.class));
@@ -301,13 +301,13 @@ public class ScheduleCreateServiceTest {
         Day day = Day.of(LocalDate.of(2023, 4, 5), trip);
 
         ScheduleCreateCommand scheduleCreateCommand = ScheduleCreateCommand.of(1L, 1L, "제목", "내용", "장소 식별자", 23.21, 23.24);
-        given(dayRepository.findById(anyLong())).willReturn(Optional.of(day));
+        given(dayRepository.findByIdWithTrip(anyLong())).willReturn(Optional.of(day));
         given(tripRepository.findById(anyLong())).willReturn(Optional.of(trip));
 
         // when & then
         assertThatThrownBy(() -> scheduleCreateService.createSchedule(noAuthorityTripperId, scheduleCreateCommand))
                 .isInstanceOf(NoScheduleCreateAuthorityException.class);
-        verify(dayRepository).findById(anyLong());
+        verify(dayRepository).findByIdWithTrip(anyLong());
         verify(tripRepository).findById(anyLong());
     }
 
