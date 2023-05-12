@@ -146,9 +146,23 @@ public class Trip {
     }
 
     public Schedule createSchedule(Day day, String title, Place place) {
+        validateTripDayRelationShip(day);
         return (day == null)
                 ? makeTemporaryStorageSchedule(title, place)
-                : makeDaySchedule(day, title, place);
+                : day.createSchedule(title, place);
+    }
+
+    /**
+     * Trip에 Day가 속해있는 지 검증합니다.
+     * @param day
+     */
+    private void validateTripDayRelationShip(Day day) {
+        if (day == null) {
+            return;
+        }
+        if (!day.isBelongTo(this)) {
+            throw new InvalidTripDayException("해당 Day는 Trip의 Day가 아님");
+        }
     }
 
     private Schedule makeTemporaryStorageSchedule(String title, Place place) {
@@ -163,14 +177,6 @@ public class Trip {
                 : temporaryStorage.get(temporaryStorage.size() - 1).getScheduleIndex().generateNextIndex();
     }
 
-    private Schedule makeDaySchedule(Day day, String title, Place place) {
-        if (!day.isBelongTo(this)) {
-            throw new InvalidTripDayException("해당 day는 Trip의 Day가 아님");
-        }
-
-        return day.createSchedule(title, place);
-    }
-
     /**
      * Schedule을 지정한 Day의 지정한 순서로 이동합니다. 이때, 지정한 Day가 null이면 임시보관함으로 이동합니다. 같은 Day를 지정하면
      * 같은 곳 안에서 순서 변경이 일어납니다.
@@ -179,24 +185,10 @@ public class Trip {
      * @param targetOrder
      */
     public ScheduleMoveDto moveSchedule(Schedule schedule, Day targetDay, int targetOrder) {
-        validateTripDayRelationShipShip(targetDay);
+        validateTripDayRelationShip(targetDay);
         return (targetDay == null)
                 ? moveScheduleToTemporaryStorage(schedule, targetOrder)
                 : targetDay.moveSchedule(schedule, targetOrder);
-    }
-
-    /**
-     * Trip에 Day가 속해있는 지 검증합니다.
-     * @param day
-     */
-
-    private void validateTripDayRelationShipShip(Day day) {
-        if (day == null) {
-            return;
-        }
-        if (!day.isBelongTo(this)) {
-            throw new InvalidTripDayException("해당 Day는 Trip의 Day가 아님");
-        }
     }
 
     /**
