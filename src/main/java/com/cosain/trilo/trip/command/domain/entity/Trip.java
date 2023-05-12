@@ -164,7 +164,7 @@ public class Trip {
     }
 
     private Schedule makeDaySchedule(Day day, String title, Place place) {
-        if (!day.getTrip().equals(this)) {
+        if (!day.isBelongTo(this)) {
             throw new InvalidTripDayException("해당 day는 Trip의 Day가 아님");
         }
 
@@ -194,7 +194,7 @@ public class Trip {
         if (day == null) {
             return;
         }
-        if (!day.getTrip().equals(this)) {
+        if (!day.isBelongTo(this)) {
             throw new InvalidTripDayException("해당 Day는 Trip의 Day가 아님");
         }
     }

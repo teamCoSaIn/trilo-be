@@ -177,4 +177,13 @@ public class Day {
     void detachSchedule(Schedule schedule) {
         this.schedules.remove(schedule);
     }
+
+    /**
+     * Day가 지정 Trip에 속해 있는 지 여부를 반환
+     * @param trip
+     * @return
+     */
+    boolean isBelongTo(Trip trip) {
+        return this.trip.equals(trip);
+    }
 }
