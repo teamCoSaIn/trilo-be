@@ -8,9 +8,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 
@@ -25,7 +27,7 @@ public class ConnectionProxyHandlerTest {
     private PreparedStatement preparedStatement;
 
     @Test
-    @DisplayName("invoke() 실행 시 PreparedStatement 타입의 객체가 반환된다")
+    @DisplayName("invoke() 실행 시 Proxy & PreparedStatement 타입의 객체가 반환된다")
     void testInvoke_PreparedStatementProxy_Returned() throws Throwable{
 
         // given
@@ -37,7 +39,8 @@ public class ConnectionProxyHandlerTest {
         Object invoke = connectionProxyHandler.invoke(connection, method, new String[]{""});
 
         // then
-        Assertions.assertInstanceOf(PreparedStatement.class, invoke);
+        assertInstanceOf(PreparedStatement.class, invoke);
+        assertInstanceOf(Proxy.class, invoke);
     }
 
 }
