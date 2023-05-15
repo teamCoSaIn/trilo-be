@@ -46,12 +46,15 @@ public class TripUpdateService implements TripUpdateUseCase {
     private void changePeriod(Trip trip, TripPeriod newPeriod) {
         var changePeriodResult = trip.changePeriod(newPeriod);
         List<Day> createdDays = changePeriodResult.getCreatedDays();
-        List<Day> deletedDays = changePeriodResult.getDeletedDays();
+        List<Long> deletedDayIds = changePeriodResult.getDeletedDays().stream()
+                .map(Day::getId)
+                .toList();
+
         if (!createdDays.isEmpty()) {
             dayRepository.saveAll(createdDays);
         }
-        if (!deletedDays.isEmpty()) {
-            dayRepository.deleteDays(deletedDays);
+        if (!deletedDayIds.isEmpty()) {
+            dayRepository.deleteAllByIds(deletedDayIds);
         }
     }
 

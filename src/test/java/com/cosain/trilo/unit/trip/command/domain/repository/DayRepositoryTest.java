@@ -60,7 +60,8 @@ public class DayRepositoryTest {
     }
 
     @Test
-    void deleteAllByDaysTest() {
+    @DisplayName("deleteAllByIds- 전달받은 Id 목록의 Day들을 삭제")
+    void deleteAllByIdsTest() {
 
         // given
         Trip trip = Trip.create("제목", 1L);
@@ -83,28 +84,6 @@ public class DayRepositoryTest {
         List<Day> remainingDays = dayRepository.findAll();
         assertThat(remainingDays.size()).isEqualTo(2);
         assertThat(remainingDays).map(Day::getId).containsExactlyInAnyOrder(day3.getId(), day4.getId());
-    }
-
-    @Test
-    void deleteDaysTest() {
-
-        // given
-        Trip trip = Trip.create("제목", 1L);
-        em.persist(trip);
-
-        Day day1 = Day.of(LocalDate.of(2023, 5, 1), trip);
-        Day day2 = Day.of(LocalDate.of(2023, 5, 2), trip);
-        Day day3 = Day.of(LocalDate.of(2023, 5, 3), trip);
-        List<Day> daysToDelete = Arrays.asList(day1, day2, day3);
-
-        dayRepository.saveAll(daysToDelete);
-
-        // when
-        dayRepository.deleteDays(daysToDelete);
-
-        // then
-        List<Day> remainingDays = dayRepository.findAll();
-        assertThat(remainingDays.size()).isEqualTo(0);
     }
 
     @Test

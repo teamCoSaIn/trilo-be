@@ -21,8 +21,7 @@ import java.util.Optional;
 import static com.cosain.trilo.fixture.TripFixture.DECIDED_TRIP;
 import static com.cosain.trilo.fixture.TripFixture.UNDECIDED_TRIP;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -44,48 +43,56 @@ public class TripUpdateServiceTest {
     @DisplayName("존재하지 않는 여행을 수정하려 하면, TripNotFoundException 발생")
     public void if_update_not_exist_trip_then_it_throws_TripNotFoundException() {
         // given
-        TripUpdateCommand updateCommand = TripUpdateCommand.of("수정할 제목",
-                LocalDate.of(2023,5,5), LocalDate.of(2023, 5, 15));
-        given(tripRepository.findByIdWithDays(anyLong())).willReturn(Optional.empty());
+        Long tripId = 1L;
+        Long tripperId = 2L;
+        TripUpdateCommand updateCommand = TripUpdateCommand.of("수정할 제목", LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 3));
+        given(tripRepository.findByIdWithDays(eq(tripId))).willReturn(Optional.empty());
 
         // when & then
-        assertThatThrownBy(() -> tripUpdateService.updateTrip(1L, 1L, updateCommand))
+        assertThatThrownBy(() -> tripUpdateService.updateTrip(tripId, tripperId, updateCommand))
                 .isInstanceOf(TripNotFoundException.class);
-        verify(tripRepository).findByIdWithDays(anyLong());
+        verify(tripRepository).findByIdWithDays(eq(tripId));
     }
 
     @Test
     public void 여행_상태가_UNDECIDED이고_날짜와_제목을_수정할_때() throws Exception {
         // given
+        Long tripId = 1L;
+        Long tripperId = 2L;
         TripUpdateCommand updateCommand = TripUpdateCommand.of("수정할 제목",
-                        LocalDate.of(2023,5,5), LocalDate.of(2023, 5, 15));
+                LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 3));
 
-        Trip trip = UNDECIDED_TRIP.createUndecided(1L, 1L, "여행 제목");
-        given(tripRepository.findByIdWithDays(anyLong())).willReturn(Optional.of(trip));
+        Trip trip = UNDECIDED_TRIP.createUndecided(tripId, tripperId, "여행 제목");
+        given(tripRepository.findByIdWithDays(eq(tripId))).willReturn(Optional.of(trip));
 
         // when
-        tripUpdateService.updateTrip(1L, 1L, updateCommand);
+        tripUpdateService.updateTrip(tripId, tripperId, updateCommand);
 
         // then
-        verify(tripRepository, times(1)).findByIdWithDays(anyLong());
-        verify(dayRepository, times(0)).deleteDays(anyList());
+        verify(tripRepository, times(1)).findByIdWithDays(eq(tripId));
+        verify(dayRepository, times(0)).deleteAllByIds(anyList());
         verify(dayRepository, times(1)).saveAll(anyList());
     }
 
     @Test
     public void 여행_상태가_DECIDED이고_다른_제목과_기간으로_수정하는_경우() throws Exception {
         // given
+        Long tripId = 1L;
+        Long tripperId = 2L;
+
         TripUpdateCommand updateCommand = TripUpdateCommand.of("수정할 제목",
-                LocalDate.of(2023,5,5), LocalDate.of(2023, 5, 15));
-        Trip trip = DECIDED_TRIP.createDecided(1L, 1L, "여행 제목", LocalDate.of(2023, 5, 10), LocalDate.of(2023, 5, 20));
-        given(tripRepository.findByIdWithDays(anyLong())).willReturn(Optional.of(trip));
+                LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 5));
+        Trip trip = DECIDED_TRIP.createDecided(tripId, tripperId, "여행 제목", LocalDate.of(2023, 3, 3), LocalDate.of(2023, 3, 7));
+        given(tripRepository.findByIdWithDays(eq(tripId))).willReturn(Optional.of(trip));
+        given(dayRepository.deleteAllByIds(anyList())).willReturn(2);
+
 
         // when
-        tripUpdateService.updateTrip(1L, 1L, updateCommand);
+        tripUpdateService.updateTrip(tripId, tripperId, updateCommand);
 
         // then
         verify(tripRepository, times(1)).findByIdWithDays(anyLong());
-        verify(dayRepository, times(1)).deleteDays(anyList());
+        verify(dayRepository, times(1)).deleteAllByIds(anyList());
         verify(dayRepository, times(1)).saveAll(anyList());
     }
 
@@ -97,16 +104,20 @@ public class TripUpdateServiceTest {
         @DisplayName("NoTripUpdateAuthorityException이 발생한다.")
         void it_throws_NoTripUpdateAuthorityException() {
             // given
+            Long tripId = 1L;
+            Long tripperId = 2L;
+            Long noAuthorityTripperId = 3L;
+
             TripUpdateCommand updateCommand = TripUpdateCommand.of("수정할 제목",
-                            LocalDate.of(2023,5,5), LocalDate.of(2023, 5, 15));
-            Trip trip = UNDECIDED_TRIP.createUndecided(1L, 1L, "여행 제목");
-            given(tripRepository.findByIdWithDays(anyLong())).willReturn(Optional.of(trip));
+                    LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 3));
+            Trip trip = UNDECIDED_TRIP.createUndecided(tripId, tripperId, "여행 제목");
+            given(tripRepository.findByIdWithDays(eq(tripId))).willReturn(Optional.of(trip));
 
             // when & then
-            assertThatThrownBy(() -> tripUpdateService.updateTrip(1L, 2L, updateCommand))
+            assertThatThrownBy(() -> tripUpdateService.updateTrip(tripId, noAuthorityTripperId, updateCommand))
                     .isInstanceOf(NoTripUpdateAuthorityException.class);
 
-            verify(tripRepository, times(1)).findByIdWithDays(anyLong());
+            verify(tripRepository, times(1)).findByIdWithDays(eq(tripId));
         }
 
     }
