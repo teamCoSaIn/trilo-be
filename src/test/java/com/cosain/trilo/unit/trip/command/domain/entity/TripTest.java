@@ -6,6 +6,7 @@ import com.cosain.trilo.trip.command.domain.entity.Schedule;
 import com.cosain.trilo.trip.command.domain.entity.Trip;
 import com.cosain.trilo.trip.command.domain.exception.*;
 import com.cosain.trilo.trip.command.domain.vo.*;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -13,7 +14,6 @@ import org.junit.jupiter.api.Test;
 import java.time.LocalDate;
 import java.util.List;
 
-import static com.cosain.trilo.fixture.TripFixture.DECIDED_TRIP;
 import static com.cosain.trilo.fixture.TripFixture.UNDECIDED_TRIP;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -96,8 +96,8 @@ public class TripTest {
                     var changePeriodResult = undecidedTrip.changePeriod(emptyPeriod);
 
                     // then
-                    List<Day> deletedDays = changePeriodResult.getDeletedDays();
-                    assertThat(deletedDays).isEmpty();
+                    List<Long> deletedDayIds = changePeriodResult.getDeletedDayIds();
+                    assertThat(deletedDayIds).isEmpty();
                 }
 
                 @Test
@@ -155,8 +155,8 @@ public class TripTest {
                     var changePeriodResult = undecidedTrip.changePeriod(newPeriod);
 
                     // then
-                    List<Day> deletedDays = changePeriodResult.getDeletedDays();
-                    assertThat(deletedDays).isEmpty();
+                    List<Long> deletedDayIds = changePeriodResult.getDeletedDayIds();
+                    assertThat(deletedDayIds).isEmpty();
                 }
 
                 @Test
@@ -207,11 +207,61 @@ public class TripTest {
         @DisplayName("DECIDED 상태 여행을 수정할 때")
         class Case_Change_DECIDED_Trip {
 
+            // common given
+            Trip decidedTrip;
+            Day day1, day2, day3, day4, day5;
+            TripPeriod notOverlappedPeriod = TripPeriod.of(LocalDate.of(2023, 3, 6), LocalDate.of(2023, 3, 10));
+
+            @BeforeEach
+            void setUp() {
+                Long tripId = 1L;
+                Long tripperId = 2L;
+
+                decidedTrip = Trip.builder()
+                        .id(tripId)
+                        .tripperId(tripperId)
+                        .title("여행 제목")
+                        .tripPeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 5)))
+                        .status(TripStatus.DECIDED)
+                        .build();
+
+                day1 = Day.builder()
+                        .id(1L)
+                        .trip(decidedTrip)
+                        .tripDate(LocalDate.of(2023, 3, 1))
+                        .build();
+
+                day2 = Day.builder()
+                        .id(2L)
+                        .trip(decidedTrip)
+                        .tripDate(LocalDate.of(2023, 3, 2))
+                        .build();
+
+                day3 = Day.builder()
+                        .id(3L)
+                        .trip(decidedTrip)
+                        .tripDate(LocalDate.of(2023, 3, 3))
+                        .build();
+
+                day4 = Day.builder()
+                        .id(4L)
+                        .trip(decidedTrip)
+                        .tripDate(LocalDate.of(2023, 3, 4))
+                        .build();
+
+                day5 = Day.builder()
+                        .id(5L)
+                        .trip(decidedTrip)
+                        .tripDate(LocalDate.of(2023, 3, 5))
+                        .build();
+
+                decidedTrip.getDays().addAll(List.of(day1, day2, day3, day4, day5));
+            }
+
             @Test
             @DisplayName("빈 기간으로 수정하면 EmptyPeriodUpdateException이 발생한다.")
             public void if_change_to_emptyPeriod_then_it_throws_EmptyPeriodUpdateException() {
                 // given
-                Trip decidedTrip = DECIDED_TRIP.createDecided(1L, 1L, "여행 제목", LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 5));
                 TripPeriod emptyPeriod = TripPeriod.empty();
 
                 // when & then
@@ -222,10 +272,6 @@ public class TripTest {
             @DisplayName("겹치지 않는 기간으로 수정하면")
             class If_Change_To_NotOverlappedPeriod {
 
-                // given
-                Trip decidedTrip = DECIDED_TRIP.createDecided(1L, 1L, "여행 제목", LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 5));
-                TripPeriod notOverlappedPeriod = TripPeriod.of(LocalDate.of(2023, 3, 6), LocalDate.of(2023, 3, 10));
-
                 @Test
                 @DisplayName("기존 기간의 Day들이 삭제된다")
                 public void previous_days_is_deleted() {
@@ -233,11 +279,12 @@ public class TripTest {
                     var changePeriodResult = decidedTrip.changePeriod(notOverlappedPeriod);
 
                     // then
-                    List<Day> deletedDays = changePeriodResult.getDeletedDays();
-                    assertThat(deletedDays).map(Day::getTripDate).containsExactly(
-                            LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 2),
-                            LocalDate.of(2023, 3, 3), LocalDate.of(2023, 3, 4),
-                            LocalDate.of(2023, 3, 5));
+                    List<Long> deletedDayIds = changePeriodResult.getDeletedDayIds();
+                    assertThat(deletedDayIds.size()).isEqualTo(5);
+                    assertThat(deletedDayIds).containsExactly(
+                            day1.getId(), day2.getId(), day3.getId(),
+                            day4.getId(), day5.getId()
+                    );
                 }
 
                 @Test
@@ -298,7 +345,6 @@ public class TripTest {
                 class If_Change_to_back_overlapped_period {
 
                     // given
-                    Trip decidedTrip = DECIDED_TRIP.createDecided(1L, 1L, "여행 제목", LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 5));
                     TripPeriod backOverlappedPeriod = TripPeriod.of(LocalDate.of(2023, 3, 4), LocalDate.of(2023, 3, 7));
 
                     @Test
@@ -307,10 +353,10 @@ public class TripTest {
                         var changePeriodResult = decidedTrip.changePeriod(backOverlappedPeriod);
 
                         // then
-                        List<Day> deletedDays = changePeriodResult.getDeletedDays();
-                        assertThat(deletedDays).map(Day::getTripDate).containsExactly(
-                                LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 2),
-                                LocalDate.of(2023, 3, 3));
+                        List<Long> deletedDayIds = changePeriodResult.getDeletedDayIds();
+                        assertThat(deletedDayIds).containsExactly(
+                                day1.getId(), day2.getId(), day3.getId()
+                        );
                     }
 
                     @Test
@@ -361,10 +407,8 @@ public class TripTest {
                 @Nested
                 @DisplayName("앞에서 겹치는 기간으로 수정하면")
                 class If_Change_to_front_overlapped_period {
-
                     // given
-                    Trip decidedTrip = DECIDED_TRIP.createDecided(1L, 1L, "여행 제목", LocalDate.of(2023, 3, 4), LocalDate.of(2023, 3, 7));
-                    TripPeriod frontOverlappedPeriod = TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 5));
+                    TripPeriod frontOverlappedPeriod = TripPeriod.of(LocalDate.of(2023, 2, 27), LocalDate.of(2023, 3, 3));
 
                     @Test
                     @DisplayName("뒤의 겹치지 않는 Day들이 삭제된다")
@@ -372,8 +416,8 @@ public class TripTest {
                         var changePeriodResult = decidedTrip.changePeriod(frontOverlappedPeriod);
 
                         // then
-                        List<Day> deletedDays = changePeriodResult.getDeletedDays();
-                        assertThat(deletedDays).map(Day::getTripDate).containsExactly(LocalDate.of(2023, 3, 6), LocalDate.of(2023, 3, 7));
+                        List<Long> deletedDayIds = changePeriodResult.getDeletedDayIds();
+                        assertThat(deletedDayIds).containsExactly(day4.getId(), day5.getId());
                     }
 
                     @Test
@@ -385,7 +429,7 @@ public class TripTest {
                         // then
                         List<Day> createdDays = changePeriodResult.getCreatedDays();
                         assertThat(createdDays).map(Day::getTripDate).containsExactly(
-                                LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 2), LocalDate.of(2023, 3, 3));
+                                LocalDate.of(2023, 2, 27), LocalDate.of(2023, 2, 28));
                     }
 
                     @Test
@@ -396,9 +440,9 @@ public class TripTest {
 
                         // then
                         assertThat(decidedTrip.getDays()).map(Day::getTripDate).containsExactlyInAnyOrder(
+                                LocalDate.of(2023, 2, 27), LocalDate.of(2023, 2, 28),
                                 LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 2),
-                                LocalDate.of(2023, 3, 3), LocalDate.of(2023, 3, 4),
-                                LocalDate.of(2023, 3, 5));
+                                LocalDate.of(2023, 3, 3));
                     }
 
                     @Test
@@ -426,7 +470,6 @@ public class TripTest {
                 @DisplayName("내부에 포함된 기간으로 수정하면")
                 class If_Change_to_inner_overlapped_period {
                     // given
-                    Trip decidedTrip = DECIDED_TRIP.createDecided(1L, 1L, "여행 제목", LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 6));
                     TripPeriod innerOverlappedPeriod = TripPeriod.of(LocalDate.of(2023, 3, 2), LocalDate.of(2023, 3, 4));
 
                     @Test
@@ -435,9 +478,8 @@ public class TripTest {
                         var changePeriodResult = decidedTrip.changePeriod(innerOverlappedPeriod);
 
                         // then
-                        List<Day> deletedDays = changePeriodResult.getDeletedDays();
-                        assertThat(deletedDays).map(Day::getTripDate).containsExactlyInAnyOrder(
-                                LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 5), LocalDate.of(2023, 3, 6));
+                        List<Long> deletedDayIds = changePeriodResult.getDeletedDayIds();
+                        assertThat(deletedDayIds).containsExactlyInAnyOrder(day1.getId(), day5.getId());
                     }
 
                     @Test
@@ -488,8 +530,7 @@ public class TripTest {
                 @DisplayName("기존 기간을 포함한 외부의 더 큰 기간으로 수정하면")
                 class If_Change_to_outer_overlapped_period {
                     // given
-                    Trip decidedTrip = DECIDED_TRIP.createDecided(1L, 1L, "여행 제목", LocalDate.of(2023, 3, 2), LocalDate.of(2023, 3, 4));
-                    TripPeriod outerOverlappedPeriod = TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 6));
+                    TripPeriod outerOverlappedPeriod = TripPeriod.of(LocalDate.of(2023, 2, 27), LocalDate.of(2023, 3, 7));
 
                     @Test
                     @DisplayName("삭제되는 Day가 없다.(더 기존의 Day를 포함한 큰 기간으로 변경하므로)")
@@ -497,8 +538,8 @@ public class TripTest {
                         var changePeriodResult = decidedTrip.changePeriod(outerOverlappedPeriod);
 
                         // then
-                        List<Day> deletedDays = changePeriodResult.getDeletedDays();
-                        assertThat(deletedDays).isEmpty();
+                        List<Long> deletedDayIds = changePeriodResult.getDeletedDayIds();
+                        assertThat(deletedDayIds).isEmpty();
                     }
 
                     @Test
@@ -510,7 +551,9 @@ public class TripTest {
                         // then
                         List<Day> createdDays = changePeriodResult.getCreatedDays();
                         assertThat(createdDays).map(Day::getTripDate)
-                                .containsExactly(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 5), LocalDate.of(2023, 3, 6));
+                                .containsExactly(
+                                        LocalDate.of(2023, 2, 27), LocalDate.of(2023, 2, 28),
+                                        LocalDate.of(2023, 3, 6), LocalDate.of(2023, 3, 7));
                     }
 
                     @Test
@@ -521,9 +564,11 @@ public class TripTest {
 
                         // then
                         assertThat(decidedTrip.getDays()).map(Day::getTripDate).containsExactlyInAnyOrder(
+                                LocalDate.of(2023, 2, 27), LocalDate.of(2023, 2, 28),
                                 LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 2),
                                 LocalDate.of(2023, 3, 3), LocalDate.of(2023, 3, 4),
-                                LocalDate.of(2023, 3, 5), LocalDate.of(2023, 3, 6));
+                                LocalDate.of(2023, 3, 5), LocalDate.of(2023, 3, 6),
+                                LocalDate.of(2023, 3, 7));
                     }
 
                     @Test
