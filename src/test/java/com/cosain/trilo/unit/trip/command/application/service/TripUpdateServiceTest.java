@@ -6,6 +6,7 @@ import com.cosain.trilo.trip.command.application.exception.TripNotFoundException
 import com.cosain.trilo.trip.command.application.service.TripUpdateService;
 import com.cosain.trilo.trip.command.domain.entity.Trip;
 import com.cosain.trilo.trip.command.domain.repository.DayRepository;
+import com.cosain.trilo.trip.command.domain.repository.ScheduleRepository;
 import com.cosain.trilo.trip.command.domain.repository.TripRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -39,6 +40,9 @@ public class TripUpdateServiceTest {
     @Mock
     private DayRepository dayRepository;
 
+    @Mock
+    private ScheduleRepository scheduleRepository;
+
     @Test
     @DisplayName("존재하지 않는 여행을 수정하려 하면, TripNotFoundException 발생")
     public void if_update_not_exist_trip_then_it_throws_TripNotFoundException() {
@@ -70,8 +74,10 @@ public class TripUpdateServiceTest {
 
         // then
         verify(tripRepository, times(1)).findByIdWithDays(eq(tripId));
-        verify(dayRepository, times(0)).deleteAllByIds(anyList());
         verify(dayRepository, times(1)).saveAll(anyList());
+        verify(scheduleRepository, times(0)).relocateDaySchedules(eq(tripId), isNull());
+        verify(scheduleRepository, times(0)).moveSchedulesToTemporaryStorage(eq(tripId), anyList());
+        verify(dayRepository, times(0)).deleteAllByIds(anyList());
     }
 
     @Test
@@ -84,16 +90,19 @@ public class TripUpdateServiceTest {
                 LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 5));
         Trip trip = DECIDED_TRIP.createDecided(tripId, tripperId, "여행 제목", LocalDate.of(2023, 3, 3), LocalDate.of(2023, 3, 7));
         given(tripRepository.findByIdWithDays(eq(tripId))).willReturn(Optional.of(trip));
+        given(scheduleRepository.relocateDaySchedules(eq(tripId), isNull())).willReturn(0);
+        given(scheduleRepository.moveSchedulesToTemporaryStorage(eq(tripId), anyList())).willReturn(0);
         given(dayRepository.deleteAllByIds(anyList())).willReturn(2);
-
 
         // when
         tripUpdateService.updateTrip(tripId, tripperId, updateCommand);
 
         // then
         verify(tripRepository, times(1)).findByIdWithDays(anyLong());
-        verify(dayRepository, times(1)).deleteAllByIds(anyList());
         verify(dayRepository, times(1)).saveAll(anyList());
+        verify(scheduleRepository, times(1)).relocateDaySchedules(eq(tripId), isNull());
+        verify(scheduleRepository, times(1)).moveSchedulesToTemporaryStorage(eq(tripId), anyList());
+        verify(dayRepository, times(1)).deleteAllByIds(anyList());
     }
 
     @Nested
