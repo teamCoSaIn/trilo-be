@@ -3,6 +3,7 @@ package com.cosain.trilo.support;
 import com.cosain.trilo.auth.domain.repository.TokenRepository;
 import com.cosain.trilo.auth.infra.TokenAnalyzer;
 import com.cosain.trilo.auth.infra.TokenProvider;
+import com.cosain.trilo.config.LoggingTestConfig;
 import com.cosain.trilo.config.MessageSourceTestConfig;
 import com.cosain.trilo.config.SecurityTestConfig;
 import com.cosain.trilo.user.domain.UserRepository;
@@ -11,6 +12,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -25,7 +27,7 @@ import static com.cosain.trilo.fixture.UserFixture.KAKAO_MEMBER;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
-@Import({SecurityTestConfig.class, MessageSourceTestConfig.class})
+@Import({SecurityTestConfig.class, MessageSourceTestConfig.class, LoggingTestConfig.class})
 public class RestControllerTest {
 
     protected MockMvc mockMvc;
