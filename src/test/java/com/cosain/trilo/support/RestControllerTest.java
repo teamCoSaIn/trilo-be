@@ -3,6 +3,7 @@ package com.cosain.trilo.support;
 import com.cosain.trilo.auth.domain.repository.TokenRepository;
 import com.cosain.trilo.auth.infra.TokenAnalyzer;
 import com.cosain.trilo.auth.infra.TokenProvider;
+import com.cosain.trilo.common.logging.query.QueryCounter;
 import com.cosain.trilo.config.MessageSourceTestConfig;
 import com.cosain.trilo.config.SecurityTestConfig;
 import com.cosain.trilo.user.domain.UserRepository;
@@ -29,6 +30,9 @@ import static org.mockito.BDDMockito.given;
 public class RestControllerTest {
 
     protected MockMvc mockMvc;
+
+    @MockBean
+    protected QueryCounter queryCounter;
 
     @Autowired
     protected WebApplicationContext context;
