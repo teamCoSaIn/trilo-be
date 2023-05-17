@@ -10,4 +10,6 @@ public interface TripQueryRepository {
     Optional<TripDto> findTripDetailByTripId(Long tripId);
 
     Slice<TripDto> findTripDetailListByTripperId(Long tripperId, Pageable pageable);
+
+    boolean existById(Long tripI);
 }
