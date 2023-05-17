@@ -9,15 +9,19 @@ import java.util.List;
 @Getter
 public class ChangeTripPeriodResult {
 
-    private final List<Day> deletedDays = new ArrayList<>();
+    private final List<Long> deletedDayIds = new ArrayList<>();
     private final List<Day> createdDays = new ArrayList<>();
 
     public static ChangeTripPeriodResult of(List<Day> deletedDays, List<Day> createdDays) {
-        return new ChangeTripPeriodResult(deletedDays, createdDays);
+        List<Long> deleteDayIds = deletedDays.stream()
+                .map(Day::getId)
+                .toList();
+
+        return new ChangeTripPeriodResult(deleteDayIds, createdDays);
     }
 
-    private ChangeTripPeriodResult(List<Day> deletedDays, List<Day> createdDays) {
-        this.deletedDays.addAll(deletedDays);
+    private ChangeTripPeriodResult(List<Long> deletedDayIds, List<Day> createdDays) {
+        this.deletedDayIds.addAll(deletedDayIds);
         this.createdDays.addAll(createdDays);
     }
 }

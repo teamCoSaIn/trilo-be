@@ -8,7 +8,6 @@ import com.cosain.trilo.trip.command.domain.vo.TripPeriod;
 import com.cosain.trilo.trip.command.domain.vo.TripStatus;
 import jakarta.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,7 +60,8 @@ public class DayRepositoryTest {
     }
 
     @Test
-    void deleteDaysTest() {
+    @DisplayName("deleteAllByIds- 전달받은 Id 목록의 Day들을 삭제")
+    void deleteAllByIdsTest() {
 
         // given
         Trip trip = Trip.create("제목", 1L);
@@ -70,16 +70,20 @@ public class DayRepositoryTest {
         Day day1 = Day.of(LocalDate.of(2023, 5, 1), trip);
         Day day2 = Day.of(LocalDate.of(2023, 5, 2), trip);
         Day day3 = Day.of(LocalDate.of(2023, 5, 3), trip);
-        List<Day> daysToDelete = Arrays.asList(day1, day2, day3);
+        Day day4 = Day.of(LocalDate.of(2023, 5, 4), trip);
 
-        dayRepository.saveAll(daysToDelete);
+        em.persist(day1);
+        em.persist(day2);
+        em.persist(day3);
+        em.persist(day4);
 
         // when
-        dayRepository.deleteDays(daysToDelete);
+        dayRepository.deleteAllByIds(List.of(day1.getId(), day2.getId()));
 
         // then
         List<Day> remainingDays = dayRepository.findAll();
-        Assertions.assertThat(remainingDays.size()).isEqualTo(0);
+        assertThat(remainingDays.size()).isEqualTo(2);
+        assertThat(remainingDays).map(Day::getId).containsExactlyInAnyOrder(day3.getId(), day4.getId());
     }
 
     @Test

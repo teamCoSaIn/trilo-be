@@ -7,6 +7,7 @@ import com.cosain.trilo.trip.command.application.usecase.TripUpdateUseCase;
 import com.cosain.trilo.trip.command.domain.entity.Day;
 import com.cosain.trilo.trip.command.domain.entity.Trip;
 import com.cosain.trilo.trip.command.domain.repository.DayRepository;
+import com.cosain.trilo.trip.command.domain.repository.ScheduleRepository;
 import com.cosain.trilo.trip.command.domain.repository.TripRepository;
 import com.cosain.trilo.trip.command.domain.vo.TripPeriod;
 import jakarta.transaction.Transactional;
@@ -21,6 +22,7 @@ public class TripUpdateService implements TripUpdateUseCase {
 
     private final TripRepository tripRepository;
     private final DayRepository dayRepository;
+    private final ScheduleRepository scheduleRepository;
 
     @Override
     @Transactional
@@ -45,14 +47,16 @@ public class TripUpdateService implements TripUpdateUseCase {
 
     private void changePeriod(Trip trip, TripPeriod newPeriod) {
         var changePeriodResult = trip.changePeriod(newPeriod);
-        List<Day> deletedDays = changePeriodResult.getDeletedDays();
         List<Day> createdDays = changePeriodResult.getCreatedDays();
+        List<Long> deletedDayIds = changePeriodResult.getDeletedDayIds();
 
-        if (!deletedDays.isEmpty()) {
-            dayRepository.deleteDays(deletedDays);
-        }
         if (!createdDays.isEmpty()) {
             dayRepository.saveAll(createdDays);
+        }
+        if (!deletedDayIds.isEmpty()) {
+            scheduleRepository.relocateDaySchedules(trip.getId(), null);
+            scheduleRepository.moveSchedulesToTemporaryStorage(trip.getId(), deletedDayIds);
+            dayRepository.deleteAllByIds(deletedDayIds);
         }
     }
 

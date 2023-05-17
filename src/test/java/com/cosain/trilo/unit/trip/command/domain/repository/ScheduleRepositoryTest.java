@@ -198,15 +198,15 @@ public class ScheduleRepositoryTest {
             em.persist(day1);
             em.persist(day2);
 
-            Schedule schedule1 = buildDummySchedule(trip, null, "일정제목1", Place.of("place-id1", "광안리 해수욕장1", Coordinate.of(35.1551, 129.1220)), ScheduleIndex.of(7));
-            Schedule schedule2 = buildDummySchedule(trip, null, "일정제목2", Place.of("place-id2", "광안리 해수욕장2", Coordinate.of(35.1551, 129.1220)), ScheduleIndex.of(-1));
-            Schedule schedule3 = buildDummySchedule(trip, null, "일정제목3", Place.of("place-id3", "광안리 해수욕장3", Coordinate.of(35.1551, 129.1220)), ScheduleIndex.of(5));
-            Schedule schedule4 = buildDummySchedule(trip, day1, "일정제목4", Place.of("place-id4", "광안리 해수욕장4", Coordinate.of(35.1551, 129.1220)), ScheduleIndex.of(7));
-            Schedule schedule5 = buildDummySchedule(trip, day1, "일정제목5", Place.of("place-id5", "광안리 해수욕장5", Coordinate.of(35.1551, 129.1220)), ScheduleIndex.of(-1));
-            Schedule schedule6 = buildDummySchedule(trip, day1, "일정제목6", Place.of("place-id6", "광안리 해수욕장6", Coordinate.of(35.1551, 129.1220)), ScheduleIndex.of(5));
-            Schedule schedule7 = buildDummySchedule(trip, day2, "일정제목7", Place.of("place-id7", "광안리 해수욕장7", Coordinate.of(35.1551, 129.1220)), ScheduleIndex.of(7));
-            Schedule schedule8 = buildDummySchedule(trip, day2, "일정제목8", Place.of("place-id8", "광안리 해수욕장8", Coordinate.of(35.1551, 129.1220)), ScheduleIndex.of(-1));
-            Schedule schedule9 = buildDummySchedule(trip, day2, "일정제목9", Place.of("place-id9", "광안리 해수욕장9", Coordinate.of(35.1551, 129.1220)), ScheduleIndex.of(5));
+            Schedule schedule1 = buildDummySchedule(trip, null, ScheduleIndex.of(7));
+            Schedule schedule2 = buildDummySchedule(trip, null, ScheduleIndex.of(-1));
+            Schedule schedule3 = buildDummySchedule(trip, null, ScheduleIndex.of(5));
+            Schedule schedule4 = buildDummySchedule(trip, day1, ScheduleIndex.of(7));
+            Schedule schedule5 = buildDummySchedule(trip, day1, ScheduleIndex.of(-1));
+            Schedule schedule6 = buildDummySchedule(trip, day1, ScheduleIndex.of(5));
+            Schedule schedule7 = buildDummySchedule(trip, day2, ScheduleIndex.of(7));
+            Schedule schedule8 = buildDummySchedule(trip, day2, ScheduleIndex.of(-1));
+            Schedule schedule9 = buildDummySchedule(trip, day2, ScheduleIndex.of(5));
 
             em.persist(schedule1);
             em.persist(schedule2);
@@ -256,15 +256,15 @@ public class ScheduleRepositoryTest {
             em.persist(day1);
             em.persist(day2);
 
-            Schedule schedule1 = buildDummySchedule(trip, null, "일정제목1", Place.of("place-id1", "광안리 해수욕장1", Coordinate.of(35.1551, 129.1220)), ScheduleIndex.of(7));
-            Schedule schedule2 = buildDummySchedule(trip, null, "일정제목2", Place.of("place-id2", "광안리 해수욕장2", Coordinate.of(35.1551, 129.1220)), ScheduleIndex.of(-1));
-            Schedule schedule3 = buildDummySchedule(trip, null, "일정제목3", Place.of("place-id3", "광안리 해수욕장3", Coordinate.of(35.1551, 129.1220)), ScheduleIndex.of(5));
-            Schedule schedule4 = buildDummySchedule(trip, day1, "일정제목4", Place.of("place-id4", "광안리 해수욕장4", Coordinate.of(35.1551, 129.1220)), ScheduleIndex.of(7));
-            Schedule schedule5 = buildDummySchedule(trip, day1, "일정제목5", Place.of("place-id5", "광안리 해수욕장5", Coordinate.of(35.1551, 129.1220)), ScheduleIndex.of(-1));
-            Schedule schedule6 = buildDummySchedule(trip, day1, "일정제목6", Place.of("place-id6", "광안리 해수욕장6", Coordinate.of(35.1551, 129.1220)), ScheduleIndex.of(5));
-            Schedule schedule7 = buildDummySchedule(trip, day2, "일정제목7", Place.of("place-id7", "광안리 해수욕장7", Coordinate.of(35.1551, 129.1220)), ScheduleIndex.of(7));
-            Schedule schedule8 = buildDummySchedule(trip, day2, "일정제목8", Place.of("place-id8", "광안리 해수욕장8", Coordinate.of(35.1551, 129.1220)), ScheduleIndex.of(-1));
-            Schedule schedule9 = buildDummySchedule(trip, day2, "일정제목9", Place.of("place-id9", "광안리 해수욕장9", Coordinate.of(35.1551, 129.1220)), ScheduleIndex.of(5));
+            Schedule schedule1 = buildDummySchedule(trip, null, ScheduleIndex.of(7));
+            Schedule schedule2 = buildDummySchedule(trip, null, ScheduleIndex.of(-1));
+            Schedule schedule3 = buildDummySchedule(trip, null, ScheduleIndex.of(5));
+            Schedule schedule4 = buildDummySchedule(trip, day1, ScheduleIndex.of(7));
+            Schedule schedule5 = buildDummySchedule(trip, day1, ScheduleIndex.of(-1));
+            Schedule schedule6 = buildDummySchedule(trip, day1, ScheduleIndex.of(5));
+            Schedule schedule7 = buildDummySchedule(trip, day2, ScheduleIndex.of(7));
+            Schedule schedule8 = buildDummySchedule(trip, day2, ScheduleIndex.of(-1));
+            Schedule schedule9 = buildDummySchedule(trip, day2, ScheduleIndex.of(5));
 
             em.persist(schedule1);
             em.persist(schedule2);
@@ -293,14 +293,152 @@ public class ScheduleRepositoryTest {
                             ScheduleIndex.of(7), ScheduleIndex.of(-1), ScheduleIndex.of(5)
                     );
         }
-        private Schedule buildDummySchedule(Trip trip, Day day, String title, Place place, ScheduleIndex scheduleIndex) {
-            return Schedule.builder()
-                    .day(day)
-                    .trip(trip)
-                    .title(title)
-                    .place(place)
-                    .scheduleIndex(scheduleIndex)
+
+    }
+
+
+    @Nested
+    @DisplayName("moveSchedulesToTemporaryStorage (day들 일괄 임시보관함 이동)")
+    class MoveScheduleToTemporaryStorage {
+
+        @Test
+        @DisplayName("임시보관함에 다른 일정이 있으면, 맨 뒤 순서값 뒤에 day들의 일정들이 date, 순서값 순으로 오름차순으로 옮겨짐")
+        public void test_When_TemporaryStorage_not_empty() {
+            // given
+            Trip trip = Trip.builder()
+                    .tripperId(1L)
+                    .title("여행 제목")
+                    .status(TripStatus.DECIDED)
+                    .tripPeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 3)))
                     .build();
+            em.persist(trip);
+
+            Day day1 = Day.of(LocalDate.of(2023, 3, 1), trip);
+            Day day2 = Day.of(LocalDate.of(2023, 3, 2), trip);
+            Day day3 = Day.of(LocalDate.of(2023, 3, 3), trip);
+            em.persist(day1);
+            em.persist(day2);
+            em.persist(day3);
+
+            Schedule schedule1 = buildDummySchedule(trip, null, ScheduleIndex.of(0));
+            Schedule schedule2 = buildDummySchedule(trip, null, ScheduleIndex.of(ScheduleIndex.DEFAULT_SEQUENCE_GAP));
+            Schedule schedule3 = buildDummySchedule(trip, day2, ScheduleIndex.of(2));
+            Schedule schedule4 = buildDummySchedule(trip, day2, ScheduleIndex.of(1));
+            Schedule schedule5 = buildDummySchedule(trip, day1, ScheduleIndex.of(2));
+            Schedule schedule6 = buildDummySchedule(trip, day1, ScheduleIndex.of(1));
+            Schedule schedule7 = buildDummySchedule(trip, day3, ScheduleIndex.of(2));
+            Schedule schedule8 = buildDummySchedule(trip, day3, ScheduleIndex.of(1));
+
+            em.persist(schedule1);
+            em.persist(schedule2);
+            em.persist(schedule3);
+            em.persist(schedule4);
+            em.persist(schedule5);
+            em.persist(schedule6);
+            em.persist(schedule7);
+            em.persist(schedule8);
+
+            // when
+            int affectedRowCount = scheduleRepository.moveSchedulesToTemporaryStorage(trip.getId(), List.of(day1.getId(), day2.getId()));
+
+            // then
+            Schedule findSchedule1 = em.find(Schedule.class, schedule1.getId());
+            Schedule findSchedule2 = em.find(Schedule.class, schedule2.getId());
+            Schedule findSchedule3 = em.find(Schedule.class, schedule3.getId());
+            Schedule findSchedule4 = em.find(Schedule.class, schedule4.getId());
+            Schedule findSchedule5 = em.find(Schedule.class, schedule5.getId());
+            Schedule findSchedule6 = em.find(Schedule.class, schedule6.getId());
+            Schedule findSchedule7 = em.find(Schedule.class, schedule7.getId());
+            Schedule findSchedule8 = em.find(Schedule.class, schedule8.getId());
+
+            assertThat(affectedRowCount).isEqualTo(4);
+            assertThat(findSchedule1.getDay()).isEqualTo(null);
+            assertThat(findSchedule2.getDay()).isEqualTo(null);
+            assertThat(findSchedule3.getDay()).isEqualTo(null);
+            assertThat(findSchedule4.getDay()).isEqualTo(null);
+            assertThat(findSchedule5.getDay()).isEqualTo(null);
+            assertThat(findSchedule6.getDay()).isEqualTo(null);
+            assertThat(findSchedule1.getScheduleIndex()).isEqualTo(ScheduleIndex.of(0));
+            assertThat(findSchedule2.getScheduleIndex()).isEqualTo(ScheduleIndex.of(ScheduleIndex.DEFAULT_SEQUENCE_GAP));
+            assertThat(findSchedule3.getScheduleIndex()).isEqualTo(ScheduleIndex.of(ScheduleIndex.DEFAULT_SEQUENCE_GAP * 5));
+            assertThat(findSchedule4.getScheduleIndex()).isEqualTo(ScheduleIndex.of(ScheduleIndex.DEFAULT_SEQUENCE_GAP * 4));
+            assertThat(findSchedule5.getScheduleIndex()).isEqualTo(ScheduleIndex.of(ScheduleIndex.DEFAULT_SEQUENCE_GAP * 3));
+            assertThat(findSchedule6.getScheduleIndex()).isEqualTo(ScheduleIndex.of(ScheduleIndex.DEFAULT_SEQUENCE_GAP * 2));
+            assertThat(findSchedule7.getDay().getId()).isEqualTo(day3.getId());
+            assertThat(findSchedule8.getDay().getId()).isEqualTo(day3.getId());
+            assertThat(findSchedule7.getScheduleIndex()).isEqualTo(ScheduleIndex.of(2));
+            assertThat(findSchedule8.getScheduleIndex()).isEqualTo(ScheduleIndex.of(1));
+        }
+
+        @Test
+        @DisplayName("임시보관함이 비어있으면, day들의 일정들이 date, 순서값 순으로 오름차순으로 0번 순서부터 지정되어 옮겨짐")
+        public void test_When_TemporaryStorage_empty() {
+            // given
+            Trip trip = Trip.builder()
+                    .tripperId(1L)
+                    .title("여행 제목")
+                    .status(TripStatus.DECIDED)
+                    .tripPeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 3)))
+                    .build();
+            em.persist(trip);
+
+            Day day1 = Day.of(LocalDate.of(2023, 3, 1), trip);
+            Day day2 = Day.of(LocalDate.of(2023, 3, 2), trip);
+            Day day3 = Day.of(LocalDate.of(2023, 3, 3), trip);
+            em.persist(day1);
+            em.persist(day2);
+            em.persist(day3);
+
+            Schedule schedule1 = buildDummySchedule(trip, day2, ScheduleIndex.of(2));
+            Schedule schedule2 = buildDummySchedule(trip, day2, ScheduleIndex.of(1));
+            Schedule schedule3 = buildDummySchedule(trip, day1, ScheduleIndex.of(2));
+            Schedule schedule4 = buildDummySchedule(trip, day1, ScheduleIndex.of(1));
+            Schedule schedule5 = buildDummySchedule(trip, day3, ScheduleIndex.of(2));
+            Schedule schedule6 = buildDummySchedule(trip, day3, ScheduleIndex.of(1));
+
+            em.persist(schedule1);
+            em.persist(schedule2);
+            em.persist(schedule3);
+            em.persist(schedule4);
+            em.persist(schedule5);
+            em.persist(schedule6);
+
+            // when
+            int affectedRowCount = scheduleRepository.moveSchedulesToTemporaryStorage(trip.getId(), List.of(day1.getId(), day2.getId()));
+
+            // then
+            Schedule findSchedule1 = em.find(Schedule.class, schedule1.getId());
+            Schedule findSchedule2 = em.find(Schedule.class, schedule2.getId());
+            Schedule findSchedule3 = em.find(Schedule.class, schedule3.getId());
+            Schedule findSchedule4 = em.find(Schedule.class, schedule4.getId());
+            Schedule findSchedule5 = em.find(Schedule.class, schedule5.getId());
+            Schedule findSchedule6 = em.find(Schedule.class, schedule6.getId());
+
+            assertThat(affectedRowCount).isEqualTo(4);
+            assertThat(findSchedule1.getDay()).isEqualTo(null);
+            assertThat(findSchedule2.getDay()).isEqualTo(null);
+            assertThat(findSchedule3.getDay()).isEqualTo(null);
+            assertThat(findSchedule4.getDay()).isEqualTo(null);
+            assertThat(findSchedule1.getScheduleIndex()).isEqualTo(ScheduleIndex.of(ScheduleIndex.DEFAULT_SEQUENCE_GAP * 3));
+            assertThat(findSchedule2.getScheduleIndex()).isEqualTo(ScheduleIndex.of(ScheduleIndex.DEFAULT_SEQUENCE_GAP * 2));
+            assertThat(findSchedule3.getScheduleIndex()).isEqualTo(ScheduleIndex.of(ScheduleIndex.DEFAULT_SEQUENCE_GAP));
+            assertThat(findSchedule4.getScheduleIndex()).isEqualTo(ScheduleIndex.of(0));
+            assertThat(findSchedule5.getDay().getId()).isEqualTo(day3.getId());
+            assertThat(findSchedule6.getDay().getId()).isEqualTo(day3.getId());
+            assertThat(findSchedule5.getScheduleIndex()).isEqualTo(ScheduleIndex.of(2));
+            assertThat(findSchedule6.getScheduleIndex()).isEqualTo(ScheduleIndex.of(1));
         }
     }
+
+
+    private Schedule buildDummySchedule(Trip trip, Day day, ScheduleIndex scheduleIndex) {
+        return Schedule.builder()
+                .day(day)
+                .trip(trip)
+                .title("일정 제목")
+                .place(Place.of("place-id", "더미 제목", Coordinate.of(35.1551, 129.1220)))
+                .scheduleIndex(scheduleIndex)
+                .build();
+    }
+
 }
