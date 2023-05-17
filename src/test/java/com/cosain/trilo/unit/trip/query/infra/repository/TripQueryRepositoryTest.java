@@ -129,8 +129,9 @@ public class TripQueryRepositoryTest {
             em.flush();
 
             // when & then
+            long notExistTripId = 2L;
             assertThat(tripQueryRepository.existById(trip.getId())).isTrue();
-            assertThat(tripQueryRepository.existById(2L)).isFalse();
+            assertThat(tripQueryRepository.existById(notExistTripId)).isFalse();
         }
 
     }
