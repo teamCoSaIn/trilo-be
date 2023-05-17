@@ -7,7 +7,7 @@ import lombok.Getter;
 @Getter
 public class ScheduleDetailResponse {
     private long scheduleId;
-    private long dayId;
+    private Long dayId;
     private String title;
     private String placeName;
     private double latitude;
@@ -29,7 +29,7 @@ public class ScheduleDetailResponse {
     }
 
     @Builder
-    private ScheduleDetailResponse(long scheduleId, long dayId, String title, String placeName, double latitude, double longitude, long order, String content) {
+    private ScheduleDetailResponse(long scheduleId, Long dayId, String title, String placeName, double latitude, double longitude, long order, String content) {
         this.scheduleId = scheduleId;
         this.dayId = dayId;
         this.title = title;

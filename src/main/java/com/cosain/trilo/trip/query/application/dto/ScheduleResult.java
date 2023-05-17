@@ -9,7 +9,7 @@ import static lombok.AccessLevel.*;
 @Getter
 public class ScheduleResult {
     private long scheduleId;
-    private long dayId;
+    private Long dayId;
     private String title;
     private String placeName;
     private double latitude;
@@ -18,7 +18,7 @@ public class ScheduleResult {
     private String content;
 
     @Builder(access = PRIVATE)
-    private ScheduleResult(long scheduleId, long dayId, String title, String placeName, double latitude, double longitude, long order, String content) {
+    private ScheduleResult(long scheduleId, Long dayId, String title, String placeName, double latitude, double longitude, long order, String content) {
         this.scheduleId = scheduleId;
         this.dayId = dayId;
         this.title = title;

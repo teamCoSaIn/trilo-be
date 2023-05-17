@@ -15,7 +15,6 @@ public class TemporaryPageResult {
         return new TemporaryPageResult(scheduleResults, hasNext);
     }
 
-    @Builder(access = AccessLevel.PRIVATE)
     private TemporaryPageResult(final List<ScheduleResult> scheduleResults, final boolean hasNext){
         this.hasNext = hasNext;
         this.scheduleResults = scheduleResults;

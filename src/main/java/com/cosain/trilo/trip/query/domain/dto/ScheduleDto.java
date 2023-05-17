@@ -8,7 +8,7 @@ import lombok.Getter;
 @Getter
 public class ScheduleDto {
     private long scheduleId;
-    private long dayId;
+    private Long dayId;
     private String title;
     private String placeName;
     private double latitude;
@@ -17,7 +17,7 @@ public class ScheduleDto {
     private String content;
 
     @Builder(access = AccessLevel.PRIVATE)
-    private ScheduleDto(long scheduleId, long dayId, String title, String placeName, double latitude, double longitude, long order, String content) {
+    private ScheduleDto(long scheduleId, Long dayId, String title, String placeName, double latitude, double longitude, long order, String content) {
         this.scheduleId = scheduleId;
         this.dayId = dayId;
         this.title = title;
