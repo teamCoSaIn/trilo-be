@@ -32,4 +32,9 @@ public class TripQueryRepositoryImpl implements TripQueryRepository {
         List<TripDto> tripDtos = tripDetails.map(TripDto::from).getContent();
         return new SliceImpl<>(tripDtos, pageable, tripDetails.hasNext());
     }
+
+    @Override
+    public boolean existById(Long tripId) {
+        return tripQueryJpaRepository.existsById(tripId);
+    }
 }

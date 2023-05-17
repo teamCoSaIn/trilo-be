@@ -6,7 +6,7 @@ import lombok.Getter;
 @Getter
 public class ScheduleDetail {
     private long scheduleId;
-    private long dayId;
+    private Long dayId;
     private String title;
     private String placeName;
     private double latitude;
@@ -15,7 +15,7 @@ public class ScheduleDetail {
     private String content;
 
     @QueryProjection
-    public ScheduleDetail(long scheduleId, long dayId, String title, String placeName, double latitude, double longitude, long order, String content) {
+    public ScheduleDetail(long scheduleId, Long dayId, String title, String placeName, double latitude, double longitude, long order, String content) {
         this.scheduleId = scheduleId;
         this.dayId = dayId;
         this.title = title;

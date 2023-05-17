@@ -6,7 +6,6 @@ import com.cosain.trilo.trip.command.domain.vo.TripPeriod;
 import com.cosain.trilo.trip.command.domain.vo.TripStatus;
 import com.cosain.trilo.trip.query.domain.dto.TripDto;
 import com.cosain.trilo.trip.query.domain.repository.TripQueryRepository;
-import com.cosain.trilo.trip.query.infra.dto.TripDetail;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -117,6 +116,23 @@ public class TripQueryRepositoryTest {
 
         }
 
+        @Test
+        void existByIdTest(){
+            // given
+            Trip trip = Trip.builder()
+                    .tripperId(1L)
+                    .title("제목 1")
+                    .status(TripStatus.DECIDED)
+                    .tripPeriod(TripPeriod.of(LocalDate.of(2023, 5, 5), LocalDate.of(2023, 5, 10)))
+                    .build();
+            em.persist(trip);
+            em.flush();
+
+            // when & then
+            long notExistTripId = 2L;
+            assertThat(tripQueryRepository.existById(trip.getId())).isTrue();
+            assertThat(tripQueryRepository.existById(notExistTripId)).isFalse();
+        }
 
     }
 
