@@ -34,7 +34,7 @@ public class TemporarySearchService implements TemporarySearchUseCase {
     private List<ScheduleResult> mapToScheduleResults(Slice<ScheduleDto> scheduleDtos) {
         return scheduleDtos.getContent()
                 .stream()
-                .map(scheduleDto -> ScheduleResult.from(scheduleDto))
+                .map(ScheduleResult::from)
                 .collect(Collectors.toList());
     }
 
