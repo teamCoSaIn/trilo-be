@@ -6,14 +6,18 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MissingRequestCookieException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 @Slf4j
@@ -36,6 +40,22 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
         String errorMessage = getMessage(errorCode + ".message");
         String errorDetail = getMessage(errorCode + ".detail");
         return BasicErrorResponse.of(errorCode, errorMessage, errorDetail);
+    }
+
+
+    /**
+     * 요청 데이터 형식 또는 데이터 타입이 올바르지 않을 때에 대한 예외 API
+     */
+    @Override
+    protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+        log.info("요청 데이터 형식이 올바르지 않음");
+        String errorCode = "request-0001";
+        String errorMessage = getMessage(errorCode + ".message");
+        String errorDetail = getMessage(errorCode + ".detail");
+
+        return ResponseEntity
+                .badRequest()
+                .body(BasicErrorResponse.of(errorCode, errorMessage, errorDetail));
     }
 
     /**

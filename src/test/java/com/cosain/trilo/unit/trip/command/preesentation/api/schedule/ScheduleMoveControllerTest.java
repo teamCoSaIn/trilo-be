@@ -21,9 +21,9 @@ import java.nio.charset.StandardCharsets;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -76,7 +76,7 @@ public class ScheduleMoveControllerTest extends RestControllerTest {
     @Test
     @DisplayName("미인증 사용자 요청 -> 인증 실패 401")
     @WithAnonymousUser
-    public void updateSchedulePlace_with_unauthorizedUser() throws Exception {
+    public void moveSchedule_with_unauthorizedUser() throws Exception {
         Long scheduleId = 1L;
         Long targetDayId = 2L;
         int targetOrder = 3;
@@ -94,5 +94,74 @@ public class ScheduleMoveControllerTest extends RestControllerTest {
                 .andExpect(jsonPath("$.errorMessage").exists())
                 .andExpect(jsonPath("$.errorDetail").exists());
     }
+
+    @Test
+    @DisplayName("비어있는 바디 -> 올바르지 않은 요청 데이터 형식으로 간주하고 400 예외")
+    public void moveSchedule_with_emptyContent() throws Exception {
+        mockingForLoginUserAnnotation();
+
+        String emptyContent = "";
+
+        mockMvc.perform(patch("/api/schedules/1")
+                        .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)
+                        .content(emptyContent)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errorCode").value("request-0001"))
+                .andExpect(jsonPath("$.errorMessage").exists())
+                .andExpect(jsonPath("$.errorDetail").exists());
+    }
+
+    @Test
+    @DisplayName("형식이 올바르지 않은 바디 -> 올바르지 않은 요청 데이터 형식으로 간주하고 400 예외")
+    public void moveSchedule_with_invalidContent() throws Exception {
+        mockingForLoginUserAnnotation();
+        String invalidContent = """
+                {
+                    "targetDayId": 따옴표로 감싸지 않은 값,
+                    "targetOrder": 123
+                }
+                """;
+
+        mockMvc.perform(patch("/api/schedules/1")
+                        .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)
+                        .content(invalidContent)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errorCode").value("request-0001"))
+                .andExpect(jsonPath("$.errorMessage").exists())
+                .andExpect(jsonPath("$.errorDetail").exists());
+    }
+
+    @Test
+    @DisplayName("타입이 올바르지 않은 요청 데이터 -> 올바르지 않은 요청 데이터 형식으로 간주하고 400 예외")
+    public void moveSchedule_with_invalidType() throws Exception {
+        mockingForLoginUserAnnotation();
+        String invalidTypeContent = """
+                {
+                    "targetDayId": 1,
+                    "targetOrder": "숫자가 아닌 값"
+                }
+                """;
+
+        mockMvc.perform(patch("/api/schedules/1")
+                        .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)
+                        .content(invalidTypeContent)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errorCode").value("request-0001"))
+                .andExpect(jsonPath("$.errorMessage").exists())
+                .andExpect(jsonPath("$.errorDetail").exists());
+    }
+
 
 }

@@ -2,7 +2,6 @@ package com.cosain.trilo.unit.trip.command.preesentation.api.schedule;
 
 import com.cosain.trilo.support.RestControllerTest;
 import com.cosain.trilo.trip.command.application.usecase.ScheduleDeleteUseCase;
-import com.cosain.trilo.trip.command.application.usecase.TripDeleteUseCase;
 import com.cosain.trilo.trip.command.presentation.schedule.ScheduleDeleteController;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -65,5 +64,4 @@ class ScheduleDeleteControllerTest extends RestControllerTest {
                 .andExpect(jsonPath("$.errorMessage").exists())
                 .andExpect(jsonPath("$.errorDetail").exists());
     }
-
 }

@@ -56,7 +56,7 @@ class TripUpdateControllerTest extends RestControllerTest {
     @DisplayName("미인증 사용자 요청 -> 인증 실패 401")
     @WithAnonymousUser
     public void updateTrip_with_unauthorizedUser() throws Exception {
-        mockMvc.perform(put("/api/trips"))
+        mockMvc.perform(put("/api/trips/1"))
                 .andDo(print())
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.errorCode").exists())
@@ -64,4 +64,73 @@ class TripUpdateControllerTest extends RestControllerTest {
                 .andExpect(jsonPath("$.errorDetail").exists());
     }
 
+    @Test
+    @DisplayName("비어있는 바디 -> 올바르지 않은 요청 데이터 형식으로 간주하고 400 예외")
+    public void updateTrip_with_emptyContent() throws Exception {
+        mockingForLoginUserAnnotation();
+
+        String emptyContent = "";
+
+        mockMvc.perform(put("/api/trips/1")
+                        .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)
+                        .content(emptyContent)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errorCode").value("request-0001"))
+                .andExpect(jsonPath("$.errorMessage").exists())
+                .andExpect(jsonPath("$.errorDetail").exists());
+    }
+
+    @Test
+    @DisplayName("형식이 올바르지 않은 바디 -> 올바르지 않은 요청 데이터 형식으로 간주하고 400 예외")
+    public void updateTrip_with_invalidContent() throws Exception {
+        mockingForLoginUserAnnotation();
+        String invalidContent = """
+                {
+                    "title": 괄호로 감싸지 않은 제목,
+                    "startDate": "2023-03-01",
+                    "endDate": "2023-03-02"
+                }
+                """;
+
+        mockMvc.perform(put("/api/trips/1")
+                        .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)
+                        .content(invalidContent)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errorCode").value("request-0001"))
+                .andExpect(jsonPath("$.errorMessage").exists())
+                .andExpect(jsonPath("$.errorDetail").exists());
+    }
+
+    @Test
+    @DisplayName("타입이 올바르지 않은 요청 데이터 -> 올바르지 않은 요청 데이터 형식으로 간주하고 400 예외")
+    public void updateTrip_with_invalidType() throws Exception {
+        mockingForLoginUserAnnotation();
+        String invalidTypeContent = """
+                {
+                    "title": "제목",
+                    "startDate": "2023-03-01",
+                    "endDate": "날짜형식이 아닌 문자열"
+                }
+                """;
+
+        mockMvc.perform(put("/api/trips/1")
+                        .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)
+                        .content(invalidTypeContent)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errorCode").value("request-0001"))
+                .andExpect(jsonPath("$.errorMessage").exists())
+                .andExpect(jsonPath("$.errorDetail").exists());
+    }
 }
