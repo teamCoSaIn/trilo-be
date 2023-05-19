@@ -1,6 +1,8 @@
 package com.cosain.trilo.support;
 
 import com.cosain.trilo.config.QueryDslConfig;
+import com.cosain.trilo.trip.query.domain.repository.DayQueryRepository;
+import com.cosain.trilo.trip.query.infra.repository.day.DayQueryRepositoryImpl;
 import com.cosain.trilo.trip.query.infra.repository.schedule.ScheduleQueryRepositoryImpl;
 import com.cosain.trilo.trip.query.infra.repository.trip.TripQueryRepositoryImpl;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -18,6 +20,6 @@ import java.lang.annotation.Target;
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @DataJpaTest
 @DirtiesContext
-@Import({QueryDslConfig.class, TripQueryRepositoryImpl.class, ScheduleQueryRepositoryImpl.class})
+@Import({QueryDslConfig.class, TripQueryRepositoryImpl.class, ScheduleQueryRepositoryImpl.class, DayQueryRepositoryImpl.class})
 public @interface RepositoryTest {
 }
