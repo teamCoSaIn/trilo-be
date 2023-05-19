@@ -32,7 +32,7 @@ class SingleDayQueryControllerTest extends RestControllerTest {
     private DaySearchUseCase daySearchUseCase;
     private final String ACCESS_TOKEN = "Bearer accessToken";
     @Test
-    @DisplayName("인증된 사용자 요청 -> 미구현 500")
+    @DisplayName("인증된 사용자 요청 -> Day 단건 조회")
     public void findSingleSchedule_with_authorizedUser() throws Exception {
 
         mockingForLoginUserAnnotation();
