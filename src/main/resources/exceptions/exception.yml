@@ -1,51 +1,135 @@
-# 공통
-UnKnown:
-  code: "TempCode"
-  message: 예상치 못 한 서버 예외가 발생했습니다.
+# 서버 문제
+server-0001:
+  message: Unknown Error
+  detail: 예상치 못 한 서버 예외가 발생했습니다.
+
+server-9999:
+  message: NotImplemented
+  detail: 미구현 기능입니다.
 
 
-NotImplemented:
-  code: "TempCode"
-  message: 미구현 기능입니다.
+# 웹 요청 관련
+request-0001:
+  message: Invalid Request Data Format
+  detail: 요청 데이터 형식 또는 데이터 타입이 올바르지 않습니다. 요청 데이터 형식, 파라미터를 다시 확인해주세요.
 
-
-# 요청 관련
-MissingRequestCookie:
-  code: "TempCode"
-  message: 요청에 필요한 쿠키가 누락 됐습니다.
+request-0002:
+  message: Missing Request Cookie
+  detail: 요청에 필요한 쿠키가 누락 됐습니다. 요청에 필요한 쿠키가 존재하는 지, 제대로 된 값인지 다시 확인해주세요.
 
 
 # 인증/인가 관련
-AuthenticationFailed:
-  code: "TempCode"
-  message: 인증에 실패했습니다.
+auth-0001:
+  message: AuthenticationFailed
+  detail: 인증에 실패했습니다.
+
+auth-0002:
+  message: AccessDenied
+  detail: 접근 권한이 없습니다.
 
 
-AccessDenied:
-  code: "TempCode"
-  message: 접근 권한이 없습니다.
+auth-0003:
+  message: UserNotFound
+  detail: 인증 대상에 해당하는 사용자를 찾을 수 없습니다.
 
 
-UserNotFound:
-  code: "TempCode"
-  message: 유저를 찾을 수 없습니다.
+auth-0004:
+  message: NotValidToken
+  detail: 전달한 토큰이 유효하지 않습니다.
 
 
-NotValidToken:
-  code: "TempCode"
-  message: 토큰 검증 과정에서 문제가 발생했습니다.
+auth-0005:
+  message: Not Support ClientId
+  detail: 지원하지 않는 로그인 방식입니다.
 
 
-NotSupportClientId:
-  code: "TempCode"
-  message: 지원하지 않는 로그인 방식입니다.
+auth-0006:
+  message: TokenAuthenticationFilterError
+  detail: 토큰 검증 과정에서 문제가 발생했습니다.
+
+auth-0007:
+  message: NotExistRefreshToken
+  detail: 리프레시 토큰이 존재하지 않습니다.
 
 
-TokenAuthenticationFilterError:
-  code: "TempCode"
-  message: 토큰 검증 과정에서 문제가 발생했습니다.
+# 사용자(여행자) 관련
+user-0001:
+  message: TripperNotFound
+  detail: 일치하는 식별자의 여행자를 찾을 수 없습니다.
 
 
-NotExistRefreshToken:
-  code: "TempCode"
-  message: 리프레시 토큰이 존재하지 않습니다.
+# 여행 관련
+trip-0001:
+  message: Trip Not Found
+  detail: 일치하는 식별자의 Trip을 찾을 수 없습니다.
+
+trip-0002:
+  message: Empty Trip Title
+  detail: 여행의 제목은 null 또는 공백일 수 없습니다.
+
+trip-0003:
+  message: Invalid Trip Title Length
+  detail: 여행 제목의 길이는 {min}자 이상 {max}자 이하여야 합니다.
+
+
+trip-0004:
+  message: No Trip Update Authority
+  detail: 해당 여행을 수정할 권한이 없습니다.
+
+trip-0005:
+  message: InvalidTripPeriod
+  detail: 여행의 기간이 올바르지 않습니다. 시작일보다 종료일이 앞서거나, 시작일 또는 종료일 중 어느 하나가 null일 수 없습니다.
+
+trip-0006:
+  message: EmptyPeriodUpdate Error
+  detail: 기간이 정해진 여행에 대해서, 빈 기간으로 변경할 수 없습니다.
+
+trip-0007:
+  message: NoTripDeleteAuthority
+  detail: 해당 여행을 삭제할 권한이 없습니다.
+
+trip-0008:
+  message: NoTripDetailSearchAuthority
+  detail: 해당 여행을 단건 조회할 권한이 없습니다.
+
+
+# Day 관련
+day-0001:
+  message: DayNotFound
+  detail: 일치하는 식별자의 Day를 찾을 수 없습니다.
+
+day-0002:
+  message: Invalid Trip-Day Relationship
+  detail: Day가 Trip에 속해있지 않습니다.
+
+
+# 일정 관련
+schedule-0001:
+  message: ScheduleNotFound
+  detail: 일치하는 식별자의 일정을 찾을 수 없습니다.
+
+schedule-0002:
+  message: NoScheduleCreateAuthority
+  detail: 해당 여행에 일정을 생성할 권한이 없습니다.
+
+schedule-0003:
+  message: NoScheduleDeleteAuthority
+  detail: 해당 일정을 삭제할 권한이 없습니다.
+
+schedule-0004:
+  message: NoScheduleUpdateAuthority
+  detail: 해당 일정을 수정할 권한이 없습니다.
+
+schedule-0005:
+  message: NoScheduleMoveAuthority
+  detail: 해당 일정을 이동할 권한이 없습니다.
+
+schedule-0006:
+  message: InvalidScheduleMoveTargetOrder
+  detail: 일정을 해당 순서로 이동시킬 수 없습니다. 유효한 순서 범위를 벗어납니다.
+
+
+# 장소 관련
+place-0001:
+  message: InvalidCoordinate
+  detail: 위도 또는 경도의 범위가 유효하지 않습니다.

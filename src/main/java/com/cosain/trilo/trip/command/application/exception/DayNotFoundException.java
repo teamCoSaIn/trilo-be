@@ -5,7 +5,7 @@ import org.springframework.http.HttpStatus;
 
 public class DayNotFoundException extends CustomException {
 
-    private static final String ERROR_NAME = "DayNotFoundException";
+    private static final String ERROR_CODE = "day-0001";
     private static final HttpStatus HTTP_STATUS = HttpStatus.NOT_FOUND;
 
     public DayNotFoundException() {
@@ -24,8 +24,8 @@ public class DayNotFoundException extends CustomException {
     }
 
     @Override
-    public String getErrorName() {
-        return ERROR_NAME;
+    public String getErrorCode() {
+        return ERROR_CODE;
     }
 
     @Override

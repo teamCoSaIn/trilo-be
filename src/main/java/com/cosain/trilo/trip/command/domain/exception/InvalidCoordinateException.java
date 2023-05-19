@@ -5,7 +5,7 @@ import org.springframework.http.HttpStatus;
 
 public class InvalidCoordinateException extends CustomException {
 
-    private static final String ERROR_NAME = "InvalidCoordinate";
+    private static final String ERROR_CODE = "place-0001";
     private static final HttpStatus HTTP_STATUS = HttpStatus.BAD_REQUEST;
 
     public InvalidCoordinateException() {
@@ -24,8 +24,8 @@ public class InvalidCoordinateException extends CustomException {
     }
 
     @Override
-    public String getErrorName() {
-        return ERROR_NAME;
+    public String getErrorCode() {
+        return ERROR_CODE;
     }
 
     @Override

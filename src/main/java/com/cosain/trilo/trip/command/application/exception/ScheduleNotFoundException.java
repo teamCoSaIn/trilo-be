@@ -5,7 +5,7 @@ import org.springframework.http.HttpStatus;
 
 public class ScheduleNotFoundException extends CustomException {
 
-    private static final String ERROR_NAME = "ScheduleNotFound";
+    private static final String ERROR_CODE = "schedule-0001";
     private static final HttpStatus HTTP_STATUS = HttpStatus.NOT_FOUND;
 
     public ScheduleNotFoundException() {
@@ -24,8 +24,8 @@ public class ScheduleNotFoundException extends CustomException {
     }
 
     @Override
-    public String getErrorName() {
-        return ERROR_NAME;
+    public String getErrorCode() {
+        return ERROR_CODE;
     }
 
     @Override

@@ -4,12 +4,12 @@ import org.springframework.http.HttpStatus;
 
 public class NotExistRefreshTokenException extends CustomException {
 
-    private static final String ERROR_NAME = "NotExistRefreshToken";
+    private static final String ERROR_CODE = "auth-0007";
     private static final HttpStatus HTTP_STATUS = HttpStatus.UNAUTHORIZED;
 
     @Override
-    public String getErrorName() {
-        return ERROR_NAME;
+    public String getErrorCode() {
+        return ERROR_CODE;
     }
 
     @Override
