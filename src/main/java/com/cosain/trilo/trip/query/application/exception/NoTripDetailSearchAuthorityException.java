@@ -5,7 +5,7 @@ import org.springframework.http.HttpStatus;
 
 public class NoTripDetailSearchAuthorityException extends CustomException {
 
-    private static final String ERROR_NAME = "NoTripDetailSearchAuthorityException";
+    private static final String ERROR_CODE = "trip-0008";
     private static final HttpStatus HTTP_STATUS = HttpStatus.FORBIDDEN;
 
     public NoTripDetailSearchAuthorityException(String debugMessage) {
@@ -13,8 +13,8 @@ public class NoTripDetailSearchAuthorityException extends CustomException {
     }
 
     @Override
-    public String getErrorName() {
-        return ERROR_NAME;
+    public String getErrorCode() {
+        return ERROR_CODE;
     }
 
     @Override

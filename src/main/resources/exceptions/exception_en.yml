@@ -1,49 +1,135 @@
-# 공통
-UnKnown:
-  code: "TempCode"
-  message: UnKnown Server Error!
+# 서버 문제
+server-0001:
+  message: Unknown Error
+  detail: An unexpected server exception occurred.
+
+server-9999:
+  message: NotImplemented
+  detail: The feature is not implemented.
 
 
-NotImplemented:
-  code: "TempCode"
-  message: This operation is not implemented.
+# 웹 요청 관련
+request-0001:
+  message: Invalid Request Data Format
+  detail: The request data format or data type is incorrect. Please check the request data format and parameters again.
 
-# 요청 관련
-MissingRequestCookie:
-  code: "TempCode"
-  message: Some cookies required for your request do not exist.
+request-0002:
+  message: Missing Request Cookie
+  detail: The required cookie in the request is missing. Please check if the necessary cookie exists and if it has the correct value.
 
 
 # 인증/인가 관련
-AuthenticationFailed:
-  code: "TempCode"
-  message: Authentication failed.
+auth-0001:
+  message: AuthenticationFailed
+  detail: Authentication failed.
 
-AccessDenied:
-  code: "TempCode"
-  message: You do not have access.
-
-
-UserNotFound:
-  code: "TempCode"
-  message: Cannot find that user.
+auth-0002:
+  message: AccessDenied
+  detail: Access is denied.
 
 
-NotValidToken:
-  code: "TempCode"
-  message: A problem occurred during token validation.
+auth-0003:
+  message: UserNotFound
+  detail: The user corresponding to the authentication target could not be found.
 
 
-InvalidAuthorizationHeaderType:
-  code: "TempCode"
-  message: Authorization header type is incorrect.
+auth-0004:
+  message: NotValidToken
+  detail: The provided token is not valid.
 
 
-NotSupportClientId:
-  code: "TempCode"
-  message: This is an unsupported login method.
+auth-0005:
+  message: Not Support ClientId
+  detail: The login method is not supported.
 
 
-NotExistRefreshToken:
-  code: "TempCode"
-  message: Refresh token does not exist.
+auth-0006:
+  message: TokenAuthenticationFilterError
+  detail: An error occurred during token verification process.
+
+auth-0007:
+  message: NotExistRefreshToken
+  detail: The refresh token does not exist.
+
+
+# 사용자(여행자) 관련
+user-0001:
+  message: TripperNotFound
+  detail: The traveler with the matching identifier could not be found.
+
+
+# 여행 관련
+trip-0001:
+  message: Trip Not Found
+  detail: The Trip with the matching identifier could not be found.
+
+trip-0002:
+  message: Empty Trip Title
+  detail: The trip title cannot be null or empty.
+
+trip-0003:
+  message: Invalid Trip Title Length
+  detail: The trip title length must be between {min} and {max} characters.
+
+
+trip-0004:
+  message: No Trip Update Authority
+  detail: You do not have the authority to modify this trip.
+
+trip-0005:
+  message: InvalidTripPeriod
+  detail: The trip period is invalid. The end date cannot be before the start date, and neither the start nor end date can be null.
+
+trip-0006:
+  message: EmptyPeriodUpdate Error
+  detail: The period of a scheduled trip cannot be updated to an empty period.
+
+trip-0007:
+  message: NoTripDeleteAuthority
+  detail: You do not have the authority to delete this trip.
+
+trip-0008:
+  message: NoTripDetailSearchAuthority
+  detail: You do not have the authority to retrieve detailed information about this trip.
+
+
+# Day 관련
+day-0001:
+  message: DayNotFound
+  detail: The Day with the matching identifier could not be found.
+
+day-0002:
+  message: Invalid Trip-Day Relationship
+  detail: The Day does not belong to the Trip.
+
+
+# 일정 관련
+schedule-0001:
+  message: ScheduleNotFound
+  detail: The schedule with the matching identifier could not be found.
+
+schedule-0002:
+  message: NoScheduleCreateAuthority
+  detail: You do not have the authority to create a schedule for this trip.
+
+schedule-0003:
+  message: NoScheduleDeleteAuthority
+  detail: You do not have the authority to delete this schedule.
+
+schedule-0004:
+  message: NoScheduleUpdateAuthority
+  detail: You do not have the authority to modify this schedule.
+
+schedule-0005:
+  message: NoScheduleMoveAuthority
+  detail: You do not have the authority to move this schedule.
+
+schedule-0006:
+  message: InvalidScheduleMoveTargetOrder
+  detail: Unable to move the schedule to the specified order. It is outside the valid order range.
+
+
+# 장소 관련
+place-0001:
+  message: InvalidCoordinate
+  detail: The latitude or longitude range is invalid.

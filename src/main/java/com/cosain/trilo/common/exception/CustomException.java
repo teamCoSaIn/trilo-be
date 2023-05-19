@@ -20,7 +20,7 @@ public abstract class CustomException extends RuntimeException {
         super(debugMessage, cause);
     }
 
-    public abstract String getErrorName();
+    public abstract String getErrorCode();
 
     public abstract HttpStatus getHttpStatus();
 }

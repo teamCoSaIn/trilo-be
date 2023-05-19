@@ -5,7 +5,7 @@ import org.springframework.http.HttpStatus;
 
 public class InvalidTripDayException extends CustomException {
 
-    private static final String ERROR_NAME = "InvalidTripDay";
+    private static final String ERROR_CODE = "day-0002";
     private static final HttpStatus HTTP_STATUS = HttpStatus.BAD_REQUEST;
 
     public InvalidTripDayException() {
@@ -24,8 +24,8 @@ public class InvalidTripDayException extends CustomException {
     }
 
     @Override
-    public String getErrorName() {
-        return ERROR_NAME;
+    public String getErrorCode() {
+        return ERROR_CODE;
     }
 
     @Override

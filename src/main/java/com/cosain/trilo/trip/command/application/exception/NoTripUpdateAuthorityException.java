@@ -5,7 +5,7 @@ import org.springframework.http.HttpStatus;
 
 public class NoTripUpdateAuthorityException extends CustomException {
 
-    private static final String ERROR_NAME = "NoTripUpdateAuthority";
+    private static final String ERROR_CODE = "trip-0004";
     private static final HttpStatus HTTP_STATUS = HttpStatus.FORBIDDEN;
 
     public NoTripUpdateAuthorityException() {}
@@ -23,8 +23,8 @@ public class NoTripUpdateAuthorityException extends CustomException {
     }
 
     @Override
-    public String getErrorName() {
-        return ERROR_NAME;
+    public String getErrorCode() {
+        return ERROR_CODE;
     }
 
     @Override

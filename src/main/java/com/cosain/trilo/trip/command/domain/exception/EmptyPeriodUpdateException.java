@@ -5,7 +5,7 @@ import org.springframework.http.HttpStatus;
 
 public class EmptyPeriodUpdateException extends CustomException {
 
-    private static final String ERROR_NAME = "InvalidTripPeriod";
+    private static final String ERROR_CODE = "trip-0006";
     private static final HttpStatus HTTP_STATUS = HttpStatus.BAD_REQUEST;
 
     public EmptyPeriodUpdateException() {
@@ -24,8 +24,8 @@ public class EmptyPeriodUpdateException extends CustomException {
     }
 
     @Override
-    public String getErrorName() {
-        return ERROR_NAME;
+    public String getErrorCode() {
+        return ERROR_CODE;
     }
 
     @Override
