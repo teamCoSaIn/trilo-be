@@ -24,8 +24,9 @@ class TripDayListQueryControllerTest extends RestControllerTest {
         mockMvc.perform(get("/api/trips/1/days"))
                 .andDo(print())
                 .andExpect(status().isInternalServerError())
-                .andExpect(jsonPath("$.errorCode").exists())
-                .andExpect(jsonPath("$.errorMessage").exists());
+                .andExpect(jsonPath("$.errorCode").value("server-9999"))
+                .andExpect(jsonPath("$.errorMessage").exists())
+                .andExpect(jsonPath("$.errorDetail").exists());
     }
 
     @Test
@@ -36,6 +37,7 @@ class TripDayListQueryControllerTest extends RestControllerTest {
                 .andDo(print())
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.errorCode").exists())
-                .andExpect(jsonPath("$.errorMessage").exists());
+                .andExpect(jsonPath("$.errorMessage").exists())
+                .andExpect(jsonPath("$.errorDetail").exists());
     }
 }

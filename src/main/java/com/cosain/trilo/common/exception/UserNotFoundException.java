@@ -4,16 +4,16 @@ import org.springframework.http.HttpStatus;
 
 public class UserNotFoundException extends CustomException {
 
-    private static final String errorName = "UserNotFound";
-    private static final HttpStatus status = HttpStatus.UNAUTHORIZED;
+    private static final String ERROR_CODE = "auth-0003";
+    private static final HttpStatus HTTP_STATUS = HttpStatus.UNAUTHORIZED;
 
     @Override
-    public String getErrorName() {
-        return errorName;
+    public String getErrorCode() {
+        return ERROR_CODE;
     }
 
     @Override
     public HttpStatus getHttpStatus() {
-        return status;
+        return HTTP_STATUS;
     }
 }

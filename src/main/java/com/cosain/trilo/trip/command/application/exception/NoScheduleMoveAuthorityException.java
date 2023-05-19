@@ -5,7 +5,7 @@ import org.springframework.http.HttpStatus;
 
 public class NoScheduleMoveAuthorityException extends CustomException {
 
-    private static final String ERROR_NAME = "NoScheduleUpdateAuthorityException";
+    private static final String ERROR_CODE = "schedule-0005";
     private static final HttpStatus HTTP_STATUS = HttpStatus.FORBIDDEN;
 
     public NoScheduleMoveAuthorityException() {
@@ -24,8 +24,8 @@ public class NoScheduleMoveAuthorityException extends CustomException {
     }
 
     @Override
-    public String getErrorName() {
-        return ERROR_NAME;
+    public String getErrorCode() {
+        return ERROR_CODE;
     }
 
     @Override

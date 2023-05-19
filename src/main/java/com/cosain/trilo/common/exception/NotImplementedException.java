@@ -4,7 +4,7 @@ import org.springframework.http.HttpStatus;
 
 public class NotImplementedException extends CustomException {
 
-    private static final String ERROR_NAME = "NotImplemented";
+    private static final String ERROR_CODE = "server-9999";
     private static final HttpStatus HTTP_STATUS = HttpStatus.INTERNAL_SERVER_ERROR;
 
     public NotImplementedException(String debugMessage) {
@@ -12,8 +12,8 @@ public class NotImplementedException extends CustomException {
     }
 
     @Override
-    public String getErrorName() {
-        return ERROR_NAME;
+    public String getErrorCode() {
+        return ERROR_CODE;
     }
 
     @Override
