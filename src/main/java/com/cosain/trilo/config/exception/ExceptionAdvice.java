@@ -1,6 +1,6 @@
 package com.cosain.trilo.config.exception;
 
-import com.cosain.trilo.common.dto.ErrorResponse;
+import com.cosain.trilo.common.dto.BasicErrorResponse;
 import com.cosain.trilo.common.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,13 +29,13 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
      */
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ErrorResponse handleUnKnownException(Exception e) {
+    public BasicErrorResponse handleUnKnownException(Exception e) {
         log.error("예상치 못 한 예외!", e);
 
         String errorCode = "server-0001";
         String errorMessage = getMessage(errorCode + ".message");
         String errorDetail = getMessage(errorCode + ".detail");
-        return ErrorResponse.of(errorCode, errorMessage, errorDetail);
+        return BasicErrorResponse.of(errorCode, errorMessage, errorDetail);
     }
 
     /**
@@ -44,7 +44,7 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
      */
     @ExceptionHandler(MissingRequestCookieException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse missingCookieError(MissingRequestCookieException e) {
+    public BasicErrorResponse missingCookieError(MissingRequestCookieException e) {
         log.info("쿠키 누락!");
         String errorCode = "request-0002";
         String errorMessage = getMessage(errorCode + ".message");
@@ -52,12 +52,12 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
 
         log.info("[{}] errorMessage={}", errorCode, errorMessage);
         log.info("-----> errorDetail={}", errorDetail);
-        return ErrorResponse.of(errorCode, errorMessage, errorDetail);
+        return BasicErrorResponse.of(errorCode, errorMessage, errorDetail);
     }
 
     @ExceptionHandler(AuthenticationException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    public ErrorResponse handleAuthenticationException(AuthenticationException e) {
+    public BasicErrorResponse handleAuthenticationException(AuthenticationException e) {
         log.info("인증 예외!");
         String errorCode = "auth-0001";
         String errorMessage = getMessage(errorCode + ".message");
@@ -65,12 +65,12 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
 
         log.info("[{}] errorMessage={}", errorCode, errorMessage);
         log.info("-----> errorDetail={}", errorDetail);
-        return ErrorResponse.of(errorCode, errorMessage, errorDetail);
+        return BasicErrorResponse.of(errorCode, errorMessage, errorDetail);
     }
 
     @ExceptionHandler(AccessDeniedException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    public ErrorResponse handleAccessDeniedException(AccessDeniedException e) {
+    public BasicErrorResponse handleAccessDeniedException(AccessDeniedException e) {
         log.info("인가 예외!");
 
         String errorCode = "auth-0002";
@@ -79,7 +79,7 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
 
         log.info("[{}] errorMessage={}", errorCode, errorMessage);
         log.info("-----> errorDetail={}", errorDetail);
-        return ErrorResponse.of(errorCode, errorMessage, errorDetail);
+        return BasicErrorResponse.of(errorCode, errorMessage, errorDetail);
     }
 
     /**
@@ -87,7 +87,7 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
      * 개발자에 의해 정의된 커스텀 예외 처리
      */
     @ExceptionHandler(CustomException.class)
-    public ResponseEntity<ErrorResponse> handleCustomException(CustomException e) {
+    public ResponseEntity<BasicErrorResponse> handleCustomException(CustomException e) {
         String errorCode = e.getErrorCode();
         String errorMessage = getMessage(errorCode + ".message");
         String errorDetail = getMessage(errorCode + ".detail");
@@ -99,7 +99,7 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
 
         return ResponseEntity
                 .status(status)
-                .body(ErrorResponse.of(errorCode, errorMessage, errorDetail));
+                .body(BasicErrorResponse.of(errorCode, errorMessage, errorDetail));
     }
 
     private String getMessage(String code) {
