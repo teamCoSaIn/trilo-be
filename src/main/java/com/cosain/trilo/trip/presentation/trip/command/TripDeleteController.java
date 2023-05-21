@@ -1,7 +1,7 @@
 package com.cosain.trilo.trip.presentation.trip.command;
 
 import com.cosain.trilo.common.LoginUser;
-import com.cosain.trilo.trip.command.application.usecase.TripDeleteUseCase;
+import com.cosain.trilo.trip.application.trip.command.service.TripDeleteUseCase;
 import com.cosain.trilo.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

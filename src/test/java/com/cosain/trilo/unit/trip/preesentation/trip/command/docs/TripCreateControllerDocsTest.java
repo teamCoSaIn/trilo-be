@@ -1,7 +1,7 @@
 package com.cosain.trilo.unit.trip.preesentation.trip.command.docs;
 
 import com.cosain.trilo.support.RestDocsTestSupport;
-import com.cosain.trilo.trip.command.application.service.TripCreateService;
+import com.cosain.trilo.trip.application.trip.command.service.TripCreateService;
 import com.cosain.trilo.trip.presentation.trip.command.TripCreateController;
 import com.cosain.trilo.trip.presentation.trip.command.dto.request.TripCreateRequest;
 import org.junit.jupiter.api.Test;

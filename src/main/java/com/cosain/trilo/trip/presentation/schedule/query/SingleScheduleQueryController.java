@@ -1,7 +1,7 @@
 package com.cosain.trilo.trip.presentation.schedule.query;
 
-import com.cosain.trilo.trip.query.application.dto.ScheduleResult;
-import com.cosain.trilo.trip.query.application.usecase.ScheduleDetailSearchUseCase;
+import com.cosain.trilo.trip.application.schedule.query.service.dto.ScheduleResult;
+import com.cosain.trilo.trip.application.schedule.query.service.ScheduleDetailSearchUseCase;
 import com.cosain.trilo.trip.presentation.schedule.query.dto.response.ScheduleDetailResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

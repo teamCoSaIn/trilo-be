@@ -1,8 +1,8 @@
 package com.cosain.trilo.unit.trip.preesentation.trip.command;
 
 import com.cosain.trilo.support.RestControllerTest;
-import com.cosain.trilo.trip.command.application.command.TripUpdateCommand;
-import com.cosain.trilo.trip.command.application.usecase.TripUpdateUseCase;
+import com.cosain.trilo.trip.application.trip.command.service.dto.TripUpdateCommand;
+import com.cosain.trilo.trip.application.trip.command.service.TripUpdateUseCase;
 import com.cosain.trilo.trip.presentation.trip.command.TripUpdateController;
 import com.cosain.trilo.trip.presentation.trip.command.dto.request.TripUpdateRequest;
 import org.junit.jupiter.api.DisplayName;

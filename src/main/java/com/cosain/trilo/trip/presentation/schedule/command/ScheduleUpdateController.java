@@ -1,8 +1,8 @@
 package com.cosain.trilo.trip.presentation.schedule.command;
 
 import com.cosain.trilo.common.LoginUser;
-import com.cosain.trilo.trip.command.application.command.ScheduleUpdateCommand;
-import com.cosain.trilo.trip.command.application.usecase.ScheduleUpdateUseCase;
+import com.cosain.trilo.trip.application.schedule.command.service.dto.ScheduleUpdateCommand;
+import com.cosain.trilo.trip.application.schedule.command.service.ScheduleUpdateUseCase;
 import com.cosain.trilo.trip.presentation.schedule.command.dto.request.ScheduleUpdateRequest;
 import com.cosain.trilo.trip.presentation.schedule.command.dto.response.ScheduleUpdateResponse;
 import com.cosain.trilo.user.domain.User;

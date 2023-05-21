@@ -1,7 +1,7 @@
 package com.cosain.trilo.unit.trip.preesentation.day.query;
 
 import com.cosain.trilo.support.RestControllerTest;
-import com.cosain.trilo.trip.query.application.usecase.DaySearchUseCase;
+import com.cosain.trilo.trip.application.day.query.service.DaySearchUseCase;
 import com.cosain.trilo.trip.query.infra.dto.DayScheduleDetail;
 import com.cosain.trilo.trip.presentation.day.query.SingleDayQueryController;
 import org.junit.jupiter.api.DisplayName;

@@ -1,8 +1,8 @@
 package com.cosain.trilo.unit.trip.preesentation.schedule.query;
 
 import com.cosain.trilo.support.RestControllerTest;
-import com.cosain.trilo.trip.query.application.dto.ScheduleResult;
-import com.cosain.trilo.trip.query.application.usecase.ScheduleDetailSearchUseCase;
+import com.cosain.trilo.trip.application.schedule.query.service.dto.ScheduleResult;
+import com.cosain.trilo.trip.application.schedule.query.service.ScheduleDetailSearchUseCase;
 import com.cosain.trilo.trip.query.domain.dto.ScheduleDto;
 import com.cosain.trilo.trip.query.infra.dto.ScheduleDetail;
 import com.cosain.trilo.trip.presentation.schedule.query.SingleScheduleQueryController;

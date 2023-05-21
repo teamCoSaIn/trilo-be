@@ -1,7 +1,7 @@
 package com.cosain.trilo.unit.trip.preesentation.trip.command;
 
 import com.cosain.trilo.support.RestControllerTest;
-import com.cosain.trilo.trip.command.application.usecase.TripCreateUseCase;
+import com.cosain.trilo.trip.application.trip.command.service.TripCreateUseCase;
 import com.cosain.trilo.trip.presentation.trip.command.TripCreateController;
 import com.cosain.trilo.trip.presentation.trip.command.dto.request.TripCreateRequest;
 import org.junit.jupiter.api.DisplayName;
