@@ -1,6 +1,6 @@
 package com.cosain.trilo.trip.query.infra.repository.schedule.jpa;
 
-import com.cosain.trilo.trip.command.domain.entity.QSchedule;
+import com.cosain.trilo.trip.domain.entity.QSchedule;
 import com.cosain.trilo.trip.query.infra.dto.QScheduleDetail;
 import com.cosain.trilo.trip.query.infra.dto.ScheduleDetail;
 import com.querydsl.jpa.impl.JPAQuery;
@@ -12,7 +12,7 @@ import org.springframework.data.domain.Slice;
 
 import java.util.Optional;
 
-import static com.cosain.trilo.trip.command.domain.entity.QSchedule.schedule;
+import static com.cosain.trilo.trip.domain.entity.QSchedule.schedule;
 
 @RequiredArgsConstructor
 public class ScheduleQueryJpaRepositoryImpl implements ScheduleQueryJpaRepositoryCustom{

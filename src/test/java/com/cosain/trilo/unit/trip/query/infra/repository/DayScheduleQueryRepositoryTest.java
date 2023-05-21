@@ -1,13 +1,13 @@
 package com.cosain.trilo.unit.trip.query.infra.repository;
 
 import com.cosain.trilo.support.RepositoryTest;
-import com.cosain.trilo.trip.command.domain.entity.Day;
-import com.cosain.trilo.trip.command.domain.entity.Schedule;
-import com.cosain.trilo.trip.command.domain.entity.Trip;
-import com.cosain.trilo.trip.command.domain.vo.Coordinate;
-import com.cosain.trilo.trip.command.domain.vo.Place;
-import com.cosain.trilo.trip.command.domain.vo.ScheduleIndex;
-import com.cosain.trilo.trip.query.domain.repository.DayQueryRepository;
+import com.cosain.trilo.trip.domain.entity.Day;
+import com.cosain.trilo.trip.domain.entity.Schedule;
+import com.cosain.trilo.trip.domain.entity.Trip;
+import com.cosain.trilo.trip.domain.entity.vo.Coordinate;
+import com.cosain.trilo.trip.domain.entity.vo.Place;
+import com.cosain.trilo.trip.domain.entity.vo.ScheduleIndex;
+import com.cosain.trilo.trip.query.infra.repository.day.DayScheduleQueryRepository;
 import com.cosain.trilo.trip.query.infra.dto.DayScheduleDetail;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.DisplayName;
@@ -19,11 +19,11 @@ import java.time.LocalDate;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RepositoryTest
-@DisplayName("DayScheduleQueryRepositoryTest 테스트")
+@DisplayName("DayQueryRepositoryTest 테스트")
 public class DayScheduleQueryRepositoryTest {
 
     @Autowired
-    private DayQueryRepository dayQueryRepository;
+    private DayScheduleQueryRepository dayQueryRepository;
 
     @Autowired
     private EntityManager em;

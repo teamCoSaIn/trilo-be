@@ -4,9 +4,9 @@ import com.cosain.trilo.trip.application.schedule.command.service.dto.ScheduleUp
 import com.cosain.trilo.trip.application.exception.NoScheduleUpdateAuthorityException;
 import com.cosain.trilo.trip.application.exception.ScheduleNotFoundException;
 import com.cosain.trilo.trip.application.schedule.command.service.ScheduleUpdateService;
-import com.cosain.trilo.trip.command.domain.entity.Schedule;
-import com.cosain.trilo.trip.command.domain.entity.Trip;
-import com.cosain.trilo.trip.command.domain.repository.ScheduleRepository;
+import com.cosain.trilo.trip.domain.entity.Schedule;
+import com.cosain.trilo.trip.domain.entity.Trip;
+import com.cosain.trilo.trip.domain.repository.ScheduleRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

@@ -1,6 +1,6 @@
 package com.cosain.trilo.trip.application.trip.query.service.dto;
 
-import com.cosain.trilo.trip.query.domain.dto.TripDto;
+import com.cosain.trilo.trip.domain.dto.TripDto;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;

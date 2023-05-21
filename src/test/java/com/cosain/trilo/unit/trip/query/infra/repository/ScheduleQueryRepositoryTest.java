@@ -1,13 +1,13 @@
 package com.cosain.trilo.unit.trip.query.infra.repository;
 
 import com.cosain.trilo.support.RepositoryTest;
-import com.cosain.trilo.trip.command.domain.entity.Schedule;
-import com.cosain.trilo.trip.command.domain.entity.Trip;
-import com.cosain.trilo.trip.command.domain.vo.Coordinate;
-import com.cosain.trilo.trip.command.domain.vo.Place;
-import com.cosain.trilo.trip.command.domain.vo.ScheduleIndex;
-import com.cosain.trilo.trip.query.domain.dto.ScheduleDto;
-import com.cosain.trilo.trip.query.domain.repository.ScheduleQueryRepository;
+import com.cosain.trilo.trip.domain.entity.Schedule;
+import com.cosain.trilo.trip.domain.entity.Trip;
+import com.cosain.trilo.trip.domain.entity.vo.Coordinate;
+import com.cosain.trilo.trip.domain.entity.vo.Place;
+import com.cosain.trilo.trip.domain.entity.vo.ScheduleIndex;
+import com.cosain.trilo.trip.domain.dto.ScheduleDto;
+import com.cosain.trilo.trip.query.infra.repository.schedule.ScheduleQueryRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;

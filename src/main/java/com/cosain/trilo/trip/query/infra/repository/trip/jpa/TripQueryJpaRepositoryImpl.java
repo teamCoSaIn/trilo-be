@@ -11,7 +11,7 @@ import org.springframework.data.domain.Slice;
 
 import java.util.Optional;
 
-import static com.cosain.trilo.trip.command.domain.entity.QTrip.trip;
+import static com.cosain.trilo.trip.domain.entity.QTrip.trip;
 
 @RequiredArgsConstructor
 public class TripQueryJpaRepositoryImpl implements TripQueryJpaRepositoryCustom{

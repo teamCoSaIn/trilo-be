@@ -1,11 +1,11 @@
 package com.cosain.trilo.unit.trip.query.infra.repository;
 
 import com.cosain.trilo.support.RepositoryTest;
-import com.cosain.trilo.trip.command.domain.entity.Trip;
-import com.cosain.trilo.trip.command.domain.vo.TripPeriod;
-import com.cosain.trilo.trip.command.domain.vo.TripStatus;
-import com.cosain.trilo.trip.query.domain.dto.TripDto;
-import com.cosain.trilo.trip.query.domain.repository.TripQueryRepository;
+import com.cosain.trilo.trip.domain.entity.Trip;
+import com.cosain.trilo.trip.domain.entity.vo.TripPeriod;
+import com.cosain.trilo.trip.domain.entity.vo.TripStatus;
+import com.cosain.trilo.trip.domain.dto.TripDto;
+import com.cosain.trilo.trip.query.infra.repository.trip.TripQueryRepository;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;

@@ -1,7 +1,6 @@
 package com.cosain.trilo.trip.query.infra.repository.schedule;
 
-import com.cosain.trilo.trip.query.domain.dto.ScheduleDto;
-import com.cosain.trilo.trip.query.domain.repository.ScheduleQueryRepository;
+import com.cosain.trilo.trip.domain.dto.ScheduleDto;
 import com.cosain.trilo.trip.query.infra.dto.ScheduleDetail;
 import com.cosain.trilo.trip.query.infra.repository.schedule.jpa.ScheduleQueryJpaRepository;
 import lombok.RequiredArgsConstructor;

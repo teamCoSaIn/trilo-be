@@ -8,8 +8,8 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.Optional;
 
-import static com.cosain.trilo.trip.command.domain.entity.QDay.day;
-import static com.cosain.trilo.trip.command.domain.entity.QSchedule.schedule;
+import static com.cosain.trilo.trip.domain.entity.QDay.day;
+import static com.cosain.trilo.trip.domain.entity.QSchedule.schedule;
 import static com.querydsl.core.group.GroupBy.groupBy;
 import static com.querydsl.core.group.GroupBy.list;
 

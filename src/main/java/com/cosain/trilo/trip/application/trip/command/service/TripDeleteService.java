@@ -2,10 +2,10 @@ package com.cosain.trilo.trip.application.trip.command.service;
 
 import com.cosain.trilo.trip.application.exception.NoTripDeleteAuthorityException;
 import com.cosain.trilo.trip.application.exception.TripNotFoundException;
-import com.cosain.trilo.trip.command.domain.entity.Trip;
-import com.cosain.trilo.trip.command.domain.repository.DayRepository;
-import com.cosain.trilo.trip.command.domain.repository.ScheduleRepository;
-import com.cosain.trilo.trip.command.domain.repository.TripRepository;
+import com.cosain.trilo.trip.domain.entity.Trip;
+import com.cosain.trilo.trip.domain.repository.DayRepository;
+import com.cosain.trilo.trip.domain.repository.ScheduleRepository;
+import com.cosain.trilo.trip.domain.repository.TripRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

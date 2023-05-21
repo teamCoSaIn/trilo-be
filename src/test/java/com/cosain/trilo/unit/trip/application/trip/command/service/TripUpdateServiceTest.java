@@ -4,10 +4,10 @@ import com.cosain.trilo.trip.application.trip.command.service.dto.TripUpdateComm
 import com.cosain.trilo.trip.application.exception.NoTripUpdateAuthorityException;
 import com.cosain.trilo.trip.application.exception.TripNotFoundException;
 import com.cosain.trilo.trip.application.trip.command.service.TripUpdateService;
-import com.cosain.trilo.trip.command.domain.entity.Trip;
-import com.cosain.trilo.trip.command.domain.repository.DayRepository;
-import com.cosain.trilo.trip.command.domain.repository.ScheduleRepository;
-import com.cosain.trilo.trip.command.domain.repository.TripRepository;
+import com.cosain.trilo.trip.domain.entity.Trip;
+import com.cosain.trilo.trip.domain.repository.DayRepository;
+import com.cosain.trilo.trip.domain.repository.ScheduleRepository;
+import com.cosain.trilo.trip.domain.repository.TripRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;

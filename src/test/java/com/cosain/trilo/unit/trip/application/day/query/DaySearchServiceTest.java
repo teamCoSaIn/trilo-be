@@ -2,7 +2,7 @@ package com.cosain.trilo.unit.trip.application.day.query;
 
 import com.cosain.trilo.trip.application.day.query.service.DaySearchService;
 import com.cosain.trilo.trip.application.exception.DayNotFoundException;
-import com.cosain.trilo.trip.query.domain.repository.DayQueryRepository;
+import com.cosain.trilo.trip.query.infra.repository.day.DayScheduleQueryRepository;
 import com.cosain.trilo.trip.query.infra.dto.DayScheduleDetail;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -29,7 +29,7 @@ public class DaySearchServiceTest {
     private DaySearchService daySearchService;
 
     @Mock
-    private DayQueryRepository dayQueryRepository;
+    private DayScheduleQueryRepository dayQueryRepository;
 
     @Test
     void Day_단건_조회(){

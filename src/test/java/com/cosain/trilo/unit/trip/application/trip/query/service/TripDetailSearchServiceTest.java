@@ -1,12 +1,12 @@
 package com.cosain.trilo.unit.trip.application.trip.query.service;
 
 import com.cosain.trilo.trip.application.exception.TripNotFoundException;
-import com.cosain.trilo.trip.command.domain.vo.TripStatus;
+import com.cosain.trilo.trip.domain.entity.vo.TripStatus;
 import com.cosain.trilo.trip.application.trip.query.service.dto.TripResult;
 import com.cosain.trilo.trip.application.exception.NoTripDetailSearchAuthorityException;
 import com.cosain.trilo.trip.application.trip.query.service.TripDetailSearchService;
-import com.cosain.trilo.trip.query.domain.dto.TripDto;
-import com.cosain.trilo.trip.query.domain.repository.TripQueryRepository;
+import com.cosain.trilo.trip.domain.dto.TripDto;
+import com.cosain.trilo.trip.query.infra.repository.trip.TripQueryRepository;
 import com.cosain.trilo.trip.query.infra.dto.TripDetail;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

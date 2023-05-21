@@ -1,7 +1,6 @@
 package com.cosain.trilo.trip.query.infra.repository.trip;
 
-import com.cosain.trilo.trip.query.domain.dto.TripDto;
-import com.cosain.trilo.trip.query.domain.repository.TripQueryRepository;
+import com.cosain.trilo.trip.domain.dto.TripDto;
 import com.cosain.trilo.trip.query.infra.dto.TripDetail;
 import com.cosain.trilo.trip.query.infra.repository.trip.jpa.TripQueryJpaRepository;
 import lombok.RequiredArgsConstructor;
@@ -12,7 +11,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Repository
 @RequiredArgsConstructor

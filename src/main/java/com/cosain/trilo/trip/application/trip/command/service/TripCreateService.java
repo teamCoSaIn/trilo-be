@@ -1,8 +1,8 @@
 package com.cosain.trilo.trip.application.trip.command.service;
 
 import com.cosain.trilo.trip.application.trip.command.service.dto.TripCreateCommand;
-import com.cosain.trilo.trip.command.domain.entity.Trip;
-import com.cosain.trilo.trip.command.domain.repository.TripRepository;
+import com.cosain.trilo.trip.domain.entity.Trip;
+import com.cosain.trilo.trip.domain.repository.TripRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

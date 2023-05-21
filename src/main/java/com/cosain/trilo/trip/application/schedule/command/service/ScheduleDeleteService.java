@@ -2,8 +2,8 @@ package com.cosain.trilo.trip.application.schedule.command.service;
 
 import com.cosain.trilo.trip.application.exception.NoScheduleDeleteAuthorityException;
 import com.cosain.trilo.trip.application.exception.ScheduleNotFoundException;
-import com.cosain.trilo.trip.command.domain.entity.Schedule;
-import com.cosain.trilo.trip.command.domain.repository.ScheduleRepository;
+import com.cosain.trilo.trip.domain.entity.Schedule;
+import com.cosain.trilo.trip.domain.repository.ScheduleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
