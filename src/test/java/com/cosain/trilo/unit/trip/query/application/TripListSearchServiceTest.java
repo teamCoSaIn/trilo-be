@@ -7,7 +7,6 @@ import com.cosain.trilo.trip.query.application.service.TripListSearchService;
 import com.cosain.trilo.trip.query.domain.dto.TripDto;
 import com.cosain.trilo.trip.query.domain.repository.TripQueryRepository;
 import com.cosain.trilo.trip.query.infra.dto.TripDetail;
-import com.cosain.trilo.trip.query.presentation.trip.dto.TripPageResponse;
 import com.cosain.trilo.user.domain.UserRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,7 +17,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
 
 import java.time.LocalDate;
 import java.util.List;

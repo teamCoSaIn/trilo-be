@@ -1,7 +1,5 @@
 package com.cosain.trilo.trip.query.application.dto;
 
-import com.cosain.trilo.trip.query.presentation.trip.dto.TripDetailResponse;
-import com.cosain.trilo.trip.query.presentation.trip.dto.TripPageResponse;
 import lombok.Getter;
 
 import java.util.List;

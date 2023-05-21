@@ -6,7 +6,6 @@ import com.cosain.trilo.trip.query.application.exception.TripperNotFoundExceptio
 import com.cosain.trilo.trip.query.application.usecase.TripListSearchUseCase;
 import com.cosain.trilo.trip.query.domain.dto.TripDto;
 import com.cosain.trilo.trip.query.domain.repository.TripQueryRepository;
-import com.cosain.trilo.trip.query.presentation.trip.dto.TripPageResponse;
 import com.cosain.trilo.user.domain.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

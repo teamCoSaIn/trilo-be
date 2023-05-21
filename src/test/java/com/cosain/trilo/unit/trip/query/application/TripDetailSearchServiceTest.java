@@ -8,7 +8,6 @@ import com.cosain.trilo.trip.query.application.service.TripDetailSearchService;
 import com.cosain.trilo.trip.query.domain.dto.TripDto;
 import com.cosain.trilo.trip.query.domain.repository.TripQueryRepository;
 import com.cosain.trilo.trip.query.infra.dto.TripDetail;
-import com.cosain.trilo.trip.query.presentation.trip.dto.TripDetailResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
