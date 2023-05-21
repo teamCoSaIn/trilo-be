@@ -1,9 +1,9 @@
 package com.cosain.trilo.support;
 
 import com.cosain.trilo.config.QueryDslConfig;
-import com.cosain.trilo.trip.query.infra.repository.day.DayScheduleQueryRepositoryImpl;
-import com.cosain.trilo.trip.query.infra.repository.schedule.ScheduleQueryRepositoryImpl;
-import com.cosain.trilo.trip.query.infra.repository.trip.TripQueryRepositoryImpl;
+import com.cosain.trilo.trip.infra.repository.day.DayScheduleQueryRepositoryImpl;
+import com.cosain.trilo.trip.infra.repository.schedule.ScheduleQueryRepositoryImpl;
+import com.cosain.trilo.trip.infra.repository.trip.TripQueryRepositoryImpl;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;

@@ -5,7 +5,7 @@ import com.cosain.trilo.trip.domain.entity.vo.TripStatus;
 import com.cosain.trilo.trip.application.trip.query.service.dto.TripResult;
 import com.cosain.trilo.trip.application.trip.query.service.TripDetailSearchUseCase;
 import com.cosain.trilo.trip.domain.dto.TripDto;
-import com.cosain.trilo.trip.query.infra.dto.TripDetail;
+import com.cosain.trilo.trip.infra.dto.TripDetail;
 import com.cosain.trilo.trip.presentation.trip.query.SingleTripQueryController;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

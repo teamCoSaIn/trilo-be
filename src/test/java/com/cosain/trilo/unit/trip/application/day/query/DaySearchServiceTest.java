@@ -2,8 +2,8 @@ package com.cosain.trilo.unit.trip.application.day.query;
 
 import com.cosain.trilo.trip.application.day.query.service.DaySearchService;
 import com.cosain.trilo.trip.application.exception.DayNotFoundException;
-import com.cosain.trilo.trip.query.infra.repository.day.DayScheduleQueryRepository;
-import com.cosain.trilo.trip.query.infra.dto.DayScheduleDetail;
+import com.cosain.trilo.trip.infra.repository.day.DayScheduleQueryRepository;
+import com.cosain.trilo.trip.infra.dto.DayScheduleDetail;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

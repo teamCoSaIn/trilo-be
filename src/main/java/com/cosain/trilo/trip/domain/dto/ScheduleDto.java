@@ -1,6 +1,6 @@
 package com.cosain.trilo.trip.domain.dto;
 
-import com.cosain.trilo.trip.query.infra.dto.ScheduleDetail;
+import com.cosain.trilo.trip.infra.dto.ScheduleDetail;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;

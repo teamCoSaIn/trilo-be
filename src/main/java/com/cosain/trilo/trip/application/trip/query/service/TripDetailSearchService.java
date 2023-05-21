@@ -4,7 +4,7 @@ import com.cosain.trilo.trip.application.exception.NoTripDetailSearchAuthorityEx
 import com.cosain.trilo.trip.application.exception.TripNotFoundException;
 import com.cosain.trilo.trip.application.trip.query.service.dto.TripResult;
 import com.cosain.trilo.trip.domain.dto.TripDto;
-import com.cosain.trilo.trip.query.infra.repository.trip.TripQueryRepository;
+import com.cosain.trilo.trip.infra.repository.trip.TripQueryRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

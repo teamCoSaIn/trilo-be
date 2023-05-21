@@ -5,7 +5,7 @@ import com.cosain.trilo.trip.application.schedule.query.service.dto.ScheduleResu
 import com.cosain.trilo.trip.application.trip.query.service.dto.TemporaryPageResult;
 import com.cosain.trilo.trip.application.trip.query.service.TemporarySearchUseCase;
 import com.cosain.trilo.trip.domain.dto.ScheduleDto;
-import com.cosain.trilo.trip.query.infra.dto.ScheduleDetail;
+import com.cosain.trilo.trip.infra.dto.ScheduleDetail;
 import com.cosain.trilo.trip.presentation.trip.query.TripTemporaryStorageQueryController;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
