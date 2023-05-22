@@ -18,18 +18,21 @@ public class ValidationErrorResponse {
         return new ValidationErrorResponse(errorCode, errorMessage, errorDetail);
     }
 
-    public void addFieldError(String errorCode, String errorMessage, String errorDetail, String field) {
-        FieldErrorResponse fieldError = new FieldErrorResponse(errorCode, errorMessage, errorDetail, field);
-        fieldErrors.add(fieldError);
-    }
-
-
-    public ValidationErrorResponse(String errorCode, String errorMessage, String errorDetail) {
+    private ValidationErrorResponse(String errorCode, String errorMessage, String errorDetail) {
         this.errorCode = errorCode;
         this.errorMessage = errorMessage;
         this.errorDetail = errorDetail;
     }
 
+    public void addFieldError(String errorCode, String errorMessage, String errorDetail, String field) {
+        FieldErrorResponse fieldError = new FieldErrorResponse(errorCode, errorMessage, errorDetail, field);
+        fieldErrors.add(fieldError);
+    }
+
+    public void addGlobalError(String errorCode, String errorMessage, String errorDetail, String objectName) {
+        GlobalErrorResponse globalError = new GlobalErrorResponse(errorCode, errorMessage, errorDetail, objectName);
+        globalErrors.add(globalError);
+    }
 
     @Getter
     private static class FieldErrorResponse {
@@ -50,5 +53,16 @@ public class ValidationErrorResponse {
     @Getter
     private static class GlobalErrorResponse {
 
+        private final String errorCode;
+        private final String errorMessage;
+        private final String errorDetail;
+        private final String object;
+
+        public GlobalErrorResponse(String errorCode, String errorMessage, String errorDetail, String object) {
+            this.errorCode = errorCode;
+            this.errorMessage = errorMessage;
+            this.errorDetail = errorDetail;
+            this.object = object;
+        }
     }
 }

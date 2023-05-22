@@ -3,6 +3,7 @@ package com.cosain.trilo.config.exception;
 import com.cosain.trilo.common.dto.BasicErrorResponse;
 import com.cosain.trilo.common.dto.ValidationErrorResponse;
 import com.cosain.trilo.common.exception.CustomException;
+import com.cosain.trilo.common.exception.CustomValidationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.TypeMismatchException;
@@ -17,6 +18,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingRequestCookieException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -117,6 +119,29 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
         return ResponseEntity.badRequest().body(response);
     }
 
+    /**
+     * 필드 검증 에러 + 글로벌 검증 에러 API
+     */
+    @ExceptionHandler(CustomValidationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ValidationErrorResponse handleCustomValidationException(CustomValidationException ex) {
+        BindingResult bindingResult = ex.getBindingResult();
+        log.info("필드 검증 + 글로벌 검증 실패!");
+
+        String errorCode = "request-0003";
+        String errorMessage = getMessage(errorCode + ".message");
+        String errorDetail = getMessage(errorCode + ".detail");
+
+        var response = ValidationErrorResponse.of(errorCode, errorMessage, errorDetail);
+
+        List<FieldError> fieldErrors = bindingResult.getFieldErrors();
+        addFieldErrors(response, fieldErrors);
+
+        List<ObjectError> globalErrors = bindingResult.getGlobalErrors();
+        addGlobalErrors(response, globalErrors);
+        return response;
+    }
+
     private void addFieldErrors(ValidationErrorResponse response, List<FieldError> fieldErrors) {
         for (FieldError fieldError : fieldErrors) {
             String fieldErrorCode = fieldError.getDefaultMessage();
@@ -124,6 +149,16 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
             String fieldErrorDetail = getMessage(fieldErrorCode + ".detail");
             String field = fieldError.getField();
             response.addFieldError(fieldErrorCode, fieldErrorMessage, fieldErrorDetail, field);
+        }
+    }
+
+    private void addGlobalErrors(ValidationErrorResponse response, List<ObjectError> globalErrors) {
+        for (ObjectError globalError : globalErrors) {
+            String globalErrorCode = globalError.getDefaultMessage();
+            String globalErrorMessage = getMessage(globalErrorCode + ".message");
+            String globalErrorDetail = getMessage(globalErrorCode + ".message");
+            String objectName = globalError.getObjectName();
+            response.addGlobalError(globalErrorCode, globalErrorMessage, globalErrorDetail, objectName);
         }
     }
 
