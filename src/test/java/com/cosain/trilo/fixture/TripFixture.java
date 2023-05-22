@@ -1,9 +1,9 @@
 package com.cosain.trilo.fixture;
 
-import com.cosain.trilo.trip.command.domain.entity.Day;
-import com.cosain.trilo.trip.command.domain.entity.Trip;
-import com.cosain.trilo.trip.command.domain.vo.TripPeriod;
-import com.cosain.trilo.trip.command.domain.vo.TripStatus;
+import com.cosain.trilo.trip.domain.entity.Day;
+import com.cosain.trilo.trip.domain.entity.Trip;
+import com.cosain.trilo.trip.domain.vo.TripPeriod;
+import com.cosain.trilo.trip.domain.vo.TripStatus;
 
 import java.util.ArrayList;
 import java.util.List;
