@@ -1,7 +1,7 @@
 package com.cosain.trilo.unit.trip.domain.entity.vo;
 
 import com.cosain.trilo.trip.domain.exception.InvalidCoordinateException;
-import com.cosain.trilo.trip.domain.entity.vo.Coordinate;
+import com.cosain.trilo.trip.domain.vo.Coordinate;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;

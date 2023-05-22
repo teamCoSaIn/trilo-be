@@ -9,9 +9,9 @@ import com.cosain.trilo.trip.application.schedule.command.service.ScheduleMoveSe
 import com.cosain.trilo.trip.domain.entity.Day;
 import com.cosain.trilo.trip.domain.entity.Schedule;
 import com.cosain.trilo.trip.domain.entity.Trip;
-import com.cosain.trilo.trip.domain.entity.vo.*;
 import com.cosain.trilo.trip.domain.repository.DayRepository;
 import com.cosain.trilo.trip.domain.repository.ScheduleRepository;
+import com.cosain.trilo.trip.domain.vo.*;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

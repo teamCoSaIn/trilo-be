@@ -1,7 +1,7 @@
 package com.cosain.trilo.unit.trip.domain.entity.vo;
 
 import com.cosain.trilo.trip.domain.exception.ScheduleIndexRangeException;
-import com.cosain.trilo.trip.domain.entity.vo.ScheduleIndex;
+import com.cosain.trilo.trip.domain.vo.ScheduleIndex;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;

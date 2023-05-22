@@ -3,9 +3,9 @@ package com.cosain.trilo.trip.domain.entity;
 import com.cosain.trilo.trip.domain.dto.ScheduleMoveDto;
 import com.cosain.trilo.trip.domain.exception.InvalidScheduleMoveTargetOrderException;
 import com.cosain.trilo.trip.domain.exception.MidScheduleIndexConflictException;
-import com.cosain.trilo.trip.domain.entity.vo.Place;
-import com.cosain.trilo.trip.domain.entity.vo.ScheduleIndex;
-import com.cosain.trilo.trip.domain.entity.vo.TripPeriod;
+import com.cosain.trilo.trip.domain.vo.Place;
+import com.cosain.trilo.trip.domain.vo.ScheduleIndex;
+import com.cosain.trilo.trip.domain.vo.TripPeriod;
 import jakarta.persistence.*;
 import lombok.*;
 

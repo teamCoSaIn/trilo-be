@@ -1,4 +1,4 @@
-package com.cosain.trilo.trip.domain.entity.vo;
+package com.cosain.trilo.trip.domain.vo;
 
 import com.cosain.trilo.trip.domain.exception.InvalidCoordinateException;
 import jakarta.persistence.Column;

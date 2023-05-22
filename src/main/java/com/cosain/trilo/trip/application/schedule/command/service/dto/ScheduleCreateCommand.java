@@ -1,7 +1,7 @@
 package com.cosain.trilo.trip.application.schedule.command.service.dto;
 
-import com.cosain.trilo.trip.domain.entity.vo.Coordinate;
-import com.cosain.trilo.trip.domain.entity.vo.Place;
+import com.cosain.trilo.trip.domain.vo.Coordinate;
+import com.cosain.trilo.trip.domain.vo.Place;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;

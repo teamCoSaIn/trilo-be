@@ -1,6 +1,6 @@
 package com.cosain.trilo.trip.application.trip.command.service.dto;
 
-import com.cosain.trilo.trip.domain.entity.vo.TripPeriod;
+import com.cosain.trilo.trip.domain.vo.TripPeriod;
 import lombok.Getter;
 
 import java.time.LocalDate;

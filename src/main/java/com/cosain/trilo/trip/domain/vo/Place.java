@@ -1,4 +1,4 @@
-package com.cosain.trilo.trip.domain.entity.vo;
+package com.cosain.trilo.trip.domain.vo;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;

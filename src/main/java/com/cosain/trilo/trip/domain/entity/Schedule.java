@@ -1,7 +1,7 @@
 package com.cosain.trilo.trip.domain.entity;
 
-import com.cosain.trilo.trip.domain.entity.vo.Place;
-import com.cosain.trilo.trip.domain.entity.vo.ScheduleIndex;
+import com.cosain.trilo.trip.domain.vo.Place;
+import com.cosain.trilo.trip.domain.vo.ScheduleIndex;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;

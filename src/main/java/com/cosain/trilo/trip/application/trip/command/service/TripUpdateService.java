@@ -8,7 +8,7 @@ import com.cosain.trilo.trip.domain.entity.Trip;
 import com.cosain.trilo.trip.domain.repository.DayRepository;
 import com.cosain.trilo.trip.domain.repository.ScheduleRepository;
 import com.cosain.trilo.trip.domain.repository.TripRepository;
-import com.cosain.trilo.trip.domain.entity.vo.TripPeriod;
+import com.cosain.trilo.trip.domain.vo.TripPeriod;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

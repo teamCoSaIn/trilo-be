@@ -2,8 +2,8 @@ package com.cosain.trilo.unit.trip.infra.repository;
 
 import com.cosain.trilo.support.RepositoryTest;
 import com.cosain.trilo.trip.domain.entity.Trip;
-import com.cosain.trilo.trip.domain.entity.vo.TripPeriod;
-import com.cosain.trilo.trip.domain.entity.vo.TripStatus;
+import com.cosain.trilo.trip.domain.vo.TripPeriod;
+import com.cosain.trilo.trip.domain.vo.TripStatus;
 import com.cosain.trilo.trip.domain.dto.TripDto;
 import com.cosain.trilo.trip.infra.repository.trip.TripQueryRepository;
 import jakarta.persistence.EntityManager;

@@ -1,7 +1,7 @@
 package com.cosain.trilo.unit.trip.domain.entity.vo;
 
 import com.cosain.trilo.trip.domain.exception.InvalidPeriodException;
-import com.cosain.trilo.trip.domain.entity.vo.TripPeriod;
+import com.cosain.trilo.trip.domain.vo.TripPeriod;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
