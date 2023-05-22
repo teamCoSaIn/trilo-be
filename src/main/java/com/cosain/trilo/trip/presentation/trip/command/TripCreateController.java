@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,7 +23,7 @@ public class TripCreateController {
     private final TripCreateUseCase tripCreateUseCase;
 
     @PostMapping("/api/trips")
-    public ResponseEntity<TripCreateResponse> createTrip(@LoginUser User user, @RequestBody TripCreateRequest request) {
+    public ResponseEntity<TripCreateResponse> createTrip(@LoginUser User user, @RequestBody @Validated TripCreateRequest request) {
         Long tripperId = user.getId();
         TripCreateCommand createCommand = request.toCommand();
 

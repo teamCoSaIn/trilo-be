@@ -33,7 +33,7 @@ class TripCreateControllerTest extends RestControllerTest {
 
     @Test
     @DisplayName("인증된 사용자의 여행 생성 요청 -> 성공")
-    public void successTest() throws Exception{
+    public void successTest() throws Exception {
         mockingForLoginUserAnnotation();
         TripCreateRequest request = new TripCreateRequest("제목");
         given(tripCreateUseCase.createTrip(any(), any())).willReturn(1L);
@@ -106,4 +106,117 @@ class TripCreateControllerTest extends RestControllerTest {
                 .andExpect(jsonPath("$.errorDetail").exists());
     }
 
+    @Test
+    @DisplayName("제목이 null -> 필드 검증 실패 -> 400 예외")
+    public void createTrip_with_nullTitle() throws Exception {
+        mockingForLoginUserAnnotation();
+        TripCreateRequest request = new TripCreateRequest(null);
+
+        mockMvc.perform(post("/api/trips")
+                        .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)
+                        .content(createJson(request))
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errorCode").value("request-0003"))
+                .andExpect(jsonPath("$.errorMessage").exists())
+                .andExpect(jsonPath("$.errorDetail").exists())
+                .andExpect(jsonPath("$.fieldErrors").exists())
+                .andExpect(jsonPath("$.fieldErrors").isNotEmpty())
+                .andExpect(jsonPath("$.fieldErrors[*].errorCode").exists())
+                .andExpect(jsonPath("$.fieldErrors[*].errorMessage").exists())
+                .andExpect(jsonPath("$.fieldErrors[*].errorDetail").exists())
+                .andExpect(jsonPath("$.fieldErrors[*].field").exists())
+                .andExpect(jsonPath("$.fieldErrors[?(@.field=='title' && @.errorCode=='trip-0002')]").exists())
+                .andExpect(jsonPath("$.globalErrors").exists())
+                .andExpect(jsonPath("$.globalErrors").isEmpty());
+    }
+
+    @Test
+    @DisplayName("제목이 빈 문자열 -> 필드 검증 실패 -> 400 예외")
+    public void createTrip_with_emptyTitle() throws Exception {
+        mockingForLoginUserAnnotation();
+        TripCreateRequest request = new TripCreateRequest("");
+
+        mockMvc.perform(post("/api/trips")
+                        .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)
+                        .content(createJson(request))
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errorCode").value("request-0003"))
+                .andExpect(jsonPath("$.errorMessage").exists())
+                .andExpect(jsonPath("$.errorDetail").exists())
+                .andExpect(jsonPath("$.fieldErrors").exists())
+                .andExpect(jsonPath("$.fieldErrors").exists())
+                .andExpect(jsonPath("$.fieldErrors").isNotEmpty())
+                .andExpect(jsonPath("$.fieldErrors[*].errorCode").exists())
+                .andExpect(jsonPath("$.fieldErrors[*].errorMessage").exists())
+                .andExpect(jsonPath("$.fieldErrors[*].errorDetail").exists())
+                .andExpect(jsonPath("$.fieldErrors[*].field").exists())
+                .andExpect(jsonPath("$.fieldErrors[?(@.field=='title' && @.errorCode=='trip-0002')]").exists())
+                .andExpect(jsonPath("$.fieldErrors[?(@.field=='title' && @.errorCode=='trip-0003')]").exists())
+                .andExpect(jsonPath("$.globalErrors").exists())
+                .andExpect(jsonPath("$.globalErrors").isEmpty());
+    }
+
+    @Test
+    @DisplayName("제목이 공백만으로 구성된 문자열 -> 필드 검증 실패 -> 400 예외")
+    public void createTrip_with_whiteSpaceTitle() throws Exception {
+        mockingForLoginUserAnnotation();
+        TripCreateRequest request = new TripCreateRequest("     ");
+
+        mockMvc.perform(post("/api/trips")
+                        .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)
+                        .content(createJson(request))
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errorCode").value("request-0003"))
+                .andExpect(jsonPath("$.errorMessage").exists())
+                .andExpect(jsonPath("$.errorDetail").exists())
+                .andExpect(jsonPath("$.fieldErrors").exists())
+                .andExpect(jsonPath("$.fieldErrors").isNotEmpty())
+                .andExpect(jsonPath("$.fieldErrors[*].errorCode").exists())
+                .andExpect(jsonPath("$.fieldErrors[*].errorMessage").exists())
+                .andExpect(jsonPath("$.fieldErrors[*].errorDetail").exists())
+                .andExpect(jsonPath("$.fieldErrors[*].field").exists())
+                .andExpect(jsonPath("$.fieldErrors[?(@.field=='title' && @.errorCode=='trip-0002')]").exists())
+                .andExpect(jsonPath("$.globalErrors").exists())
+                .andExpect(jsonPath("$.globalErrors").isEmpty());
+    }
+
+    @Test
+    @DisplayName("제목이 20자를 넘어갈 떄 -> 필드 검증 실패 -> 400 예외")
+    public void createTrip_with_tooLongTitle() throws Exception {
+        mockingForLoginUserAnnotation();
+        TripCreateRequest request = new TripCreateRequest("가".repeat(21));
+
+        mockMvc.perform(post("/api/trips")
+                        .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)
+                        .content(createJson(request))
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errorCode").value("request-0003"))
+                .andExpect(jsonPath("$.errorMessage").exists())
+                .andExpect(jsonPath("$.errorDetail").exists())
+                .andExpect(jsonPath("$.fieldErrors").exists())
+                .andExpect(jsonPath("$.fieldErrors").isNotEmpty())
+                .andExpect(jsonPath("$.fieldErrors[*].errorCode").exists())
+                .andExpect(jsonPath("$.fieldErrors[*].errorMessage").exists())
+                .andExpect(jsonPath("$.fieldErrors[*].errorDetail").exists())
+                .andExpect(jsonPath("$.fieldErrors[*].field").exists())
+                .andExpect(jsonPath("$.fieldErrors[?(@.field=='title' && @.errorCode=='trip-0003')]").exists())
+                .andExpect(jsonPath("$.globalErrors").exists())
+                .andExpect(jsonPath("$.globalErrors").isEmpty());
+    }
 }
