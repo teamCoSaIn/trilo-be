@@ -21,6 +21,11 @@ request-0003:
   message: Not Valid Request Parameter
   detail : 유효하지 않은 파라미터가 전달됐습니다. 요청 파라미터의 유효성을 다시 확인해주세요.
 
+request-0004:
+  message: Invalid Parameter Type in URL or Query Parameter
+  detail : URL의 파라미터 변수 또는 쿼리 파라미터의 타입이 올바르지 않습니다.
+
+
 # 인증/인가 관련
 auth-0001:
   message: AuthenticationFailed
