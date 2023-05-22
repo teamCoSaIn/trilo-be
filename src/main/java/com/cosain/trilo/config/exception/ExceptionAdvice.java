@@ -5,6 +5,7 @@ import com.cosain.trilo.common.dto.ValidationErrorResponse;
 import com.cosain.trilo.common.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.TypeMismatchException;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpHeaders;
@@ -80,6 +81,22 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
         return BasicErrorResponse.of(errorCode, errorMessage, errorDetail);
     }
 
+    /**
+     * URL의 파라미터 변수 또는 쿼리 파라미터의 타입 에러
+     */
+    @Override
+    protected ResponseEntity<Object> handleTypeMismatch(TypeMismatchException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+        log.info("URL의 파라미터 변수 또는 쿼리 파라미터의 타입 에러");
+
+        String errorCode = "request-0004";
+        String errorMessage = getMessage(errorCode + ".message");
+        String errorDetail = getMessage(errorCode + ".detail");
+
+        log.info("[{}] errorMessage={}", errorCode, errorMessage);
+        log.info("-----> errorDetail={}", errorDetail);
+        var response = BasicErrorResponse.of(errorCode, errorMessage, errorDetail);
+        return ResponseEntity.badRequest().body(response);
+    }
 
     /**
      * 필드 검증 에러 API
