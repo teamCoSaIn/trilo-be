@@ -20,7 +20,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@DisplayName("[TripCommand] 여행 삭제 API 테스트")
+@DisplayName("여행 삭제 API 테스트")
 @WebMvcTest(TripDeleteController.class)
 class TripDeleteControllerTest extends RestControllerTest {
 
