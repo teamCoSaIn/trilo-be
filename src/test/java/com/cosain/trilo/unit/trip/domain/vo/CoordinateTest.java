@@ -1,4 +1,4 @@
-package com.cosain.trilo.unit.trip.domain.entity.vo;
+package com.cosain.trilo.unit.trip.domain.vo;
 
 import com.cosain.trilo.trip.domain.exception.InvalidCoordinateException;
 import com.cosain.trilo.trip.domain.vo.Coordinate;
