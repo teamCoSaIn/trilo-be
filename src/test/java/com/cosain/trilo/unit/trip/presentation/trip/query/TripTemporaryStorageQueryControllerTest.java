@@ -1,4 +1,4 @@
-package com.cosain.trilo.unit.trip.preesentation.trip.query;
+package com.cosain.trilo.unit.trip.presentation.trip.query;
 
 import com.cosain.trilo.support.RestControllerTest;
 import com.cosain.trilo.trip.application.schedule.query.service.dto.ScheduleResult;

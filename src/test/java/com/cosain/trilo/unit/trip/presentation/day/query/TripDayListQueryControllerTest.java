@@ -1,4 +1,4 @@
-package com.cosain.trilo.unit.trip.preesentation.day.query;
+package com.cosain.trilo.unit.trip.presentation.day.query;
 
 import com.cosain.trilo.support.RestControllerTest;
 import com.cosain.trilo.trip.presentation.day.query.TripDayListQueryController;

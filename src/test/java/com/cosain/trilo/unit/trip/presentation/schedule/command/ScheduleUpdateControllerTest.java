@@ -1,4 +1,4 @@
-package com.cosain.trilo.unit.trip.preesentation.schedule.command;
+package com.cosain.trilo.unit.trip.presentation.schedule.command;
 
 import com.cosain.trilo.support.RestControllerTest;
 import com.cosain.trilo.trip.application.schedule.command.service.dto.ScheduleUpdateCommand;

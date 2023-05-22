@@ -1,4 +1,4 @@
-package com.cosain.trilo.unit.trip.preesentation.trip.command.docs;
+package com.cosain.trilo.unit.trip.presentation.trip.command.docs;
 
 import com.cosain.trilo.support.RestDocsTestSupport;
 import com.cosain.trilo.trip.application.trip.command.service.TripUpdateUseCase;
