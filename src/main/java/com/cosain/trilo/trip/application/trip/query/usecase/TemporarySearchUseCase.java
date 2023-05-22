@@ -1,6 +1,6 @@
-package com.cosain.trilo.trip.application.trip.query.service;
+package com.cosain.trilo.trip.application.trip.query.usecase;
 
-import com.cosain.trilo.trip.application.trip.query.service.dto.TemporaryPageResult;
+import com.cosain.trilo.trip.application.trip.query.usecase.dto.TemporaryPageResult;
 import org.springframework.data.domain.Pageable;
 
 public interface TemporarySearchUseCase {

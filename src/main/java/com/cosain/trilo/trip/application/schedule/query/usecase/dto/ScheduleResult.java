@@ -1,4 +1,4 @@
-package com.cosain.trilo.trip.application.schedule.query.service.dto;
+package com.cosain.trilo.trip.application.schedule.query.usecase.dto;
 
 import com.cosain.trilo.trip.domain.dto.ScheduleDto;
 import lombok.Builder;

@@ -1,7 +1,7 @@
 package com.cosain.trilo.unit.trip.presentation.trip.command.docs;
 
 import com.cosain.trilo.support.RestDocsTestSupport;
-import com.cosain.trilo.trip.application.trip.command.service.TripUpdateUseCase;
+import com.cosain.trilo.trip.application.trip.command.usecase.TripUpdateUseCase;
 import com.cosain.trilo.trip.presentation.trip.command.TripUpdateController;
 import com.cosain.trilo.trip.presentation.trip.command.dto.request.TripUpdateRequest;
 import org.junit.jupiter.api.Test;

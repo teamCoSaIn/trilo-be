@@ -1,4 +1,4 @@
-package com.cosain.trilo.trip.application.trip.command.service.dto;
+package com.cosain.trilo.trip.application.trip.command.usecase.dto;
 
 import com.cosain.trilo.trip.domain.vo.TripPeriod;
 import lombok.Getter;

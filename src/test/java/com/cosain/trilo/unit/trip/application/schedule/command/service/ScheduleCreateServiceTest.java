@@ -1,7 +1,7 @@
 package com.cosain.trilo.unit.trip.application.schedule.command.service;
 
 import com.cosain.trilo.fixture.TripFixture;
-import com.cosain.trilo.trip.application.schedule.command.service.dto.ScheduleCreateCommand;
+import com.cosain.trilo.trip.application.schedule.command.usecase.dto.ScheduleCreateCommand;
 import com.cosain.trilo.trip.application.exception.NoScheduleCreateAuthorityException;
 import com.cosain.trilo.trip.application.schedule.command.service.ScheduleCreateService;
 import com.cosain.trilo.trip.domain.entity.Day;

@@ -1,8 +1,8 @@
 package com.cosain.trilo.trip.presentation.trip.command;
 
 import com.cosain.trilo.common.LoginUser;
-import com.cosain.trilo.trip.application.trip.command.service.dto.TripUpdateCommand;
-import com.cosain.trilo.trip.application.trip.command.service.TripUpdateUseCase;
+import com.cosain.trilo.trip.application.trip.command.usecase.dto.TripUpdateCommand;
+import com.cosain.trilo.trip.application.trip.command.usecase.TripUpdateUseCase;
 import com.cosain.trilo.trip.presentation.trip.command.dto.request.TripUpdateRequest;
 import com.cosain.trilo.trip.presentation.trip.command.dto.response.TripUpdateResponse;
 import com.cosain.trilo.user.domain.User;

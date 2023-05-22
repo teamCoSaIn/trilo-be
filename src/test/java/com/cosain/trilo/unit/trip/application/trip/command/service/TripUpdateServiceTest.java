@@ -1,6 +1,6 @@
 package com.cosain.trilo.unit.trip.application.trip.command.service;
 
-import com.cosain.trilo.trip.application.trip.command.service.dto.TripUpdateCommand;
+import com.cosain.trilo.trip.application.trip.command.usecase.dto.TripUpdateCommand;
 import com.cosain.trilo.trip.application.exception.NoTripUpdateAuthorityException;
 import com.cosain.trilo.trip.application.exception.TripNotFoundException;
 import com.cosain.trilo.trip.application.trip.command.service.TripUpdateService;

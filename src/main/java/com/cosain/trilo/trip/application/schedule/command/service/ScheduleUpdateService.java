@@ -2,7 +2,8 @@ package com.cosain.trilo.trip.application.schedule.command.service;
 
 import com.cosain.trilo.trip.application.exception.NoScheduleUpdateAuthorityException;
 import com.cosain.trilo.trip.application.exception.ScheduleNotFoundException;
-import com.cosain.trilo.trip.application.schedule.command.service.dto.ScheduleUpdateCommand;
+import com.cosain.trilo.trip.application.schedule.command.usecase.dto.ScheduleUpdateCommand;
+import com.cosain.trilo.trip.application.schedule.command.usecase.ScheduleUpdateUseCase;
 import com.cosain.trilo.trip.domain.entity.Schedule;
 import com.cosain.trilo.trip.domain.repository.ScheduleRepository;
 import lombok.RequiredArgsConstructor;

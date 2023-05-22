@@ -1,6 +1,6 @@
-package com.cosain.trilo.trip.application.trip.query.service.dto;
+package com.cosain.trilo.trip.application.trip.query.usecase.dto;
 
-import com.cosain.trilo.trip.application.schedule.query.service.dto.ScheduleResult;
+import com.cosain.trilo.trip.application.schedule.query.usecase.dto.ScheduleResult;
 import lombok.Getter;
 
 import java.util.List;

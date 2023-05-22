@@ -2,9 +2,9 @@ package com.cosain.trilo.unit.trip.presentation.schedule.command;
 
 
 import com.cosain.trilo.support.RestControllerTest;
-import com.cosain.trilo.trip.application.schedule.command.service.dto.ScheduleMoveCommand;
-import com.cosain.trilo.trip.application.schedule.command.service.dto.ScheduleMoveResult;
-import com.cosain.trilo.trip.application.schedule.command.service.ScheduleMoveUseCase;
+import com.cosain.trilo.trip.application.schedule.command.usecase.dto.ScheduleMoveCommand;
+import com.cosain.trilo.trip.application.schedule.command.usecase.dto.ScheduleMoveResult;
+import com.cosain.trilo.trip.application.schedule.command.usecase.ScheduleMoveUseCase;
 import com.cosain.trilo.trip.presentation.schedule.command.ScheduleMoveController;
 import com.cosain.trilo.trip.presentation.schedule.command.dto.request.ScheduleMoveRequest;
 import org.junit.jupiter.api.DisplayName;

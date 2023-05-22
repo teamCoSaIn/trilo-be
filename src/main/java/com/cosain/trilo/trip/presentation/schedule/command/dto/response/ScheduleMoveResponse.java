@@ -1,6 +1,6 @@
 package com.cosain.trilo.trip.presentation.schedule.command.dto.response;
 
-import com.cosain.trilo.trip.application.schedule.command.service.dto.ScheduleMoveResult;
+import com.cosain.trilo.trip.application.schedule.command.usecase.dto.ScheduleMoveResult;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;

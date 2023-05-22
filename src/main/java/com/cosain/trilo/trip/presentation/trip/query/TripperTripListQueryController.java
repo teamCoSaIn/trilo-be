@@ -1,7 +1,7 @@
 package com.cosain.trilo.trip.presentation.trip.query;
 
-import com.cosain.trilo.trip.application.trip.query.service.dto.TripPageResult;
-import com.cosain.trilo.trip.application.trip.query.service.TripListSearchUseCase;
+import com.cosain.trilo.trip.application.trip.query.usecase.dto.TripPageResult;
+import com.cosain.trilo.trip.application.trip.query.usecase.TripListSearchUseCase;
 import com.cosain.trilo.trip.presentation.trip.query.dto.response.TripPageResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -1,6 +1,6 @@
 package com.cosain.trilo.unit.trip.application.schedule.command.service;
 
-import com.cosain.trilo.trip.application.schedule.command.service.dto.ScheduleUpdateCommand;
+import com.cosain.trilo.trip.application.schedule.command.usecase.dto.ScheduleUpdateCommand;
 import com.cosain.trilo.trip.application.exception.NoScheduleUpdateAuthorityException;
 import com.cosain.trilo.trip.application.exception.ScheduleNotFoundException;
 import com.cosain.trilo.trip.application.schedule.command.service.ScheduleUpdateService;

@@ -1,6 +1,6 @@
-package com.cosain.trilo.trip.application.trip.command.service;
+package com.cosain.trilo.trip.application.trip.command.usecase;
 
-import com.cosain.trilo.trip.application.trip.command.service.dto.TripUpdateCommand;
+import com.cosain.trilo.trip.application.trip.command.usecase.dto.TripUpdateCommand;
 
 public interface TripUpdateUseCase {
 

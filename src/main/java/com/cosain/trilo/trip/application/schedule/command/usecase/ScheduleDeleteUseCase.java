@@ -1,4 +1,4 @@
-package com.cosain.trilo.trip.application.schedule.command.service;
+package com.cosain.trilo.trip.application.schedule.command.usecase;
 
 public interface ScheduleDeleteUseCase {
 

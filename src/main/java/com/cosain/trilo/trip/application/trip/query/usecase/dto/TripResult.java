@@ -1,4 +1,4 @@
-package com.cosain.trilo.trip.application.trip.query.service.dto;
+package com.cosain.trilo.trip.application.trip.query.usecase.dto;
 
 import com.cosain.trilo.trip.domain.dto.TripDto;
 import lombok.AccessLevel;

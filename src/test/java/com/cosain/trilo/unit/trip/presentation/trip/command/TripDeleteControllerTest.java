@@ -1,7 +1,7 @@
 package com.cosain.trilo.unit.trip.presentation.trip.command;
 
 import com.cosain.trilo.support.RestControllerTest;
-import com.cosain.trilo.trip.application.trip.command.service.TripDeleteUseCase;
+import com.cosain.trilo.trip.application.trip.command.usecase.TripDeleteUseCase;
 import com.cosain.trilo.trip.presentation.trip.command.TripDeleteController;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

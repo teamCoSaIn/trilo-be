@@ -1,6 +1,6 @@
 package com.cosain.trilo.unit.trip.application.trip.command.service;
 
-import com.cosain.trilo.trip.application.trip.command.service.dto.TripCreateCommand;
+import com.cosain.trilo.trip.application.trip.command.usecase.dto.TripCreateCommand;
 import com.cosain.trilo.trip.application.trip.command.service.TripCreateService;
 import com.cosain.trilo.trip.domain.entity.Trip;
 import com.cosain.trilo.trip.domain.repository.TripRepository;

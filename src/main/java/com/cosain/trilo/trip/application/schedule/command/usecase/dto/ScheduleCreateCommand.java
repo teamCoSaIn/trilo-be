@@ -1,4 +1,4 @@
-package com.cosain.trilo.trip.application.schedule.command.service.dto;
+package com.cosain.trilo.trip.application.schedule.command.usecase.dto;
 
 import com.cosain.trilo.trip.domain.vo.Coordinate;
 import com.cosain.trilo.trip.domain.vo.Place;

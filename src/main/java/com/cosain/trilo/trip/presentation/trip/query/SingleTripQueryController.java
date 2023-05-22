@@ -1,8 +1,8 @@
 package com.cosain.trilo.trip.presentation.trip.query;
 
 import com.cosain.trilo.common.LoginUser;
-import com.cosain.trilo.trip.application.trip.query.service.dto.TripResult;
-import com.cosain.trilo.trip.application.trip.query.service.TripDetailSearchUseCase;
+import com.cosain.trilo.trip.application.trip.query.usecase.dto.TripResult;
+import com.cosain.trilo.trip.application.trip.query.usecase.TripDetailSearchUseCase;
 import com.cosain.trilo.trip.presentation.trip.query.dto.response.TripDetailResponse;
 import com.cosain.trilo.user.domain.User;
 import lombok.RequiredArgsConstructor;

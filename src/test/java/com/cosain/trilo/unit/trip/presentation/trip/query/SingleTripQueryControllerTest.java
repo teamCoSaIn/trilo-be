@@ -2,8 +2,8 @@ package com.cosain.trilo.unit.trip.presentation.trip.query;
 
 import com.cosain.trilo.support.RestControllerTest;
 import com.cosain.trilo.trip.domain.vo.TripStatus;
-import com.cosain.trilo.trip.application.trip.query.service.dto.TripResult;
-import com.cosain.trilo.trip.application.trip.query.service.TripDetailSearchUseCase;
+import com.cosain.trilo.trip.application.trip.query.usecase.dto.TripResult;
+import com.cosain.trilo.trip.application.trip.query.usecase.TripDetailSearchUseCase;
 import com.cosain.trilo.trip.domain.dto.TripDto;
 import com.cosain.trilo.trip.infra.dto.TripDetail;
 import com.cosain.trilo.trip.presentation.trip.query.SingleTripQueryController;

@@ -1,9 +1,10 @@
 package com.cosain.trilo.trip.application.schedule.command.service;
 
-import com.cosain.trilo.trip.application.schedule.command.service.dto.ScheduleCreateCommand;
+import com.cosain.trilo.trip.application.schedule.command.usecase.dto.ScheduleCreateCommand;
 import com.cosain.trilo.trip.application.exception.DayNotFoundException;
 import com.cosain.trilo.trip.application.exception.NoScheduleCreateAuthorityException;
 import com.cosain.trilo.trip.application.exception.TripNotFoundException;
+import com.cosain.trilo.trip.application.schedule.command.usecase.ScheduleCreateUseCase;
 import com.cosain.trilo.trip.domain.entity.Day;
 import com.cosain.trilo.trip.domain.entity.Schedule;
 import com.cosain.trilo.trip.domain.entity.Trip;

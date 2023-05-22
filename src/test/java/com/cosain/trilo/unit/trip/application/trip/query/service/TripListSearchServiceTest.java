@@ -1,7 +1,7 @@
 package com.cosain.trilo.unit.trip.application.trip.query.service;
 
 import com.cosain.trilo.trip.domain.vo.TripStatus;
-import com.cosain.trilo.trip.application.trip.query.service.dto.TripPageResult;
+import com.cosain.trilo.trip.application.trip.query.usecase.dto.TripPageResult;
 import com.cosain.trilo.trip.application.exception.TripperNotFoundException;
 import com.cosain.trilo.trip.application.trip.query.service.TripListSearchService;
 import com.cosain.trilo.trip.domain.dto.TripDto;

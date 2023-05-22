@@ -1,7 +1,7 @@
 package com.cosain.trilo.unit.trip.application.schedule.query.service;
 
 import com.cosain.trilo.trip.application.exception.ScheduleNotFoundException;
-import com.cosain.trilo.trip.application.schedule.query.service.dto.ScheduleResult;
+import com.cosain.trilo.trip.application.schedule.query.usecase.dto.ScheduleResult;
 import com.cosain.trilo.trip.application.schedule.query.service.ScheduleDetailSearchService;
 import com.cosain.trilo.trip.domain.dto.ScheduleDto;
 import com.cosain.trilo.trip.infra.repository.schedule.ScheduleQueryRepository;
