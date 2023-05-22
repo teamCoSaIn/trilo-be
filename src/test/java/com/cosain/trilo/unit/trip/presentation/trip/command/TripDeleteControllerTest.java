@@ -61,4 +61,20 @@ class TripDeleteControllerTest extends RestControllerTest {
                 .andExpect(jsonPath("$.errorDetail").exists());
     }
 
+    @Test
+    @DisplayName("tripId으로 숫자가 아닌 문자열 주입 -> 올바르지 않은 경로 변수 타입 400 에러")
+    public void deleteTrip_with_stringTripId() throws Exception {
+        mockingForLoginUserAnnotation();
+
+        mockMvc.perform(delete("/api/trips/가가가")
+                        .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errorCode").value("request-0004"))
+                .andExpect(jsonPath("$.errorMessage").exists())
+                .andExpect(jsonPath("$.errorDetail").exists());
+    }
 }
