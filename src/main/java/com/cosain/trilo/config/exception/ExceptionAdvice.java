@@ -1,6 +1,7 @@
 package com.cosain.trilo.config.exception;
 
 import com.cosain.trilo.common.dto.BasicErrorResponse;
+import com.cosain.trilo.common.dto.ValidationErrorResponse;
 import com.cosain.trilo.common.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,12 +14,17 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingRequestCookieException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+
+import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -72,6 +78,36 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
         log.info("[{}] errorMessage={}", errorCode, errorMessage);
         log.info("-----> errorDetail={}", errorDetail);
         return BasicErrorResponse.of(errorCode, errorMessage, errorDetail);
+    }
+
+
+    /**
+     * 필드 검증 에러 API
+     */
+    @Override
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+        BindingResult bindingResult = ex.getBindingResult();
+        log.info("필드 검증 실패!");
+
+        String errorCode = "request-0003";
+        String errorMessage = getMessage(errorCode + ".message");
+        String errorDetail = getMessage(errorCode + ".detail");
+
+        var response = ValidationErrorResponse.of(errorCode, errorMessage, errorDetail);
+        List<FieldError> fieldErrors = bindingResult.getFieldErrors();
+        addFieldErrors(response, fieldErrors);
+
+        return ResponseEntity.badRequest().body(response);
+    }
+
+    private void addFieldErrors(ValidationErrorResponse response, List<FieldError> fieldErrors) {
+        for (FieldError fieldError : fieldErrors) {
+            String fieldErrorCode = fieldError.getDefaultMessage();
+            String fieldErrorMessage = getMessage(fieldErrorCode + ".message");
+            String fieldErrorDetail = getMessage(fieldErrorCode + ".detail");
+            String field = fieldError.getField();
+            response.addFieldError(fieldErrorCode, fieldErrorMessage, fieldErrorDetail, field);
+        }
     }
 
     @ExceptionHandler(AuthenticationException.class)

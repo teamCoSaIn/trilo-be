@@ -69,7 +69,7 @@ trip-0002:
 
 trip-0003:
   message: Invalid Trip Title Length
-  detail: The trip title length must be between {min} and {max} characters.
+  detail: The trip title length must be between 1 and 20 characters.
 
 
 trip-0004:

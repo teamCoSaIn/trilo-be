@@ -17,6 +17,9 @@ request-0002:
   message: Missing Request Cookie
   detail: 요청에 필요한 쿠키가 누락 됐습니다. 요청에 필요한 쿠키가 존재하는 지, 제대로 된 값인지 다시 확인해주세요.
 
+request-0003:
+  message: Not Valid Request Parameter
+  detail : 유효하지 않은 파라미터가 전달됐습니다. 요청 파라미터의 유효성을 다시 확인해주세요.
 
 # 인증/인가 관련
 auth-0001:
@@ -69,7 +72,7 @@ trip-0002:
 
 trip-0003:
   message: Invalid Trip Title Length
-  detail: 여행 제목의 길이는 {min}자 이상 {max}자 이하여야 합니다.
+  detail: 여행 제목의 길이는 1자 이상 20자 이하여야 합니다.
 
 
 trip-0004:
