@@ -25,7 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
-@DisplayName("[TripCommand] 일정 생성 API 테스트")
+@DisplayName("일정 생성 API 테스트")
 @WebMvcTest(ScheduleCreateController.class)
 class ScheduleCreateControllerTest extends RestControllerTest {
 
@@ -36,7 +36,7 @@ class ScheduleCreateControllerTest extends RestControllerTest {
     @Test
     @DisplayName("인증된 사용자의 올바른 요청 -> 일정 생성됨")
     @WithMockUser
-    public void createSchedulePlace_with_authorizedUser() throws Exception {
+    public void createSchedule_with_authorizedUser() throws Exception {
         mockingForLoginUserAnnotation();
 
         ScheduleCreateRequest request = ScheduleCreateRequest.builder()
@@ -67,7 +67,7 @@ class ScheduleCreateControllerTest extends RestControllerTest {
     @Test
     @DisplayName("미인증 사용자 요청 -> 인증 실패 401")
     @WithAnonymousUser
-    public void updateSchedulePlace_with_unauthorizedUser() throws Exception {
+    public void createSchedule_with_unauthorizedUser() throws Exception {
         ScheduleCreateRequest request = ScheduleCreateRequest.builder()
                 .dayId(1L)
                 .title("일정 제목")
@@ -83,6 +83,86 @@ class ScheduleCreateControllerTest extends RestControllerTest {
                 .andDo(print())
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.errorCode").exists())
+                .andExpect(jsonPath("$.errorMessage").exists())
+                .andExpect(jsonPath("$.errorDetail").exists());
+    }
+
+
+    @Test
+    @DisplayName("비어있는 바디 -> 올바르지 않은 요청 데이터 형식으로 간주하고 400 예외")
+    public void createSchedule_with_emptyContent() throws Exception {
+        mockingForLoginUserAnnotation();
+
+        String emptyContent = "";
+
+        mockMvc.perform(post("/api/schedules")
+                        .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)
+                        .content(emptyContent)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errorCode").value("request-0001"))
+                .andExpect(jsonPath("$.errorMessage").exists())
+                .andExpect(jsonPath("$.errorDetail").exists());
+    }
+
+    @Test
+    @DisplayName("형식이 올바르지 않은 바디 -> 올바르지 않은 요청 데이터 형식으로 간주하고 400 예외")
+    public void createSchedule_with_invalidContent() throws Exception {
+        mockingForLoginUserAnnotation();
+        String invalidContent = """
+                {
+                    "dayId"+ 1,
+                    "tripId": 2,
+                    "title": 괄호로 감싸지지 않은 문자열,
+                    "placeId": "place-5964",
+                    "placeName": "장소명",
+                    "latitude": 35.1234,
+                    "longitude": 123.1212
+                }
+                """;
+
+        mockMvc.perform(post("/api/schedules")
+                        .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)
+                        .content(invalidContent)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errorCode").value("request-0001"))
+                .andExpect(jsonPath("$.errorMessage").exists())
+                .andExpect(jsonPath("$.errorDetail").exists());
+    }
+
+    @Test
+    @DisplayName("타입이 올바르지 않은 요청 데이터 -> 올바르지 않은 요청 데이터 형식으로 간주하고 400 예외")
+    public void createSchedule_with_invalidType() throws Exception {
+        mockingForLoginUserAnnotation();
+        String invalidTypeContent = """
+                {
+                    "dayId": 1,
+                    "tripId": "숫자가 아닌 값",
+                    "title": "제목",
+                    "placeId": "place-5964",
+                    "placeName": "장소명",
+                    "latitude": "숫자가 아닌 위도값",
+                    "longitude": "숫자가 아닌 경도값"
+                }
+                """;
+
+
+        mockMvc.perform(post("/api/schedules")
+                        .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)
+                        .content(invalidTypeContent)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errorCode").value("request-0001"))
                 .andExpect(jsonPath("$.errorMessage").exists())
                 .andExpect(jsonPath("$.errorDetail").exists());
     }
