@@ -72,12 +72,8 @@ trip-0001:
   detail: 일치하는 식별자의 Trip을 찾을 수 없습니다.
 
 trip-0002:
-  message: Empty Trip Title
-  detail: 여행의 제목은 null 또는 공백일 수 없습니다.
-
-trip-0003:
-  message: Invalid Trip Title Length
-  detail: 여행 제목의 길이는 1자 이상 20자 이하여야 합니다.
+  message: Invalid Trip Title
+  detail: 여행의 제목은 null 또는 공백일 수 없습니다. 또한, 여행 제목의 길이는 1자 이상 20자 이하여야 합니다.
 
 
 trip-0004:

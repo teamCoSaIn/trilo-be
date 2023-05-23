@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 public class TripCreateRequest {
 
     @NotBlank(message = "trip-0002")
-    @Size(min = 1, max = 20, message = "trip-0003")
+    @Size(min = 1, max = 20, message = "trip-0002")
     private String title;
 
     public TripCreateRequest(String title) {

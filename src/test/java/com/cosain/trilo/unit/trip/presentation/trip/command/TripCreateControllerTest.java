@@ -159,7 +159,6 @@ class TripCreateControllerTest extends RestControllerTest {
                 .andExpect(jsonPath("$.fieldErrors[*].errorDetail").exists())
                 .andExpect(jsonPath("$.fieldErrors[*].field").exists())
                 .andExpect(jsonPath("$.fieldErrors[?(@.field=='title' && @.errorCode=='trip-0002')]").exists())
-                .andExpect(jsonPath("$.fieldErrors[?(@.field=='title' && @.errorCode=='trip-0003')]").exists())
                 .andExpect(jsonPath("$.globalErrors").exists())
                 .andExpect(jsonPath("$.globalErrors").isEmpty());
     }
@@ -215,7 +214,7 @@ class TripCreateControllerTest extends RestControllerTest {
                 .andExpect(jsonPath("$.fieldErrors[*].errorMessage").exists())
                 .andExpect(jsonPath("$.fieldErrors[*].errorDetail").exists())
                 .andExpect(jsonPath("$.fieldErrors[*].field").exists())
-                .andExpect(jsonPath("$.fieldErrors[?(@.field=='title' && @.errorCode=='trip-0003')]").exists())
+                .andExpect(jsonPath("$.fieldErrors[?(@.field=='title' && @.errorCode=='trip-0002')]").exists())
                 .andExpect(jsonPath("$.globalErrors").exists())
                 .andExpect(jsonPath("$.globalErrors").isEmpty());
     }

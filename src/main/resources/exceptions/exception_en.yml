@@ -72,12 +72,8 @@ trip-0001:
   detail: The Trip with the matching identifier could not be found.
 
 trip-0002:
-  message: Empty Trip Title
-  detail: The trip title cannot be null or empty.
-
-trip-0003:
-  message: Invalid Trip Title Length
-  detail: The trip title length must be between 1 and 20 characters.
+  message: Invalid Trip Title
+  detail: The TripTitle cannot be null or empty. Additionally, the TripTitle must be between 1 and 20 characters.
 
 
 trip-0004:
