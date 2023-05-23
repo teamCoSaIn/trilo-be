@@ -79,7 +79,7 @@ public class ScheduleQueryRepositoryTest {
             em.flush();
 
             // when
-            Slice<ScheduleDto> temporaryScheduleListByTripId = scheduleQueryRepository.findTemporaryScheduleListByTripId(1L, PageRequest.of(0, 1));
+            Slice<ScheduleDetail> temporaryScheduleListByTripId = scheduleQueryRepository.findTemporaryScheduleListByTripId(1L, PageRequest.of(0, 1));
 
             // then
             assertThat(temporaryScheduleListByTripId.getSize()).isEqualTo(1);
@@ -100,15 +100,13 @@ public class ScheduleQueryRepositoryTest {
             em.flush();
 
             // when
-            Slice<ScheduleDto> temporaryScheduleListByTripId = scheduleQueryRepository.findTemporaryScheduleListByTripId(1L, PageRequest.of(0, 3));
+            Slice<ScheduleDetail> scheduleDetails = scheduleQueryRepository.findTemporaryScheduleListByTripId(1L, PageRequest.of(0, 3));
 
             // then
-            assertThat(temporaryScheduleListByTripId.getSize()).isEqualTo(3);
-            List<ScheduleDto> scheduleList = temporaryScheduleListByTripId.getContent();
-            assertThat(scheduleList).hasSize(3);
-            assertThat(scheduleList.get(0).getOrder()).isEqualTo(1L);
-            assertThat(scheduleList.get(1).getOrder()).isEqualTo(2L);
-            assertThat(scheduleList.get(2).getOrder()).isEqualTo(3L);
+            assertThat(scheduleDetails.getSize()).isEqualTo(3);
+            assertThat(scheduleDetails.getContent().get(0).getOrder()).isEqualTo(1L);
+            assertThat(scheduleDetails.getContent().get(1).getOrder()).isEqualTo(2L);
+            assertThat(scheduleDetails.getContent().get(2).getOrder()).isEqualTo(3L);
         }
         private Schedule createSchedule(Trip trip, long scheduleIndexValue){
             return Schedule.builder()

@@ -1,9 +1,7 @@
 package com.cosain.trilo.unit.trip.application.trip.query.service;
 
 import com.cosain.trilo.trip.application.exception.TripNotFoundException;
-import com.cosain.trilo.trip.application.trip.query.usecase.dto.TemporaryPageResult;
 import com.cosain.trilo.trip.application.trip.query.service.TemporarySearchService;
-import com.cosain.trilo.trip.domain.dto.ScheduleDto;
 import com.cosain.trilo.trip.infra.repository.schedule.ScheduleQueryRepository;
 import com.cosain.trilo.trip.infra.repository.trip.TripQueryRepository;
 import com.cosain.trilo.trip.infra.dto.ScheduleDetail;
@@ -38,22 +36,20 @@ public class TemporarySearchServiceTest {
     private ScheduleQueryRepository scheduleQueryRepository;
 
     @Test
-    void tripId가_유효하고_임시보관함이_비어있지_않으면_페이지_요청의_크기만큼_ScheduleResult로_만들어_반환한다(){
+    void tripId가_유효하고_임시보관함이_비어있지_않으면_페이지_요청의_크기만큼의_ScheduleDetail들을_반환한다(){
         // given
         Pageable pageable = PageRequest.of(0, 3);
-        ScheduleDto scheduleDto1 = ScheduleDto.from(new ScheduleDetail(1L, 1L, "제목", "장소", 33.33, 33.33, 1L, "내용"));
-        ScheduleDto scheduleDto2 = ScheduleDto.from(new ScheduleDetail(2L, 1L, "제목", "장소", 33.33, 33.33, 1L, "내용"));
-        ScheduleDto scheduleDto3 = ScheduleDto.from(new ScheduleDetail(3L, 1L, "제목", "장소", 33.33, 33.33, 1L, "내용"));
-        Slice<ScheduleDto> slices = new SliceImpl<>(List.of(scheduleDto1, scheduleDto2, scheduleDto3), pageable, true);
+        ScheduleDetail scheduleDetail1 = new ScheduleDetail(1L, 1L, "제목", "장소", 33.33, 33.33, 1L, "내용");
+        ScheduleDetail scheduleDetail2 = new ScheduleDetail(2L, 1L, "제목", "장소", 33.33, 33.33, 1L, "내용");
+        ScheduleDetail scheduleDetail3 = new ScheduleDetail(3L, 1L, "제목", "장소", 33.33, 33.33, 1L, "내용");
         given(tripQueryRepository.existById(anyLong())).willReturn(true);
-        given(scheduleQueryRepository.findTemporaryScheduleListByTripId(anyLong(), any())).willReturn(slices);
+        given(scheduleQueryRepository.findTemporaryScheduleListByTripId(anyLong(), any())).willReturn(new SliceImpl(List.of(scheduleDetail1, scheduleDetail2, scheduleDetail3)));
 
         // when
-        TemporaryPageResult temporaryPageResult = temporarySearchService.searchTemporary(1L, pageable);
+        Slice<ScheduleDetail> scheduleDetails = temporarySearchService.searchTemporary(1L, pageable);
 
         // then
-        assertThat(temporaryPageResult.isHasNext()).isTrue();
-        assertThat(temporaryPageResult.getScheduleResults().size()).isEqualTo(3);
+        assertThat(scheduleDetails.getSize()).isEqualTo(3);
     }
     @Test
     void tripId가_유효하지_않다면_TripNotFoundException을_발생시킨다(){

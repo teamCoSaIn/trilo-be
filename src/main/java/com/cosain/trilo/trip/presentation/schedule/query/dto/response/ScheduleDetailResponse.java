@@ -1,6 +1,7 @@
 package com.cosain.trilo.trip.presentation.schedule.query.dto.response;
 
 import com.cosain.trilo.trip.application.schedule.query.usecase.dto.ScheduleResult;
+import com.cosain.trilo.trip.infra.dto.ScheduleDetail;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -15,16 +16,16 @@ public class ScheduleDetailResponse {
     private long order;
     private String content;
 
-    public static ScheduleDetailResponse from(ScheduleResult scheduleResult){
+    public static ScheduleDetailResponse from(ScheduleDetail scheduleDetail){
         return ScheduleDetailResponse.builder()
-                .scheduleId(scheduleResult.getScheduleId())
-                .dayId(scheduleResult.getDayId())
-                .title(scheduleResult.getTitle())
-                .placeName(scheduleResult.getPlaceName())
-                .latitude(scheduleResult.getLatitude())
-                .longitude(scheduleResult.getLongitude())
-                .order(scheduleResult.getOrder())
-                .content(scheduleResult.getContent())
+                .scheduleId(scheduleDetail.getScheduleId())
+                .dayId(scheduleDetail.getDayId())
+                .title(scheduleDetail.getTitle())
+                .placeName(scheduleDetail.getPlaceName())
+                .latitude(scheduleDetail.getLatitude())
+                .longitude(scheduleDetail.getLongitude())
+                .order(scheduleDetail.getOrder())
+                .content(scheduleDetail.getContent())
                 .build();
     }
 

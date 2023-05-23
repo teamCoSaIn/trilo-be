@@ -10,5 +10,5 @@ import java.util.Optional;
 public interface ScheduleQueryRepository {
     Optional<ScheduleDetail> findScheduleDetailByScheduleId(Long scheduleId);
 
-    Slice<ScheduleDto> findTemporaryScheduleListByTripId(Long tripId, Pageable pageable);
+    Slice<ScheduleDetail> findTemporaryScheduleListByTripId(Long tripId, Pageable pageable);
 }

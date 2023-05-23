@@ -24,10 +24,8 @@ public class ScheduleQueryRepositoryImpl implements ScheduleQueryRepository {
     }
 
     @Override
-    public Slice<ScheduleDto> findTemporaryScheduleListByTripId(Long tripId, Pageable pageable) {
-        Slice<ScheduleDetail> scheduleDetails = scheduleQueryJpaRepository.findTemporaryScheduleListByTripId(tripId, pageable);
-        List<ScheduleDto> scheduleDtos = scheduleDetails.map(ScheduleDto::from).getContent();
-        return new SliceImpl<>(scheduleDtos, pageable, scheduleDetails.hasNext());
+    public Slice<ScheduleDetail> findTemporaryScheduleListByTripId(Long tripId, Pageable pageable) {
+        return scheduleQueryJpaRepository.findTemporaryScheduleListByTripId(tripId, pageable);
     }
 }
 
