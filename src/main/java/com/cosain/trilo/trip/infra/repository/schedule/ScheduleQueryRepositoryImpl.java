@@ -19,10 +19,8 @@ public class ScheduleQueryRepositoryImpl implements ScheduleQueryRepository {
     private final ScheduleQueryJpaRepository scheduleQueryJpaRepository;
 
     @Override
-    public Optional<ScheduleDto> findScheduleDetailByScheduleId(Long id) {
-        Optional<ScheduleDetail> scheduleDetail = scheduleQueryJpaRepository.findScheduleDetailById(id);
-
-        return scheduleDetail.isEmpty() ? Optional.empty() : Optional.of(ScheduleDto.from(scheduleDetail.get()));
+    public Optional<ScheduleDetail> findScheduleDetailByScheduleId(Long id) {
+        return scheduleQueryJpaRepository.findScheduleDetailById(id);
     }
 
     @Override

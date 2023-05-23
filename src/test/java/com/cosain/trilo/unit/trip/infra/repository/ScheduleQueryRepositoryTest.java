@@ -1,12 +1,13 @@
 package com.cosain.trilo.unit.trip.infra.repository;
 
 import com.cosain.trilo.support.RepositoryTest;
+import com.cosain.trilo.trip.domain.dto.ScheduleDto;
 import com.cosain.trilo.trip.domain.entity.Schedule;
 import com.cosain.trilo.trip.domain.entity.Trip;
 import com.cosain.trilo.trip.domain.vo.Coordinate;
 import com.cosain.trilo.trip.domain.vo.Place;
 import com.cosain.trilo.trip.domain.vo.ScheduleIndex;
-import com.cosain.trilo.trip.domain.dto.ScheduleDto;
+import com.cosain.trilo.trip.infra.dto.ScheduleDetail;
 import com.cosain.trilo.trip.infra.repository.schedule.ScheduleQueryRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -48,17 +49,17 @@ public class ScheduleQueryRepositoryTest {
         em.flush();
 
         // when
-        ScheduleDto scheduleDto = scheduleQueryRepository.findScheduleDetailByScheduleId(schedule.getId()).get();
+        ScheduleDetail dto = scheduleQueryRepository.findScheduleDetailByScheduleId(schedule.getId()).get();
 
         // then
-        assertThat(scheduleDto.getScheduleId()).isEqualTo(schedule.getId());
-        assertThat(scheduleDto.getScheduleId()).isEqualTo(schedule.getId());
-        assertThat(scheduleDto.getTitle()).isEqualTo(schedule.getTitle());
-        assertThat(scheduleDto.getPlaceName()).isEqualTo(schedule.getPlace().getPlaceName());
-        assertThat(scheduleDto.getLatitude()).isEqualTo(schedule.getPlace().getCoordinate().getLatitude());
-        assertThat(scheduleDto.getLongitude()).isEqualTo(schedule.getPlace().getCoordinate().getLongitude());
-        assertThat(scheduleDto.getOrder()).isEqualTo(schedule.getScheduleIndex().getValue());
-        assertThat(scheduleDto.getContent()).isEqualTo(schedule.getContent());
+        assertThat(dto.getScheduleId()).isEqualTo(schedule.getId());
+        assertThat(dto.getScheduleId()).isEqualTo(schedule.getId());
+        assertThat(dto.getTitle()).isEqualTo(schedule.getTitle());
+        assertThat(dto.getPlaceName()).isEqualTo(schedule.getPlace().getPlaceName());
+        assertThat(dto.getLatitude()).isEqualTo(schedule.getPlace().getCoordinate().getLatitude());
+        assertThat(dto.getLongitude()).isEqualTo(schedule.getPlace().getCoordinate().getLongitude());
+        assertThat(dto.getOrder()).isEqualTo(schedule.getScheduleIndex().getValue());
+        assertThat(dto.getContent()).isEqualTo(schedule.getContent());
 
     }
 

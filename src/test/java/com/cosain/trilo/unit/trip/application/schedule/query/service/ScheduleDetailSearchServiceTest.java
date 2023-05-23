@@ -1,11 +1,9 @@
 package com.cosain.trilo.unit.trip.application.schedule.query.service;
 
 import com.cosain.trilo.trip.application.exception.ScheduleNotFoundException;
-import com.cosain.trilo.trip.application.schedule.query.usecase.dto.ScheduleResult;
 import com.cosain.trilo.trip.application.schedule.query.service.ScheduleDetailSearchService;
-import com.cosain.trilo.trip.domain.dto.ScheduleDto;
-import com.cosain.trilo.trip.infra.repository.schedule.ScheduleQueryRepository;
 import com.cosain.trilo.trip.infra.dto.ScheduleDetail;
+import com.cosain.trilo.trip.infra.repository.schedule.ScheduleQueryRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -35,20 +33,20 @@ public class ScheduleDetailSearchServiceTest {
     void searchScheduleDetailTest(){
         // given
         ScheduleDetail scheduleDetail = new ScheduleDetail(1L, 1L, "제목", "장소 이름", 24.24, 24.24, 3L, "내용");
-        given(scheduleQueryRepository.findScheduleDetailByScheduleId(anyLong())).willReturn(Optional.of(ScheduleDto.from(scheduleDetail)));
+        given(scheduleQueryRepository.findScheduleDetailByScheduleId(anyLong())).willReturn(Optional.of(scheduleDetail));
 
         // when
-        ScheduleResult scheduleResult = scheduleDetailSearchService.searchScheduleDetail(anyLong());
+        ScheduleDetail dto = scheduleDetailSearchService.searchScheduleDetail(anyLong());
 
         // then
-        assertThat(scheduleResult.getScheduleId()).isEqualTo(scheduleDetail.getScheduleId());
-        assertThat(scheduleResult.getDayId()).isEqualTo(scheduleDetail.getDayId());
-        assertThat(scheduleResult.getContent()).isEqualTo(scheduleDetail.getContent());
-        assertThat(scheduleResult.getTitle()).isEqualTo(scheduleDetail.getTitle());
-        assertThat(scheduleResult.getLatitude()).isEqualTo(scheduleDetail.getLatitude());
-        assertThat(scheduleResult.getLongitude()).isEqualTo(scheduleDetail.getLongitude());
-        assertThat(scheduleResult.getOrder()).isEqualTo(scheduleDetail.getOrder());
-        assertThat(scheduleResult.getPlaceName()).isEqualTo(scheduleDetail.getPlaceName());
+        assertThat(dto.getScheduleId()).isEqualTo(scheduleDetail.getScheduleId());
+        assertThat(dto.getDayId()).isEqualTo(scheduleDetail.getDayId());
+        assertThat(dto.getContent()).isEqualTo(scheduleDetail.getContent());
+        assertThat(dto.getTitle()).isEqualTo(scheduleDetail.getTitle());
+        assertThat(dto.getLatitude()).isEqualTo(scheduleDetail.getLatitude());
+        assertThat(dto.getLongitude()).isEqualTo(scheduleDetail.getLongitude());
+        assertThat(dto.getOrder()).isEqualTo(scheduleDetail.getOrder());
+        assertThat(dto.getPlaceName()).isEqualTo(scheduleDetail.getPlaceName());
 
 
 
