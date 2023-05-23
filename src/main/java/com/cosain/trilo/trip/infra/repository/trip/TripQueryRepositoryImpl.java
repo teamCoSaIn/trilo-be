@@ -19,9 +19,8 @@ public class TripQueryRepositoryImpl implements TripQueryRepository {
     private final TripQueryJpaRepository tripQueryJpaRepository;
 
     @Override
-    public Optional<TripDto> findTripDetailByTripId(Long tripId) {
-        Optional<TripDetail> tripDetail = tripQueryJpaRepository.findTripDetailById(tripId);
-        return tripDetail.isEmpty() ? Optional.empty() : Optional.of(TripDto.from(tripDetail.get()));
+    public Optional<TripDetail> findTripDetailByTripId(Long tripId) {
+        return tripQueryJpaRepository.findTripDetailById(tripId);
     }
 
     @Override

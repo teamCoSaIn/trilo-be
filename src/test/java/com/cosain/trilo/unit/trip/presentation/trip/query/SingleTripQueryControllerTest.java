@@ -1,10 +1,8 @@
 package com.cosain.trilo.unit.trip.presentation.trip.query;
 
 import com.cosain.trilo.support.RestControllerTest;
-import com.cosain.trilo.trip.domain.vo.TripStatus;
-import com.cosain.trilo.trip.application.trip.query.usecase.dto.TripResult;
 import com.cosain.trilo.trip.application.trip.query.usecase.TripDetailSearchUseCase;
-import com.cosain.trilo.trip.domain.dto.TripDto;
+import com.cosain.trilo.trip.domain.vo.TripStatus;
 import com.cosain.trilo.trip.infra.dto.TripDetail;
 import com.cosain.trilo.trip.presentation.trip.query.SingleTripQueryController;
 import org.junit.jupiter.api.DisplayName;
@@ -40,8 +38,8 @@ class SingleTripQueryControllerTest extends RestControllerTest {
     public void findSingleTrip_with_authorizedUser() throws Exception {
         // given
         mockingForLoginUserAnnotation();
-        TripResult tripResult = TripResult.from(TripDto.from(new TripDetail(1L, 2L, "여행 제목", TripStatus.DECIDED, LocalDate.of(2023, 4, 4), LocalDate.of(2023, 4, 5))));
-        given(tripDetailSearchUseCase.searchTripDetail(anyLong(), any())).willReturn(tripResult);
+        TripDetail tripDetail = new TripDetail(1L, 2L, "여행 제목", TripStatus.DECIDED, LocalDate.of(2023, 4, 4), LocalDate.of(2023, 4, 5));
+        given(tripDetailSearchUseCase.searchTripDetail(anyLong(), any())).willReturn(tripDetail);
 
         // when & then
         mockMvc.perform(get("/api/trips/1")
@@ -49,11 +47,11 @@ class SingleTripQueryControllerTest extends RestControllerTest {
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.tripId").value(tripResult.getId()))
-                .andExpect(jsonPath("$.title").value(tripResult.getTitle()))
-                .andExpect(jsonPath("$.status").value(tripResult.getStatus()))
-                .andExpect(jsonPath("$.startDate").value(tripResult.getStartDate().toString()))
-                .andExpect(jsonPath("$.endDate").value(tripResult.getEndDate().toString()));
+                .andExpect(jsonPath("$.tripId").value(tripDetail.getId()))
+                .andExpect(jsonPath("$.title").value(tripDetail.getTitle()))
+                .andExpect(jsonPath("$.status").value(tripDetail.getStatus()))
+                .andExpect(jsonPath("$.startDate").value(tripDetail.getStartDate().toString()))
+                .andExpect(jsonPath("$.endDate").value(tripDetail.getEndDate().toString()));
 
 
         verify(tripDetailSearchUseCase).searchTripDetail(anyLong(), any());

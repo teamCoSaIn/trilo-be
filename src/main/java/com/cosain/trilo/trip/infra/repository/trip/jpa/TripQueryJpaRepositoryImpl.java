@@ -27,6 +27,7 @@ public class TripQueryJpaRepositoryImpl implements TripQueryJpaRepositoryCustom{
      * 등의 단점을 극복하기 위해 QueryDSL 사용
      *
      */
+    @Override
     public Optional<TripDetail> findTripDetailById(Long tripId){
 
         return Optional.ofNullable(query.select(

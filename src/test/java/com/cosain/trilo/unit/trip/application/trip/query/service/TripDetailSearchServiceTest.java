@@ -39,18 +39,17 @@ public class TripDetailSearchServiceTest {
     void called_test(){
         // given
         TripDetail tripDetail = new TripDetail(1L, 1L, "제목", TripStatus.DECIDED, LocalDate.of(2023, 5, 10), LocalDate.of(2023, 5, 15));
-        TripDto tripDto = TripDto.from(tripDetail);
-        given(tripQueryRepository.findTripDetailByTripId(anyLong())).willReturn(Optional.of(tripDto));
+        given(tripQueryRepository.findTripDetailByTripId(anyLong())).willReturn(Optional.of(tripDetail));
 
         // when
-        TripResult tripResult = tripDetailSearchService.searchTripDetail(1L, 1L);
+        TripDetail dto = tripDetailSearchService.searchTripDetail(1L, 1L);
 
         // then
         verify(tripQueryRepository).findTripDetailByTripId(anyLong());
-        assertThat(tripResult.getId()).isEqualTo(tripDetail.getId());
-        assertThat(tripResult.getStatus()).isEqualTo(tripDetail.getStatus());
-        assertThat(tripResult.getStartDate()).isEqualTo(tripDetail.getStartDate());
-        assertThat(tripResult.getEndDate()).isEqualTo(tripDetail.getEndDate());
+        assertThat(dto.getId()).isEqualTo(tripDetail.getId());
+        assertThat(dto.getStatus()).isEqualTo(tripDetail.getStatus());
+        assertThat(dto.getStartDate()).isEqualTo(tripDetail.getStartDate());
+        assertThat(dto.getEndDate()).isEqualTo(tripDetail.getEndDate());
     }
 
     @Test
@@ -59,8 +58,7 @@ public class TripDetailSearchServiceTest {
 
         // given
         TripDetail tripDetail = new TripDetail(1L, 1L, "제목", TripStatus.DECIDED, LocalDate.of(2023, 5, 10), LocalDate.of(2023, 5, 15));
-        TripDto tripDto = TripDto.from(tripDetail);
-        given(tripQueryRepository.findTripDetailByTripId(anyLong())).willReturn(Optional.of(tripDto));
+        given(tripQueryRepository.findTripDetailByTripId(anyLong())).willReturn(Optional.of(tripDetail));
 
         // when && then
         assertThatThrownBy(() -> tripDetailSearchService.searchTripDetail(1L, 2L))
