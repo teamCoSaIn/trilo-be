@@ -1,12 +1,10 @@
 package com.cosain.trilo.unit.trip.application.trip.query.service;
 
-import com.cosain.trilo.trip.domain.vo.TripStatus;
-import com.cosain.trilo.trip.application.trip.query.usecase.dto.TripPageResult;
 import com.cosain.trilo.trip.application.exception.TripperNotFoundException;
 import com.cosain.trilo.trip.application.trip.query.service.TripListSearchService;
-import com.cosain.trilo.trip.domain.dto.TripDto;
-import com.cosain.trilo.trip.infra.repository.trip.TripQueryRepository;
+import com.cosain.trilo.trip.domain.vo.TripStatus;
 import com.cosain.trilo.trip.infra.dto.TripDetail;
+import com.cosain.trilo.trip.infra.repository.trip.TripQueryRepository;
 import com.cosain.trilo.user.domain.UserRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,6 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -47,23 +46,21 @@ public class TripListSearchServiceTest {
         Pageable pageable = PageRequest.of(0, 10);
         TripDetail tripDetail1 = new TripDetail(1L, tripperId, "여행 1", TripStatus.DECIDED, LocalDate.now(), LocalDate.now());
         TripDetail tripDetail2 = new TripDetail(2L, tripperId, "여행 2", TripStatus.UNDECIDED, LocalDate.now(), LocalDate.now());
-        TripDto tripDto1 = TripDto.from(tripDetail1);
-        TripDto tripDto2 = TripDto.from(tripDetail2);
 
-        PageImpl<TripDto> tripDtos = new PageImpl<>(List.of(tripDto1, tripDto2), pageable, 2L);
+        Slice<TripDetail> tripDetails = new PageImpl<>(List.of(tripDetail1, tripDetail2));
 
         given(userRepository.findById(eq(1L))).willReturn(Optional.of(KAKAO_MEMBER.create()));
-        given(tripQueryRepository.findTripDetailListByTripperId(tripperId, pageable)).willReturn(tripDtos);
+        given(tripQueryRepository.findTripDetailListByTripperId(tripperId, pageable)).willReturn(tripDetails);
 
         // when
-        TripPageResult tripPageResult = tripListSearchService.searchTripDetails(tripperId, pageable);
+        Slice<TripDetail> searchTripDetails = tripListSearchService.searchTripDetails(tripperId, pageable);
 
         // then
-        assertThat(tripPageResult).isNotNull();
-        assertThat(tripPageResult.getTrips()).hasSize(2);
-        assertThat(tripPageResult.getTrips().get(0).getTitle()).isEqualTo(tripDetail1.getTitle());
-        assertThat(tripPageResult.getTrips().get(1).getTitle()).isEqualTo(tripDetail2.getTitle());
-        assertThat(tripPageResult.isHasNext()).isFalse();
+        assertThat(searchTripDetails).isNotNull();
+        assertThat(searchTripDetails.getContent()).hasSize(2);
+        assertThat(searchTripDetails.getContent().get(0).getTitle()).isEqualTo(tripDetail1.getTitle());
+        assertThat(searchTripDetails.getContent().get(1).getTitle()).isEqualTo(tripDetail2.getTitle());
+        assertThat(searchTripDetails.hasNext()).isFalse();
 
     }
 

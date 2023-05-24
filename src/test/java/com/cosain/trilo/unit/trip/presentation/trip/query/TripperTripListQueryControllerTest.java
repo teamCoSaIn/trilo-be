@@ -2,18 +2,17 @@ package com.cosain.trilo.unit.trip.presentation.trip.query;
 
 
 import com.cosain.trilo.support.RestControllerTest;
-import com.cosain.trilo.trip.domain.vo.TripStatus;
-import com.cosain.trilo.trip.application.trip.query.usecase.dto.TripPageResult;
-import com.cosain.trilo.trip.application.trip.query.usecase.dto.TripResult;
 import com.cosain.trilo.trip.application.trip.query.usecase.TripListSearchUseCase;
-import com.cosain.trilo.trip.domain.dto.TripDto;
+import com.cosain.trilo.trip.domain.vo.TripStatus;
 import com.cosain.trilo.trip.infra.dto.TripDetail;
 import com.cosain.trilo.trip.presentation.trip.query.TripperTripListQueryController;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.SliceImpl;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithAnonymousUser;
@@ -43,15 +42,18 @@ class TripperTripListQueryControllerTest extends RestControllerTest {
     @DisplayName("인증된 사용자 요청 -> 회원 여행 목록 조회")
     public void findTripperTripList_with_authorizedUser() throws Exception {
 
+        // given
         mockingForLoginUserAnnotation();
 
-        TripResult tripResult1 = TripResult.from(TripDto.from(new TripDetail(1L, 1L, "제목 1", TripStatus.DECIDED, LocalDate.of(2023, 3,4), LocalDate.of(2023, 4, 1))));
-        TripResult tripResult2 = TripResult.from(TripDto.from(new TripDetail(2L, 1L, "제목 2", TripStatus.UNDECIDED, null, null)));
-        TripResult tripResult3 = TripResult.from(TripDto.from(new TripDetail(3L, 1L, "제목 3", TripStatus.DECIDED, LocalDate.of(2023, 4,4), LocalDate.of(2023, 4, 5))));
+        TripDetail tripDetail1 = new TripDetail(1L, 1L, "제목 1", TripStatus.DECIDED, LocalDate.of(2023, 3,4), LocalDate.of(2023, 4, 1));
+        TripDetail tripDetail2 = new TripDetail(2L, 1L, "제목 2", TripStatus.UNDECIDED, null, null);
+        TripDetail tripDetail3 = new TripDetail(3L, 1L, "제목 3", TripStatus.DECIDED, LocalDate.of(2023, 4,4), LocalDate.of(2023, 4, 5));
+        Pageable pageable = PageRequest.of(0, 3);
+        SliceImpl<TripDetail> tripDetails = new SliceImpl<>(List.of(tripDetail1, tripDetail2, tripDetail3), pageable, true);
 
-        TripPageResult tripPageResult = TripPageResult.of(List.of(tripResult1, tripResult2, tripResult3), true);
-        given(tripListSearchUseCase.searchTripDetails(eq(1L), any(Pageable.class))).willReturn(tripPageResult);
+        given(tripListSearchUseCase.searchTripDetails(eq(1L), any(Pageable.class))).willReturn(tripDetails);
 
+        // when & then
         mockMvc.perform(get("/api/trips?tripper-id=1")
                         .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)
                         .characterEncoding(StandardCharsets.UTF_8)

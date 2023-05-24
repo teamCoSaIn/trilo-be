@@ -4,7 +4,6 @@ import com.cosain.trilo.support.RepositoryTest;
 import com.cosain.trilo.trip.domain.entity.Trip;
 import com.cosain.trilo.trip.domain.vo.TripPeriod;
 import com.cosain.trilo.trip.domain.vo.TripStatus;
-import com.cosain.trilo.trip.domain.dto.TripDto;
 import com.cosain.trilo.trip.infra.dto.TripDetail;
 import com.cosain.trilo.trip.infra.repository.trip.TripQueryRepository;
 import jakarta.persistence.EntityManager;
@@ -79,10 +78,10 @@ public class TripQueryRepositoryTest {
             em.persist(trip2);
 
             // when
-            Slice<TripDto> tripDtos = tripQueryRepository.findTripDetailListByTripperId(1L, PageRequest.of(0, 2));
+            Slice<TripDetail> tripDetailListByTripperId = tripQueryRepository.findTripDetailListByTripperId(1L, PageRequest.of(0, 2));
 
             // then
-            assertThat(tripDtos.getContent().size()).isEqualTo(2);
+            assertThat(tripDetailListByTripperId.getContent().size()).isEqualTo(2);
         }
 
         @Test
@@ -108,12 +107,12 @@ public class TripQueryRepositoryTest {
             em.persist(trip2);
 
             // when
-            Slice<TripDto> tripDtos = tripQueryRepository.findTripDetailListByTripperId(1L, PageRequest.of(0, 2));
+            Slice<TripDetail> tripDetailListByTripperId = tripQueryRepository.findTripDetailListByTripperId(1L, PageRequest.of(0, 2));
 
 
             // then
-            assertThat(tripDtos.getContent().get(0).getTitle()).isEqualTo(trip2.getTitle());
-            assertThat(tripDtos.getContent().get(1).getTitle()).isEqualTo(trip1.getTitle());
+            assertThat(tripDetailListByTripperId.getContent().get(0).getTitle()).isEqualTo(trip2.getTitle());
+            assertThat(tripDetailListByTripperId.getContent().get(1).getTitle()).isEqualTo(trip1.getTitle());
 
         }
 

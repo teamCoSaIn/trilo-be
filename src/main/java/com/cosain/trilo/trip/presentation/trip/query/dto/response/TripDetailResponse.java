@@ -1,6 +1,5 @@
 package com.cosain.trilo.trip.presentation.trip.query.dto.response;
 
-import com.cosain.trilo.trip.application.trip.query.usecase.dto.TripResult;
 import com.cosain.trilo.trip.infra.dto.TripDetail;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -22,16 +21,6 @@ public class TripDetailResponse {
                 .status(tripDetail.getStatus())
                 .startDate(tripDetail.getStartDate())
                 .endDate(tripDetail.getEndDate())
-                .build();
-    }
-
-    public static TripDetailResponse from(TripResult tripResult){
-        return TripDetailResponse.builder()
-                .tripId(tripResult.getId())
-                .title(tripResult.getTitle())
-                .status(tripResult.getStatus())
-                .startDate(tripResult.getStartDate())
-                .endDate(tripResult.getEndDate())
                 .build();
     }
 

@@ -1,15 +1,12 @@
 package com.cosain.trilo.trip.infra.repository.trip;
 
-import com.cosain.trilo.trip.domain.dto.TripDto;
 import com.cosain.trilo.trip.infra.dto.TripDetail;
 import com.cosain.trilo.trip.infra.repository.trip.jpa.TripQueryJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -24,10 +21,8 @@ public class TripQueryRepositoryImpl implements TripQueryRepository {
     }
 
     @Override
-    public Slice<TripDto> findTripDetailListByTripperId(Long tripperId, Pageable pageable) {
-        Slice<TripDetail> tripDetails = tripQueryJpaRepository.findTripDetailListByTripperId(tripperId, pageable);
-        List<TripDto> tripDtos = tripDetails.map(TripDto::from).getContent();
-        return new SliceImpl<>(tripDtos, pageable, tripDetails.hasNext());
+    public Slice<TripDetail> findTripDetailListByTripperId(Long tripperId, Pageable pageable) {
+        return tripQueryJpaRepository.findTripDetailListByTripperId(tripperId, pageable);
     }
 
     @Override
