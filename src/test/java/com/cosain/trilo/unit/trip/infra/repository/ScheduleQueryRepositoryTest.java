@@ -6,7 +6,8 @@ import com.cosain.trilo.trip.domain.entity.Trip;
 import com.cosain.trilo.trip.domain.vo.Coordinate;
 import com.cosain.trilo.trip.domain.vo.Place;
 import com.cosain.trilo.trip.domain.vo.ScheduleIndex;
-import com.cosain.trilo.trip.domain.dto.ScheduleDto;
+import com.cosain.trilo.trip.infra.dto.ScheduleDetail;
+import com.cosain.trilo.trip.infra.dto.ScheduleSummary;
 import com.cosain.trilo.trip.infra.repository.schedule.ScheduleQueryRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -16,8 +17,6 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 import org.springframework.test.annotation.DirtiesContext;
-
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -48,17 +47,17 @@ public class ScheduleQueryRepositoryTest {
         em.flush();
 
         // when
-        ScheduleDto scheduleDto = scheduleQueryRepository.findScheduleDetailByScheduleId(schedule.getId()).get();
+        ScheduleDetail dto = scheduleQueryRepository.findScheduleDetailByScheduleId(schedule.getId()).get();
 
         // then
-        assertThat(scheduleDto.getScheduleId()).isEqualTo(schedule.getId());
-        assertThat(scheduleDto.getScheduleId()).isEqualTo(schedule.getId());
-        assertThat(scheduleDto.getTitle()).isEqualTo(schedule.getTitle());
-        assertThat(scheduleDto.getPlaceName()).isEqualTo(schedule.getPlace().getPlaceName());
-        assertThat(scheduleDto.getLatitude()).isEqualTo(schedule.getPlace().getCoordinate().getLatitude());
-        assertThat(scheduleDto.getLongitude()).isEqualTo(schedule.getPlace().getCoordinate().getLongitude());
-        assertThat(scheduleDto.getOrder()).isEqualTo(schedule.getScheduleIndex().getValue());
-        assertThat(scheduleDto.getContent()).isEqualTo(schedule.getContent());
+        assertThat(dto.getScheduleId()).isEqualTo(schedule.getId());
+        assertThat(dto.getScheduleId()).isEqualTo(schedule.getId());
+        assertThat(dto.getTitle()).isEqualTo(schedule.getTitle());
+        assertThat(dto.getPlaceName()).isEqualTo(schedule.getPlace().getPlaceName());
+        assertThat(dto.getLatitude()).isEqualTo(schedule.getPlace().getCoordinate().getLatitude());
+        assertThat(dto.getLongitude()).isEqualTo(schedule.getPlace().getCoordinate().getLongitude());
+        assertThat(dto.getOrder()).isEqualTo(schedule.getScheduleIndex().getValue());
+        assertThat(dto.getContent()).isEqualTo(schedule.getContent());
 
     }
 
@@ -78,10 +77,10 @@ public class ScheduleQueryRepositoryTest {
             em.flush();
 
             // when
-            Slice<ScheduleDto> temporaryScheduleListByTripId = scheduleQueryRepository.findTemporaryScheduleListByTripId(1L, PageRequest.of(0, 1));
+            Slice<ScheduleSummary> scheduleSummaries = scheduleQueryRepository.findTemporaryScheduleListByTripId(1L, PageRequest.of(0, 1));
 
             // then
-            assertThat(temporaryScheduleListByTripId.getSize()).isEqualTo(1);
+            assertThat(scheduleSummaries.getSize()).isEqualTo(1);
         }
 
         @Test
@@ -99,15 +98,13 @@ public class ScheduleQueryRepositoryTest {
             em.flush();
 
             // when
-            Slice<ScheduleDto> temporaryScheduleListByTripId = scheduleQueryRepository.findTemporaryScheduleListByTripId(1L, PageRequest.of(0, 3));
+            Slice<ScheduleSummary> scheduleSummaries = scheduleQueryRepository.findTemporaryScheduleListByTripId(1L, PageRequest.of(0, 3));
 
             // then
-            assertThat(temporaryScheduleListByTripId.getSize()).isEqualTo(3);
-            List<ScheduleDto> scheduleList = temporaryScheduleListByTripId.getContent();
-            assertThat(scheduleList).hasSize(3);
-            assertThat(scheduleList.get(0).getOrder()).isEqualTo(1L);
-            assertThat(scheduleList.get(1).getOrder()).isEqualTo(2L);
-            assertThat(scheduleList.get(2).getOrder()).isEqualTo(3L);
+            assertThat(scheduleSummaries.getSize()).isEqualTo(3);
+            assertThat(scheduleSummaries.getContent().get(0).getScheduleId()).isEqualTo(1L);
+            assertThat(scheduleSummaries.getContent().get(1).getScheduleId()).isEqualTo(2L);
+            assertThat(scheduleSummaries.getContent().get(2).getScheduleId()).isEqualTo(3L);
         }
         private Schedule createSchedule(Trip trip, long scheduleIndexValue){
             return Schedule.builder()

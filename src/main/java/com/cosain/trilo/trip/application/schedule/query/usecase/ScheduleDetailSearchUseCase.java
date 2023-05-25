@@ -1,7 +1,7 @@
 package com.cosain.trilo.trip.application.schedule.query.usecase;
 
-import com.cosain.trilo.trip.application.schedule.query.usecase.dto.ScheduleResult;
+import com.cosain.trilo.trip.infra.dto.ScheduleDetail;
 
 public interface ScheduleDetailSearchUseCase {
-    ScheduleResult searchScheduleDetail(Long scheduleId);
+    ScheduleDetail searchScheduleDetail(Long scheduleId);
 }

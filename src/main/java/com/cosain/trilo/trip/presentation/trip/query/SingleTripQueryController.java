@@ -1,9 +1,8 @@
 package com.cosain.trilo.trip.presentation.trip.query;
 
 import com.cosain.trilo.common.LoginUser;
-import com.cosain.trilo.trip.application.trip.query.usecase.dto.TripResult;
 import com.cosain.trilo.trip.application.trip.query.usecase.TripDetailSearchUseCase;
-import com.cosain.trilo.trip.presentation.trip.query.dto.response.TripDetailResponse;
+import com.cosain.trilo.trip.infra.dto.TripDetail;
 import com.cosain.trilo.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,11 +20,10 @@ public class SingleTripQueryController {
 
     @GetMapping("/api/trips/{tripId}")
     @ResponseStatus(HttpStatus.OK)
-    public TripDetailResponse findSingleTrip(@LoginUser User user, @PathVariable Long tripId) {
+    public TripDetail findSingleTrip(@LoginUser User user, @PathVariable Long tripId) {
 
         Long tripperId = user.getId();
 
-        TripResult tripResult = tripDetailSearchUseCase.searchTripDetail(tripId, tripperId);
-        return TripDetailResponse.from(tripResult);
+        return tripDetailSearchUseCase.searchTripDetail(tripId, tripperId);
     }
 }

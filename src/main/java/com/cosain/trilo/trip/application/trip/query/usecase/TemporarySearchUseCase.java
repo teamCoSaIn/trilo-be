@@ -1,8 +1,9 @@
 package com.cosain.trilo.trip.application.trip.query.usecase;
 
-import com.cosain.trilo.trip.application.trip.query.usecase.dto.TemporaryPageResult;
+import com.cosain.trilo.trip.infra.dto.ScheduleSummary;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 
 public interface TemporarySearchUseCase {
-    TemporaryPageResult searchTemporary(Long tripId, Pageable pageable);
+    Slice<ScheduleSummary> searchTemporary(Long tripId, Pageable pageable);
 }

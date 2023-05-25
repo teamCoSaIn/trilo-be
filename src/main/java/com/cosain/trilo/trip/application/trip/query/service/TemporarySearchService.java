@@ -1,19 +1,14 @@
 package com.cosain.trilo.trip.application.trip.query.service;
 
 import com.cosain.trilo.trip.application.exception.TripNotFoundException;
-import com.cosain.trilo.trip.application.schedule.query.usecase.dto.ScheduleResult;
-import com.cosain.trilo.trip.application.trip.query.usecase.dto.TemporaryPageResult;
 import com.cosain.trilo.trip.application.trip.query.usecase.TemporarySearchUseCase;
-import com.cosain.trilo.trip.domain.dto.ScheduleDto;
+import com.cosain.trilo.trip.infra.dto.ScheduleSummary;
 import com.cosain.trilo.trip.infra.repository.schedule.ScheduleQueryRepository;
 import com.cosain.trilo.trip.infra.repository.trip.TripQueryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -23,19 +18,11 @@ public class TemporarySearchService implements TemporarySearchUseCase {
     private final ScheduleQueryRepository scheduleQueryRepository;
 
     @Override
-    public TemporaryPageResult searchTemporary(Long tripId, Pageable pageable) {
+    public Slice<ScheduleSummary> searchTemporary(Long tripId, Pageable pageable) {
 
         verifyTripExists(tripId);
-        Slice<ScheduleDto> scheduleDtos = findTemporaryScheduleListByTripId(tripId, pageable);
-        List<ScheduleResult> scheduleResults = mapToScheduleResults(scheduleDtos);
-        return TemporaryPageResult.of(scheduleResults, scheduleDtos.hasNext());
-    }
-
-    private List<ScheduleResult> mapToScheduleResults(Slice<ScheduleDto> scheduleDtos) {
-        return scheduleDtos.getContent()
-                .stream()
-                .map(ScheduleResult::from)
-                .collect(Collectors.toList());
+        Slice<ScheduleSummary> scheduleSummaries = findTemporaryScheduleListByTripId(tripId, pageable);
+        return scheduleSummaries;
     }
 
     private void verifyTripExists(Long tripId) {
@@ -44,7 +31,7 @@ public class TemporarySearchService implements TemporarySearchUseCase {
         }
     }
 
-    private Slice<ScheduleDto> findTemporaryScheduleListByTripId(Long tripId, Pageable pageable){
+    private Slice<ScheduleSummary> findTemporaryScheduleListByTripId(Long tripId, Pageable pageable){
         return scheduleQueryRepository.findTemporaryScheduleListByTripId(tripId, pageable);
     }
 

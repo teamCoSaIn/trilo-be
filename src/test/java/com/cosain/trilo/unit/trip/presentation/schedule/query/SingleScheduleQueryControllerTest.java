@@ -37,20 +37,20 @@ class SingleScheduleQueryControllerTest extends RestControllerTest {
     public void findSingleSchedule_with_authorizedUser() throws Exception {
 
         mockingForLoginUserAnnotation();
-        ScheduleResult dto = ScheduleResult.from(ScheduleDto.from(new ScheduleDetail(1L, 1L, "제목", "장소 이름", 23.23, 23.23, 1L, "내용")));
-        given(scheduleDetailSearchUseCase.searchScheduleDetail(anyLong())).willReturn(dto);
+        ScheduleDetail scheduleDetail = new ScheduleDetail(1L, 1L, "제목", "장소 이름", 23.23, 23.23, 1L, "내용");
+        given(scheduleDetailSearchUseCase.searchScheduleDetail(anyLong())).willReturn(scheduleDetail);
 
         mockMvc.perform(get("/api/schedules/1")
                         .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.scheduleId").value(dto.getScheduleId()))
-                .andExpect(jsonPath("$.content").value(dto.getContent()))
-                .andExpect(jsonPath("$.title").value(dto.getTitle()))
-                .andExpect(jsonPath("$.dayId").value(dto.getDayId()))
-                .andExpect(jsonPath("$.latitude").value(dto.getLatitude()))
-                .andExpect(jsonPath("$.longitude").value(dto.getLongitude()));
+                .andExpect(jsonPath("$.scheduleId").value(scheduleDetail.getScheduleId()))
+                .andExpect(jsonPath("$.content").value(scheduleDetail.getContent()))
+                .andExpect(jsonPath("$.title").value(scheduleDetail.getTitle()))
+                .andExpect(jsonPath("$.dayId").value(scheduleDetail.getDayId()))
+                .andExpect(jsonPath("$.latitude").value(scheduleDetail.getLatitude()))
+                .andExpect(jsonPath("$.longitude").value(scheduleDetail.getLongitude()));
 
     }
 

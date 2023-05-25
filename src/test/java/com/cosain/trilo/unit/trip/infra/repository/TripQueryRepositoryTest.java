@@ -4,7 +4,8 @@ import com.cosain.trilo.support.RepositoryTest;
 import com.cosain.trilo.trip.domain.entity.Trip;
 import com.cosain.trilo.trip.domain.vo.TripPeriod;
 import com.cosain.trilo.trip.domain.vo.TripStatus;
-import com.cosain.trilo.trip.domain.dto.TripDto;
+import com.cosain.trilo.trip.infra.dto.TripDetail;
+import com.cosain.trilo.trip.infra.dto.TripSummary;
 import com.cosain.trilo.trip.infra.repository.trip.TripQueryRepository;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.DisplayName;
@@ -40,15 +41,15 @@ public class TripQueryRepositoryTest {
         em.persist(trip);
 
         // when
-        TripDto tripDto = tripQueryRepository.findTripDetailByTripId(1L).get();
+        TripDetail tripDetail = tripQueryRepository.findTripDetailByTripId(1L).get();
 
         // then
-        assertThat(tripDto.getTitle()).isEqualTo(trip.getTitle());
-        assertThat(tripDto.getTripperId()).isEqualTo(trip.getTripperId());
-        assertThat(tripDto.getId()).isEqualTo(trip.getId());
-        assertThat(tripDto.getStartDate()).isEqualTo(trip.getTripPeriod().getStartDate());
-        assertThat(tripDto.getEndDate()).isEqualTo(trip.getTripPeriod().getEndDate());
-        assertThat(tripDto.getStatus()).isEqualTo(trip.getStatus().name());
+        assertThat(tripDetail.getTitle()).isEqualTo(trip.getTitle());
+        assertThat(tripDetail.getTripperId()).isEqualTo(trip.getTripperId());
+        assertThat(tripDetail.getTripId()).isEqualTo(trip.getId());
+        assertThat(tripDetail.getStartDate()).isEqualTo(trip.getTripPeriod().getStartDate());
+        assertThat(tripDetail.getEndDate()).isEqualTo(trip.getTripPeriod().getEndDate());
+        assertThat(tripDetail.getStatus()).isEqualTo(trip.getStatus().name());
     }
 
     @Nested
@@ -78,10 +79,10 @@ public class TripQueryRepositoryTest {
             em.persist(trip2);
 
             // when
-            Slice<TripDto> tripDtos = tripQueryRepository.findTripDetailListByTripperId(1L, PageRequest.of(0, 2));
+            Slice<TripSummary> tripSummariesByTripperId = tripQueryRepository.findTripSummariesByTripperId(1L, PageRequest.of(0, 2));
 
             // then
-            assertThat(tripDtos.getContent().size()).isEqualTo(2);
+            assertThat(tripSummariesByTripperId.getContent().size()).isEqualTo(2);
         }
 
         @Test
@@ -107,12 +108,12 @@ public class TripQueryRepositoryTest {
             em.persist(trip2);
 
             // when
-            Slice<TripDto> tripDtos = tripQueryRepository.findTripDetailListByTripperId(1L, PageRequest.of(0, 2));
+            Slice<TripSummary> tripSummariesByTripperId = tripQueryRepository.findTripSummariesByTripperId(1L, PageRequest.of(0, 2));
 
 
             // then
-            assertThat(tripDtos.getContent().get(0).getTitle()).isEqualTo(trip2.getTitle());
-            assertThat(tripDtos.getContent().get(1).getTitle()).isEqualTo(trip1.getTitle());
+            assertThat(tripSummariesByTripperId.getContent().get(0).getTitle()).isEqualTo(trip2.getTitle());
+            assertThat(tripSummariesByTripperId.getContent().get(1).getTitle()).isEqualTo(trip1.getTitle());
 
         }
 

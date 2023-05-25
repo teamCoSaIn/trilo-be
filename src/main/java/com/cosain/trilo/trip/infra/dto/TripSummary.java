@@ -6,23 +6,18 @@ import lombok.Getter;
 import java.time.LocalDate;
 
 @Getter
-public class TripDetail {
+public class TripSummary {
 
-    private final long tripId;
-
-    private final long tripperId;
-
-    private final String title;
-
-    private final String status;
-
+    private long id;
+    private long tripperId;
+    private String title;
+    private String status;
     private LocalDate startDate;
-
     private LocalDate endDate;
 
     @QueryProjection
-    public TripDetail(final long tripId, final long tripperId,final String title, Enum status, LocalDate startDate, LocalDate endDate) {
-        this.tripId = tripId;
+    public TripSummary(long id, long tripperId, String title, Enum status, LocalDate startDate, LocalDate endDate) {
+        this.id = id;
         this.tripperId = tripperId;
         this.title = title;
         this.status = status.name();

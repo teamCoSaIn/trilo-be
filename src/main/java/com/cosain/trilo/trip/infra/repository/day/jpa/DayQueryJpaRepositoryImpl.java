@@ -2,7 +2,7 @@ package com.cosain.trilo.trip.infra.repository.day.jpa;
 
 import com.cosain.trilo.trip.infra.dto.DayScheduleDetail;
 import com.cosain.trilo.trip.infra.dto.QDayScheduleDetail;
-import com.cosain.trilo.trip.infra.dto.QDayScheduleDetail_ScheduleSummary;
+import com.cosain.trilo.trip.infra.dto.QScheduleSummary;
 import com.querydsl.core.group.GroupBy;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +30,7 @@ public class DayQueryJpaRepositoryImpl implements DayQueryJpaRepositoryCustom{
                         day.id,
                         day.trip.id,
                         day.tripDate,
-                        GroupBy.list(new QDayScheduleDetail_ScheduleSummary(
+                        GroupBy.list(new QScheduleSummary(
                                 schedule.id,
                                 schedule.title,
                                 schedule.place.placeName,

@@ -2,9 +2,8 @@ package com.cosain.trilo.trip.application.trip.query.service;
 
 import com.cosain.trilo.trip.application.exception.NoTripDetailSearchAuthorityException;
 import com.cosain.trilo.trip.application.exception.TripNotFoundException;
-import com.cosain.trilo.trip.application.trip.query.usecase.dto.TripResult;
 import com.cosain.trilo.trip.application.trip.query.usecase.TripDetailSearchUseCase;
-import com.cosain.trilo.trip.domain.dto.TripDto;
+import com.cosain.trilo.trip.infra.dto.TripDetail;
 import com.cosain.trilo.trip.infra.repository.trip.TripQueryRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,19 +19,19 @@ public class TripDetailSearchService implements TripDetailSearchUseCase {
     private final TripQueryRepository tripQueryRepository;
 
     @Override
-    public TripResult searchTripDetail(Long tripId, Long tripperId) {
+    public TripDetail searchTripDetail(Long tripId, Long tripperId) {
 
-        TripDto tripDto = findTripDetail(tripId);
-        validateTripDetailQueryAuthority(tripDto, tripperId);
-        return TripResult.from(tripDto);
+        TripDetail tripDetail = findTripDetail(tripId);
+        validateTripDetailQueryAuthority(tripDetail, tripperId);
+        return tripDetail;
     }
 
-    private TripDto findTripDetail(Long tripId){
+    private TripDetail findTripDetail(Long tripId){
         return tripQueryRepository.findTripDetailByTripId(tripId).orElseThrow(TripNotFoundException::new);
     }
 
-    private void validateTripDetailQueryAuthority(TripDto tripDto, Long tripperId){
-        if (tripDto.getTripperId() != tripperId) {
+    private void validateTripDetailQueryAuthority(TripDetail tripDetail, Long tripperId){
+        if (tripDetail.getTripperId() != tripperId) {
             throw new NoTripDetailSearchAuthorityException("여행 단건 조회 권한이 없습니다.");
         }
     }
