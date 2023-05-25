@@ -3,7 +3,7 @@ package com.cosain.trilo.unit.trip.application.trip.query.service;
 import com.cosain.trilo.trip.application.exception.TripperNotFoundException;
 import com.cosain.trilo.trip.application.trip.query.service.TripListSearchService;
 import com.cosain.trilo.trip.domain.vo.TripStatus;
-import com.cosain.trilo.trip.infra.dto.TripDetail;
+import com.cosain.trilo.trip.infra.dto.TripSummary;
 import com.cosain.trilo.trip.infra.repository.trip.TripQueryRepository;
 import com.cosain.trilo.user.domain.UserRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -44,23 +44,23 @@ public class TripListSearchServiceTest {
         // given
         Long tripperId = 1L;
         Pageable pageable = PageRequest.of(0, 10);
-        TripDetail tripDetail1 = new TripDetail(1L, tripperId, "여행 1", TripStatus.DECIDED, LocalDate.now(), LocalDate.now());
-        TripDetail tripDetail2 = new TripDetail(2L, tripperId, "여행 2", TripStatus.UNDECIDED, LocalDate.now(), LocalDate.now());
+        TripSummary tripSummary1 = new TripSummary(1L, tripperId, "여행 1", TripStatus.DECIDED, LocalDate.now(), LocalDate.now());
+        TripSummary tripSummary2 = new TripSummary(2L, tripperId, "여행 2", TripStatus.UNDECIDED, LocalDate.now(), LocalDate.now());
 
-        Slice<TripDetail> tripDetails = new PageImpl<>(List.of(tripDetail1, tripDetail2));
+        Slice<TripSummary> tripSummaries = new PageImpl<>(List.of(tripSummary1, tripSummary2));
 
         given(userRepository.findById(eq(1L))).willReturn(Optional.of(KAKAO_MEMBER.create()));
-        given(tripQueryRepository.findTripDetailListByTripperId(tripperId, pageable)).willReturn(tripDetails);
+        given(tripQueryRepository.findTripSummariesByTripperId(tripperId, pageable)).willReturn(tripSummaries);
 
         // when
-        Slice<TripDetail> searchTripDetails = tripListSearchService.searchTripDetails(tripperId, pageable);
+        Slice<TripSummary> searchTripSummaries = tripListSearchService.searchTripSummaries(tripperId, pageable);
 
         // then
-        assertThat(searchTripDetails).isNotNull();
-        assertThat(searchTripDetails.getContent()).hasSize(2);
-        assertThat(searchTripDetails.getContent().get(0).getTitle()).isEqualTo(tripDetail1.getTitle());
-        assertThat(searchTripDetails.getContent().get(1).getTitle()).isEqualTo(tripDetail2.getTitle());
-        assertThat(searchTripDetails.hasNext()).isFalse();
+        assertThat(searchTripSummaries).isNotNull();
+        assertThat(searchTripSummaries.getContent()).hasSize(2);
+        assertThat(searchTripSummaries.getContent().get(0).getTitle()).isEqualTo(tripSummary1.getTitle());
+        assertThat(searchTripSummaries.getContent().get(1).getTitle()).isEqualTo(tripSummary2.getTitle());
+        assertThat(searchTripSummaries.hasNext()).isFalse();
 
     }
 
@@ -73,7 +73,7 @@ public class TripListSearchServiceTest {
         given(userRepository.findById(tripperId)).willReturn(Optional.empty());
 
         // when & then
-        assertThatThrownBy(() -> tripListSearchService.searchTripDetails(tripperId, pageable)).isInstanceOf(TripperNotFoundException.class);
+        assertThatThrownBy(() -> tripListSearchService.searchTripSummaries(tripperId, pageable)).isInstanceOf(TripperNotFoundException.class);
 
     }
 

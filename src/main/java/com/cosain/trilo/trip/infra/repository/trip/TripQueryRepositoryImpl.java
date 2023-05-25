@@ -1,6 +1,7 @@
 package com.cosain.trilo.trip.infra.repository.trip;
 
 import com.cosain.trilo.trip.infra.dto.TripDetail;
+import com.cosain.trilo.trip.infra.dto.TripSummary;
 import com.cosain.trilo.trip.infra.repository.trip.jpa.TripQueryJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -21,8 +22,8 @@ public class TripQueryRepositoryImpl implements TripQueryRepository {
     }
 
     @Override
-    public Slice<TripDetail> findTripDetailListByTripperId(Long tripperId, Pageable pageable) {
-        return tripQueryJpaRepository.findTripDetailListByTripperId(tripperId, pageable);
+    public Slice<TripSummary> findTripSummariesByTripperId(Long tripperId, Pageable pageable) {
+        return tripQueryJpaRepository.findTripSummariesByTripperId(tripperId, pageable);
     }
 
     @Override

@@ -1,7 +1,9 @@
 package com.cosain.trilo.trip.infra.repository.trip.jpa;
 
 import com.cosain.trilo.trip.infra.dto.QTripDetail;
+import com.cosain.trilo.trip.infra.dto.QTripSummary;
 import com.cosain.trilo.trip.infra.dto.TripDetail;
+import com.cosain.trilo.trip.infra.dto.TripSummary;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -38,8 +40,8 @@ public class TripQueryJpaRepositoryImpl implements TripQueryJpaRepositoryCustom{
     }
 
     @Override
-    public Slice<TripDetail> findTripDetailListByTripperId(Long tripperId, Pageable pageable) {
-        JPAQuery<TripDetail> jpaQuery = query.select(new QTripDetail(trip.id, trip.tripperId, trip.title, trip.status, trip.tripPeriod.startDate, trip.tripPeriod.endDate))
+    public Slice<TripSummary> findTripSummariesByTripperId(Long tripperId, Pageable pageable) {
+        JPAQuery<TripSummary> jpaQuery = query.select(new QTripSummary(trip.id, trip.tripperId, trip.title, trip.status, trip.tripPeriod.startDate, trip.tripPeriod.endDate))
                 .from(trip)
                 .where(trip.tripperId.eq(tripperId))
                 .orderBy(trip.id.desc())

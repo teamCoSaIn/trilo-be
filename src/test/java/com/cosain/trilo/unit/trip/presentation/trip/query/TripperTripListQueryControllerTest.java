@@ -4,7 +4,7 @@ package com.cosain.trilo.unit.trip.presentation.trip.query;
 import com.cosain.trilo.support.RestControllerTest;
 import com.cosain.trilo.trip.application.trip.query.usecase.TripListSearchUseCase;
 import com.cosain.trilo.trip.domain.vo.TripStatus;
-import com.cosain.trilo.trip.infra.dto.TripDetail;
+import com.cosain.trilo.trip.infra.dto.TripSummary;
 import com.cosain.trilo.trip.presentation.trip.query.TripperTripListQueryController;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -45,13 +45,13 @@ class TripperTripListQueryControllerTest extends RestControllerTest {
         // given
         mockingForLoginUserAnnotation();
 
-        TripDetail tripDetail1 = new TripDetail(1L, 1L, "제목 1", TripStatus.DECIDED, LocalDate.of(2023, 3,4), LocalDate.of(2023, 4, 1));
-        TripDetail tripDetail2 = new TripDetail(2L, 1L, "제목 2", TripStatus.UNDECIDED, null, null);
-        TripDetail tripDetail3 = new TripDetail(3L, 1L, "제목 3", TripStatus.DECIDED, LocalDate.of(2023, 4,4), LocalDate.of(2023, 4, 5));
+        TripSummary tripSummary1 = new TripSummary(1L, 1L, "제목 1", TripStatus.DECIDED, LocalDate.of(2023, 3,4), LocalDate.of(2023, 4, 1));
+        TripSummary tripSummary2 = new TripSummary(2L, 1L, "제목 2", TripStatus.UNDECIDED, null, null);
+        TripSummary tripSummary3 = new TripSummary(3L, 1L, "제목 3", TripStatus.DECIDED, LocalDate.of(2023, 4,4), LocalDate.of(2023, 4, 5));
         Pageable pageable = PageRequest.of(0, 3);
-        SliceImpl<TripDetail> tripDetails = new SliceImpl<>(List.of(tripDetail1, tripDetail2, tripDetail3), pageable, true);
+        SliceImpl<TripSummary> tripDetails = new SliceImpl<>(List.of(tripSummary1, tripSummary2, tripSummary3), pageable, true);
 
-        given(tripListSearchUseCase.searchTripDetails(eq(1L), any(Pageable.class))).willReturn(tripDetails);
+        given(tripListSearchUseCase.searchTripSummaries(eq(1L), any(Pageable.class))).willReturn(tripDetails);
 
         // when & then
         mockMvc.perform(get("/api/trips?tripper-id=1")

@@ -1,7 +1,7 @@
 package com.cosain.trilo.trip.presentation.trip.query;
 
 import com.cosain.trilo.trip.application.trip.query.usecase.TripListSearchUseCase;
-import com.cosain.trilo.trip.infra.dto.TripDetail;
+import com.cosain.trilo.trip.infra.dto.TripSummary;
 import com.cosain.trilo.trip.presentation.trip.query.dto.response.TripPageResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +22,7 @@ public class TripperTripListQueryController {
     @GetMapping("/api/trips")
     @ResponseStatus(HttpStatus.OK)
     public TripPageResponse findTripperTripList(@RequestParam("tripper-id") Long tripperId, Pageable pageable) {
-        Slice<TripDetail> tripDetails = tripListSearchUseCase.searchTripDetails(tripperId, pageable);
-        return TripPageResponse.from(tripDetails);
+        Slice<TripSummary> tripSummaries = tripListSearchUseCase.searchTripSummaries(tripperId, pageable);
+        return TripPageResponse.from(tripSummaries);
     }
 }
