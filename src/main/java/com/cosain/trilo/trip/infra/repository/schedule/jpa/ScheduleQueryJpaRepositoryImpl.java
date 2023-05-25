@@ -1,7 +1,9 @@
 package com.cosain.trilo.trip.infra.repository.schedule.jpa;
 
 import com.cosain.trilo.trip.infra.dto.QScheduleDetail;
+import com.cosain.trilo.trip.infra.dto.QScheduleSummary;
 import com.cosain.trilo.trip.infra.dto.ScheduleDetail;
+import com.cosain.trilo.trip.infra.dto.ScheduleSummary;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -28,8 +30,8 @@ public class ScheduleQueryJpaRepositoryImpl implements ScheduleQueryJpaRepositor
     }
 
     @Override
-    public Slice<ScheduleDetail> findTemporaryScheduleListByTripId(Long tripId, Pageable pageable) {
-        JPAQuery<ScheduleDetail> jpaQuery = query.select(new QScheduleDetail(schedule.id, schedule.day.id, schedule.title, schedule.place.placeName, schedule.place.coordinate.latitude, schedule.place.coordinate.longitude, schedule.scheduleIndex.value, schedule.content))
+    public Slice<ScheduleSummary> findTemporaryScheduleListByTripId(Long tripId, Pageable pageable) {
+        JPAQuery<ScheduleSummary> jpaQuery = query.select(new QScheduleSummary(schedule.id, schedule.title, schedule.place.placeName, schedule.place.coordinate.latitude, schedule.place.coordinate.longitude))
                 .from(schedule)
                 .where(schedule.trip.id.eq(tripId).and(schedule.day.id.isNull()))
                 .orderBy(schedule.scheduleIndex.value.asc())

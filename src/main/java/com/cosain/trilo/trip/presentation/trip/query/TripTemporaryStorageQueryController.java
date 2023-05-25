@@ -1,7 +1,7 @@
 package com.cosain.trilo.trip.presentation.trip.query;
 
 import com.cosain.trilo.trip.application.trip.query.usecase.TemporarySearchUseCase;
-import com.cosain.trilo.trip.infra.dto.ScheduleDetail;
+import com.cosain.trilo.trip.infra.dto.ScheduleSummary;
 import com.cosain.trilo.trip.presentation.trip.query.dto.response.TemporaryPageResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +23,7 @@ public class TripTemporaryStorageQueryController {
     @GetMapping("/api/trips/{tripId}/temporary-storage")
     @ResponseStatus(HttpStatus.OK)
     public TemporaryPageResponse findTripTemporaryStorage(@PathVariable Long tripId, Pageable pageable) {
-        Slice<ScheduleDetail> scheduleDetails = temporarySearchUseCase.searchTemporary(tripId, pageable);
-        return TemporaryPageResponse.from(scheduleDetails);
+        Slice<ScheduleSummary> scheduleSummaries = temporarySearchUseCase.searchTemporary(tripId, pageable);
+        return TemporaryPageResponse.from(scheduleSummaries);
     }
 }

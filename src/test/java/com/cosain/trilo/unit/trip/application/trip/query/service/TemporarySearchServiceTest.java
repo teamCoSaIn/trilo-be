@@ -2,6 +2,7 @@ package com.cosain.trilo.unit.trip.application.trip.query.service;
 
 import com.cosain.trilo.trip.application.exception.TripNotFoundException;
 import com.cosain.trilo.trip.application.trip.query.service.TemporarySearchService;
+import com.cosain.trilo.trip.infra.dto.ScheduleSummary;
 import com.cosain.trilo.trip.infra.repository.schedule.ScheduleQueryRepository;
 import com.cosain.trilo.trip.infra.repository.trip.TripQueryRepository;
 import com.cosain.trilo.trip.infra.dto.ScheduleDetail;
@@ -46,10 +47,10 @@ public class TemporarySearchServiceTest {
         given(scheduleQueryRepository.findTemporaryScheduleListByTripId(anyLong(), any())).willReturn(new SliceImpl(List.of(scheduleDetail1, scheduleDetail2, scheduleDetail3)));
 
         // when
-        Slice<ScheduleDetail> scheduleDetails = temporarySearchService.searchTemporary(1L, pageable);
+        Slice<ScheduleSummary> scheduleSummaries = temporarySearchService.searchTemporary(1L, pageable);
 
         // then
-        assertThat(scheduleDetails.getSize()).isEqualTo(3);
+        assertThat(scheduleSummaries.getSize()).isEqualTo(3);
     }
     @Test
     void tripId가_유효하지_않다면_TripNotFoundException을_발생시킨다(){
