@@ -1,6 +1,7 @@
 package com.cosain.trilo.unit.trip.domain.vo;
 
 import com.cosain.trilo.trip.domain.exception.InvalidPeriodException;
+import com.cosain.trilo.trip.domain.exception.TooLongPeriodException;
 import com.cosain.trilo.trip.domain.vo.TripPeriod;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -126,6 +127,43 @@ public class TripPeriodTest {
                 // then
                 assertThat(period.getStartDate()).isEqualTo(startDate);
                 assertThat(period.getEndDate()).isEqualTo(endDate);
+            }
+        }
+
+        @Nested
+        @DisplayName("일수가 10일일 경우")
+        class If_numberOfDays_is_10 {
+
+            @Test
+            @DisplayName("정상적으로 TripPeriod가 생성된다.")
+            public void it_returns_TripPeriod_successfully() {
+                // given
+                LocalDate startDate = LocalDate.of(2023, 5, 1);
+                LocalDate endDate = LocalDate.of(2023, 5, 10);
+
+                // when
+                TripPeriod period = TripPeriod.of(startDate, endDate);
+
+                // then
+                assertThat(period.getStartDate()).isEqualTo(startDate);
+                assertThat(period.getEndDate()).isEqualTo(endDate);
+            }
+        }
+
+        @Nested
+        @DisplayName("일수가 10일을 넘을 경우")
+        class If_numberOfDays_is_over_10 {
+
+            @Test
+            @DisplayName("TooLongPeriodException이 발생한다.")
+            public void it_throws_TooLongPeriodException() {
+                // given
+                LocalDate startDate = LocalDate.of(2023, 5, 1);
+                LocalDate endDate = LocalDate.of(2023, 5, 11);
+
+                // when & then
+                assertThatThrownBy(() -> TripPeriod.of(startDate, endDate))
+                        .isInstanceOf(TooLongPeriodException.class);
             }
         }
     }

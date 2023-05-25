@@ -5,11 +5,13 @@ import com.cosain.trilo.trip.application.trip.command.usecase.dto.TripUpdateComm
 import com.cosain.trilo.trip.application.trip.command.usecase.dto.factory.TripUpdateCommandFactory;
 import com.cosain.trilo.trip.domain.exception.InvalidPeriodException;
 import com.cosain.trilo.trip.domain.exception.InvalidTripTitleException;
+import com.cosain.trilo.trip.domain.exception.TooLongPeriodException;
 import com.cosain.trilo.trip.domain.vo.TripPeriod;
 import com.cosain.trilo.trip.domain.vo.TripTitle;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.cglib.core.Local;
 
 import java.time.LocalDate;
 
@@ -171,5 +173,101 @@ public class TripUpdateCommandFactoryTest {
         assertThat(command).isNotNull();
         assertThat(command.getTripTitle()).isEqualTo(TripTitle.of(normalTitle));
         assertThat(command.getTripPeriod()).isEqualTo(TripPeriod.of(startDate, endDate));
+    }
+
+    @DisplayName("제목이 올바른 길이이고 여행 일수가 딱 10일 -> 정상 생성")
+    @Test
+    public void createSuccessTest2() {
+        // given
+        String normalTitle = "제목";
+        LocalDate startDate = LocalDate.of(2023,5,1);
+        LocalDate endDate = LocalDate.of(2023,5,10);
+
+        // when
+        TripUpdateCommand command = tripUpdateCommandFactory.createCommand(normalTitle, startDate, endDate);
+
+        // then
+        assertThat(command).isNotNull();
+        assertThat(command.getTripTitle()).isEqualTo(TripTitle.of(normalTitle));
+        assertThat(command.getTripPeriod()).isEqualTo(TripPeriod.of(startDate, endDate));
+    }
+
+    @DisplayName("제목이 올바른 길이이고 여행 일수가 10일 초과 -> 검증 예외 발생")
+    @Test
+    public void tooLongTripPeriodTest() {
+        // given
+        String title = "제목";
+        LocalDate startDate = LocalDate.of(2023,3,1);
+        LocalDate endDate = LocalDate.of(2023,3,11);
+
+        // when
+        CustomValidationException cve = catchThrowableOfType(
+                () -> tripUpdateCommandFactory.createCommand(title, startDate, endDate),
+                CustomValidationException.class);
+
+        // then
+        assertThat(cve).isNotNull();
+        assertThat(cve.getExceptions()).hasSize(1);
+        assertThat(cve.getExceptions().get(0)).isInstanceOf(TooLongPeriodException.class);
+    }
+
+    @DisplayName("제목이 올바르지 않은 길이이고 한 날짜가 null인 일정 -> 모두 담은 검증 예외 발생")
+    @Test
+    public void invalidTripTitleAndOneDateNullTest() {
+        // given
+        String title = "";
+        LocalDate startDate = null;
+        LocalDate endDate = LocalDate.of(2023,3,1);
+
+        // when
+        CustomValidationException cve = catchThrowableOfType(
+                () -> tripUpdateCommandFactory.createCommand(title, startDate, endDate),
+                CustomValidationException.class);
+
+        // then
+        assertThat(cve).isNotNull();
+        assertThat(cve.getExceptions()).hasSize(2);
+        assertThat(cve.getExceptions().get(0)).isInstanceOf(InvalidTripTitleException.class);
+        assertThat(cve.getExceptions().get(1)).isInstanceOf(InvalidPeriodException.class);
+    }
+
+    @DisplayName("제목이 올바르지 않은 길이이고 끝날짜가 앞서는 일정 -> 모두 담은 검증 예외 발생")
+    @Test
+    public void invalidTripTitleAndEndDateFastTest() {
+        // given
+        String title = "";
+        LocalDate startDate = LocalDate.of(2023,3,2);
+        LocalDate endDate = LocalDate.of(2023,3,1);
+
+        // when
+        CustomValidationException cve = catchThrowableOfType(
+                () -> tripUpdateCommandFactory.createCommand(title, startDate, endDate),
+                CustomValidationException.class);
+
+        // then
+        assertThat(cve).isNotNull();
+        assertThat(cve.getExceptions()).hasSize(2);
+        assertThat(cve.getExceptions().get(0)).isInstanceOf(InvalidTripTitleException.class);
+        assertThat(cve.getExceptions().get(1)).isInstanceOf(InvalidPeriodException.class);
+    }
+
+    @DisplayName("제목이 올바르지 않은 길이이고 너무 긴 일정 -> 모두 담은 검증 예외 발생")
+    @Test
+    public void invalidTripTitleAndTooLongPeriodTest() {
+        // given
+        String title = "";
+        LocalDate startDate = LocalDate.of(2023,3,1);
+        LocalDate endDate = LocalDate.of(2023,3,11);
+
+        // when
+        CustomValidationException cve = catchThrowableOfType(
+                () -> tripUpdateCommandFactory.createCommand(title, startDate, endDate),
+                CustomValidationException.class);
+
+        // then
+        assertThat(cve).isNotNull();
+        assertThat(cve.getExceptions()).hasSize(2);
+        assertThat(cve.getExceptions().get(0)).isInstanceOf(InvalidTripTitleException.class);
+        assertThat(cve.getExceptions().get(1)).isInstanceOf(TooLongPeriodException.class);
     }
 }

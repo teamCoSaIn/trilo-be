@@ -96,6 +96,9 @@ trip-0008:
   message: NoTripDetailSearchAuthority
   detail: You do not have the authority to retrieve detailed information about this trip.
 
+trip-0009:
+  message: Too Long TripPeriod
+  detail: The TripPeriod is too long. The maximum allowed TripPeriod is 10 days.
 
 # Day 관련
 day-0001:

@@ -1,6 +1,7 @@
 package com.cosain.trilo.trip.domain.vo;
 
 import com.cosain.trilo.trip.domain.exception.InvalidPeriodException;
+import com.cosain.trilo.trip.domain.exception.TooLongPeriodException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.*;
@@ -17,6 +18,7 @@ import java.util.stream.Stream;
 public class TripPeriod {
 
     private static final TripPeriod EMPTY_PERIOD = new TripPeriod(null, null);
+    public static final int MAX_DAYS = 10;
 
     @Column(name = "start_date")
     private LocalDate startDate;
@@ -28,13 +30,25 @@ public class TripPeriod {
         if (startDate == null && endDate == null) {
             return EMPTY_PERIOD;
         }
+        validateDateCombination(startDate, endDate);
+        validateDayLength(startDate, endDate);
+        return new TripPeriod(startDate, endDate);
+    }
+
+    private static void validateDateCombination(LocalDate startDate, LocalDate endDate) {
         if ((startDate != null && endDate == null) || (startDate == null && endDate != null)) {
             throw new InvalidPeriodException("시작일 또는 종료일 어느 한 쪽만 null일 수 없습니다.");
         }
         if (endDate.isBefore(startDate)) {
             throw new InvalidPeriodException("종료일이 시작일보다 앞섭니다.");
         }
-        return new TripPeriod(startDate, endDate);
+    }
+
+    private static void validateDayLength(LocalDate startDate, LocalDate endDate) {
+        long numberOfDays = ChronoUnit.DAYS.between(startDate, endDate) + 1; // between은 날짜의 차를 구하므로, 사이에 속한 일수를 구하려면 1을 더해야함.
+        if (numberOfDays > MAX_DAYS) {
+            throw new TooLongPeriodException("여행 일수가 너무 많음.");
+        }
     }
 
     private TripPeriod(LocalDate startDate, LocalDate endDate) {
