@@ -8,6 +8,8 @@ import com.cosain.trilo.trip.domain.entity.Trip;
 import com.cosain.trilo.trip.domain.repository.DayRepository;
 import com.cosain.trilo.trip.domain.repository.ScheduleRepository;
 import com.cosain.trilo.trip.domain.repository.TripRepository;
+import com.cosain.trilo.trip.domain.vo.TripPeriod;
+import com.cosain.trilo.trip.domain.vo.TripTitle;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -49,7 +51,10 @@ public class TripUpdateServiceTest {
         // given
         Long tripId = 1L;
         Long tripperId = 2L;
-        TripUpdateCommand updateCommand = TripUpdateCommand.of("수정할 제목", LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 3));
+        TripUpdateCommand updateCommand = new TripUpdateCommand(
+                TripTitle.of("수정할 제목"),
+                TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 3))
+        );
         given(tripRepository.findByIdWithDays(eq(tripId))).willReturn(Optional.empty());
 
         // when & then
@@ -63,8 +68,10 @@ public class TripUpdateServiceTest {
         // given
         Long tripId = 1L;
         Long tripperId = 2L;
-        TripUpdateCommand updateCommand = TripUpdateCommand.of("수정할 제목",
-                LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 3));
+        TripUpdateCommand updateCommand = new TripUpdateCommand(
+                TripTitle.of("수정할 제목"),
+                TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 3))
+        );
 
         Trip trip = UNDECIDED_TRIP.createUndecided(tripId, tripperId, "여행 제목");
         given(tripRepository.findByIdWithDays(eq(tripId))).willReturn(Optional.of(trip));
@@ -86,8 +93,10 @@ public class TripUpdateServiceTest {
         Long tripId = 1L;
         Long tripperId = 2L;
 
-        TripUpdateCommand updateCommand = TripUpdateCommand.of("수정할 제목",
-                LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 5));
+        TripUpdateCommand updateCommand = new TripUpdateCommand(
+                TripTitle.of("수정할 제목"),
+                TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 5))
+        );
         Trip trip = DECIDED_TRIP.createDecided(tripId, tripperId, "여행 제목", LocalDate.of(2023, 3, 3), LocalDate.of(2023, 3, 7));
         given(tripRepository.findByIdWithDays(eq(tripId))).willReturn(Optional.of(trip));
         given(scheduleRepository.relocateDaySchedules(eq(tripId), isNull())).willReturn(0);
@@ -117,8 +126,10 @@ public class TripUpdateServiceTest {
             Long tripperId = 2L;
             Long noAuthorityTripperId = 3L;
 
-            TripUpdateCommand updateCommand = TripUpdateCommand.of("수정할 제목",
-                    LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 3));
+            TripUpdateCommand updateCommand = new TripUpdateCommand(
+                    TripTitle.of("수정할 제목"),
+                    TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 3))
+            );
             Trip trip = UNDECIDED_TRIP.createUndecided(tripId, tripperId, "여행 제목");
             given(tripRepository.findByIdWithDays(eq(tripId))).willReturn(Optional.of(trip));
 

@@ -21,7 +21,4 @@ public class TripUpdateRequest {
         this.endDate = endDate;
     }
 
-    public TripUpdateCommand toCommand() {
-        return TripUpdateCommand.of(title, startDate, endDate);
-    }
 }
