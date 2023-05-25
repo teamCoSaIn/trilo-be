@@ -46,7 +46,7 @@ public class TripQueryRepositoryTest {
         // then
         assertThat(tripDetail.getTitle()).isEqualTo(trip.getTitle());
         assertThat(tripDetail.getTripperId()).isEqualTo(trip.getTripperId());
-        assertThat(tripDetail.getId()).isEqualTo(trip.getId());
+        assertThat(tripDetail.getTripId()).isEqualTo(trip.getId());
         assertThat(tripDetail.getStartDate()).isEqualTo(trip.getTripPeriod().getStartDate());
         assertThat(tripDetail.getEndDate()).isEqualTo(trip.getTripPeriod().getEndDate());
         assertThat(tripDetail.getStatus()).isEqualTo(trip.getStatus().name());

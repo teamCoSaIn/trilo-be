@@ -44,7 +44,7 @@ public class TripDetailSearchServiceTest {
 
         // then
         verify(tripQueryRepository).findTripDetailByTripId(anyLong());
-        assertThat(dto.getId()).isEqualTo(tripDetail.getId());
+        assertThat(dto.getTripId()).isEqualTo(tripDetail.getTripId());
         assertThat(dto.getStatus()).isEqualTo(tripDetail.getStatus());
         assertThat(dto.getStartDate()).isEqualTo(tripDetail.getStartDate());
         assertThat(dto.getEndDate()).isEqualTo(tripDetail.getEndDate());

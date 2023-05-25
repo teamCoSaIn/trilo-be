@@ -47,7 +47,7 @@ class SingleTripQueryControllerTest extends RestControllerTest {
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.tripId").value(tripDetail.getId()))
+                .andExpect(jsonPath("$.tripId").value(tripDetail.getTripId()))
                 .andExpect(jsonPath("$.title").value(tripDetail.getTitle()))
                 .andExpect(jsonPath("$.status").value(tripDetail.getStatus()))
                 .andExpect(jsonPath("$.startDate").value(tripDetail.getStartDate().toString()))
