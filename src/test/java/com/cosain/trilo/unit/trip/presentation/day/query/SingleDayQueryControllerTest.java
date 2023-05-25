@@ -3,6 +3,7 @@ package com.cosain.trilo.unit.trip.presentation.day.query;
 import com.cosain.trilo.support.RestControllerTest;
 import com.cosain.trilo.trip.application.day.query.usecase.DaySearchUseCase;
 import com.cosain.trilo.trip.infra.dto.DayScheduleDetail;
+import com.cosain.trilo.trip.infra.dto.ScheduleSummary;
 import com.cosain.trilo.trip.presentation.day.query.SingleDayQueryController;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -35,8 +36,8 @@ class SingleDayQueryControllerTest extends RestControllerTest {
     public void findSingleSchedule_with_authorizedUser() throws Exception {
 
         mockingForLoginUserAnnotation();
-        DayScheduleDetail.ScheduleSummary scheduleSummary1 = new DayScheduleDetail.ScheduleSummary(1L, "제목", "장소 이름", 33.33, 33.33);
-        DayScheduleDetail.ScheduleSummary scheduleSummary2 = new DayScheduleDetail.ScheduleSummary(2L, "제목2", "장소 이름2", 33.33, 33.33);
+        ScheduleSummary scheduleSummary1 = new ScheduleSummary(1L, "제목", "장소 이름", 33.33, 33.33);
+        ScheduleSummary scheduleSummary2 = new ScheduleSummary(2L, "제목2", "장소 이름2", 33.33, 33.33);
 
         DayScheduleDetail dayScheduleDetail = new DayScheduleDetail(1L, 1L, LocalDate.of(2023, 2, 3), List.of(scheduleSummary1, scheduleSummary2));
         given(daySearchUseCase.searchDeySchedule(eq(1L))).willReturn(dayScheduleDetail);
