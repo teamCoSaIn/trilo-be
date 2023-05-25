@@ -8,11 +8,7 @@ public class TripCreateCommand {
 
     private TripTitle tripTitle;
 
-    public static TripCreateCommand from(String rawTitle) {
-        return new TripCreateCommand(TripTitle.of(rawTitle));
-    }
-
-    private TripCreateCommand(TripTitle tripTitle) {
+    public TripCreateCommand(TripTitle tripTitle) {
         this.tripTitle = tripTitle;
     }
 }

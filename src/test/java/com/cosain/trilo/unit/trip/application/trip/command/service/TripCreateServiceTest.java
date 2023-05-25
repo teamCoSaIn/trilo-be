@@ -35,7 +35,7 @@ public class TripCreateServiceTest {
     @DisplayName("create 하면, 내부적으로 repository가 호출된다.")
     public void create_and_repository_called() throws Exception {
         // given
-        TripCreateCommand createCommand = TripCreateCommand.from("제목");
+        TripCreateCommand createCommand = new TripCreateCommand(TripTitle.of("제목"));
         Long tripperId = 1L;
 
         // mocking

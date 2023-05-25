@@ -11,44 +11,35 @@ public class ValidationErrorResponse {
     private final String errorCode;
     private final String errorMessage;
     private final String errorDetail;
-    private final List<FieldErrorResponse> fieldErrors = new ArrayList<>();
-    private final List<GlobalErrorResponse> globalErrors = new ArrayList<>();
+    private final List<PartErrorResponse> errors = new ArrayList<>();
 
     public static ValidationErrorResponse of(String errorCode, String errorMessage, String errorDetail) {
         return new ValidationErrorResponse(errorCode, errorMessage, errorDetail);
     }
 
-    public void addFieldError(String errorCode, String errorMessage, String errorDetail, String field) {
-        FieldErrorResponse fieldError = new FieldErrorResponse(errorCode, errorMessage, errorDetail, field);
-        fieldErrors.add(fieldError);
-    }
-
-
-    public ValidationErrorResponse(String errorCode, String errorMessage, String errorDetail) {
+    private ValidationErrorResponse(String errorCode, String errorMessage, String errorDetail) {
         this.errorCode = errorCode;
         this.errorMessage = errorMessage;
         this.errorDetail = errorDetail;
     }
 
+    public void addError(String errorCode, String errorMessage, String errorDetail) {
+        PartErrorResponse partError = new PartErrorResponse(errorCode, errorMessage, errorDetail);
+        errors.add(partError);
+    }
 
     @Getter
-    private static class FieldErrorResponse {
+    private static class PartErrorResponse {
 
         private final String errorCode;
         private final String errorMessage;
         private final String errorDetail;
-        private final String field;
 
-        public FieldErrorResponse(String errorCode, String errorMessage, String errorDetail, String field) {
+        public PartErrorResponse(String errorCode, String errorMessage, String errorDetail) {
             this.errorCode = errorCode;
             this.errorMessage = errorMessage;
             this.errorDetail = errorDetail;
-            this.field = field;
         }
     }
 
-    @Getter
-    private static class GlobalErrorResponse {
-
-    }
 }

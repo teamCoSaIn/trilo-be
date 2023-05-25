@@ -73,7 +73,7 @@ trip-0001:
 
 trip-0002:
   message: Invalid Trip Title
-  detail: The TripTitle cannot be null or empty. Additionally, the TripTitle must be between 1 and 20 characters.
+  detail: The TripTitle is not valid. The TripTitle cannot be null or blank, and its length should be between 1 and 20 characters.
 
 
 trip-0004:

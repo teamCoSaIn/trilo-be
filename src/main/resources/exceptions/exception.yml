@@ -73,8 +73,7 @@ trip-0001:
 
 trip-0002:
   message: Invalid Trip Title
-  detail: 여행의 제목은 null 또는 공백일 수 없습니다. 또한, 여행 제목의 길이는 1자 이상 20자 이하여야 합니다.
-
+  detail: 여행 제목이 올바르지 않습니다. 여행 제목은 null 또는 공백으로만 구성된 문자열일 수 없고, 길이는 1자 이상 20자 이하여야 합니다.
 
 trip-0004:
   message: No Trip Update Authority

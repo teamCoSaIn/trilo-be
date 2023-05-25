@@ -3,6 +3,7 @@ package com.cosain.trilo.config.exception;
 import com.cosain.trilo.common.dto.BasicErrorResponse;
 import com.cosain.trilo.common.dto.ValidationErrorResponse;
 import com.cosain.trilo.common.exception.CustomException;
+import com.cosain.trilo.common.exception.CustomValidationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.TypeMismatchException;
@@ -15,9 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingRequestCookieException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -98,32 +97,25 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
         return ResponseEntity.badRequest().body(response);
     }
 
-    /**
-     * 필드 검증 에러 API
-     */
-    @Override
-    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
-        BindingResult bindingResult = ex.getBindingResult();
-        log.info("필드 검증 실패!");
-
+    @ExceptionHandler(CustomValidationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ValidationErrorResponse handleCustomValidationException(CustomValidationException ex) {
         String errorCode = "request-0003";
         String errorMessage = getMessage(errorCode + ".message");
         String errorDetail = getMessage(errorCode + ".detail");
 
         var response = ValidationErrorResponse.of(errorCode, errorMessage, errorDetail);
-        List<FieldError> fieldErrors = bindingResult.getFieldErrors();
-        addFieldErrors(response, fieldErrors);
-
-        return ResponseEntity.badRequest().body(response);
+        List<CustomException> exceptions = ex.getExceptions();
+        addExceptionsToValidationErrorResponse(response, exceptions);
+        return response;
     }
 
-    private void addFieldErrors(ValidationErrorResponse response, List<FieldError> fieldErrors) {
-        for (FieldError fieldError : fieldErrors) {
-            String fieldErrorCode = fieldError.getDefaultMessage();
-            String fieldErrorMessage = getMessage(fieldErrorCode + ".message");
-            String fieldErrorDetail = getMessage(fieldErrorCode + ".detail");
-            String field = fieldError.getField();
-            response.addFieldError(fieldErrorCode, fieldErrorMessage, fieldErrorDetail, field);
+    private void addExceptionsToValidationErrorResponse(ValidationErrorResponse response, List<CustomException> exceptions) {
+        for (CustomException ex : exceptions) {
+            String errorCode = ex.getErrorCode();
+            String errorMessage = getMessage(errorCode + ".message");
+            String errorDetail = getMessage(errorCode + ".detail");
+            response.addError(errorCode, errorMessage, errorDetail);
         }
     }
 
