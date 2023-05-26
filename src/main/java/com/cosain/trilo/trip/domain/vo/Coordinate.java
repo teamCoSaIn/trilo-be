@@ -12,11 +12,11 @@ import lombok.*;
 @Embeddable
 public class Coordinate {
 
-    private static final double MIN_LATITUDE = -90;
-    private static final double MAX_LATITUDE = 90;
+    public static final double MIN_LATITUDE = -90;
+    public static final double MAX_LATITUDE = 90;
 
-    private static final double MIN_LONGITUDE = -180;
-    private static final double MAX_LONGITUDE = 180;
+    public static final double MIN_LONGITUDE = -180;
+    public static final double MAX_LONGITUDE = 180;
 
     @Column(name = "place_latitude", nullable = false)
     private double latitude;
