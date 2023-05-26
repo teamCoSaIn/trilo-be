@@ -24,7 +24,10 @@ public class Coordinate {
     @Column(name= "place_longitude", nullable = false)
     private double longitude;
 
-    public static Coordinate of(double latitude, double longitude) {
+    public static Coordinate of(Double latitude, Double longitude) {
+        if (latitude == null || longitude == null) {
+            throw new InvalidCoordinateException("위도 또는 경도가 누락됨");
+        }
         if (!(MIN_LATITUDE <= latitude && latitude <= MAX_LATITUDE)) {
             throw new InvalidCoordinateException("위도의 범위가 옳지 않음");
         }
@@ -34,7 +37,7 @@ public class Coordinate {
         return new Coordinate(latitude, longitude);
     }
 
-    public Coordinate(double latitude, double longitude) {
+    private Coordinate(double latitude, double longitude) {
         this.latitude = latitude;
         this.longitude = longitude;
     }
