@@ -135,6 +135,13 @@ schedule-0006:
   message: InvalidScheduleMoveTargetOrder
   detail: Unable to move the schedule to the specified order. It is outside the valid order range.
 
+schedule-0007:
+  message: Schedule Create Failed - Null TripId
+  detail: The TripId required for generating the schedule is missing.
+
+schedule-0008:
+  message: Invalid Schedule Title
+  detail: The ScheduleTitle is not valid. The ScheduleTitle cannot be a null or empty string, and its length must be between 1 and 20 characters
 
 # 장소 관련
 place-0001:

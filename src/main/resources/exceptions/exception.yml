@@ -135,6 +135,14 @@ schedule-0006:
   message: InvalidScheduleMoveTargetOrder
   detail: 일정을 해당 순서로 이동시킬 수 없습니다. 유효한 순서 범위를 벗어납니다.
 
+schedule-0007:
+  message: Schedule Create Failed - Null TripId
+  detail: 일정 생성 시 필요한 TripId가 누락됐습니다.
+
+schedule-0008:
+  message: Invalid Schedule Title
+  detail: 일정 제목이 올바르지 않습니다. 일정 제목은 null 또는 공백으로만 구성된 문자열일 수 없고, 길이는 1자 이상 20자 이하여야 합니다.
+
 
 # 장소 관련
 place-0001:
