@@ -50,7 +50,17 @@ class SingleDayQueryControllerTest extends RestControllerTest {
                 .andExpect(jsonPath("$.dayId").value(dayScheduleDetail.getDayId()))
                 .andExpect(jsonPath("$.date").value(dayScheduleDetail.getDate().toString()))
                 .andExpect(jsonPath("$.tripId").value(dayScheduleDetail.getTripId()))
-                .andExpect(jsonPath("$.scheduleSummaries").isArray());
+                .andExpect(jsonPath("$.scheduleSummaries").isArray())
+                .andExpect(jsonPath("$.scheduleSummaries[0].coordinate.latitude").value(scheduleSummary1.getCoordinate().getLatitude()))
+                .andExpect(jsonPath("$.scheduleSummaries[0].coordinate.longitude").value(scheduleSummary1.getCoordinate().getLongitude()))
+                .andExpect(jsonPath("$.scheduleSummaries[0].scheduleId").value(scheduleSummary1.getScheduleId()))
+                .andExpect(jsonPath("$.scheduleSummaries[0].title").value(scheduleSummary1.getTitle()))
+                .andExpect(jsonPath("$.scheduleSummaries[0].placeName").value(scheduleSummary1.getPlaceName()))
+                .andExpect(jsonPath("$.scheduleSummaries[1].coordinate.latitude").value(scheduleSummary2.getCoordinate().getLatitude()))
+                .andExpect(jsonPath("$.scheduleSummaries[1].coordinate.longitude").value(scheduleSummary2.getCoordinate().getLongitude()))
+                .andExpect(jsonPath("$.scheduleSummaries[1].scheduleId").value(scheduleSummary2.getScheduleId()))
+                .andExpect(jsonPath("$.scheduleSummaries[1].title").value(scheduleSummary2.getTitle()))
+                .andExpect(jsonPath("$.scheduleSummaries[1].placeName").value(scheduleSummary2.getPlaceName()));
     }
 
     @Test
