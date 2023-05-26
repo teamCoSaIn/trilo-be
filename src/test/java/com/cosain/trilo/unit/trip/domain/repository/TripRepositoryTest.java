@@ -35,7 +35,7 @@ public class TripRepositoryTest {
         @Test
         @DisplayName("같은 id로 조회하면 같은 여행이 찾아진다.")
         void successTest() {
-            Trip trip = Trip.create("제목", 1L);
+            Trip trip = Trip.create(TripTitle.of("제목"), 1L);
             tripRepository.save(trip);
 
             em.clear();
@@ -50,7 +50,7 @@ public class TripRepositoryTest {
         @DisplayName("임시보관함을 지연로딩(기본 양방향 매핑)하여 얻어오면, 순서대로 요소들이 가져와진다.")
         void lazy_loading_TemporaryStorage() {
             // given
-            Trip trip = Trip.create("제목", 1L);
+            Trip trip = Trip.create(TripTitle.of("제목"), 1L);
             tripRepository.save(trip);
 
             Schedule schedule1 = Schedule.builder()
@@ -103,7 +103,7 @@ public class TripRepositoryTest {
         @DisplayName("UnDecided 상태의 Trip을 조회하면 여행만 조회된다.")
         public void findUndecidedTripTest() {
             // given
-            Trip trip = Trip.create("제목", 1L);
+            Trip trip = Trip.create(TripTitle.of("제목"), 1L);
             em.persist(trip);
 
             em.clear();
@@ -112,7 +112,7 @@ public class TripRepositoryTest {
             Trip findTrip = tripRepository.findByIdWithDays(trip.getId()).get();
 
             // then
-            assertThat(findTrip.getTitle()).isEqualTo(trip.getTitle());
+            assertThat(findTrip.getTripTitle()).isEqualTo(trip.getTripTitle());
             assertThat(findTrip.getId()).isEqualTo(trip.getId());
             assertThat(findTrip.getDays()).isEmpty();
         }
@@ -124,6 +124,7 @@ public class TripRepositoryTest {
             // given
             Trip trip = Trip.builder()
                     .tripperId(1L)
+                    .tripTitle(TripTitle.of("여행 제목"))
                     .tripPeriod(TripPeriod.of(LocalDate.of(2023,5,1), LocalDate.of(2023,5,3)))
                     .status(TripStatus.DECIDED)
                     .build();
@@ -144,7 +145,7 @@ public class TripRepositoryTest {
             Trip findTrip = tripRepository.findByIdWithDays(trip.getId()).get();
 
             // then
-            assertThat(findTrip.getTitle()).isEqualTo(trip.getTitle());
+            assertThat(findTrip.getTripTitle()).isEqualTo(trip.getTripTitle());
             assertThat(findTrip.getId()).isEqualTo(trip.getId());
             assertThat(findTrip.getDays()).map(Day::getTripDate).containsExactly(
                     LocalDate.of(2023,5,1), LocalDate.of(2023,5,2), LocalDate.of(2023,5,3));
@@ -158,7 +159,7 @@ public class TripRepositoryTest {
         // given
         Trip trip = Trip.builder()
                 .tripperId(1L)
-                .title("여행 제목")
+                .tripTitle(TripTitle.of("여행 제목"))
                 .status(TripStatus.DECIDED)
                 .tripPeriod(TripPeriod.of(LocalDate.of(2023,3,1), LocalDate.of(2023,3,3)))
                 .build();

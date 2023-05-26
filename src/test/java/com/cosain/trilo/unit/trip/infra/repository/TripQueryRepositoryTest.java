@@ -1,3 +1,4 @@
+
 package com.cosain.trilo.unit.trip.infra.repository;
 
 import com.cosain.trilo.support.RepositoryTest;
@@ -6,6 +7,7 @@ import com.cosain.trilo.trip.domain.vo.TripPeriod;
 import com.cosain.trilo.trip.domain.vo.TripStatus;
 import com.cosain.trilo.trip.infra.dto.TripDetail;
 import com.cosain.trilo.trip.infra.dto.TripSummary;
+import com.cosain.trilo.trip.domain.vo.TripTitle;
 import com.cosain.trilo.trip.infra.repository.trip.TripQueryRepository;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.DisplayName;
@@ -34,7 +36,7 @@ public class TripQueryRepositoryTest {
         // given
         Trip trip = Trip.builder()
                 .tripperId(1L)
-                .title("제목")
+                .tripTitle(TripTitle.of("제목"))
                 .status(TripStatus.DECIDED)
                 .tripPeriod(TripPeriod.of(LocalDate.of(2023, 5, 5), LocalDate.of(2023, 5, 10)))
                 .build();
@@ -44,7 +46,7 @@ public class TripQueryRepositoryTest {
         TripDetail tripDetail = tripQueryRepository.findTripDetailByTripId(1L).get();
 
         // then
-        assertThat(tripDetail.getTitle()).isEqualTo(trip.getTitle());
+        assertThat(tripDetail.getTitle()).isEqualTo(trip.getTripTitle().getValue());
         assertThat(tripDetail.getTripperId()).isEqualTo(trip.getTripperId());
         assertThat(tripDetail.getTripId()).isEqualTo(trip.getId());
         assertThat(tripDetail.getStartDate()).isEqualTo(trip.getTripPeriod().getStartDate());
@@ -62,14 +64,14 @@ public class TripQueryRepositoryTest {
             // given
             Trip trip1 = Trip.builder()
                     .tripperId(1L)
-                    .title("제목 1")
+                    .tripTitle(TripTitle.of("제목 1"))
                     .status(TripStatus.DECIDED)
                     .tripPeriod(TripPeriod.of(LocalDate.of(2023, 5, 5), LocalDate.of(2023, 5, 10)))
                     .build();
 
             Trip trip2 = Trip.builder()
                     .tripperId(1L)
-                    .title("제목 2")
+                    .tripTitle(TripTitle.of("제목 2"))
                     .status(TripStatus.DECIDED)
                     .tripPeriod(TripPeriod.of(LocalDate.of(2023, 5, 5), LocalDate.of(2023, 5, 10)))
                     .build();
@@ -91,14 +93,14 @@ public class TripQueryRepositoryTest {
             // given
             Trip trip1 = Trip.builder()
                     .tripperId(1L)
-                    .title("제목 1")
+                    .tripTitle(TripTitle.of("제목 1"))
                     .status(TripStatus.DECIDED)
                     .tripPeriod(TripPeriod.of(LocalDate.of(2023, 5, 5), LocalDate.of(2023, 5, 10)))
                     .build();
 
             Trip trip2 = Trip.builder()
                     .tripperId(1L)
-                    .title("제목 2")
+                    .tripTitle(TripTitle.of("제목 2"))
                     .status(TripStatus.DECIDED)
                     .tripPeriod(TripPeriod.of(LocalDate.of(2023, 5, 5), LocalDate.of(2023, 5, 10)))
                     .build();
@@ -112,9 +114,8 @@ public class TripQueryRepositoryTest {
 
 
             // then
-            assertThat(tripSummariesByTripperId.getContent().get(0).getTitle()).isEqualTo(trip2.getTitle());
-            assertThat(tripSummariesByTripperId.getContent().get(1).getTitle()).isEqualTo(trip1.getTitle());
-
+            assertThat(tripSummariesByTripperId.getContent().get(0).getTitle()).isEqualTo(trip2.getTripTitle().getValue());
+            assertThat(tripSummariesByTripperId.getContent().get(1).getTitle()).isEqualTo(trip1.getTripTitle().getValue());
         }
 
         @Test
@@ -122,7 +123,7 @@ public class TripQueryRepositoryTest {
             // given
             Trip trip = Trip.builder()
                     .tripperId(1L)
-                    .title("제목 1")
+                    .tripTitle(TripTitle.of("제목 1"))
                     .status(TripStatus.DECIDED)
                     .tripPeriod(TripPeriod.of(LocalDate.of(2023, 5, 5), LocalDate.of(2023, 5, 10)))
                     .build();
@@ -136,6 +137,5 @@ public class TripQueryRepositoryTest {
         }
 
     }
-
 
 }

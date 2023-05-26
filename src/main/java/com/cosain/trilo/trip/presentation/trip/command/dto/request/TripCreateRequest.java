@@ -20,6 +20,6 @@ public class TripCreateRequest {
     }
 
     public TripCreateCommand toCommand() {
-        return new TripCreateCommand(title);
+        return TripCreateCommand.from(title);
     }
 }

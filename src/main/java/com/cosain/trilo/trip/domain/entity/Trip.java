@@ -6,10 +6,7 @@ import com.cosain.trilo.trip.domain.exception.EmptyPeriodUpdateException;
 import com.cosain.trilo.trip.domain.exception.InvalidScheduleMoveTargetOrderException;
 import com.cosain.trilo.trip.domain.exception.InvalidTripDayException;
 import com.cosain.trilo.trip.domain.exception.MidScheduleIndexConflictException;
-import com.cosain.trilo.trip.domain.vo.Place;
-import com.cosain.trilo.trip.domain.vo.ScheduleIndex;
-import com.cosain.trilo.trip.domain.vo.TripPeriod;
-import com.cosain.trilo.trip.domain.vo.TripStatus;
+import com.cosain.trilo.trip.domain.vo.*;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -38,7 +35,7 @@ public class Trip {
     private Long tripperId;
 
     @Column(name = "title")
-    private String title;
+    private TripTitle tripTitle;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "trip_status")
@@ -58,14 +55,14 @@ public class Trip {
     /**
      * 여행(Trip)을 최초로 생성합니다. 최초 생성된 Trip은 UNDECIDED 상태입니다.
      *
-     * @param title:    여행의 제목
+     * @param tripTitle:    여행의 제목
      * @param tripperId : 여행자의 식별자
      * @return 생성된 Trip
      */
-    public static Trip create(String title, Long tripperId) {
+    public static Trip create(TripTitle tripTitle, Long tripperId) {
         return Trip.builder()
                 .tripperId(tripperId)
-                .title(title)
+                .tripTitle(tripTitle)
                 .status(TripStatus.UNDECIDED)
                 .tripPeriod(TripPeriod.empty())
                 .build();
@@ -75,10 +72,10 @@ public class Trip {
      * 테스트의 편의성을 위해 Builder accessLevel = PUBLIC 으로 설정
      */
     @Builder(access = AccessLevel.PUBLIC)
-    private Trip(Long id, Long tripperId, String title, TripStatus status, TripPeriod tripPeriod, List<Day> days, List<Schedule> temporaryStorage) {
+    private Trip(Long id, Long tripperId, TripTitle tripTitle, TripStatus status, TripPeriod tripPeriod, List<Day> days, List<Schedule> temporaryStorage) {
         this.id = id;
         this.tripperId = tripperId;
-        this.title = title;
+        this.tripTitle = tripTitle;
         this.status = status;
         this.tripPeriod = tripPeriod;
 
@@ -96,8 +93,8 @@ public class Trip {
      *
      * @param newTitle : 변경할 제목
      */
-    public void changeTitle(String newTitle) {
-        this.title = newTitle;
+    public void changeTitle(TripTitle newTitle) {
+        this.tripTitle = newTitle;
     }
 
     /**

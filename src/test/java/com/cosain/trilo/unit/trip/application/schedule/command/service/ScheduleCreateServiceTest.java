@@ -57,7 +57,7 @@ public class ScheduleCreateServiceTest {
             Trip trip = Trip.builder()
                     .id(tripId)
                     .tripperId(tripperId)
-                    .title("여행 제목")
+                    .tripTitle(TripTitle.of("여행 제목"))
                     .status(TripStatus.DECIDED)
                     .tripPeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 1)))
                     .build();
@@ -106,7 +106,7 @@ public class ScheduleCreateServiceTest {
             Trip beforeTrip = Trip.builder()
                     .id(tripId)
                     .tripperId(tripperId)
-                    .title("여행 제목")
+                    .tripTitle(TripTitle.of("여행 제목"))
                     .status(TripStatus.DECIDED)
                     .tripPeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 1)))
                     .build();
@@ -135,7 +135,7 @@ public class ScheduleCreateServiceTest {
             Trip rediscoveredTrip = Trip.builder()
                     .id(tripId)
                     .tripperId(tripperId)
-                    .title("여행 제목")
+                    .tripTitle(TripTitle.of("여행 제목"))
                     .status(TripStatus.DECIDED)
                     .tripPeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 1)))
                     .build();
@@ -203,7 +203,7 @@ public class ScheduleCreateServiceTest {
             Trip trip = Trip.builder()
                     .id(tripId)
                     .tripperId(tripperId)
-                    .title("여행 제목")
+                    .tripTitle(TripTitle.of("여행 제목"))
                     .status(TripStatus.DECIDED)
                     .tripPeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 1)))
                     .build();
@@ -296,7 +296,7 @@ public class ScheduleCreateServiceTest {
         // given
         Long noAuthorityTripperId = 2L;
 
-        Trip trip = Trip.create("제목", 1L);
+        Trip trip = Trip.create(TripTitle.of("제목"), 1L);
         Day day = Day.of(LocalDate.of(2023, 4, 5), trip);
 
         ScheduleCreateCommand scheduleCreateCommand = ScheduleCreateCommand.of(1L, 1L, "제목", "내용", "장소 식별자", 23.21, 23.24);

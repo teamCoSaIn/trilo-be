@@ -4,6 +4,7 @@ import com.cosain.trilo.trip.domain.entity.Day;
 import com.cosain.trilo.trip.domain.entity.Trip;
 import com.cosain.trilo.trip.domain.vo.TripPeriod;
 import com.cosain.trilo.trip.domain.vo.TripStatus;
+import com.cosain.trilo.trip.domain.vo.TripTitle;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,23 +22,23 @@ public enum TripFixture {
         this.status = status;
     }
 
-    public Trip createUndecided(Long id, Long tripperId, String title){
+    public Trip createUndecided(Long id, Long tripperId, String rawTitle){
         if(this.status.equals(TripStatus.DECIDED)) throw new IllegalArgumentException("status 가 DECIDED 일 경우 startDate와 endDate를 지정해주어야 합니다.");
         return Trip.builder()
                 .id(id)
                 .tripperId(tripperId)
-                .title(title)
+                .tripTitle(TripTitle.of(rawTitle))
                 .status(this.status)
                 .tripPeriod(TripPeriod.empty())
                 .build();
     }
 
-    public Trip createDecided(Long id, Long tripperId, String title, LocalDate startDate, LocalDate endDate){
+    public Trip createDecided(Long id, Long tripperId, String rawTitle, LocalDate startDate, LocalDate endDate){
         if(this.status.equals(TripStatus.UNDECIDED)) throw new IllegalArgumentException("status 가 UNDECIDED 일 경우 startDate와 endDate를 지정해 줄 수 없습니다.");
         Trip trip = Trip.builder()
                 .id(id)
                 .tripperId(tripperId)
-                .title(title)
+                .tripTitle(TripTitle.of(rawTitle))
                 .status(this.status)
                 .build();
         List<Day> days = createDays(startDate, endDate, trip);
@@ -45,7 +46,7 @@ public enum TripFixture {
         return Trip.builder()
                 .id(id)
                 .tripperId(tripperId)
-                .title(title)
+                .tripTitle(TripTitle.of(rawTitle))
                 .tripPeriod(TripPeriod.of(startDate, endDate))
                 .days(days)
                 .status(this.status)

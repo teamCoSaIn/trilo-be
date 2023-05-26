@@ -1,12 +1,13 @@
 package com.cosain.trilo.unit.trip.application.schedule.command.service;
 
-import com.cosain.trilo.trip.application.schedule.command.usecase.dto.ScheduleUpdateCommand;
 import com.cosain.trilo.trip.application.exception.NoScheduleUpdateAuthorityException;
 import com.cosain.trilo.trip.application.exception.ScheduleNotFoundException;
 import com.cosain.trilo.trip.application.schedule.command.service.ScheduleUpdateService;
+import com.cosain.trilo.trip.application.schedule.command.usecase.dto.ScheduleUpdateCommand;
 import com.cosain.trilo.trip.domain.entity.Schedule;
 import com.cosain.trilo.trip.domain.entity.Trip;
 import com.cosain.trilo.trip.domain.repository.ScheduleRepository;
+import com.cosain.trilo.trip.domain.vo.TripTitle;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,7 +18,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
@@ -38,7 +38,7 @@ public class ScheduleUpdateServiceTest {
         ScheduleUpdateCommand command = ScheduleUpdateCommand.of("변경할 제목", "변경할 내용");
 
         Schedule schedule = Schedule.builder()
-                .trip(Trip.create("여행 제목", 1L))
+                .trip(Trip.create(TripTitle.of("여행 제목"), 1L))
                 .title("원래 제목")
                 .content("원래 내용")
                 .build();
@@ -58,7 +58,7 @@ public class ScheduleUpdateServiceTest {
         ScheduleUpdateCommand command = ScheduleUpdateCommand.of("변경할 제목", "변경할 내용");
 
         Schedule schedule = Schedule.builder()
-                .trip(Trip.create("여행 제목", 2L))
+                .trip(Trip.create(TripTitle.of("여행 제목"), 2L))
                 .title("원래 제목")
                 .content("원래 내용")
                 .build();

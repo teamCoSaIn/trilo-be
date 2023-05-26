@@ -3,15 +3,12 @@ package com.cosain.trilo.trip.domain.vo;
 import com.cosain.trilo.trip.domain.exception.InvalidTripTitleException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 @Getter
 @ToString(of = {"value"})
 @EqualsAndHashCode(of = {"value"})
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Embeddable
 public class TripTitle {
 

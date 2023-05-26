@@ -36,7 +36,7 @@ public class ScheduleRepositoryTest {
         // given
         Trip trip = Trip.builder()
                 .tripperId(1L)
-                .title("여행 제목")
+                .tripTitle(TripTitle.of("여행 제목"))
                 .status(TripStatus.DECIDED)
                 .tripPeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 1)))
                 .build();
@@ -74,7 +74,7 @@ public class ScheduleRepositoryTest {
         // given
         Trip trip = Trip.builder()
                 .tripperId(1L)
-                .title("여행 제목")
+                .tripTitle(TripTitle.of("여행 제목"))
                 .status(TripStatus.DECIDED)
                 .tripPeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 1)))
                 .build();
@@ -105,7 +105,7 @@ public class ScheduleRepositoryTest {
         // given
         Trip trip = Trip.builder()
                 .tripperId(1L)
-                .title("여행 제목")
+                .tripTitle(TripTitle.of(("여행 제목")))
                 .status(TripStatus.DECIDED)
                 .tripPeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 3)))
                 .build();
@@ -145,7 +145,7 @@ public class ScheduleRepositoryTest {
         // given
         Trip trip = Trip.builder()
                 .tripperId(1L)
-                .title("여행 제목")
+                .tripTitle(TripTitle.of("여행 제목"))
                 .status(TripStatus.DECIDED)
                 .tripPeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 1)))
                 .build();
@@ -185,7 +185,7 @@ public class ScheduleRepositoryTest {
             // given
             Trip trip = Trip.builder()
                     .tripperId(1L)
-                    .title("여행 제목")
+                    .tripTitle(TripTitle.of("여행 제목"))
                     .status(TripStatus.DECIDED)
                     .tripPeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 1)))
                     .build();
@@ -243,7 +243,7 @@ public class ScheduleRepositoryTest {
             // given
             Trip trip = Trip.builder()
                     .tripperId(1L)
-                    .title("여행 제목")
+                    .tripTitle(TripTitle.of("여행 제목"))
                     .status(TripStatus.DECIDED)
                     .tripPeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 2)))
                     .build();
@@ -307,7 +307,7 @@ public class ScheduleRepositoryTest {
             // given
             Trip trip = Trip.builder()
                     .tripperId(1L)
-                    .title("여행 제목")
+                    .tripTitle(TripTitle.of("여행 제목"))
                     .status(TripStatus.DECIDED)
                     .tripPeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 3)))
                     .build();
@@ -376,7 +376,7 @@ public class ScheduleRepositoryTest {
             // given
             Trip trip = Trip.builder()
                     .tripperId(1L)
-                    .title("여행 제목")
+                    .tripTitle(TripTitle.of("여행 제목"))
                     .status(TripStatus.DECIDED)
                     .tripPeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 3)))
                     .build();

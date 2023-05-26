@@ -4,6 +4,7 @@ import com.cosain.trilo.trip.application.trip.command.usecase.dto.TripCreateComm
 import com.cosain.trilo.trip.application.trip.command.service.TripCreateService;
 import com.cosain.trilo.trip.domain.entity.Trip;
 import com.cosain.trilo.trip.domain.repository.TripRepository;
+import com.cosain.trilo.trip.domain.vo.TripTitle;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -34,11 +35,11 @@ public class TripCreateServiceTest {
     @DisplayName("create 하면, 내부적으로 repository가 호출된다.")
     public void create_and_repository_called() throws Exception {
         // given
-        TripCreateCommand createCommand = new TripCreateCommand("제목");
+        TripCreateCommand createCommand = TripCreateCommand.from("제목");
         Long tripperId = 1L;
 
         // mocking
-        Trip trip = Trip.create("제목", tripperId);
+        Trip trip = Trip.create(TripTitle.of("제목"), tripperId);
         injectFakeTripId(trip, 1L);
 
         given(tripRepository.save(any(Trip.class))).willReturn(trip);

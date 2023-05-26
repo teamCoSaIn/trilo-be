@@ -17,13 +17,13 @@ public class TripCreateService implements TripCreateUseCase {
     /**
      * Trip을 생성하여 등록하고, 식별자를 반환합니다.
      * @param tripperId : 여행자 식별자
-     * @param createDto : 여행 생성에 필요한 정보들
+     * @param createCommand : 여행 생성에 필요한 정보들
      * @return 생성된 여행의 식별자
      */
     @Override
     @Transactional
-    public Long createTrip(Long tripperId, TripCreateCommand createDto) {
-        Trip trip = Trip.create(createDto.getTitle(), tripperId);
+    public Long createTrip(Long tripperId, TripCreateCommand createCommand) {
+        Trip trip = Trip.create(createCommand.getTripTitle(), tripperId);
         Trip savedTrip = tripRepository.save(trip);
         return savedTrip.getId();
     }

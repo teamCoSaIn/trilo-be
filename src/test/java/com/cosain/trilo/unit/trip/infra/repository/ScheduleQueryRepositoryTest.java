@@ -1,3 +1,4 @@
+
 package com.cosain.trilo.unit.trip.infra.repository;
 
 import com.cosain.trilo.support.RepositoryTest;
@@ -8,6 +9,7 @@ import com.cosain.trilo.trip.domain.vo.Place;
 import com.cosain.trilo.trip.domain.vo.ScheduleIndex;
 import com.cosain.trilo.trip.infra.dto.ScheduleDetail;
 import com.cosain.trilo.trip.infra.dto.ScheduleSummary;
+import com.cosain.trilo.trip.domain.vo.TripTitle;
 import com.cosain.trilo.trip.infra.repository.schedule.ScheduleQueryRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -34,7 +36,7 @@ public class ScheduleQueryRepositoryTest {
     @Test
     void findScheduleTest(){
         // given
-        Trip trip = Trip.create("제목", 1L);
+        Trip trip = Trip.create(TripTitle.of("제목"), 1L);
         em.persist(trip);
         Schedule schedule = Schedule.builder()
                 .trip(trip)
@@ -70,7 +72,7 @@ public class ScheduleQueryRepositoryTest {
         @DisplayName("tripId 가 일치하고 dayId 가 null 인 일정들이 페이지의 크기만큼 조회된다.")
         void findTest(){
             // given
-            Trip trip = Trip.create("제목", 1L);
+            Trip trip = Trip.create(TripTitle.of("제목"), 1L);
             em.persist(trip);
             Schedule schedule = createSchedule(trip, 1L);
             em.persist(schedule);
@@ -87,7 +89,7 @@ public class ScheduleQueryRepositoryTest {
         @DisplayName("scheduleIndex 기준 오름차순으로 조회된다.")
         void sortTest(){
             // given
-            Trip trip = Trip.create("제목", 1L);
+            Trip trip = Trip.create(TripTitle.of("제목"), 1L);
             em.persist(trip);
             Schedule schedule1 = createSchedule(trip, 1L);
             Schedule schedule2 = createSchedule(trip, 2L);

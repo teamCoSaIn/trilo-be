@@ -76,7 +76,7 @@ public class ScheduleMoveServiceTest {
         Trip trip = Trip.builder()
                 .id(tripId)
                 .tripperId(tripperId)
-                .title("여행 제목")
+                .tripTitle(TripTitle.of("여행 제목"))
                 .status(TripStatus.DECIDED)
                 .tripPeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 1)))
                 .build();
@@ -120,7 +120,7 @@ public class ScheduleMoveServiceTest {
         Trip trip = Trip.builder()
                 .id(tripId)
                 .tripperId(tripperId)
-                .title("여행 제목")
+                .tripTitle(TripTitle.of("여행 제목"))
                 .status(TripStatus.DECIDED)
                 .tripPeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 1)))
                 .build();
@@ -170,7 +170,7 @@ public class ScheduleMoveServiceTest {
         Trip trip = Trip.builder()
                 .id(tripId)
                 .tripperId(tripperId)
-                .title("여행 제목")
+                .tripTitle(TripTitle.of("여행 제목"))
                 .status(TripStatus.DECIDED)
                 .tripPeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 1)))
                 .build();
@@ -224,7 +224,7 @@ public class ScheduleMoveServiceTest {
         Trip beforeTrip = Trip.builder()
                 .id(tripId)
                 .tripperId(tripperId)
-                .title("여행 제목")
+                .tripTitle(TripTitle.of("여행 제목"))
                 .status(TripStatus.DECIDED)
                 .tripPeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 1)))
                 .build();
@@ -256,7 +256,7 @@ public class ScheduleMoveServiceTest {
         Trip rediscoveredTrip = Trip.builder()
                 .id(tripId)
                 .tripperId(tripperId)
-                .title("여행 제목")
+                .tripTitle(TripTitle.of("여행 제목"))
                 .status(TripStatus.DECIDED)
                 .tripPeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 1)))
                 .build();
@@ -323,7 +323,7 @@ public class ScheduleMoveServiceTest {
         Trip beforeTrip = Trip.builder()
                 .id(tripId)
                 .tripperId(tripperId)
-                .title("여행 제목")
+                .tripTitle(TripTitle.of("여행 제목"))
                 .status(TripStatus.DECIDED)
                 .tripPeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 1)))
                 .build();
@@ -355,7 +355,7 @@ public class ScheduleMoveServiceTest {
         Trip rediscoveredTrip = Trip.builder()
                 .id(tripId)
                 .tripperId(tripperId)
-                .title("여행 제목")
+                .tripTitle(TripTitle.of("여행 제목"))
                 .status(TripStatus.DECIDED)
                 .tripPeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 1)))
                 .build();
@@ -422,7 +422,7 @@ public class ScheduleMoveServiceTest {
         Trip beforeTrip = Trip.builder()
                 .id(tripId)
                 .tripperId(tripperId)
-                .title("여행 제목")
+                .tripTitle(TripTitle.of("여행 제목"))
                 .status(TripStatus.DECIDED)
                 .tripPeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 1)))
                 .build();
@@ -463,7 +463,7 @@ public class ScheduleMoveServiceTest {
         Trip rediscoveredTrip = Trip.builder()
                 .id(tripId)
                 .tripperId(tripperId)
-                .title("여행 제목")
+                .tripTitle(TripTitle.of("여행 제목"))
                 .status(TripStatus.DECIDED)
                 .tripPeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 1)))
                 .build();
