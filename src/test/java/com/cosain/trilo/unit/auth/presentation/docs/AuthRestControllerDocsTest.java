@@ -10,6 +10,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
+
+import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
+import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import org.springframework.security.test.context.support.WithMockUser;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -21,7 +24,7 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.response
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(AuthRestController.class)
-class AuthRestControllerTest extends RestDocsTestSupport {
+class AuthRestControllerDocsTest extends RestDocsTestSupport {
 
     @MockBean
     private AuthService authService;
@@ -67,7 +70,11 @@ class AuthRestControllerTest extends RestDocsTestSupport {
                 .cookie(new Cookie("refreshToken", "refreshToken"))
                 .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken"))
                 .andExpect(status().isOk())
-                .andDo(restDocs.document());
+                .andDo(restDocs.document(
+                    requestHeaders(
+                            headerWithName(HttpHeaders.AUTHORIZATION).description("Bearer 타입 AccessToken")
+                    )
+                ));
     }
 
 }

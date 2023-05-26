@@ -11,27 +11,27 @@
 === 인증 URI
 
 ==== 구글 URI
-operation::o-auth2-login-test/구글_인증_url_요청[]
+operation::o-auth2-login-test/구글_인증_url_요청[snippets = 'http-request,http-response,response-fields']
 
 ==== 네이버 URI
-operation::o-auth2-login-test/네이버_인증_url_요청[]
+operation::o-auth2-login-test/네이버_인증_url_요청[snippets = 'http-request,http-response,response-fields']
 
 ==== 카카오 URI
-operation::o-auth2-login-test/카카오_인증_url_요청[]
+operation::o-auth2-login-test/카카오_인증_url_요청[snippets = 'http-request,http-response,response-fields']
 
 === 로그아웃
-operation::auth-rest-controller-test/로그아웃_요청[]
+operation::auth-rest-controller-docs-test/로그아웃_요청[snippets = 'http-request,request-headers,http-response']
 
 === 재발급 토큰 상태 조회
-operation::auth-rest-controller-test/재발급_토큰_상태_조회_요청[]
+operation::auth-rest-controller-docs-test/재발급_토큰_상태_조회_요청[snippets = 'http-request,http-response,response-fields']
 
-=== 접긑 토큰 재발급
-operation::auth-rest-controller-test/접근토큰_재발급_요청[]
+=== 접근 토큰 재발급
+operation::auth-rest-controller-docs-test/접근토큰_재발급_요청[snippets = 'http-request,http-response,response-fields']
 
 == Trip API
 
 === Trip 생성
-operation::trip-create-controller-docs-test/여행_생성_요청[]
+operation::trip-create-controller-docs-test/여행_생성_요청[snippets = 'http-request,request-fields,http-response,request-headers,response-fields']
 
 === Trip 수정
-operation::trip-update-controller-docs-test/여행_수정_요청[]
+operation::trip-update-controller-docs-test/여행_수정_요청[snippets = 'http-request,path-parameters,request-headers,request-fields,http-response,response-fields']
