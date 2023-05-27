@@ -1,9 +1,7 @@
 package com.cosain.trilo.unit.trip.presentation.schedule.query;
 
 import com.cosain.trilo.support.RestControllerTest;
-import com.cosain.trilo.trip.application.schedule.query.usecase.dto.ScheduleResult;
 import com.cosain.trilo.trip.application.schedule.query.usecase.ScheduleDetailSearchUseCase;
-import com.cosain.trilo.trip.domain.dto.ScheduleDto;
 import com.cosain.trilo.trip.infra.dto.ScheduleDetail;
 import com.cosain.trilo.trip.presentation.schedule.query.SingleScheduleQueryController;
 import org.junit.jupiter.api.DisplayName;
@@ -49,8 +47,8 @@ class SingleScheduleQueryControllerTest extends RestControllerTest {
                 .andExpect(jsonPath("$.content").value(scheduleDetail.getContent()))
                 .andExpect(jsonPath("$.title").value(scheduleDetail.getTitle()))
                 .andExpect(jsonPath("$.dayId").value(scheduleDetail.getDayId()))
-                .andExpect(jsonPath("$.latitude").value(scheduleDetail.getLatitude()))
-                .andExpect(jsonPath("$.longitude").value(scheduleDetail.getLongitude()));
+                .andExpect(jsonPath("$.coordinate.latitude").value(scheduleDetail.getCoordinate().getLatitude()))
+                .andExpect(jsonPath("$.coordinate.longitude").value(scheduleDetail.getCoordinate().getLongitude()));
 
     }
 

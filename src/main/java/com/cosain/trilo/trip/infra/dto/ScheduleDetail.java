@@ -9,8 +9,7 @@ public class ScheduleDetail {
     private Long dayId;
     private String title;
     private String placeName;
-    private double latitude;
-    private double longitude;
+    private Coordinate coordinate;
     private long order;
     private String content;
 
@@ -20,8 +19,7 @@ public class ScheduleDetail {
         this.dayId = dayId;
         this.title = title;
         this.placeName = placeName;
-        this.latitude = latitude;
-        this.longitude = longitude;
+        this.coordinate = Coordinate.from(latitude, longitude);
         this.order = order;
         this.content = content;
     }
