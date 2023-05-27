@@ -34,6 +34,7 @@ public class DayQueryJpaRepositoryImpl implements DayQueryJpaRepositoryCustom{
                                 schedule.id,
                                 schedule.title,
                                 schedule.place.placeName,
+                                schedule.place.placeId,
                                 schedule.place.coordinate.latitude,
                                 schedule.place.coordinate.longitude
                         ))

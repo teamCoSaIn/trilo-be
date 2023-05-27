@@ -36,8 +36,8 @@ class SingleDayQueryControllerTest extends RestControllerTest {
     public void findSingleSchedule_with_authorizedUser() throws Exception {
 
         mockingForLoginUserAnnotation();
-        ScheduleSummary scheduleSummary1 = new ScheduleSummary(1L, "제목", "장소 이름", 33.33, 33.33);
-        ScheduleSummary scheduleSummary2 = new ScheduleSummary(2L, "제목2", "장소 이름2", 33.33, 33.33);
+        ScheduleSummary scheduleSummary1 = new ScheduleSummary(1L, "제목", "장소 이름","장소 식별자1", 33.33, 33.33);
+        ScheduleSummary scheduleSummary2 = new ScheduleSummary(2L, "제목2", "장소 이름2","장소 식별자2", 33.33, 33.33);
 
         DayScheduleDetail dayScheduleDetail = new DayScheduleDetail(1L, 1L, LocalDate.of(2023, 2, 3), List.of(scheduleSummary1, scheduleSummary2));
         given(daySearchUseCase.searchDeySchedule(eq(1L))).willReturn(dayScheduleDetail);
@@ -56,11 +56,13 @@ class SingleDayQueryControllerTest extends RestControllerTest {
                 .andExpect(jsonPath("$.schedules[0].scheduleId").value(scheduleSummary1.getScheduleId()))
                 .andExpect(jsonPath("$.schedules[0].title").value(scheduleSummary1.getTitle()))
                 .andExpect(jsonPath("$.schedules[0].placeName").value(scheduleSummary1.getPlaceName()))
+                .andExpect(jsonPath("$.schedules[0].placeId").value(scheduleSummary1.getPlaceId()))
                 .andExpect(jsonPath("$.schedules[1].coordinate.latitude").value(scheduleSummary2.getCoordinate().getLatitude()))
                 .andExpect(jsonPath("$.schedules[1].coordinate.longitude").value(scheduleSummary2.getCoordinate().getLongitude()))
                 .andExpect(jsonPath("$.schedules[1].scheduleId").value(scheduleSummary2.getScheduleId()))
                 .andExpect(jsonPath("$.schedules[1].title").value(scheduleSummary2.getTitle()))
-                .andExpect(jsonPath("$.schedules[1].placeName").value(scheduleSummary2.getPlaceName()));
+                .andExpect(jsonPath("$.schedules[1].placeName").value(scheduleSummary2.getPlaceName()))
+                .andExpect(jsonPath("$.schedules[1].placeId").value(scheduleSummary2.getPlaceId()));
     }
 
     @Test
