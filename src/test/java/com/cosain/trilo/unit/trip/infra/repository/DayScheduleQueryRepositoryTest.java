@@ -59,9 +59,9 @@ public class DayScheduleQueryRepositoryTest {
         assertThat(dayScheduleDetail.getDayId()).isEqualTo(day1.getId());
         assertThat(dayScheduleDetail.getDate()).isEqualTo(day1.getTripDate());
         assertThat(dayScheduleDetail.getTripId()).isEqualTo(trip.getId());
-        assertThat(dayScheduleDetail.getScheduleSummaries().size()).isEqualTo(findSchedulesSize);
-        assertThat(dayScheduleDetail.getScheduleSummaries().get(0).getScheduleId()).isEqualTo(schedule1.getId());
-        assertThat(dayScheduleDetail.getScheduleSummaries().get(2).getScheduleId()).isEqualTo(schedule3.getId());
+        assertThat(dayScheduleDetail.getSchedules().size()).isEqualTo(findSchedulesSize);
+        assertThat(dayScheduleDetail.getSchedules().get(0).getScheduleId()).isEqualTo(schedule1.getId());
+        assertThat(dayScheduleDetail.getSchedules().get(2).getScheduleId()).isEqualTo(schedule3.getId());
     }
 
     private Schedule createSchedule(Trip trip, Day day, Long scheduleIndexValue){
