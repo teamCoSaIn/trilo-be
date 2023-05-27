@@ -43,8 +43,8 @@ public class ScheduleDetailSearchServiceTest {
         assertThat(dto.getDayId()).isEqualTo(scheduleDetail.getDayId());
         assertThat(dto.getContent()).isEqualTo(scheduleDetail.getContent());
         assertThat(dto.getTitle()).isEqualTo(scheduleDetail.getTitle());
-        assertThat(dto.getLatitude()).isEqualTo(scheduleDetail.getLatitude());
-        assertThat(dto.getLongitude()).isEqualTo(scheduleDetail.getLongitude());
+        assertThat(dto.getCoordinate().getLatitude()).isEqualTo(scheduleDetail.getCoordinate().getLatitude());
+        assertThat(dto.getCoordinate().getLongitude()).isEqualTo(scheduleDetail.getCoordinate().getLongitude());
         assertThat(dto.getOrder()).isEqualTo(scheduleDetail.getOrder());
         assertThat(dto.getPlaceName()).isEqualTo(scheduleDetail.getPlaceName());
 

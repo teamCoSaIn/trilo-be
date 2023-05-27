@@ -47,8 +47,8 @@ class SingleScheduleQueryControllerTest extends RestControllerTest {
                 .andExpect(jsonPath("$.content").value(scheduleDetail.getContent()))
                 .andExpect(jsonPath("$.title").value(scheduleDetail.getTitle()))
                 .andExpect(jsonPath("$.dayId").value(scheduleDetail.getDayId()))
-                .andExpect(jsonPath("$.latitude").value(scheduleDetail.getLatitude()))
-                .andExpect(jsonPath("$.longitude").value(scheduleDetail.getLongitude()));
+                .andExpect(jsonPath("$.coordinate.latitude").value(scheduleDetail.getCoordinate().getLatitude()))
+                .andExpect(jsonPath("$.coordinate.longitude").value(scheduleDetail.getCoordinate().getLongitude()));
 
     }
 

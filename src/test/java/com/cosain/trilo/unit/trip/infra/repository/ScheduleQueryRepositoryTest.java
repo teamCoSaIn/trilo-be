@@ -54,8 +54,8 @@ public class ScheduleQueryRepositoryTest {
         assertThat(dto.getScheduleId()).isEqualTo(schedule.getId());
         assertThat(dto.getTitle()).isEqualTo(schedule.getTitle());
         assertThat(dto.getPlaceName()).isEqualTo(schedule.getPlace().getPlaceName());
-        assertThat(dto.getLatitude()).isEqualTo(schedule.getPlace().getCoordinate().getLatitude());
-        assertThat(dto.getLongitude()).isEqualTo(schedule.getPlace().getCoordinate().getLongitude());
+        assertThat(dto.getCoordinate().getLatitude()).isEqualTo(schedule.getPlace().getCoordinate().getLatitude());
+        assertThat(dto.getCoordinate().getLatitude()).isEqualTo(schedule.getPlace().getCoordinate().getLongitude());
         assertThat(dto.getOrder()).isEqualTo(schedule.getScheduleIndex().getValue());
         assertThat(dto.getContent()).isEqualTo(schedule.getContent());
 
