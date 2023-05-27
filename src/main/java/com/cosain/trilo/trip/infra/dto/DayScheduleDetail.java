@@ -11,13 +11,13 @@ public class DayScheduleDetail {
     private Long dayId;
     private Long tripId;
     private LocalDate date;
-    private List<ScheduleSummary> scheduleSummaries;
+    private List<ScheduleSummary> schedules;
 
     @QueryProjection
     public DayScheduleDetail(Long dayId, Long tripId, LocalDate date, List<ScheduleSummary> scheduleSummaries) {
         this.dayId = dayId;
         this.tripId = tripId;
         this.date = date;
-        this.scheduleSummaries = scheduleSummaries;
+        this.schedules = scheduleSummaries;
     }
 }

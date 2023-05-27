@@ -37,7 +37,7 @@ public class DaySearchServiceTest {
 
         // given
         Long dayId = 1L;
-        ScheduleSummary scheduleSummary = new ScheduleSummary(1L, "제목", "장소", 33.33, 33.33);
+        ScheduleSummary scheduleSummary = new ScheduleSummary(1L, "제목", "장소","장소 식별자", 33.33, 33.33);
         DayScheduleDetail dayScheduleDetail = new DayScheduleDetail(dayId, 1L, LocalDate.of(2023, 5, 5), List.of(scheduleSummary));
         given(dayQueryRepository.findDayWithSchedulesByDayId(1L)).willReturn(Optional.of(dayScheduleDetail));
 

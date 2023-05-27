@@ -41,12 +41,9 @@ class TripTemporaryStorageQueryControllerTest extends RestControllerTest {
         // given
         Long tripId = 1L;
         mockingForLoginUserAnnotation();
-        SliceImpl<ScheduleSummary> scheduleSummaries = new SliceImpl<>(List.of(
-                new ScheduleSummary(1L, null, "제목", 33.33, 33.33),
-                new ScheduleSummary(2L, null, "제목", 33.33, 33.33),
-                new ScheduleSummary(3L, null, "제목", 33.33, 33.33),
-                new ScheduleSummary(4L, null, "제목", 33.33, 33.33)
-        ));
+        ScheduleSummary scheduleSummary1 = new ScheduleSummary(1L, null, "제목","장소 식별자", 33.33, 33.33);
+        ScheduleSummary scheduleSummary2 = new ScheduleSummary(2L, null, "제목","장소 식별자",33.33, 33.33);
+        SliceImpl<ScheduleSummary> scheduleSummaries = new SliceImpl<>(List.of(scheduleSummary1, scheduleSummary2));
         given(temporarySearchUseCase.searchTemporary(eq(tripId), any(Pageable.class))).willReturn(scheduleSummaries);
 
         mockMvc.perform(get("/api/trips/1/temporary-storage")
@@ -55,6 +52,18 @@ class TripTemporaryStorageQueryControllerTest extends RestControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.tempSchedules").isArray())
                 .andExpect(jsonPath("$.tempSchedules.size()").value(scheduleSummaries.getSize()))
+                .andExpect(jsonPath("$.tempSchedules[0].coordinate.latitude").value(scheduleSummary1.getCoordinate().getLatitude()))
+                .andExpect(jsonPath("$.tempSchedules[0].coordinate.longitude").value(scheduleSummary1.getCoordinate().getLongitude()))
+                .andExpect(jsonPath("$.tempSchedules[0].scheduleId").value(scheduleSummary1.getScheduleId()))
+                .andExpect(jsonPath("$.tempSchedules[0].title").value(scheduleSummary1.getTitle()))
+                .andExpect(jsonPath("$.tempSchedules[0].placeName").value(scheduleSummary1.getPlaceName()))
+                .andExpect(jsonPath("$.tempSchedules[0].placeId").value(scheduleSummary1.getPlaceId()))
+                .andExpect(jsonPath("$.tempSchedules[1].coordinate.latitude").value(scheduleSummary2.getCoordinate().getLatitude()))
+                .andExpect(jsonPath("$.tempSchedules[1].coordinate.longitude").value(scheduleSummary2.getCoordinate().getLongitude()))
+                .andExpect(jsonPath("$.tempSchedules[1].scheduleId").value(scheduleSummary2.getScheduleId()))
+                .andExpect(jsonPath("$.tempSchedules[1].title").value(scheduleSummary2.getTitle()))
+                .andExpect(jsonPath("$.tempSchedules[1].placeName").value(scheduleSummary2.getPlaceName()))
+                .andExpect(jsonPath("$.tempSchedules[1].placeId").value(scheduleSummary2.getPlaceId()))
                 .andExpect(jsonPath("$.hasNext").isBoolean())
                 .andExpect(status().isOk());
     }

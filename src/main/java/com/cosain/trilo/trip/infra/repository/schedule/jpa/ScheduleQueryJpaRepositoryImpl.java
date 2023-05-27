@@ -31,7 +31,7 @@ public class ScheduleQueryJpaRepositoryImpl implements ScheduleQueryJpaRepositor
 
     @Override
     public Slice<ScheduleSummary> findTemporaryScheduleListByTripId(Long tripId, Pageable pageable) {
-        JPAQuery<ScheduleSummary> jpaQuery = query.select(new QScheduleSummary(schedule.id, schedule.title, schedule.place.placeName, schedule.place.coordinate.latitude, schedule.place.coordinate.longitude))
+        JPAQuery<ScheduleSummary> jpaQuery = query.select(new QScheduleSummary(schedule.id, schedule.title, schedule.place.placeName, schedule.place.placeId, schedule.place.coordinate.latitude, schedule.place.coordinate.longitude))
                 .from(schedule)
                 .where(schedule.trip.id.eq(tripId).and(schedule.day.id.isNull()))
                 .orderBy(schedule.scheduleIndex.value.asc())
