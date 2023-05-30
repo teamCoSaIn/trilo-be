@@ -86,7 +86,7 @@ trip-0005:
 
 trip-0006:
   message: EmptyPeriodUpdate Error
-  detail: The period of a scheduled trip cannot be updated to an empty period.
+  detail: It is not possible to move the schedule in the specified order. The order value cannot be null or negative, and it should be a valid order value in the day or the temporary storage.
 
 trip-0007:
   message: NoTripDeleteAuthority

@@ -5,6 +5,7 @@ import com.cosain.trilo.support.RestControllerTest;
 import com.cosain.trilo.trip.application.schedule.command.usecase.dto.ScheduleMoveCommand;
 import com.cosain.trilo.trip.application.schedule.command.usecase.dto.ScheduleMoveResult;
 import com.cosain.trilo.trip.application.schedule.command.usecase.ScheduleMoveUseCase;
+import com.cosain.trilo.trip.application.schedule.command.usecase.dto.factory.ScheduleMoveCommandFactory;
 import com.cosain.trilo.trip.presentation.schedule.command.ScheduleMoveController;
 import com.cosain.trilo.trip.presentation.schedule.command.dto.request.ScheduleMoveRequest;
 import org.junit.jupiter.api.DisplayName;
@@ -34,6 +35,9 @@ public class ScheduleMoveControllerTest extends RestControllerTest {
     @MockBean
     private ScheduleMoveUseCase scheduleMoveUseCase;
 
+    @MockBean
+    private ScheduleMoveCommandFactory scheduleMoveCommandFactory;
+
     private final static String ACCESS_TOKEN = "Bearer accessToken";
 
     @Test
@@ -53,6 +57,10 @@ public class ScheduleMoveControllerTest extends RestControllerTest {
                 .build();
 
         ScheduleMoveRequest request = new ScheduleMoveRequest(targetDayId, targetOrder);
+        ScheduleMoveCommand command = new ScheduleMoveCommand(targetDayId, targetOrder);
+
+        given(scheduleMoveCommandFactory.createCommand(eq(targetDayId), eq(targetOrder)))
+                .willReturn(command);
         given(scheduleMoveUseCase.moveSchedule(eq(scheduleId), any(), any(ScheduleMoveCommand.class)))
                 .willReturn(moveResult);
 
@@ -69,6 +77,7 @@ public class ScheduleMoveControllerTest extends RestControllerTest {
                 .andExpect(jsonPath("$.afterDayId").value(moveResult.getAfterDayId()))
                 .andExpect(jsonPath("$.positionChanged").value(moveResult.isPositionChanged()));
 
+        verify(scheduleMoveCommandFactory).createCommand(eq(targetDayId), eq(targetOrder));
         verify(scheduleMoveUseCase).moveSchedule(eq(scheduleId), any(), any(ScheduleMoveCommand.class));
     }
 

@@ -133,7 +133,7 @@ schedule-0005:
 
 schedule-0006:
   message: InvalidScheduleMoveTargetOrder
-  detail: 일정을 해당 순서로 이동시킬 수 없습니다. 유효한 순서 범위를 벗어납니다.
+  detail: 일정을 해당 순서로 이동시킬 수 없습니다. 순서값은 null 또는 음수일 수 없으며, 옮기려는 day 또는 임시보관함에서 유효한 순서값이여야합니다.
 
 schedule-0007:
   message: Schedule Create Failed - Null TripId

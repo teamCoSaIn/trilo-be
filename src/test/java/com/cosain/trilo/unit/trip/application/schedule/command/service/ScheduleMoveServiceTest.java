@@ -52,7 +52,7 @@ public class ScheduleMoveServiceTest {
         Long targetDayId = 2L;
         int targetOrder = 3;
 
-        ScheduleMoveCommand moveCommand = ScheduleMoveCommand.of(targetDayId, targetOrder);
+        ScheduleMoveCommand moveCommand = new ScheduleMoveCommand(targetDayId, targetOrder);
         given(scheduleRepository.findByIdWithTrip(eq(notExistScheduleId))).willReturn(Optional.empty());
 
 
@@ -91,8 +91,7 @@ public class ScheduleMoveServiceTest {
                 .build();
         trip.getTemporaryStorage().add(schedule);
 
-        ScheduleMoveCommand moveCommand = ScheduleMoveCommand.of(notExistTargetDayId, targetOrder);
-
+        ScheduleMoveCommand moveCommand = new ScheduleMoveCommand(notExistTargetDayId, targetOrder);
         given(scheduleRepository.findByIdWithTrip(eq(scheduleId))).willReturn(Optional.of(schedule));
         given(dayRepository.findByIdWithTrip(eq(notExistTargetDayId))).willReturn(Optional.empty());
 
@@ -142,7 +141,7 @@ public class ScheduleMoveServiceTest {
                 .build();
         trip.getTemporaryStorage().add(schedule);
 
-        ScheduleMoveCommand moveCommand = ScheduleMoveCommand.of(targetDayId, targetOrder);
+        ScheduleMoveCommand moveCommand = new ScheduleMoveCommand(targetDayId, targetOrder);
 
         given(scheduleRepository.findByIdWithTrip(eq(scheduleId))).willReturn(Optional.of(schedule));
         given(dayRepository.findByIdWithTrip(eq(targetDayId))).willReturn(Optional.of(day));
@@ -192,7 +191,7 @@ public class ScheduleMoveServiceTest {
                 .build();
         trip.getTemporaryStorage().add(schedule);
 
-        ScheduleMoveCommand moveCommand = ScheduleMoveCommand.of(targetDayId, targetOrder);
+        ScheduleMoveCommand moveCommand = new ScheduleMoveCommand(targetDayId, targetOrder);
 
         given(scheduleRepository.findByIdWithTrip(eq(scheduleId))).willReturn(Optional.of(schedule));
         given(dayRepository.findByIdWithTrip(eq(targetDayId))).willReturn(Optional.of(day));
@@ -285,7 +284,8 @@ public class ScheduleMoveServiceTest {
         rediscoveredTargetDay.getSchedules().add(rediscoveredTargetDaySchedule);
         rediscoveredTrip.getTemporaryStorage().add(rediscoveredMoveSchedule);
 
-        ScheduleMoveCommand moveCommand = ScheduleMoveCommand.of(targetDayId, targetOrder);
+        ScheduleMoveCommand moveCommand = new ScheduleMoveCommand(targetDayId, targetOrder);
+
 
         when(scheduleRepository.findByIdWithTrip(eq(scheduleId)))
                 .thenReturn(Optional.of(beforeMoveSchedule))
@@ -384,7 +384,7 @@ public class ScheduleMoveServiceTest {
         rediscoveredTargetDay.getSchedules().add(rediscoveredTargetDaySchedule);
         rediscoveredTrip.getTemporaryStorage().add(rediscoveredMoveSchedule);
 
-        ScheduleMoveCommand moveCommand = ScheduleMoveCommand.of(targetDayId, targetOrder);
+        ScheduleMoveCommand moveCommand = new ScheduleMoveCommand(targetDayId, targetOrder);
 
         when(scheduleRepository.findByIdWithTrip(eq(scheduleId)))
                 .thenReturn(Optional.of(beforeMoveSchedule))
@@ -501,7 +501,7 @@ public class ScheduleMoveServiceTest {
         rediscoveredTargetDay.getSchedules().add(rediscoveredTargetDaySchedule2);
         rediscoveredTrip.getTemporaryStorage().add(rediscoveredMoveSchedule);
 
-        ScheduleMoveCommand moveCommand = ScheduleMoveCommand.of(targetDayId, targetOrder);
+        ScheduleMoveCommand moveCommand = new ScheduleMoveCommand(targetDayId, targetOrder);
 
         when(scheduleRepository.findByIdWithTrip(eq(scheduleId)))
                 .thenReturn(Optional.of(beforeMoveSchedule))
