@@ -32,7 +32,7 @@ public class DayQueryJpaRepositoryImpl implements DayQueryJpaRepositoryCustom{
                         day.tripDate,
                         GroupBy.list(new QScheduleSummary(
                                 schedule.id,
-                                schedule.title,
+                                schedule.scheduleTitle.value,
                                 schedule.place.placeName,
                                 schedule.place.placeId,
                                 schedule.place.coordinate.latitude,

@@ -4,12 +4,9 @@ package com.cosain.trilo.unit.trip.infra.repository;
 import com.cosain.trilo.support.RepositoryTest;
 import com.cosain.trilo.trip.domain.entity.Schedule;
 import com.cosain.trilo.trip.domain.entity.Trip;
-import com.cosain.trilo.trip.domain.vo.Coordinate;
-import com.cosain.trilo.trip.domain.vo.Place;
-import com.cosain.trilo.trip.domain.vo.ScheduleIndex;
+import com.cosain.trilo.trip.domain.vo.*;
 import com.cosain.trilo.trip.infra.dto.ScheduleDetail;
 import com.cosain.trilo.trip.infra.dto.ScheduleSummary;
-import com.cosain.trilo.trip.domain.vo.TripTitle;
 import com.cosain.trilo.trip.infra.repository.schedule.ScheduleQueryRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -40,7 +37,7 @@ public class ScheduleQueryRepositoryTest {
         em.persist(trip);
         Schedule schedule = Schedule.builder()
                 .trip(trip)
-                .title("Test Schedule")
+                .scheduleTitle(ScheduleTitle.of("Test Schedule"))
                 .place(Place.of("장소 1", "광산구", Coordinate.of(62.62, 62.62)))
                 .scheduleIndex(ScheduleIndex.ZERO_INDEX)
                 .content("Test Content")
@@ -54,7 +51,7 @@ public class ScheduleQueryRepositoryTest {
         // then
         assertThat(dto.getScheduleId()).isEqualTo(schedule.getId());
         assertThat(dto.getScheduleId()).isEqualTo(schedule.getId());
-        assertThat(dto.getTitle()).isEqualTo(schedule.getTitle());
+        assertThat(dto.getTitle()).isEqualTo(schedule.getScheduleTitle().getValue());
         assertThat(dto.getPlaceName()).isEqualTo(schedule.getPlace().getPlaceName());
         assertThat(dto.getCoordinate().getLatitude()).isEqualTo(schedule.getPlace().getCoordinate().getLatitude());
         assertThat(dto.getCoordinate().getLatitude()).isEqualTo(schedule.getPlace().getCoordinate().getLongitude());
@@ -111,7 +108,7 @@ public class ScheduleQueryRepositoryTest {
         private Schedule createSchedule(Trip trip, long scheduleIndexValue){
             return Schedule.builder()
                     .trip(trip)
-                    .title("Test Schedule")
+                    .scheduleTitle(ScheduleTitle.of("Test Schedule"))
                     .place(Place.of("장소 1", "광산구", Coordinate.of(62.62, 62.62)))
                     .scheduleIndex(ScheduleIndex.of(scheduleIndexValue))
                     .content("Test Content")

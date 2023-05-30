@@ -15,7 +15,7 @@ import java.util.List;
 @Component
 public class ScheduleCreateCommandFactory {
 
-    public static ScheduleCreateCommand createCommand(
+    public ScheduleCreateCommand createCommand(
             Long dayId, Long tripId, String title,
             String placeId, String placeName,
             Double latitude, Double longitude) {
@@ -43,7 +43,7 @@ public class ScheduleCreateCommandFactory {
     /**
      * TridId가 Null이 아닌지 검증합니다. null이면, 예외 목록에 추가합니다.
      */
-    private static void validateTripIdNotNull(Long tripId, List<CustomException> exceptions) {
+    private void validateTripIdNotNull(Long tripId, List<CustomException> exceptions) {
         if (tripId == null) {
             exceptions.add(new NullTripIdException("Trip의 식별자가 전달되지 않음"));
         }
@@ -52,7 +52,7 @@ public class ScheduleCreateCommandFactory {
     /**
      * 일정 제목을 생성합니다. 일정 제목 정합성이 맞지 않을 경우 예외 목록에 추가합니다.
      */
-    private static ScheduleTitle makeScheduleTitle(String title, List<CustomException> exceptions) {
+    private ScheduleTitle makeScheduleTitle(String title, List<CustomException> exceptions) {
         try {
             return ScheduleTitle.of(title);
         } catch (CustomException e) {
@@ -64,7 +64,7 @@ public class ScheduleCreateCommandFactory {
     /**
      * 좌표를 생성합니다. 좌표 정합성이 맞지 않을 경우, 예외 목록에 추가합니다.
      */
-    private static Coordinate makeCoordinate(Double latitude, Double longitude, List<CustomException> exceptions) {
+    private Coordinate makeCoordinate(Double latitude, Double longitude, List<CustomException> exceptions) {
         try {
             return Coordinate.of(latitude, longitude);
         } catch (CustomException e) {
@@ -76,7 +76,7 @@ public class ScheduleCreateCommandFactory {
     /**
      * 장소를 생성합니다. 정합성에 맞지 않으면 예외 목록에 추가합니다.
      */
-    private static Place makePlace(String placeId, String placeName, Coordinate coordinate, List<CustomException> exceptions) {
+    private Place makePlace(String placeId, String placeName, Coordinate coordinate, List<CustomException> exceptions) {
         try {
             return Place.of(placeId, placeName, coordinate);
         } catch (CustomException e) {

@@ -9,6 +9,7 @@ import com.cosain.trilo.trip.domain.entity.Trip;
 import com.cosain.trilo.trip.domain.repository.ScheduleRepository;
 import com.cosain.trilo.trip.domain.vo.Coordinate;
 import com.cosain.trilo.trip.domain.vo.Place;
+import com.cosain.trilo.trip.domain.vo.ScheduleTitle;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -71,7 +72,7 @@ public class ScheduleDeleteServiceTest {
             Day day = Day.of(LocalDate.of(2023,3,1),trip);
             Schedule schedule = Schedule.builder()
                             .id(scheduleId)
-                            .title("일정")
+                            .scheduleTitle(ScheduleTitle.of("일정"))
                             .day(day)
                             .trip(trip)
                             .place(Place.of("place-id", "광안리 해수욕장", Coordinate.of(35.1551, 129.1220)))
@@ -100,7 +101,7 @@ public class ScheduleDeleteServiceTest {
         Day day = Day.of(LocalDate.of(2023,3,1),trip);
         Schedule schedule = Schedule.builder()
                 .id(scheduleId)
-                .title("일정")
+                .scheduleTitle(ScheduleTitle.of("일정"))
                 .day(day)
                 .trip(trip)
                 .place(Place.of("place-id", "광안리 해수욕장", Coordinate.of(35.1551, 129.1220)))

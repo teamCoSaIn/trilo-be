@@ -3,6 +3,10 @@ package com.cosain.trilo.unit.trip.presentation.schedule.command;
 import com.cosain.trilo.support.RestControllerTest;
 import com.cosain.trilo.trip.application.schedule.command.usecase.dto.ScheduleCreateCommand;
 import com.cosain.trilo.trip.application.schedule.command.usecase.ScheduleCreateUseCase;
+import com.cosain.trilo.trip.application.schedule.command.usecase.dto.factory.ScheduleCreateCommandFactory;
+import com.cosain.trilo.trip.domain.vo.Coordinate;
+import com.cosain.trilo.trip.domain.vo.Place;
+import com.cosain.trilo.trip.domain.vo.ScheduleTitle;
 import com.cosain.trilo.trip.presentation.schedule.command.ScheduleCreateController;
 import com.cosain.trilo.trip.presentation.schedule.command.dto.request.ScheduleCreateRequest;
 import org.junit.jupiter.api.DisplayName;
@@ -17,6 +21,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import java.nio.charset.StandardCharsets;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -31,6 +36,10 @@ class ScheduleCreateControllerTest extends RestControllerTest {
 
     @MockBean
     private ScheduleCreateUseCase scheduleCreateUseCase;
+
+    @MockBean
+    private ScheduleCreateCommandFactory scheduleCreateCommandFactory;
+
     private final String ACCESS_TOKEN = "Bearer accessToken";
 
     @Test
@@ -39,16 +48,35 @@ class ScheduleCreateControllerTest extends RestControllerTest {
     public void createSchedule_with_authorizedUser() throws Exception {
         mockingForLoginUserAnnotation();
 
+        Long dayId = 1L;
+        Long tripId = 1L;
+        String rawScheduleTitle = "일정 제목";
+        String placeId = "place-id";
+        String placeName = "place-Name";
+        Double latitude = 37.5642135;
+        Double longitude = 127.0016985;
+
         ScheduleCreateRequest request = ScheduleCreateRequest.builder()
-                .dayId(1L)
-                .tripId(1L)
-                .title("일정 제목")
-                .placeId("google-place-id-1234")
-                .placeName("장소명")
-                .latitude(37.5642135)
-                .longitude(127.0016985)
+                .dayId(dayId)
+                .tripId(tripId)
+                .title(rawScheduleTitle)
+                .placeId(placeId)
+                .placeName(placeName)
+                .latitude(latitude)
+                .longitude(longitude)
                 .build();
 
+        ScheduleCreateCommand command = ScheduleCreateCommand.builder()
+                .dayId(dayId)
+                .tripId(tripId)
+                .scheduleTitle(ScheduleTitle.of(rawScheduleTitle))
+                .place(Place.of(placeId, placeName, Coordinate.of(latitude, longitude)))
+                .build();
+
+        given(scheduleCreateCommandFactory.createCommand(
+                eq(dayId), eq(tripId), eq(rawScheduleTitle),
+                eq(placeId), eq(placeName),
+                eq(latitude), eq(longitude))).willReturn(command);
         given(scheduleCreateUseCase.createSchedule(any(), any(ScheduleCreateCommand.class))).willReturn(1L);
 
         mockMvc.perform(post("/api/schedules")
@@ -62,6 +90,11 @@ class ScheduleCreateControllerTest extends RestControllerTest {
                 .andExpect(jsonPath("$.scheduleId").value(1L));
 
         verify(scheduleCreateUseCase).createSchedule(any(), any(ScheduleCreateCommand.class));
+        verify(scheduleCreateCommandFactory).createCommand(
+                eq(dayId), eq(tripId), eq(rawScheduleTitle),
+                eq(placeId), eq(placeName),
+                eq(latitude), eq(longitude)
+        );
     }
 
     @Test

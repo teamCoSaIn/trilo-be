@@ -4,10 +4,7 @@ import com.cosain.trilo.support.RepositoryTest;
 import com.cosain.trilo.trip.domain.entity.Day;
 import com.cosain.trilo.trip.domain.entity.Schedule;
 import com.cosain.trilo.trip.domain.entity.Trip;
-import com.cosain.trilo.trip.domain.vo.Coordinate;
-import com.cosain.trilo.trip.domain.vo.Place;
-import com.cosain.trilo.trip.domain.vo.ScheduleIndex;
-import com.cosain.trilo.trip.domain.vo.TripTitle;
+import com.cosain.trilo.trip.domain.vo.*;
 import com.cosain.trilo.trip.infra.repository.day.DayScheduleQueryRepository;
 import com.cosain.trilo.trip.infra.dto.DayScheduleDetail;
 import jakarta.persistence.EntityManager;
@@ -69,7 +66,7 @@ public class DayScheduleQueryRepositoryTest {
         return Schedule.builder()
                 .trip(trip)
                 .day(day)
-                .title("Test Schedule")
+                .scheduleTitle(ScheduleTitle.of("Test Schedule"))
                 .place(Place.of("장소 1", "광산구", Coordinate.of(62.62, 62.62)))
                 .scheduleIndex(ScheduleIndex.of(scheduleIndexValue))
                 .content("Test Content")

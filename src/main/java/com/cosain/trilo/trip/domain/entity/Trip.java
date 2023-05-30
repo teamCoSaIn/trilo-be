@@ -145,11 +145,11 @@ public class Trip {
         return newDays;
     }
 
-    public Schedule createSchedule(Day day, String title, Place place) {
+    public Schedule createSchedule(Day day, ScheduleTitle scheduleTitle, Place place) {
         validateTripDayRelationShip(day);
         return (day == null)
-                ? makeTemporaryStorageSchedule(title, place)
-                : day.createSchedule(title, place);
+                ? makeTemporaryStorageSchedule(scheduleTitle, place)
+                : day.createSchedule(scheduleTitle, place);
     }
 
     /**
@@ -165,8 +165,8 @@ public class Trip {
         }
     }
 
-    private Schedule makeTemporaryStorageSchedule(String title, Place place) {
-        Schedule schedule = Schedule.create(null, this, title, place, generateNextTemporaryStorageScheduleIndex());
+    private Schedule makeTemporaryStorageSchedule(ScheduleTitle scheduleTitle, Place place) {
+        Schedule schedule = Schedule.create(null, this, scheduleTitle, place, generateNextTemporaryStorageScheduleIndex());
         temporaryStorage.add(schedule);
         return schedule;
     }

@@ -49,7 +49,7 @@ public class ScheduleRepositoryTest {
         Schedule schedule = Schedule.builder()
                 .day(day)
                 .trip(trip)
-                .title("제목")
+                .scheduleTitle(ScheduleTitle.of("제목"))
                 .content("본문")
                 .place(Place.of("place-id", "광안리 해수욕장", Coordinate.of(43.1275, 132.127)))
                 .build();
@@ -61,7 +61,7 @@ public class ScheduleRepositoryTest {
         // then
         Schedule findSchedule = scheduleRepository.findById(schedule.getId()).get();
         assertThat(findSchedule.getId()).isEqualTo(schedule.getId());
-        assertThat(findSchedule.getTitle()).isEqualTo(schedule.getTitle());
+        assertThat(findSchedule.getScheduleTitle()).isEqualTo(schedule.getScheduleTitle());
         assertThat(findSchedule.getContent()).isEqualTo(schedule.getContent());
         assertThat(findSchedule.getPlace()).isEqualTo(schedule.getPlace());
     }
@@ -84,7 +84,7 @@ public class ScheduleRepositoryTest {
         Day day = Day.of(LocalDate.of(2023, 3, 1), trip);
         em.persist(day);
 
-        Schedule schedule = trip.createSchedule(day, "일정1", Place.of("place-id1", "광안리 해수욕장", Coordinate.of(35.1551, 129.1220)));
+        Schedule schedule = trip.createSchedule(day, ScheduleTitle.of("일정1"), Place.of("place-id1", "광안리 해수욕장", Coordinate.of(35.1551, 129.1220)));
         em.persist(schedule);
 
         // when
@@ -120,9 +120,9 @@ public class ScheduleRepositoryTest {
         em.persist(day2);
         em.persist(day3);
 
-        Schedule schedule1 = trip.createSchedule(day1, "일정1", Place.of("place-id1", "광안리 해수욕장", Coordinate.of(35.1551, 129.1220)));
-        Schedule schedule2 = trip.createSchedule(day2, "일정2", Place.of("place-id2", "광화문 광장", Coordinate.of(37.5748, 126.9767)));
-        Schedule schedule3 = trip.createSchedule(day3, "일정3", Place.of("place-id3", "도쿄 타워", Coordinate.of(35.3931, 139.4443)));
+        Schedule schedule1 = trip.createSchedule(day1, ScheduleTitle.of("일정1"), Place.of("place-id1", "광안리 해수욕장", Coordinate.of(35.1551, 129.1220)));
+        Schedule schedule2 = trip.createSchedule(day2, ScheduleTitle.of("일정2"), Place.of("place-id2", "광화문 광장", Coordinate.of(37.5748, 126.9767)));
+        Schedule schedule3 = trip.createSchedule(day3, ScheduleTitle.of("일정3"), Place.of("place-id3", "도쿄 타워", Coordinate.of(35.3931, 139.4443)));
 
         em.persist(schedule1);
         em.persist(schedule2);
@@ -154,9 +154,9 @@ public class ScheduleRepositoryTest {
         Day day = Day.of(LocalDate.of(2023, 3, 1), trip);
         em.persist(day);
 
-        Schedule schedule1 = trip.createSchedule(day, "일정1", Place.of("place-id1", "광안리 해수욕장1", Coordinate.of(35.1551, 129.1220)));
-        Schedule schedule2 = trip.createSchedule(day, "일정2", Place.of("place-id2", "광안리 해수욕장2", Coordinate.of(35.1551, 129.1220)));
-        Schedule schedule3 = trip.createSchedule(day, "일정3", Place.of("place-id3", "광안리 해수욕장3", Coordinate.of(35.1551, 129.1220)));
+        Schedule schedule1 = trip.createSchedule(day, ScheduleTitle.of("일정1"), Place.of("place-id1", "광안리 해수욕장1", Coordinate.of(35.1551, 129.1220)));
+        Schedule schedule2 = trip.createSchedule(day, ScheduleTitle.of("일정2"), Place.of("place-id2", "광안리 해수욕장2", Coordinate.of(35.1551, 129.1220)));
+        Schedule schedule3 = trip.createSchedule(day, ScheduleTitle.of("일정3"), Place.of("place-id3", "광안리 해수욕장3", Coordinate.of(35.1551, 129.1220)));
 
         em.persist(schedule1);
         em.persist(schedule2);
@@ -170,7 +170,7 @@ public class ScheduleRepositoryTest {
         // then
         assertThat(findSchedule.getId()).isEqualTo(schedule2.getId());
         assertThat(findSchedule.getTrip().getId()).isEqualTo(trip.getId());
-        assertThat(findSchedule.getTitle()).isEqualTo(schedule2.getTitle());
+        assertThat(findSchedule.getScheduleTitle()).isEqualTo(schedule2.getScheduleTitle());
         assertThat(findSchedule.getPlace()).isEqualTo(schedule2.getPlace());
     }
 
@@ -435,7 +435,7 @@ public class ScheduleRepositoryTest {
         return Schedule.builder()
                 .day(day)
                 .trip(trip)
-                .title("일정 제목")
+                .scheduleTitle(ScheduleTitle.of("일정 제목"))
                 .place(Place.of("place-id", "더미 제목", Coordinate.of(35.1551, 129.1220)))
                 .scheduleIndex(scheduleIndex)
                 .build();

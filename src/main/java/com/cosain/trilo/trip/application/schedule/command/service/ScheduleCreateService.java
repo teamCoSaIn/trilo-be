@@ -36,12 +36,12 @@ public class ScheduleCreateService implements ScheduleCreateUseCase {
 
         Schedule schedule;
         try {
-            schedule = trip.createSchedule(day, createCommand.getTitle(), createCommand.getPlace());
+            schedule = trip.createSchedule(day, createCommand.getScheduleTitle(), createCommand.getPlace());
         } catch (ScheduleIndexRangeException e) {
             scheduleRepository.relocateDaySchedules(tripId, dayId);
             trip = findTrip(trip.getId());
             day = findDay(dayId);
-            schedule =  trip.createSchedule(day, createCommand.getTitle(), createCommand.getPlace());
+            schedule =  trip.createSchedule(day, createCommand.getScheduleTitle(), createCommand.getPlace());
         }
         scheduleRepository.save(schedule);
         return schedule.getId();

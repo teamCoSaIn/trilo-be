@@ -56,7 +56,7 @@ public class TripRepositoryTest {
             Schedule schedule1 = Schedule.builder()
                     .day(null)
                     .trip(trip)
-                    .title("일정1")
+                    .scheduleTitle(ScheduleTitle.of("일정1"))
                     .place(Place.of("place-id1", "광안리 해수욕장111", Coordinate.of(35.1551, 129.1220)))
                     .scheduleIndex(ScheduleIndex.of(30_000_000L))
                     .build();
@@ -64,7 +64,7 @@ public class TripRepositoryTest {
             Schedule schedule2 = Schedule.builder()
                     .day(null)
                     .trip(trip)
-                    .title("일정2")
+                    .scheduleTitle(ScheduleTitle.of("일정2"))
                     .place(Place.of("place-id2", "광안리 해수욕장222", Coordinate.of(35.1551, 129.1220)))
                     .scheduleIndex(ScheduleIndex.of(50_000_000L))
                     .build();
@@ -73,7 +73,7 @@ public class TripRepositoryTest {
             Schedule schedule3 = Schedule.builder()
                     .day(null)
                     .trip(trip)
-                    .title("일정3")
+                    .scheduleTitle(ScheduleTitle.of("일정3"))
                     .place(Place.of("place-id3", "광안리 해수욕장333", Coordinate.of(35.1551, 129.1220)))
                     .scheduleIndex(ScheduleIndex.of(-10_000_000L))
                     .build();

@@ -7,6 +7,7 @@ import com.cosain.trilo.trip.application.schedule.command.usecase.dto.ScheduleUp
 import com.cosain.trilo.trip.domain.entity.Schedule;
 import com.cosain.trilo.trip.domain.entity.Trip;
 import com.cosain.trilo.trip.domain.repository.ScheduleRepository;
+import com.cosain.trilo.trip.domain.vo.ScheduleTitle;
 import com.cosain.trilo.trip.domain.vo.TripTitle;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -39,7 +40,7 @@ public class ScheduleUpdateServiceTest {
 
         Schedule schedule = Schedule.builder()
                 .trip(Trip.create(TripTitle.of("여행 제목"), 1L))
-                .title("원래 제목")
+                .scheduleTitle(ScheduleTitle.of("원래 제목"))
                 .content("원래 내용")
                 .build();
 
@@ -59,7 +60,7 @@ public class ScheduleUpdateServiceTest {
 
         Schedule schedule = Schedule.builder()
                 .trip(Trip.create(TripTitle.of("여행 제목"), 2L))
-                .title("원래 제목")
+                .scheduleTitle(ScheduleTitle.of("원래 제목"))
                 .content("원래 내용")
                 .build();
 

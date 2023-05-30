@@ -22,7 +22,7 @@ public class ScheduleUpdateService implements ScheduleUpdateUseCase {
         Schedule schedule = findSchedule(scheduleId);
         validateScheduleUpdateAuthority(schedule, tripperId);
 
-        schedule.changeTitle(scheduleUpdateCommand.getTitle());
+        schedule.changeTitle(scheduleUpdateCommand.getScheduleTitle());
         schedule.changeContent(scheduleUpdateCommand.getContent());
 
         return schedule.getId();

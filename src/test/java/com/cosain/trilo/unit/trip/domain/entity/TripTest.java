@@ -611,7 +611,7 @@ public class TripTest {
                 Schedule schedule1 = Schedule.builder()
                         .day(null)
                         .trip(trip)
-                        .title("일정 제목1")
+                        .scheduleTitle(ScheduleTitle.of("일정 제목1"))
                         .place(Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)))
                         .scheduleIndex(ScheduleIndex.of(ScheduleIndex.MAX_INDEX_VALUE))
                         .build();
@@ -620,7 +620,7 @@ public class TripTest {
 
                 // when & then
                 assertThatThrownBy(() ->
-                        trip.createSchedule(null, "일정제목2", Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523))))
+                        trip.createSchedule(null, ScheduleTitle.of("일정제목2"), Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523))))
                         .isInstanceOf(ScheduleIndexRangeException.class);
             }
 
@@ -629,8 +629,8 @@ public class TripTest {
             public void successTest() {
                 Trip trip = Trip.create(TripTitle.of("여행 제목"), 1L);
 
-                Schedule schedule1 = trip.createSchedule(null, "일정 제목1", Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
-                Schedule schedule2 = trip.createSchedule(null, "일정 제목2", Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule1 = trip.createSchedule(null, ScheduleTitle.of("일정 제목1"), Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule2 = trip.createSchedule(null, ScheduleTitle.of("일정 제목2"), Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
 
                 assertThat(schedule1.getScheduleIndex()).isEqualTo(ScheduleIndex.ZERO_INDEX);
                 assertThat(schedule2.getScheduleIndex()).isEqualTo(ScheduleIndex.of(ScheduleIndex.DEFAULT_SEQUENCE_GAP));
@@ -677,7 +677,7 @@ public class TripTest {
                 otherTrip.getDays().add(otherTripDay);
 
                 // when & then
-                assertThatThrownBy(() -> trip.createSchedule(otherTripDay, "일정 제목", Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523))))
+                assertThatThrownBy(() -> trip.createSchedule(otherTripDay, ScheduleTitle.of("일정 제목"), Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523))))
                         .isInstanceOf(InvalidTripDayException.class);
             }
 
@@ -706,7 +706,7 @@ public class TripTest {
                 Schedule schedule1 = Schedule.builder()
                         .day(day)
                         .trip(trip)
-                        .title("일정 제목1")
+                        .scheduleTitle(ScheduleTitle.of("일정 제목1"))
                         .place(Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)))
                         .scheduleIndex(ScheduleIndex.of(ScheduleIndex.MAX_INDEX_VALUE))
                         .build();
@@ -715,7 +715,7 @@ public class TripTest {
 
                 // when & then
                 assertThatThrownBy(() ->
-                        trip.createSchedule(day, "일정제목2", Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523))))
+                        trip.createSchedule(day, ScheduleTitle.of("일정제목2"), Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523))))
                         .isInstanceOf(ScheduleIndexRangeException.class);
             }
 
@@ -738,8 +738,8 @@ public class TripTest {
 
                 trip.getDays().add(day);
 
-                Schedule schedule1 = trip.createSchedule(day, "일정 제목1", Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
-                Schedule schedule2 = trip.createSchedule(day, "일정 제목2", Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule1 = trip.createSchedule(day, ScheduleTitle.of("일정 제목1"), Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule2 = trip.createSchedule(day, ScheduleTitle.of("일정 제목2"), Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
 
                 assertThat(schedule1.getScheduleIndex()).isEqualTo(ScheduleIndex.ZERO_INDEX);
                 assertThat(schedule2.getScheduleIndex()).isEqualTo(ScheduleIndex.of(ScheduleIndex.DEFAULT_SEQUENCE_GAP));
@@ -761,7 +761,7 @@ public class TripTest {
                 // given
                 Trip trip = Trip.create(TripTitle.of("여행제목"), 1L);
                 Day day = null;
-                Schedule schedule = trip.createSchedule(day, "일정제목", Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule = trip.createSchedule(day, ScheduleTitle.of("일정제목"), Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
 
                 // when & then
                 assertThatThrownBy(() -> trip.moveSchedule(schedule, day, -1))
@@ -774,8 +774,8 @@ public class TripTest {
                 Trip trip = Trip.create(TripTitle.of("여행제목"), 1L);
                 Day day = null;
 
-                Schedule schedule1 = trip.createSchedule(day, "일정제목", Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
-                Schedule schedule2 = trip.createSchedule(day, "일정제목", Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule1 = trip.createSchedule(day, ScheduleTitle.of("일정제목"), Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule2 = trip.createSchedule(day, ScheduleTitle.of("일정제목"), Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
 
                 // when & then
                 assertThatThrownBy(() -> trip.moveSchedule(schedule1, day, 3))
@@ -788,8 +788,8 @@ public class TripTest {
                 Trip trip = Trip.create(TripTitle.of("여행제목"), 1L);
                 Day day = null;
 
-                Schedule schedule1 = trip.createSchedule(day, "일정제목1", Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
-                Schedule schedule2 = trip.createSchedule(day, "일정제목2", Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule1 = trip.createSchedule(day, ScheduleTitle.of("일정제목1"), Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule2 = trip.createSchedule(day, ScheduleTitle.of("일정제목2"), Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
 
                 // when
                 ScheduleMoveDto scheduleMoveDto = trip.moveSchedule(schedule2, day, 1);
@@ -815,8 +815,8 @@ public class TripTest {
                 Trip trip = Trip.create(TripTitle.of("여행제목"), 1L);
                 Day day = null;
 
-                Schedule schedule1 = trip.createSchedule(day, "일정제목1", Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
-                Schedule schedule2 = trip.createSchedule(day, "일정제목2", Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule1 = trip.createSchedule(day, ScheduleTitle.of("일정제목1"), Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule2 = trip.createSchedule(day, ScheduleTitle.of("일정제목2"), Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
 
                 // when
                 ScheduleMoveDto scheduleMoveDto = trip.moveSchedule(schedule2, day, 2);
@@ -842,8 +842,8 @@ public class TripTest {
                 Trip trip = Trip.create(TripTitle.of("여행제목"), 1L);
                 Day day = null;
 
-                Schedule schedule1 = trip.createSchedule(day, "일정제목1", Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
-                Schedule schedule2 = trip.createSchedule(day, "일정제목2", Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule1 = trip.createSchedule(day, ScheduleTitle.of("일정제목1"), Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule2 = trip.createSchedule(day, ScheduleTitle.of("일정제목2"), Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
 
                 // when
                 ScheduleMoveDto scheduleMoveDto = trip.moveSchedule(schedule1, day, 2);
@@ -869,7 +869,7 @@ public class TripTest {
                 Schedule schedule1 = Schedule.builder()
                         .day(day)
                         .trip(trip)
-                        .title("일정제목1")
+                        .scheduleTitle(ScheduleTitle.of("일정제목1"))
                         .place(Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)))
                         .scheduleIndex(ScheduleIndex.ZERO_INDEX)
                         .build();
@@ -877,7 +877,7 @@ public class TripTest {
                 Schedule schedule2 = Schedule.builder()
                         .day(day)
                         .trip(trip)
-                        .title("일정제목2")
+                        .scheduleTitle(ScheduleTitle.of("일정제목2"))
                         .place(Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)))
                         .scheduleIndex(ScheduleIndex.of(ScheduleIndex.MAX_INDEX_VALUE))
                         .build();
@@ -897,8 +897,8 @@ public class TripTest {
                 Trip trip = Trip.create(TripTitle.of("여행제목"), 1L);
                 Day day = null;
 
-                Schedule schedule1 = trip.createSchedule(day, "일정제목1", Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
-                Schedule schedule2 = trip.createSchedule(day, "일정제목2", Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule1 = trip.createSchedule(day, ScheduleTitle.of("일정제목1"), Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule2 = trip.createSchedule(day, ScheduleTitle.of("일정제목2"), Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
 
                 // when
                 ScheduleMoveDto scheduleMoveDto = trip.moveSchedule(schedule2, day, 0);
@@ -924,7 +924,7 @@ public class TripTest {
                 Schedule schedule1 = Schedule.builder()
                         .day(day)
                         .trip(trip)
-                        .title("일정제목1")
+                        .scheduleTitle(ScheduleTitle.of("일정제목1"))
                         .place(Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)))
                         .scheduleIndex(ScheduleIndex.of(ScheduleIndex.MIN_INDEX_VALUE))
                         .build();
@@ -932,7 +932,7 @@ public class TripTest {
                 Schedule schedule2 = Schedule.builder()
                         .day(day)
                         .trip(trip)
-                        .title("일정제목2")
+                        .scheduleTitle(ScheduleTitle.of("일정제목2"))
                         .place(Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)))
                         .scheduleIndex(ScheduleIndex.ZERO_INDEX)
                         .build();
@@ -952,9 +952,9 @@ public class TripTest {
                 Trip trip = Trip.create(TripTitle.of("여행제목"), 1L);
                 Day day = null;
 
-                Schedule schedule1 = trip.createSchedule(day, "일정제목1", Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
-                Schedule schedule2 = trip.createSchedule(day, "일정제목2", Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
-                Schedule schedule3 = trip.createSchedule(day, "일정제목3", Place.of("place-id333", "place 이름333", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule1 = trip.createSchedule(day, ScheduleTitle.of("일정제목1"), Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule2 = trip.createSchedule(day, ScheduleTitle.of("일정제목2"), Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule3 = trip.createSchedule(day, ScheduleTitle.of("일정제목3"), Place.of("place-id333", "place 이름333", Coordinate.of(37.72221, 137.86523)));
 
                 // when
                 ScheduleMoveDto scheduleMoveDto = trip.moveSchedule(schedule1, day, 2);
@@ -980,7 +980,7 @@ public class TripTest {
                 Schedule schedule1 = Schedule.builder()
                         .day(day)
                         .trip(trip)
-                        .title("일정제목1")
+                        .scheduleTitle(ScheduleTitle.of("일정제목1"))
                         .place(Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)))
                         .scheduleIndex(ScheduleIndex.ZERO_INDEX)
                         .build();
@@ -988,7 +988,7 @@ public class TripTest {
                 Schedule schedule2 = Schedule.builder()
                         .day(day)
                         .trip(trip)
-                        .title("일정제목2")
+                        .scheduleTitle(ScheduleTitle.of("일정제목2"))
                         .place(Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)))
                         .scheduleIndex(ScheduleIndex.of(10))
                         .build();
@@ -996,7 +996,7 @@ public class TripTest {
                 Schedule schedule3 = Schedule.builder()
                         .day(day)
                         .trip(trip)
-                        .title("일정제목3")
+                        .scheduleTitle(ScheduleTitle.of("일정제목3"))
                         .place(Place.of("place-id333", "place 이름333", Coordinate.of(37.72221, 137.86523)))
                         .scheduleIndex(ScheduleIndex.of(11))
                         .build();
@@ -1026,7 +1026,7 @@ public class TripTest {
                 otherTrip.changePeriod(TripPeriod.of(LocalDate.of(2023, 4, 1), LocalDate.of(2023, 4, 1)));
 
                 Day beforeDay = null;
-                Schedule schedule = trip.createSchedule(beforeDay, "일정제목", Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule = trip.createSchedule(beforeDay, ScheduleTitle.of("일정제목"), Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
 
                 Day targetDay = otherTrip.getDays().get(0);
 
@@ -1043,7 +1043,7 @@ public class TripTest {
                 Trip trip = Trip.create(TripTitle.of("여행제목"), 1L);
                 trip.changePeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 1)));
                 Day beforeDay = null;
-                Schedule schedule = trip.createSchedule(beforeDay, "일정제목", Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule = trip.createSchedule(beforeDay, ScheduleTitle.of("일정제목"), Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
 
                 Day targetDay = trip.getDays().get(0);
 
@@ -1059,10 +1059,10 @@ public class TripTest {
                 trip.changePeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 1)));
 
                 Day beforeDay = null;
-                Schedule schedule1 = trip.createSchedule(beforeDay, "일정제목", Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule1 = trip.createSchedule(beforeDay, ScheduleTitle.of("일정제목"), Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
 
                 Day targetDay = trip.getDays().get(0);
-                Schedule schedule2 = trip.createSchedule(targetDay, "일정제목2", Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule2 = trip.createSchedule(targetDay, ScheduleTitle.of("일정제목2"), Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
 
                 // when & then
                 assertThatThrownBy(() -> trip.moveSchedule(schedule1, targetDay, 2))
@@ -1079,8 +1079,8 @@ public class TripTest {
                 Day beforeDay = null;
                 Day targetDay = trip.getDays().get(0);
 
-                Schedule schedule1 = trip.createSchedule(beforeDay, "일정제목1", Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
-                Schedule schedule2 = trip.createSchedule(targetDay, "일정제목2", Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule1 = trip.createSchedule(beforeDay, ScheduleTitle.of("일정제목1"), Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule2 = trip.createSchedule(targetDay, ScheduleTitle.of("일정제목2"), Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
 
                 // when
                 ScheduleMoveDto scheduleMoveDto = trip.moveSchedule(schedule1, targetDay, 1);
@@ -1111,7 +1111,7 @@ public class TripTest {
                 Schedule schedule1 = Schedule.builder()
                         .day(beforeDay)
                         .trip(trip)
-                        .title("일정제목1")
+                        .scheduleTitle(ScheduleTitle.of("일정제목1"))
                         .place(Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)))
                         .scheduleIndex(ScheduleIndex.ZERO_INDEX)
                         .build();
@@ -1119,7 +1119,7 @@ public class TripTest {
                 Schedule schedule2 = Schedule.builder()
                         .day(targetDay)
                         .trip(trip)
-                        .title("일정제목2")
+                        .scheduleTitle(ScheduleTitle.of("일정제목2"))
                         .place(Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)))
                         .scheduleIndex(ScheduleIndex.of(ScheduleIndex.MAX_INDEX_VALUE))
                         .build();
@@ -1142,8 +1142,8 @@ public class TripTest {
                 Day beforeDay = null;
                 Day targetDay = trip.getDays().get(0);
 
-                Schedule schedule1 = trip.createSchedule(beforeDay, "일정제목1", Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
-                Schedule schedule2 = trip.createSchedule(targetDay, "일정제목2", Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule1 = trip.createSchedule(beforeDay, ScheduleTitle.of("일정제목1"), Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule2 = trip.createSchedule(targetDay, ScheduleTitle.of("일정제목2"), Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
 
                 // when
                 ScheduleMoveDto scheduleMoveDto = trip.moveSchedule(schedule1, targetDay, 0);
@@ -1174,7 +1174,7 @@ public class TripTest {
                 Schedule schedule1 = Schedule.builder()
                         .day(beforeDay)
                         .trip(trip)
-                        .title("일정제목1")
+                        .scheduleTitle(ScheduleTitle.of("일정제목1"))
                         .place(Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)))
                         .scheduleIndex(ScheduleIndex.ZERO_INDEX)
                         .build();
@@ -1182,7 +1182,7 @@ public class TripTest {
                 Schedule schedule2 = Schedule.builder()
                         .day(targetDay)
                         .trip(trip)
-                        .title("일정제목2")
+                        .scheduleTitle(ScheduleTitle.of("일정제목2"))
                         .place(Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)))
                         .scheduleIndex(ScheduleIndex.of(ScheduleIndex.MIN_INDEX_VALUE))
                         .build();
@@ -1205,9 +1205,9 @@ public class TripTest {
                 Day beforeDay = null;
                 Day targetDay = trip.getDays().get(0);
 
-                Schedule schedule1 = trip.createSchedule(beforeDay, "일정제목1", Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
-                Schedule schedule2 = trip.createSchedule(targetDay, "일정제목2", Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
-                Schedule schedule3 = trip.createSchedule(targetDay, "일정제목3", Place.of("place-id333", "place 이름333", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule1 = trip.createSchedule(beforeDay, ScheduleTitle.of("일정제목1"), Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule2 = trip.createSchedule(targetDay, ScheduleTitle.of("일정제목2"), Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule3 = trip.createSchedule(targetDay, ScheduleTitle.of("일정제목3"), Place.of("place-id333", "place 이름333", Coordinate.of(37.72221, 137.86523)));
 
                 // when
                 ScheduleMoveDto scheduleMoveDto = trip.moveSchedule(schedule1, targetDay, 1);
@@ -1239,7 +1239,7 @@ public class TripTest {
                 Schedule schedule1 = Schedule.builder()
                         .day(beforeDay)
                         .trip(trip)
-                        .title("일정제목1")
+                        .scheduleTitle(ScheduleTitle.of("일정제목1"))
                         .place(Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)))
                         .scheduleIndex(ScheduleIndex.ZERO_INDEX)
                         .build();
@@ -1247,7 +1247,7 @@ public class TripTest {
                 Schedule schedule2 = Schedule.builder()
                         .day(targetDay)
                         .trip(trip)
-                        .title("일정제목2")
+                        .scheduleTitle(ScheduleTitle.of("일정제목2"))
                         .place(Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)))
                         .scheduleIndex(ScheduleIndex.of(10))
                         .build();
@@ -1255,7 +1255,7 @@ public class TripTest {
                 Schedule schedule3 = Schedule.builder()
                         .day(targetDay)
                         .trip(trip)
-                        .title("일정제목3")
+                        .scheduleTitle(ScheduleTitle.of("일정제목3"))
                         .place(Place.of("place-id333", "place 이름333", Coordinate.of(37.72221, 137.86523)))
                         .scheduleIndex(ScheduleIndex.of(11))
                         .build();
@@ -1282,7 +1282,7 @@ public class TripTest {
                 Trip trip = Trip.create(TripTitle.of("여행제목"), 1L);
                 trip.changePeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 2)));
                 Day beforeDay = trip.getDays().get(0);
-                Schedule schedule = trip.createSchedule(beforeDay, "여행 제목", Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule = trip.createSchedule(beforeDay, ScheduleTitle.of("여행 제목"), Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
 
                 Trip otherTrip = Trip.create(TripTitle.of("다른 여행 제목"), 1L);
                 otherTrip.changePeriod(TripPeriod.of(LocalDate.of(2023, 4, 1), LocalDate.of(2023, 4, 1)));
@@ -1300,7 +1300,7 @@ public class TripTest {
                 Trip trip = Trip.create(TripTitle.of("여행제목"), 1L);
                 trip.changePeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 2)));
                 Day beforeDay = trip.getDays().get(0);
-                Schedule schedule = trip.createSchedule(beforeDay, "일정제목", Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule = trip.createSchedule(beforeDay, ScheduleTitle.of("일정제목"), Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
 
                 Day targetDay = trip.getDays().get(1);
 
@@ -1316,11 +1316,11 @@ public class TripTest {
                 trip.changePeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 2)));
 
                 Day beforeDay = trip.getDays().get(0);
-                Schedule schedule1 = trip.createSchedule(beforeDay, "일정제목", Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule1 = trip.createSchedule(beforeDay, ScheduleTitle.of("일정제목"), Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
 
 
                 Day targetDay = trip.getDays().get(1);
-                Schedule schedule2 = trip.createSchedule(targetDay, "일정제목2", Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule2 = trip.createSchedule(targetDay, ScheduleTitle.of("일정제목2"), Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
 
                 // when & then
                 assertThatThrownBy(() -> trip.moveSchedule(schedule1, targetDay, 2))
@@ -1334,8 +1334,8 @@ public class TripTest {
                 trip.changePeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 1)));
                 Day day = trip.getDays().get(0);
 
-                Schedule schedule1 = trip.createSchedule(day, "일정제목1", Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
-                Schedule schedule2 = trip.createSchedule(day, "일정제목2", Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule1 = trip.createSchedule(day, ScheduleTitle.of("일정제목1"), Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule2 = trip.createSchedule(day, ScheduleTitle.of("일정제목2"), Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
 
                 // when
                 ScheduleMoveDto scheduleMoveDto = trip.moveSchedule(schedule2, day, 1);
@@ -1362,8 +1362,8 @@ public class TripTest {
                 trip.changePeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 1)));
                 Day day = trip.getDays().get(0);
 
-                Schedule schedule1 = trip.createSchedule(day, "일정제목1", Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
-                Schedule schedule2 = trip.createSchedule(day, "일정제목2", Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule1 = trip.createSchedule(day, ScheduleTitle.of("일정제목1"), Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule2 = trip.createSchedule(day, ScheduleTitle.of("일정제목2"), Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
 
                 // when
                 ScheduleMoveDto scheduleMoveDto = trip.moveSchedule(schedule2, day, 2);
@@ -1393,8 +1393,8 @@ public class TripTest {
                 Day beforeDay = trip.getDays().get(0);
                 Day targetDay = trip.getDays().get(1);
 
-                Schedule schedule1 = trip.createSchedule(beforeDay, "일정제목1", Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
-                Schedule schedule2 = trip.createSchedule(targetDay, "일정제목2", Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule1 = trip.createSchedule(beforeDay, ScheduleTitle.of("일정제목1"), Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule2 = trip.createSchedule(targetDay, ScheduleTitle.of("일정제목2"), Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
 
                 // when
                 ScheduleMoveDto scheduleMoveDto = trip.moveSchedule(schedule1, targetDay, 1);
@@ -1425,7 +1425,7 @@ public class TripTest {
                 Schedule schedule1 = Schedule.builder()
                         .day(beforeDay)
                         .trip(trip)
-                        .title("일정제목1")
+                        .scheduleTitle(ScheduleTitle.of("일정제목1"))
                         .place(Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)))
                         .scheduleIndex(ScheduleIndex.ZERO_INDEX)
                         .build();
@@ -1433,7 +1433,7 @@ public class TripTest {
                 Schedule schedule2 = Schedule.builder()
                         .day(targetDay)
                         .trip(trip)
-                        .title("일정제목2")
+                        .scheduleTitle(ScheduleTitle.of("일정제목2"))
                         .place(Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)))
                         .scheduleIndex(ScheduleIndex.of(ScheduleIndex.MAX_INDEX_VALUE))
                         .build();
@@ -1456,8 +1456,8 @@ public class TripTest {
                 Day beforeDay = trip.getDays().get(0);
                 Day targetDay = trip.getDays().get(1);
 
-                Schedule schedule1 = trip.createSchedule(beforeDay, "일정제목1", Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
-                Schedule schedule2 = trip.createSchedule(targetDay, "일정제목2", Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule1 = trip.createSchedule(beforeDay, ScheduleTitle.of("일정제목1"), Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule2 = trip.createSchedule(targetDay, ScheduleTitle.of("일정제목2"), Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
 
                 // when
                 ScheduleMoveDto scheduleMoveDto = trip.moveSchedule(schedule1, targetDay, 0);
@@ -1488,7 +1488,7 @@ public class TripTest {
                 Schedule schedule1 = Schedule.builder()
                         .day(beforeDay)
                         .trip(trip)
-                        .title("일정제목1")
+                        .scheduleTitle(ScheduleTitle.of("일정제목1"))
                         .place(Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)))
                         .scheduleIndex(ScheduleIndex.ZERO_INDEX)
                         .build();
@@ -1496,7 +1496,7 @@ public class TripTest {
                 Schedule schedule2 = Schedule.builder()
                         .day(targetDay)
                         .trip(trip)
-                        .title("일정제목2")
+                        .scheduleTitle(ScheduleTitle.of("일정제목2"))
                         .place(Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)))
                         .scheduleIndex(ScheduleIndex.of(ScheduleIndex.MIN_INDEX_VALUE))
                         .build();
@@ -1519,9 +1519,9 @@ public class TripTest {
                 Day beforeDay = trip.getDays().get(0);
                 Day targetDay = trip.getDays().get(1);
 
-                Schedule schedule1 = trip.createSchedule(beforeDay, "일정제목1", Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
-                Schedule schedule2 = trip.createSchedule(targetDay, "일정제목2", Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
-                Schedule schedule3 = trip.createSchedule(targetDay, "일정제목3", Place.of("place-id333", "place 이름333", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule1 = trip.createSchedule(beforeDay, ScheduleTitle.of("일정제목1"), Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule2 = trip.createSchedule(targetDay, ScheduleTitle.of("일정제목2"), Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule3 = trip.createSchedule(targetDay, ScheduleTitle.of("일정제목3"), Place.of("place-id333", "place 이름333", Coordinate.of(37.72221, 137.86523)));
 
                 // when
                 ScheduleMoveDto scheduleMoveDto = trip.moveSchedule(schedule1, targetDay, 1);
@@ -1553,7 +1553,7 @@ public class TripTest {
                 Schedule schedule1 = Schedule.builder()
                         .day(beforeDay)
                         .trip(trip)
-                        .title("일정제목1")
+                        .scheduleTitle(ScheduleTitle.of("일정제목1"))
                         .place(Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)))
                         .scheduleIndex(ScheduleIndex.ZERO_INDEX)
                         .build();
@@ -1561,7 +1561,7 @@ public class TripTest {
                 Schedule schedule2 = Schedule.builder()
                         .day(targetDay)
                         .trip(trip)
-                        .title("일정제목2")
+                        .scheduleTitle(ScheduleTitle.of("일정제목2"))
                         .place(Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)))
                         .scheduleIndex(ScheduleIndex.of(10))
                         .build();
@@ -1569,7 +1569,7 @@ public class TripTest {
                 Schedule schedule3 = Schedule.builder()
                         .day(targetDay)
                         .trip(trip)
-                        .title("일정제목3")
+                        .scheduleTitle(ScheduleTitle.of("일정제목3"))
                         .place(Place.of("place-id333", "place 이름333", Coordinate.of(37.72221, 137.86523)))
                         .scheduleIndex(ScheduleIndex.of(11))
                         .build();
@@ -1596,7 +1596,7 @@ public class TripTest {
                 Trip trip = Trip.create(TripTitle.of("여행제목"), 1L);
                 trip.changePeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 1)));
                 Day beforeDay = trip.getDays().get(0);
-                Schedule schedule = trip.createSchedule(beforeDay, "일정제목", Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule = trip.createSchedule(beforeDay, ScheduleTitle.of("일정제목"), Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
 
                 Day targetDay = null;
 
@@ -1613,8 +1613,8 @@ public class TripTest {
                 Day beforeDay = trip.getDays().get(0);
                 Day targetDay = null;
 
-                Schedule schedule1 = trip.createSchedule(beforeDay, "일정제목", Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
-                Schedule schedule2 = trip.createSchedule(targetDay, "일정제목", Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule1 = trip.createSchedule(beforeDay, ScheduleTitle.of("일정제목"), Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule2 = trip.createSchedule(targetDay, ScheduleTitle.of("일정제목"), Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
 
                 // when & then
                 assertThatThrownBy(() -> trip.moveSchedule(schedule1, targetDay, 2))
@@ -1631,8 +1631,8 @@ public class TripTest {
                 Day beforeDay = trip.getDays().get(0);
                 Day targetDay = null;
 
-                Schedule schedule1 = trip.createSchedule(beforeDay, "일정제목1", Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
-                Schedule schedule2 = trip.createSchedule(targetDay, "일정제목2", Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule1 = trip.createSchedule(beforeDay, ScheduleTitle.of("일정제목1"), Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule2 = trip.createSchedule(targetDay, ScheduleTitle.of("일정제목2"), Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
 
                 // when
                 ScheduleMoveDto scheduleMoveDto = trip.moveSchedule(schedule1, targetDay, 1);
@@ -1663,7 +1663,7 @@ public class TripTest {
                 Schedule schedule1 = Schedule.builder()
                         .day(beforeDay)
                         .trip(trip)
-                        .title("일정제목1")
+                        .scheduleTitle(ScheduleTitle.of("일정제목1"))
                         .place(Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)))
                         .scheduleIndex(ScheduleIndex.ZERO_INDEX)
                         .build();
@@ -1671,7 +1671,7 @@ public class TripTest {
                 Schedule schedule2 = Schedule.builder()
                         .day(targetDay)
                         .trip(trip)
-                        .title("일정제목2")
+                        .scheduleTitle(ScheduleTitle.of("일정제목2"))
                         .place(Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)))
                         .scheduleIndex(ScheduleIndex.of(ScheduleIndex.MAX_INDEX_VALUE))
                         .build();
@@ -1695,8 +1695,8 @@ public class TripTest {
                 Day beforeDay = trip.getDays().get(0);
                 Day targetDay = null;
 
-                Schedule schedule1 = trip.createSchedule(beforeDay, "일정제목1", Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
-                Schedule schedule2 = trip.createSchedule(targetDay, "일정제목2", Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule1 = trip.createSchedule(beforeDay, ScheduleTitle.of("일정제목1"), Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule2 = trip.createSchedule(targetDay, ScheduleTitle.of("일정제목2"), Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
 
                 // when
                 ScheduleMoveDto scheduleMoveDto = trip.moveSchedule(schedule1, targetDay, 0);
@@ -1727,7 +1727,7 @@ public class TripTest {
                 Schedule schedule1 = Schedule.builder()
                         .day(beforeDay)
                         .trip(trip)
-                        .title("일정제목1")
+                        .scheduleTitle(ScheduleTitle.of("일정제목1"))
                         .place(Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)))
                         .scheduleIndex(ScheduleIndex.ZERO_INDEX)
                         .build();
@@ -1735,7 +1735,7 @@ public class TripTest {
                 Schedule schedule2 = Schedule.builder()
                         .day(targetDay)
                         .trip(trip)
-                        .title("일정제목2")
+                        .scheduleTitle(ScheduleTitle.of("일정제목2"))
                         .place(Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)))
                         .scheduleIndex(ScheduleIndex.of(ScheduleIndex.MIN_INDEX_VALUE))
                         .build();
@@ -1758,9 +1758,9 @@ public class TripTest {
                 Day beforeDay = trip.getDays().get(0);
                 Day targetDay = null;
 
-                Schedule schedule1 = trip.createSchedule(beforeDay, "일정제목1", Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
-                Schedule schedule2 = trip.createSchedule(targetDay, "일정제목2", Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
-                Schedule schedule3 = trip.createSchedule(targetDay, "일정제목3", Place.of("place-id333", "place 이름333", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule1 = trip.createSchedule(beforeDay, ScheduleTitle.of("일정제목1"), Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule2 = trip.createSchedule(targetDay, ScheduleTitle.of("일정제목2"), Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule3 = trip.createSchedule(targetDay, ScheduleTitle.of("일정제목3"), Place.of("place-id333", "place 이름333", Coordinate.of(37.72221, 137.86523)));
 
                 // when
                 ScheduleMoveDto scheduleMoveDto = trip.moveSchedule(schedule1, targetDay, 1);
@@ -1793,7 +1793,7 @@ public class TripTest {
                 Schedule schedule1 = Schedule.builder()
                         .day(beforeDay)
                         .trip(trip)
-                        .title("일정제목1")
+                        .scheduleTitle(ScheduleTitle.of("일정제목1"))
                         .place(Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)))
                         .scheduleIndex(ScheduleIndex.ZERO_INDEX)
                         .build();
@@ -1801,7 +1801,7 @@ public class TripTest {
                 Schedule schedule2 = Schedule.builder()
                         .day(targetDay)
                         .trip(trip)
-                        .title("일정제목2")
+                        .scheduleTitle(ScheduleTitle.of("일정제목2"))
                         .place(Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)))
                         .scheduleIndex(ScheduleIndex.of(10))
                         .build();
@@ -1809,7 +1809,7 @@ public class TripTest {
                 Schedule schedule3 = Schedule.builder()
                         .day(targetDay)
                         .trip(trip)
-                        .title("일정제목3")
+                        .scheduleTitle(ScheduleTitle.of("일정제목3"))
                         .place(Place.of("place-id333", "place 이름333", Coordinate.of(37.72221, 137.86523)))
                         .scheduleIndex(ScheduleIndex.of(11))
                         .build();
