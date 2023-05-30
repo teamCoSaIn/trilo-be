@@ -50,7 +50,7 @@ public class ScheduleRepositoryTest {
                 .day(day)
                 .trip(trip)
                 .scheduleTitle(ScheduleTitle.of("제목"))
-                .content("본문")
+                .scheduleContent(ScheduleContent.of("본문"))
                 .place(Place.of("place-id", "광안리 해수욕장", Coordinate.of(43.1275, 132.127)))
                 .build();
 
@@ -62,7 +62,7 @@ public class ScheduleRepositoryTest {
         Schedule findSchedule = scheduleRepository.findById(schedule.getId()).get();
         assertThat(findSchedule.getId()).isEqualTo(schedule.getId());
         assertThat(findSchedule.getScheduleTitle()).isEqualTo(schedule.getScheduleTitle());
-        assertThat(findSchedule.getContent()).isEqualTo(schedule.getContent());
+        assertThat(findSchedule.getScheduleContent()).isEqualTo(schedule.getScheduleContent());
         assertThat(findSchedule.getPlace()).isEqualTo(schedule.getPlace());
     }
 

@@ -69,7 +69,7 @@ public class DayScheduleQueryRepositoryTest {
                 .scheduleTitle(ScheduleTitle.of("Test Schedule"))
                 .place(Place.of("장소 1", "광산구", Coordinate.of(62.62, 62.62)))
                 .scheduleIndex(ScheduleIndex.of(scheduleIndexValue))
-                .content("Test Content")
+                .scheduleContent(ScheduleContent.of("일정 본문"))
                 .build();
     }
 }

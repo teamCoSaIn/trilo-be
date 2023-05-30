@@ -1,6 +1,7 @@
 package com.cosain.trilo.trip.domain.entity;
 
 import com.cosain.trilo.trip.domain.vo.Place;
+import com.cosain.trilo.trip.domain.vo.ScheduleContent;
 import com.cosain.trilo.trip.domain.vo.ScheduleIndex;
 import com.cosain.trilo.trip.domain.vo.ScheduleTitle;
 import jakarta.persistence.*;
@@ -32,8 +33,8 @@ public class Schedule {
     @Embedded
     private ScheduleTitle scheduleTitle;
 
-    @Column(nullable = true)
-    private String content;
+    @Embedded
+    private ScheduleContent scheduleContent;
 
     @Embedded
     private Place place;
@@ -55,12 +56,12 @@ public class Schedule {
      * 테스트의 편의성을 위해 Builder accessLevel = PUBLIC 으로 설정
      */
     @Builder(access = AccessLevel.PUBLIC)
-    private Schedule(Long id, Day day, Trip trip, ScheduleTitle scheduleTitle, String content, Place place, ScheduleIndex scheduleIndex) {
+    private Schedule(Long id, Day day, Trip trip, ScheduleTitle scheduleTitle, ScheduleContent scheduleContent, Place place, ScheduleIndex scheduleIndex) {
         this.id = id;
         this.day = day;
         this.trip = trip;
         this.scheduleTitle = scheduleTitle;
-        this.content = content;
+        this.scheduleContent = scheduleContent;
         this.place = place;
         this.scheduleIndex = scheduleIndex;
     }
@@ -69,8 +70,8 @@ public class Schedule {
         this.scheduleTitle = scheduleTitle;
     }
 
-    public void changeContent(String content){
-        this.content = content;
+    public void changeContent(ScheduleContent scheduleContent){
+        this.scheduleContent = scheduleContent;
     }
 
     /**

@@ -23,7 +23,7 @@ public class ScheduleQueryJpaRepositoryImpl implements ScheduleQueryJpaRepositor
     @Override
     public Optional<ScheduleDetail> findScheduleDetailById(Long scheduleId) {
         return Optional.ofNullable(query.select(
-            new QScheduleDetail(schedule.id, schedule.day.id, schedule.scheduleTitle.value, schedule.place.placeName, schedule.place.coordinate.latitude, schedule.place.coordinate.longitude, schedule.scheduleIndex.value, schedule.content))
+            new QScheduleDetail(schedule.id, schedule.day.id, schedule.scheduleTitle.value, schedule.place.placeName, schedule.place.coordinate.latitude, schedule.place.coordinate.longitude, schedule.scheduleIndex.value, schedule.scheduleContent.value))
                 .from(schedule)
                 .where(schedule.id.eq(scheduleId))
                 .fetchOne());

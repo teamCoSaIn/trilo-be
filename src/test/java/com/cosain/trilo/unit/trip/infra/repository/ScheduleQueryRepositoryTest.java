@@ -40,7 +40,7 @@ public class ScheduleQueryRepositoryTest {
                 .scheduleTitle(ScheduleTitle.of("Test Schedule"))
                 .place(Place.of("장소 1", "광산구", Coordinate.of(62.62, 62.62)))
                 .scheduleIndex(ScheduleIndex.ZERO_INDEX)
-                .content("Test Content")
+                .scheduleContent(ScheduleContent.of("일정 본문"))
                 .build();
         em.persist(schedule);
         em.flush();
@@ -56,8 +56,7 @@ public class ScheduleQueryRepositoryTest {
         assertThat(dto.getCoordinate().getLatitude()).isEqualTo(schedule.getPlace().getCoordinate().getLatitude());
         assertThat(dto.getCoordinate().getLatitude()).isEqualTo(schedule.getPlace().getCoordinate().getLongitude());
         assertThat(dto.getOrder()).isEqualTo(schedule.getScheduleIndex().getValue());
-        assertThat(dto.getContent()).isEqualTo(schedule.getContent());
-
+        assertThat(dto.getContent()).isEqualTo(schedule.getScheduleContent().getValue());
     }
 
     @Nested
@@ -111,7 +110,7 @@ public class ScheduleQueryRepositoryTest {
                     .scheduleTitle(ScheduleTitle.of("Test Schedule"))
                     .place(Place.of("장소 1", "광산구", Coordinate.of(62.62, 62.62)))
                     .scheduleIndex(ScheduleIndex.of(scheduleIndexValue))
-                    .content("Test Content")
+                    .scheduleContent(ScheduleContent.of("일정 본문"))
                     .build();
         }
     }
