@@ -9,11 +9,7 @@ public class ScheduleUpdateCommand {
     private ScheduleTitle scheduleTitle;
     private ScheduleContent scheduleContent;
 
-    public static ScheduleUpdateCommand of(String title, String content){
-        return new ScheduleUpdateCommand(ScheduleTitle.of(title), ScheduleContent.of(content));
-    }
-
-    private ScheduleUpdateCommand(ScheduleTitle scheduleTitle, ScheduleContent scheduleContent){
+    public ScheduleUpdateCommand(ScheduleTitle scheduleTitle, ScheduleContent scheduleContent){
         this.scheduleTitle = scheduleTitle;
         this.scheduleContent = scheduleContent;
     }

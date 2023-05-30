@@ -37,7 +37,7 @@ public class ScheduleUpdateServiceTest {
     @DisplayName("호출이 제대로 이루어 지는지 테스트")
     public void update_schedule_test(){
         // given
-        ScheduleUpdateCommand command = ScheduleUpdateCommand.of("변경할 제목", "변경할 내용");
+        ScheduleUpdateCommand command = new ScheduleUpdateCommand(ScheduleTitle.of("변경할 제목"), ScheduleContent.of("변경할 내용"));
 
         Schedule schedule = Schedule.builder()
                 .trip(Trip.create(TripTitle.of("여행 제목"), 1L))
@@ -57,7 +57,7 @@ public class ScheduleUpdateServiceTest {
     @DisplayName("권한이 없는 사람이 Schedule 을 변경하려고 하면, NoScheduleUpdateAuthorityException 이 발생한다")
     public void when_no_authority_user_try_update_test(){
         // given
-        ScheduleUpdateCommand command = ScheduleUpdateCommand.of("변경할 제목", "변경할 내용");
+        ScheduleUpdateCommand command = new ScheduleUpdateCommand(ScheduleTitle.of("변경할 제목"), ScheduleContent.of("변경할 내용"));
 
         Schedule schedule = Schedule.builder()
                 .trip(Trip.create(TripTitle.of("여행 제목"), 2L))
@@ -75,7 +75,7 @@ public class ScheduleUpdateServiceTest {
     @DisplayName("일정이 존재하지 않는다면, ScheduleNotFoundException 이 발생한다")
     public void when_no_schedule_test(){
         // given
-        ScheduleUpdateCommand command = ScheduleUpdateCommand.of("변경할 제목", "변경할 내용");
+        ScheduleUpdateCommand command = new ScheduleUpdateCommand(ScheduleTitle.of("변경할 제목"), ScheduleContent.of("변경할 내용"));
         given(scheduleRepository.findByIdWithTrip(anyLong())).willReturn(Optional.empty());
 
         // when & then
