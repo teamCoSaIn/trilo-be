@@ -33,7 +33,7 @@ public class TripQueryJpaRepositoryImpl implements TripQueryJpaRepositoryCustom{
     public Optional<TripDetail> findTripDetailById(Long tripId){
 
         return Optional.ofNullable(query.select(
-                new QTripDetail(trip.id, trip.tripperId, trip.title, trip.status, trip.tripPeriod.startDate, trip.tripPeriod.endDate))
+                        new QTripDetail(trip.id, trip.tripperId, trip.tripTitle.value, trip.status, trip.tripPeriod.startDate, trip.tripPeriod.endDate))
                 .from(trip)
                 .where(trip.id.eq(tripId))
                 .fetchOne());
@@ -41,7 +41,7 @@ public class TripQueryJpaRepositoryImpl implements TripQueryJpaRepositoryCustom{
 
     @Override
     public Slice<TripSummary> findTripSummariesByTripperId(Long tripperId, Pageable pageable) {
-        JPAQuery<TripSummary> jpaQuery = query.select(new QTripSummary(trip.id, trip.tripperId, trip.title, trip.status, trip.tripPeriod.startDate, trip.tripPeriod.endDate))
+        JPAQuery<TripSummary> jpaQuery = query.select(new QTripSummary(trip.id, trip.tripperId, trip.tripTitle.value, trip.status, trip.tripPeriod.startDate, trip.tripPeriod.endDate))
                 .from(trip)
                 .where(trip.tripperId.eq(tripperId))
                 .orderBy(trip.id.desc())

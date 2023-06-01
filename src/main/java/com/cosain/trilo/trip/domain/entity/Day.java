@@ -5,6 +5,7 @@ import com.cosain.trilo.trip.domain.exception.InvalidScheduleMoveTargetOrderExce
 import com.cosain.trilo.trip.domain.exception.MidScheduleIndexConflictException;
 import com.cosain.trilo.trip.domain.vo.Place;
 import com.cosain.trilo.trip.domain.vo.ScheduleIndex;
+import com.cosain.trilo.trip.domain.vo.ScheduleTitle;
 import com.cosain.trilo.trip.domain.vo.TripPeriod;
 import jakarta.persistence.*;
 import lombok.*;
@@ -69,8 +70,8 @@ public class Day {
         return tripPeriod.contains(tripDate);
     }
 
-    Schedule createSchedule(String title, Place place) {
-        Schedule schedule = Schedule.create(this, trip, title, place, generateNextScheduleIndex());
+    Schedule createSchedule(ScheduleTitle scheduleTitle, Place place) {
+        Schedule schedule = Schedule.create(this, trip, scheduleTitle, place, generateNextScheduleIndex());
         schedules.add(schedule);
         return schedule;
     }

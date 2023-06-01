@@ -16,14 +16,14 @@ public class ScheduleCreateRequest {
 
     private String placeId;
     private String placeName;
-    private double latitude;
-    private double longitude;
+    private Double latitude;
+    private Double longitude;
 
     /**
      * 테스트의 편의성을 위해 Builder accessLevel = PUBLIC 으로 설정
      */
     @Builder(access = AccessLevel.PUBLIC)
-    private ScheduleCreateRequest(Long dayId, Long tripId, String title, String placeId, String placeName, double latitude, double longitude) {
+    private ScheduleCreateRequest(Long dayId, Long tripId, String title, String placeId, String placeName, Double latitude, Double longitude) {
         this.dayId = dayId;
         this.tripId = tripId;
         this.title = title;
@@ -31,10 +31,6 @@ public class ScheduleCreateRequest {
         this.placeName = placeName;
         this.latitude = latitude;
         this.longitude = longitude;
-    }
-
-    public ScheduleCreateCommand toCommand() {
-        return ScheduleCreateCommand.of(dayId, tripId, title, placeId, placeName, latitude, longitude);
     }
 
 }

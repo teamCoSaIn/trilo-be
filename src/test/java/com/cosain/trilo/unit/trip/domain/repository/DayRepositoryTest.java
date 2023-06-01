@@ -6,6 +6,7 @@ import com.cosain.trilo.trip.domain.entity.Trip;
 import com.cosain.trilo.trip.domain.repository.DayRepository;
 import com.cosain.trilo.trip.domain.vo.TripPeriod;
 import com.cosain.trilo.trip.domain.vo.TripStatus;
+import com.cosain.trilo.trip.domain.vo.TripTitle;
 import jakarta.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
@@ -34,7 +35,7 @@ public class DayRepositoryTest {
         // given
         Trip trip = Trip.builder()
                 .tripperId(1L)
-                .title("여행 제목")
+                .tripTitle(TripTitle.of("여행 제목"))
                 .status(TripStatus.DECIDED)
                 .tripPeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 1)))
                 .build();
@@ -63,7 +64,7 @@ public class DayRepositoryTest {
     void deleteAllByIdsTest() {
 
         // given
-        Trip trip = Trip.create("제목", 1L);
+        Trip trip = Trip.create(TripTitle.of("제목"), 1L);
         em.persist(trip);
 
         Day day1 = Day.of(LocalDate.of(2023, 5, 1), trip);
@@ -92,7 +93,7 @@ public class DayRepositoryTest {
         // given
         Trip trip = Trip.builder()
                 .tripperId(1L)
-                .title("여행 제목")
+                .tripTitle(TripTitle.of("여행 제목"))
                 .status(TripStatus.DECIDED)
                 .tripPeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 3)))
                 .build();

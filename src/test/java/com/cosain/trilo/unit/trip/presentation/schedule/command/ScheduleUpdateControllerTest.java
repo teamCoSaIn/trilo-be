@@ -1,8 +1,11 @@
 package com.cosain.trilo.unit.trip.presentation.schedule.command;
 
 import com.cosain.trilo.support.RestControllerTest;
-import com.cosain.trilo.trip.application.schedule.command.usecase.dto.ScheduleUpdateCommand;
 import com.cosain.trilo.trip.application.schedule.command.usecase.ScheduleUpdateUseCase;
+import com.cosain.trilo.trip.application.schedule.command.usecase.dto.ScheduleUpdateCommand;
+import com.cosain.trilo.trip.application.schedule.command.usecase.dto.factory.ScheduleUpdateCommandFactory;
+import com.cosain.trilo.trip.domain.vo.ScheduleContent;
+import com.cosain.trilo.trip.domain.vo.ScheduleTitle;
 import com.cosain.trilo.trip.presentation.schedule.command.ScheduleUpdateController;
 import com.cosain.trilo.trip.presentation.schedule.command.dto.request.ScheduleUpdateRequest;
 import org.junit.jupiter.api.DisplayName;
@@ -15,8 +18,7 @@ import org.springframework.security.test.context.support.WithAnonymousUser;
 
 import java.nio.charset.StandardCharsets;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -31,6 +33,9 @@ class ScheduleUpdateControllerTest extends RestControllerTest {
     @MockBean
     private ScheduleUpdateUseCase scheduleUpdateUseCase;
 
+    @MockBean
+    private ScheduleUpdateCommandFactory scheduleUpdateCommandFactory;
+
     private final String ACCESS_TOKEN = "Bearer accessToken";
 
     @Test
@@ -39,21 +44,28 @@ class ScheduleUpdateControllerTest extends RestControllerTest {
 
         // given
         mockingForLoginUserAnnotation();
-        ScheduleUpdateRequest scheduleUpdateRequest = new ScheduleUpdateRequest("수정할 제목", "수정할 내용");
 
-        given(scheduleUpdateUseCase.updateSchedule(anyLong(),any(),any(ScheduleUpdateCommand.class))).willReturn(1L);
+        Long scheduleId = 1L;
+        String rawTitle = "수정할 제목";
+        String rawContent = "수정할 내용";
+        ScheduleUpdateRequest request = new ScheduleUpdateRequest(rawTitle, rawContent);
+        ScheduleUpdateCommand command = new ScheduleUpdateCommand(ScheduleTitle.of(rawContent), ScheduleContent.of(rawContent));
+
+        given(scheduleUpdateCommandFactory.createCommand(eq(rawTitle),eq(rawContent))).willReturn(command);
+        given(scheduleUpdateUseCase.updateSchedule(eq(scheduleId),any(),any(ScheduleUpdateCommand.class))).willReturn(1L);
 
         // when & then
-        mockMvc.perform(put("/api/schedules/1")
+        mockMvc.perform(put("/api/schedules/" + scheduleId)
                         .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)
-                        .content(createJson(scheduleUpdateRequest))
+                        .content(createJson(request))
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding(StandardCharsets.UTF_8))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.scheduleId").value(1L))
                 .andDo(print());
 
-        verify(scheduleUpdateUseCase).updateSchedule(anyLong(),any(),any(ScheduleUpdateCommand.class));
+        verify(scheduleUpdateCommandFactory).createCommand(eq(rawTitle), eq(rawContent));
+        verify(scheduleUpdateUseCase).updateSchedule(eq(scheduleId),any(),any(ScheduleUpdateCommand.class));
     }
 
     @Test
@@ -68,4 +80,48 @@ class ScheduleUpdateControllerTest extends RestControllerTest {
                 .andExpect(jsonPath("$.errorDetail").exists());
     }
 
+
+    @Test
+    @DisplayName("비어있는 바디 -> 올바르지 않은 요청 데이터 형식으로 간주하고 400 예외")
+    public void updateSchedule_with_emptyContent() throws Exception {
+        mockingForLoginUserAnnotation();
+
+        String emptyContent = "";
+
+        mockMvc.perform(put("/api/schedules/1")
+                        .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)
+                        .content(emptyContent)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errorCode").value("request-0001"))
+                .andExpect(jsonPath("$.errorMessage").exists())
+                .andExpect(jsonPath("$.errorDetail").exists());
+    }
+
+    @Test
+    @DisplayName("형식이 올바르지 않은 바디 -> 올바르지 않은 요청 데이터 형식으로 간주하고 400 예외")
+    public void updateSchedule_with_invalidContent() throws Exception {
+        mockingForLoginUserAnnotation();
+        String invalidContent = """
+                {
+                    "title": 따옴표로 감싸지 않은 제목,
+                    "content": "본문"
+                }
+                """;
+
+        mockMvc.perform(put("/api/schedules/1")
+                        .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)
+                        .content(invalidContent)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errorCode").value("request-0001"))
+                .andExpect(jsonPath("$.errorMessage").exists())
+                .andExpect(jsonPath("$.errorDetail").exists());
+    }
 }

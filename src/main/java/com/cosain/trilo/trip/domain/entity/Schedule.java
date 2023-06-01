@@ -1,7 +1,9 @@
 package com.cosain.trilo.trip.domain.entity;
 
 import com.cosain.trilo.trip.domain.vo.Place;
+import com.cosain.trilo.trip.domain.vo.ScheduleContent;
 import com.cosain.trilo.trip.domain.vo.ScheduleIndex;
+import com.cosain.trilo.trip.domain.vo.ScheduleTitle;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
@@ -28,11 +30,11 @@ public class Schedule {
     @JoinColumn(name = "trip_id", nullable = false)
     private Trip trip;
 
-    @Column(nullable = false)
-    private String title;
+    @Embedded
+    private ScheduleTitle scheduleTitle;
 
-    @Column(nullable = true)
-    private String content;
+    @Embedded
+    private ScheduleContent scheduleContent;
 
     @Embedded
     private Place place;
@@ -40,11 +42,11 @@ public class Schedule {
     @Embedded
     private ScheduleIndex scheduleIndex;
 
-    static Schedule create(Day day, Trip trip, String title, Place place, ScheduleIndex scheduleIndex) {
+    static Schedule create(Day day, Trip trip, ScheduleTitle scheduleTitle, Place place, ScheduleIndex scheduleIndex) {
         return Schedule.builder()
                 .day(day)
                 .trip(trip)
-                .title(title)
+                .scheduleTitle(scheduleTitle)
                 .place(place)
                 .scheduleIndex(scheduleIndex)
                 .build();
@@ -54,21 +56,22 @@ public class Schedule {
      * 테스트의 편의성을 위해 Builder accessLevel = PUBLIC 으로 설정
      */
     @Builder(access = AccessLevel.PUBLIC)
-    private Schedule(Long id, Day day, Trip trip, String title, String content, Place place, ScheduleIndex scheduleIndex) {
+    private Schedule(Long id, Day day, Trip trip, ScheduleTitle scheduleTitle, ScheduleContent scheduleContent, Place place, ScheduleIndex scheduleIndex) {
         this.id = id;
         this.day = day;
         this.trip = trip;
-        this.title = title;
-        this.content = content;
+        this.scheduleTitle = scheduleTitle;
+        this.scheduleContent = scheduleContent;
         this.place = place;
         this.scheduleIndex = scheduleIndex;
     }
 
-    public void changeTitle(String title){
-        this.title = title;
+    public void changeTitle(ScheduleTitle scheduleTitle){
+        this.scheduleTitle = scheduleTitle;
     }
-    public void changeContent(String content){
-        this.content = content;
+
+    public void changeContent(ScheduleContent scheduleContent){
+        this.scheduleContent = scheduleContent;
     }
 
     /**

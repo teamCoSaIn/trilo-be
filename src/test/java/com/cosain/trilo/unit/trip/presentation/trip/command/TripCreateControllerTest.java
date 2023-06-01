@@ -2,6 +2,9 @@ package com.cosain.trilo.unit.trip.presentation.trip.command;
 
 import com.cosain.trilo.support.RestControllerTest;
 import com.cosain.trilo.trip.application.trip.command.usecase.TripCreateUseCase;
+import com.cosain.trilo.trip.application.trip.command.usecase.dto.TripCreateCommand;
+import com.cosain.trilo.trip.application.trip.command.usecase.dto.factory.TripCreateCommandFactory;
+import com.cosain.trilo.trip.domain.vo.TripTitle;
 import com.cosain.trilo.trip.presentation.trip.command.TripCreateController;
 import com.cosain.trilo.trip.presentation.trip.command.dto.request.TripCreateRequest;
 import org.junit.jupiter.api.DisplayName;
@@ -15,6 +18,7 @@ import org.springframework.security.test.context.support.WithAnonymousUser;
 import java.nio.charset.StandardCharsets;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -29,14 +33,19 @@ class TripCreateControllerTest extends RestControllerTest {
     @MockBean
     private TripCreateUseCase tripCreateUseCase;
 
+    @MockBean
+    private TripCreateCommandFactory tripCreateCommandFactory;
+
     private final static String ACCESS_TOKEN = "Bearer accessToken";
 
     @Test
     @DisplayName("인증된 사용자의 여행 생성 요청 -> 성공")
-    public void successTest() throws Exception{
+    public void successTest() throws Exception {
         mockingForLoginUserAnnotation();
-        TripCreateRequest request = new TripCreateRequest("제목");
-        given(tripCreateUseCase.createTrip(any(), any())).willReturn(1L);
+        String rawTitle = "제목";
+        TripCreateRequest request = new TripCreateRequest(rawTitle);
+        given(tripCreateCommandFactory.createCommand(eq(rawTitle))).willReturn(new TripCreateCommand(TripTitle.of(rawTitle)));
+        given(tripCreateUseCase.createTrip(any(), any(TripCreateCommand.class))).willReturn(1L);
 
         mockMvc.perform(post("/api/trips")
                         .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)
@@ -61,5 +70,49 @@ class TripCreateControllerTest extends RestControllerTest {
                 .andExpect(jsonPath("$.errorMessage").exists())
                 .andExpect(jsonPath("$.errorDetail").exists());
     }
-}
 
+
+    @Test
+    @DisplayName("비어있는 바디 -> 올바르지 않은 요청 데이터 형식으로 간주하고 400 예외")
+    public void createTrip_with_emptyContent() throws Exception {
+        mockingForLoginUserAnnotation();
+
+        String emptyContent = "";
+
+        mockMvc.perform(post("/api/trips")
+                        .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)
+                        .content(emptyContent)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errorCode").value("request-0001"))
+                .andExpect(jsonPath("$.errorMessage").exists())
+                .andExpect(jsonPath("$.errorDetail").exists());
+    }
+
+    @Test
+    @DisplayName("형식이 올바르지 않은 바디 -> 올바르지 않은 요청 데이터 형식으로 간주하고 400 예외")
+    public void createTrip_with_invalidContent() throws Exception {
+        mockingForLoginUserAnnotation();
+        String invalidContent = """
+                {
+                    "title": 따옴표 안 감싼 제목
+                }
+                """;
+
+        mockMvc.perform(post("/api/trips")
+                        .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)
+                        .content(invalidContent)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errorCode").value("request-0001"))
+                .andExpect(jsonPath("$.errorMessage").exists())
+                .andExpect(jsonPath("$.errorDetail").exists());
+    }
+
+}

@@ -52,7 +52,7 @@ public class ScheduleMoveServiceTest {
         Long targetDayId = 2L;
         int targetOrder = 3;
 
-        ScheduleMoveCommand moveCommand = ScheduleMoveCommand.of(targetDayId, targetOrder);
+        ScheduleMoveCommand moveCommand = new ScheduleMoveCommand(targetDayId, targetOrder);
         given(scheduleRepository.findByIdWithTrip(eq(notExistScheduleId))).willReturn(Optional.empty());
 
 
@@ -76,7 +76,7 @@ public class ScheduleMoveServiceTest {
         Trip trip = Trip.builder()
                 .id(tripId)
                 .tripperId(tripperId)
-                .title("여행 제목")
+                .tripTitle(TripTitle.of("여행 제목"))
                 .status(TripStatus.DECIDED)
                 .tripPeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 1)))
                 .build();
@@ -85,14 +85,13 @@ public class ScheduleMoveServiceTest {
                 .id(scheduleId)
                 .day(null)
                 .trip(trip)
-                .title("일정 제목")
+                .scheduleTitle(ScheduleTitle.of("일정 제목"))
                 .place(Place.of("장소 식별자", "장소명", Coordinate.of(23.21, 23.24)))
                 .scheduleIndex(ScheduleIndex.ZERO_INDEX)
                 .build();
         trip.getTemporaryStorage().add(schedule);
 
-        ScheduleMoveCommand moveCommand = ScheduleMoveCommand.of(notExistTargetDayId, targetOrder);
-
+        ScheduleMoveCommand moveCommand = new ScheduleMoveCommand(notExistTargetDayId, targetOrder);
         given(scheduleRepository.findByIdWithTrip(eq(scheduleId))).willReturn(Optional.of(schedule));
         given(dayRepository.findByIdWithTrip(eq(notExistTargetDayId))).willReturn(Optional.empty());
 
@@ -120,7 +119,7 @@ public class ScheduleMoveServiceTest {
         Trip trip = Trip.builder()
                 .id(tripId)
                 .tripperId(tripperId)
-                .title("여행 제목")
+                .tripTitle(TripTitle.of("여행 제목"))
                 .status(TripStatus.DECIDED)
                 .tripPeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 1)))
                 .build();
@@ -136,13 +135,13 @@ public class ScheduleMoveServiceTest {
                 .id(scheduleId)
                 .day(null)
                 .trip(trip)
-                .title("일정 제목")
+                .scheduleTitle(ScheduleTitle.of("일정 제목"))
                 .place(Place.of("장소 식별자", "장소명", Coordinate.of(23.21, 23.24)))
                 .scheduleIndex(ScheduleIndex.ZERO_INDEX)
                 .build();
         trip.getTemporaryStorage().add(schedule);
 
-        ScheduleMoveCommand moveCommand = ScheduleMoveCommand.of(targetDayId, targetOrder);
+        ScheduleMoveCommand moveCommand = new ScheduleMoveCommand(targetDayId, targetOrder);
 
         given(scheduleRepository.findByIdWithTrip(eq(scheduleId))).willReturn(Optional.of(schedule));
         given(dayRepository.findByIdWithTrip(eq(targetDayId))).willReturn(Optional.of(day));
@@ -170,7 +169,7 @@ public class ScheduleMoveServiceTest {
         Trip trip = Trip.builder()
                 .id(tripId)
                 .tripperId(tripperId)
-                .title("여행 제목")
+                .tripTitle(TripTitle.of("여행 제목"))
                 .status(TripStatus.DECIDED)
                 .tripPeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 1)))
                 .build();
@@ -186,13 +185,13 @@ public class ScheduleMoveServiceTest {
                 .id(scheduleId)
                 .day(null)
                 .trip(trip)
-                .title("일정 제목")
+                .scheduleTitle(ScheduleTitle.of("일정 제목"))
                 .place(Place.of("장소 식별자", "장소명", Coordinate.of(23.21, 23.24)))
                 .scheduleIndex(ScheduleIndex.ZERO_INDEX)
                 .build();
         trip.getTemporaryStorage().add(schedule);
 
-        ScheduleMoveCommand moveCommand = ScheduleMoveCommand.of(targetDayId, targetOrder);
+        ScheduleMoveCommand moveCommand = new ScheduleMoveCommand(targetDayId, targetOrder);
 
         given(scheduleRepository.findByIdWithTrip(eq(scheduleId))).willReturn(Optional.of(schedule));
         given(dayRepository.findByIdWithTrip(eq(targetDayId))).willReturn(Optional.of(day));
@@ -224,7 +223,7 @@ public class ScheduleMoveServiceTest {
         Trip beforeTrip = Trip.builder()
                 .id(tripId)
                 .tripperId(tripperId)
-                .title("여행 제목")
+                .tripTitle(TripTitle.of("여행 제목"))
                 .status(TripStatus.DECIDED)
                 .tripPeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 1)))
                 .build();
@@ -237,7 +236,7 @@ public class ScheduleMoveServiceTest {
                 .id(scheduleId)
                 .day(beforeTargetDay)
                 .trip(beforeTrip)
-                .title("일정 제목1")
+                .scheduleTitle(ScheduleTitle.of("일정 제목1"))
                 .place(Place.of("장소 식별자1", "장소명2", Coordinate.of(23.21, 23.24)))
                 .scheduleIndex(ScheduleIndex.of(ScheduleIndex.MAX_INDEX_VALUE))
                 .build();
@@ -245,7 +244,7 @@ public class ScheduleMoveServiceTest {
                 .id(scheduleId)
                 .day(null)
                 .trip(beforeTrip)
-                .title("일정 제목2")
+                .scheduleTitle(ScheduleTitle.of("일정 제목2"))
                 .place(Place.of("장소 식별자2", "장소명2", Coordinate.of(23.21, 23.24)))
                 .scheduleIndex(ScheduleIndex.ZERO_INDEX)
                 .build();
@@ -256,7 +255,7 @@ public class ScheduleMoveServiceTest {
         Trip rediscoveredTrip = Trip.builder()
                 .id(tripId)
                 .tripperId(tripperId)
-                .title("여행 제목")
+                .tripTitle(TripTitle.of("여행 제목"))
                 .status(TripStatus.DECIDED)
                 .tripPeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 1)))
                 .build();
@@ -269,7 +268,7 @@ public class ScheduleMoveServiceTest {
                 .id(scheduleId)
                 .day(rediscoveredTargetDay)
                 .trip(rediscoveredTrip)
-                .title("일정 제목1")
+                .scheduleTitle(ScheduleTitle.of("일정 제목1"))
                 .place(Place.of("장소 식별자1", "장소명2", Coordinate.of(23.21, 23.24)))
                 .scheduleIndex(ScheduleIndex.ZERO_INDEX)
                 .build();
@@ -277,7 +276,7 @@ public class ScheduleMoveServiceTest {
                 .id(scheduleId)
                 .day(null)
                 .trip(rediscoveredTrip)
-                .title("일정 제목")
+                .scheduleTitle(ScheduleTitle.of("일정 제목"))
                 .place(Place.of("장소 식별자", "장소명", Coordinate.of(23.21, 23.24)))
                 .scheduleIndex(ScheduleIndex.ZERO_INDEX)
                 .build();
@@ -285,7 +284,8 @@ public class ScheduleMoveServiceTest {
         rediscoveredTargetDay.getSchedules().add(rediscoveredTargetDaySchedule);
         rediscoveredTrip.getTemporaryStorage().add(rediscoveredMoveSchedule);
 
-        ScheduleMoveCommand moveCommand = ScheduleMoveCommand.of(targetDayId, targetOrder);
+        ScheduleMoveCommand moveCommand = new ScheduleMoveCommand(targetDayId, targetOrder);
+
 
         when(scheduleRepository.findByIdWithTrip(eq(scheduleId)))
                 .thenReturn(Optional.of(beforeMoveSchedule))
@@ -323,7 +323,7 @@ public class ScheduleMoveServiceTest {
         Trip beforeTrip = Trip.builder()
                 .id(tripId)
                 .tripperId(tripperId)
-                .title("여행 제목")
+                .tripTitle(TripTitle.of("여행 제목"))
                 .status(TripStatus.DECIDED)
                 .tripPeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 1)))
                 .build();
@@ -336,7 +336,7 @@ public class ScheduleMoveServiceTest {
                 .id(scheduleId)
                 .day(beforeTargetDay)
                 .trip(beforeTrip)
-                .title("일정 제목1")
+                .scheduleTitle(ScheduleTitle.of("일정 제목1"))
                 .place(Place.of("장소 식별자1", "장소명2", Coordinate.of(23.21, 23.24)))
                 .scheduleIndex(ScheduleIndex.of(ScheduleIndex.MIN_INDEX_VALUE))
                 .build();
@@ -344,7 +344,7 @@ public class ScheduleMoveServiceTest {
                 .id(scheduleId)
                 .day(null)
                 .trip(beforeTrip)
-                .title("일정 제목2")
+                .scheduleTitle(ScheduleTitle.of("일정 제목2"))
                 .place(Place.of("장소 식별자2", "장소명2", Coordinate.of(23.21, 23.24)))
                 .scheduleIndex(ScheduleIndex.ZERO_INDEX)
                 .build();
@@ -355,7 +355,7 @@ public class ScheduleMoveServiceTest {
         Trip rediscoveredTrip = Trip.builder()
                 .id(tripId)
                 .tripperId(tripperId)
-                .title("여행 제목")
+                .tripTitle(TripTitle.of("여행 제목"))
                 .status(TripStatus.DECIDED)
                 .tripPeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 1)))
                 .build();
@@ -368,7 +368,7 @@ public class ScheduleMoveServiceTest {
                 .id(scheduleId)
                 .day(rediscoveredTargetDay)
                 .trip(rediscoveredTrip)
-                .title("일정 제목1")
+                .scheduleTitle(ScheduleTitle.of("일정 제목1"))
                 .place(Place.of("장소 식별자1", "장소명2", Coordinate.of(23.21, 23.24)))
                 .scheduleIndex(ScheduleIndex.ZERO_INDEX)
                 .build();
@@ -376,7 +376,7 @@ public class ScheduleMoveServiceTest {
                 .id(scheduleId)
                 .day(null)
                 .trip(rediscoveredTrip)
-                .title("일정 제목")
+                .scheduleTitle(ScheduleTitle.of("일정 제목"))
                 .place(Place.of("장소 식별자", "장소명", Coordinate.of(23.21, 23.24)))
                 .scheduleIndex(ScheduleIndex.ZERO_INDEX)
                 .build();
@@ -384,7 +384,7 @@ public class ScheduleMoveServiceTest {
         rediscoveredTargetDay.getSchedules().add(rediscoveredTargetDaySchedule);
         rediscoveredTrip.getTemporaryStorage().add(rediscoveredMoveSchedule);
 
-        ScheduleMoveCommand moveCommand = ScheduleMoveCommand.of(targetDayId, targetOrder);
+        ScheduleMoveCommand moveCommand = new ScheduleMoveCommand(targetDayId, targetOrder);
 
         when(scheduleRepository.findByIdWithTrip(eq(scheduleId)))
                 .thenReturn(Optional.of(beforeMoveSchedule))
@@ -422,7 +422,7 @@ public class ScheduleMoveServiceTest {
         Trip beforeTrip = Trip.builder()
                 .id(tripId)
                 .tripperId(tripperId)
-                .title("여행 제목")
+                .tripTitle(TripTitle.of("여행 제목"))
                 .status(TripStatus.DECIDED)
                 .tripPeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 1)))
                 .build();
@@ -435,7 +435,7 @@ public class ScheduleMoveServiceTest {
                 .id(scheduleId)
                 .day(beforeTargetDay)
                 .trip(beforeTrip)
-                .title("일정 제목1")
+                .scheduleTitle(ScheduleTitle.of("일정 제목1"))
                 .place(Place.of("장소 식별자1", "장소명1", Coordinate.of(23.21, 23.24)))
                 .scheduleIndex(ScheduleIndex.of(10))
                 .build();
@@ -443,7 +443,7 @@ public class ScheduleMoveServiceTest {
                 .id(scheduleId)
                 .day(beforeTargetDay)
                 .trip(beforeTrip)
-                .title("일정 제목2")
+                .scheduleTitle(ScheduleTitle.of("일정 제목2"))
                 .place(Place.of("장소 식별자2", "장소명2", Coordinate.of(23.21, 23.24)))
                 .scheduleIndex(ScheduleIndex.of(11))
                 .build();
@@ -451,7 +451,7 @@ public class ScheduleMoveServiceTest {
                 .id(scheduleId)
                 .day(null)
                 .trip(beforeTrip)
-                .title("일정 제목3")
+                .scheduleTitle(ScheduleTitle.of("일정 제목3"))
                 .place(Place.of("장소 식별자3", "장소명3", Coordinate.of(23.21, 23.24)))
                 .scheduleIndex(ScheduleIndex.ZERO_INDEX)
                 .build();
@@ -463,7 +463,7 @@ public class ScheduleMoveServiceTest {
         Trip rediscoveredTrip = Trip.builder()
                 .id(tripId)
                 .tripperId(tripperId)
-                .title("여행 제목")
+                .tripTitle(TripTitle.of("여행 제목"))
                 .status(TripStatus.DECIDED)
                 .tripPeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 1)))
                 .build();
@@ -476,7 +476,7 @@ public class ScheduleMoveServiceTest {
                 .id(scheduleId)
                 .day(rediscoveredTargetDay)
                 .trip(rediscoveredTrip)
-                .title("일정 제목1")
+                .scheduleTitle(ScheduleTitle.of("일정 제목1"))
                 .place(Place.of("장소 식별자1", "장소명1", Coordinate.of(23.21, 23.24)))
                 .scheduleIndex(ScheduleIndex.ZERO_INDEX)
                 .build();
@@ -484,7 +484,7 @@ public class ScheduleMoveServiceTest {
                 .id(scheduleId)
                 .day(rediscoveredTargetDay)
                 .trip(rediscoveredTrip)
-                .title("일정 제목2")
+                .scheduleTitle(ScheduleTitle.of("일정 제목2"))
                 .place(Place.of("장소 식별자2", "장소명2", Coordinate.of(23.21, 23.24)))
                 .scheduleIndex(ScheduleIndex.of(ScheduleIndex.DEFAULT_SEQUENCE_GAP))
                 .build();
@@ -492,7 +492,7 @@ public class ScheduleMoveServiceTest {
                 .id(scheduleId)
                 .day(null)
                 .trip(rediscoveredTrip)
-                .title("일정 제목")
+                .scheduleTitle(ScheduleTitle.of("일정 제목"))
                 .place(Place.of("장소 식별자", "장소명", Coordinate.of(23.21, 23.24)))
                 .scheduleIndex(ScheduleIndex.ZERO_INDEX)
                 .build();
@@ -501,7 +501,7 @@ public class ScheduleMoveServiceTest {
         rediscoveredTargetDay.getSchedules().add(rediscoveredTargetDaySchedule2);
         rediscoveredTrip.getTemporaryStorage().add(rediscoveredMoveSchedule);
 
-        ScheduleMoveCommand moveCommand = ScheduleMoveCommand.of(targetDayId, targetOrder);
+        ScheduleMoveCommand moveCommand = new ScheduleMoveCommand(targetDayId, targetOrder);
 
         when(scheduleRepository.findByIdWithTrip(eq(scheduleId)))
                 .thenReturn(Optional.of(beforeMoveSchedule))

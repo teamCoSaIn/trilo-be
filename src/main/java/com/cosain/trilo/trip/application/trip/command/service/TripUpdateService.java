@@ -30,7 +30,7 @@ public class TripUpdateService implements TripUpdateUseCase {
         Trip trip = findTrip(tripId);
         validateTripUpdateAuthority(trip, tripperId);
 
-        trip.changeTitle(updateCommand.getTitle());
+        trip.changeTitle(updateCommand.getTripTitle());
         changePeriod(trip, updateCommand.getTripPeriod());
     }
 

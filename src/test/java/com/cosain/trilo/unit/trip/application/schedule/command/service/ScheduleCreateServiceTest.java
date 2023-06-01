@@ -57,7 +57,7 @@ public class ScheduleCreateServiceTest {
             Trip trip = Trip.builder()
                     .id(tripId)
                     .tripperId(tripperId)
-                    .title("여행 제목")
+                    .tripTitle(TripTitle.of("여행 제목"))
                     .status(TripStatus.DECIDED)
                     .tripPeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 1)))
                     .build();
@@ -70,13 +70,18 @@ public class ScheduleCreateServiceTest {
 
             trip.getDays().add(day);
 
-            ScheduleCreateCommand scheduleCreateCommand = ScheduleCreateCommand.of(dayId, tripId, "일정 제목", "장소식별자", "장소명", 23.21, 23.24);
+            ScheduleCreateCommand scheduleCreateCommand = ScheduleCreateCommand.builder()
+                    .dayId(dayId)
+                    .tripId(tripId)
+                    .scheduleTitle(ScheduleTitle.of("일정 제목"))
+                    .place(Place.of("장소식별자", "장소명", Coordinate.of(23.21, 23.24)))
+                    .build();
 
             Schedule createdSchedule = Schedule.builder()
                     .id(1L)
                     .day(day)
                     .trip(trip)
-                    .title("일정 제목")
+                    .scheduleTitle(ScheduleTitle.of("일정 제목"))
                     .place(Place.of("장소 식별자", "장소명", Coordinate.of(23.21, 23.24)))
                     .scheduleIndex(ScheduleIndex.ZERO_INDEX)
                     .build();
@@ -106,7 +111,7 @@ public class ScheduleCreateServiceTest {
             Trip beforeTrip = Trip.builder()
                     .id(tripId)
                     .tripperId(tripperId)
-                    .title("여행 제목")
+                    .tripTitle(TripTitle.of("여행 제목"))
                     .status(TripStatus.DECIDED)
                     .tripPeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 1)))
                     .build();
@@ -122,20 +127,25 @@ public class ScheduleCreateServiceTest {
                     .id(1L)
                     .day(beforeDay)
                     .trip(beforeTrip)
-                    .title("제목")
+                    .scheduleTitle(ScheduleTitle.of("제목"))
                     .place(Place.of("장소식별자", "장소명", Coordinate.of(23.21, 23.24)))
                     .scheduleIndex(ScheduleIndex.of(ScheduleIndex.MAX_INDEX_VALUE))
                     .build();
             beforeDay.getSchedules().add(beforeSchedule);
             beforeTrip.getDays().add(beforeDay);
 
-            ScheduleCreateCommand scheduleCreateCommand = ScheduleCreateCommand.of(dayId, tripId, "일정 제목", "장소식별자", "장소명", 23.21, 23.24);
+            ScheduleCreateCommand scheduleCreateCommand = ScheduleCreateCommand.builder()
+                    .dayId(dayId)
+                    .tripId(tripId)
+                    .scheduleTitle(ScheduleTitle.of("일정 제목"))
+                    .place(Place.of("장소 식별자", "장소명", Coordinate.of(23.21, 23.24)))
+                    .build();
 
 
             Trip rediscoveredTrip = Trip.builder()
                     .id(tripId)
                     .tripperId(tripperId)
-                    .title("여행 제목")
+                    .tripTitle(TripTitle.of("여행 제목"))
                     .status(TripStatus.DECIDED)
                     .tripPeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 1)))
                     .build();
@@ -150,7 +160,7 @@ public class ScheduleCreateServiceTest {
                     .id(1L)
                     .day(rediscoveredDay)
                     .trip(rediscoveredTrip)
-                    .title("제목")
+                    .scheduleTitle(ScheduleTitle.of("제목"))
                     .place(Place.of("장소식별자", "장소명", Coordinate.of(23.21, 23.24)))
                     .scheduleIndex(ScheduleIndex.ZERO_INDEX)
                     .build();
@@ -162,7 +172,7 @@ public class ScheduleCreateServiceTest {
                     .id(2L)
                     .day(rediscoveredDay)
                     .trip(rediscoveredTrip)
-                    .title("일정 제목")
+                    .scheduleTitle(ScheduleTitle.of("일정 제목"))
                     .place(Place.of("장소 식별자", "장소명", Coordinate.of(23.21, 23.24)))
                     .scheduleIndex(ScheduleIndex.of(ScheduleIndex.DEFAULT_SEQUENCE_GAP))
                     .build();
@@ -203,18 +213,23 @@ public class ScheduleCreateServiceTest {
             Trip trip = Trip.builder()
                     .id(tripId)
                     .tripperId(tripperId)
-                    .title("여행 제목")
+                    .tripTitle(TripTitle.of("여행 제목"))
                     .status(TripStatus.DECIDED)
                     .tripPeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 1)))
                     .build();
 
-            ScheduleCreateCommand scheduleCreateCommand = ScheduleCreateCommand.of(null, tripId, "일정 제목", "장소식별자", "장소명", 23.21, 23.24);
+            ScheduleCreateCommand scheduleCreateCommand = ScheduleCreateCommand.builder()
+                    .dayId(null)
+                    .tripId(tripId)
+                    .scheduleTitle(ScheduleTitle.of("일정 제목"))
+                    .place(Place.of("장소 식별자", "장소명", Coordinate.of(23.21, 23.24)))
+                    .build();
 
             Schedule createdSchedule = Schedule.builder()
                     .id(1L)
                     .day(null)
                     .trip(trip)
-                    .title("일정 제목")
+                    .scheduleTitle(ScheduleTitle.of("일정 제목"))
                     .place(Place.of("장소 식별자", "장소명", Coordinate.of(23.21, 23.24)))
                     .scheduleIndex(ScheduleIndex.ZERO_INDEX)
                     .build();
@@ -244,7 +259,7 @@ public class ScheduleCreateServiceTest {
                     .id(1L)
                     .day(null)
                     .trip(trip)
-                    .title("제목")
+                    .scheduleTitle(ScheduleTitle.of("제목"))
                     .place(Place.of("장소식별자", "장소명", Coordinate.of(23.21, 23.24)))
                     .scheduleIndex(ScheduleIndex.of(ScheduleIndex.MAX_INDEX_VALUE))
                     .build();
@@ -255,19 +270,24 @@ public class ScheduleCreateServiceTest {
                     .id(1L)
                     .day(null)
                     .trip(trip)
-                    .title("제목")
+                    .scheduleTitle(ScheduleTitle.of("제목"))
                     .place(Place.of("장소식별자", "장소명", Coordinate.of(23.21, 23.24)))
                     .scheduleIndex(ScheduleIndex.ZERO_INDEX)
                     .build();
             rediscoveredTrip.getTemporaryStorage().add(relocatedSchedule);
 
-            ScheduleCreateCommand scheduleCreateCommand = ScheduleCreateCommand.of(null, tripId, "일정제목2", "장소식별자2", "장소이름2", 19.18, 27.15);
+            ScheduleCreateCommand scheduleCreateCommand = ScheduleCreateCommand.builder()
+                    .dayId(null)
+                    .tripId(tripId)
+                    .scheduleTitle(ScheduleTitle.of("일정제목2"))
+                    .place(Place.of("장소식별자2", "장소이름2", Coordinate.of(19.18, 27.15)))
+                    .build();
 
             Schedule newSchedule = Schedule.builder()
                     .id(2L)
                     .day(null)
                     .trip(trip)
-                    .title("일정제목2")
+                    .scheduleTitle(ScheduleTitle.of("일정제목2"))
                     .place(Place.of("장소식별자2", "장소이름2", Coordinate.of(19.18, 27.15)))
                     .scheduleIndex(ScheduleIndex.of(ScheduleIndex.DEFAULT_SEQUENCE_GAP))
                     .build();
@@ -294,20 +314,29 @@ public class ScheduleCreateServiceTest {
     @DisplayName("권한 없는 사람이 Schedule을 생성하면, NoScheduleCreateAuthortyException이 발생한다.")
     public void when_no_authority_tripper_create_schedule_it_throws_NoScheduleCreateAuthorityException() {
         // given
+        Long tripOwnerId = 1L;
         Long noAuthorityTripperId = 2L;
+        Long tripId = 3L;
+        Long dayId = 4L;
 
-        Trip trip = Trip.create("제목", 1L);
+        Trip trip = Trip.create(TripTitle.of("제목"), tripOwnerId);
         Day day = Day.of(LocalDate.of(2023, 4, 5), trip);
 
-        ScheduleCreateCommand scheduleCreateCommand = ScheduleCreateCommand.of(1L, 1L, "제목", "내용", "장소 식별자", 23.21, 23.24);
-        given(dayRepository.findByIdWithTrip(anyLong())).willReturn(Optional.of(day));
-        given(tripRepository.findById(anyLong())).willReturn(Optional.of(trip));
+        ScheduleCreateCommand scheduleCreateCommand = ScheduleCreateCommand.builder()
+                .dayId(dayId)
+                .tripId(tripId)
+                .scheduleTitle(ScheduleTitle.of("제목"))
+                .place(Place.of("장소 식별자", "장소명", Coordinate.of(23.21, 23.24)))
+                .build();
+
+        given(dayRepository.findByIdWithTrip(eq(dayId))).willReturn(Optional.of(day));
+        given(tripRepository.findById(eq(tripId))).willReturn(Optional.of(trip));
 
         // when & then
         assertThatThrownBy(() -> scheduleCreateService.createSchedule(noAuthorityTripperId, scheduleCreateCommand))
                 .isInstanceOf(NoScheduleCreateAuthorityException.class);
-        verify(dayRepository).findByIdWithTrip(anyLong());
-        verify(tripRepository).findById(anyLong());
+        verify(dayRepository).findByIdWithTrip(eq(dayId));
+        verify(tripRepository).findById(eq(tripId));
     }
 
 }

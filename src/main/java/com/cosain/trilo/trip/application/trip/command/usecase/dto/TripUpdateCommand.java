@@ -1,22 +1,17 @@
 package com.cosain.trilo.trip.application.trip.command.usecase.dto;
 
 import com.cosain.trilo.trip.domain.vo.TripPeriod;
+import com.cosain.trilo.trip.domain.vo.TripTitle;
 import lombok.Getter;
-
-import java.time.LocalDate;
 
 @Getter
 public class TripUpdateCommand {
 
-    private String title;
+    private TripTitle tripTitle;
     private TripPeriod tripPeriod;
 
-    public static TripUpdateCommand of(String title, LocalDate startDate, LocalDate endDate) {
-        return new TripUpdateCommand(title, TripPeriod.of(startDate, endDate));
-    }
-
-    private TripUpdateCommand(String title, TripPeriod tripPeriod) {
-        this.title = title;
+    public TripUpdateCommand(TripTitle tripTitle, TripPeriod tripPeriod) {
+        this.tripTitle = tripTitle;
         this.tripPeriod = tripPeriod;
     }
 }

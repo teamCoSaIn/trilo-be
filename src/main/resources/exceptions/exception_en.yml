@@ -17,6 +17,14 @@ request-0002:
   message: Missing Request Cookie
   detail: The required cookie in the request is missing. Please check if the necessary cookie exists and if it has the correct value.
 
+request-0003:
+  message: Not Valid Request Parameter
+  detail : Invalid parameter(s) have been passed. Please recheck the validity of the request parameters.
+
+request-0004:
+  message: Invalid Parameter Type in URL or Query Parameter
+  detail : The type of the URL parameter or query parameter is invalid.
+
 
 # 인증/인가 관련
 auth-0001:
@@ -64,12 +72,8 @@ trip-0001:
   detail: The Trip with the matching identifier could not be found.
 
 trip-0002:
-  message: Empty Trip Title
-  detail: The trip title cannot be null or empty.
-
-trip-0003:
-  message: Invalid Trip Title Length
-  detail: The trip title length must be between {min} and {max} characters.
+  message: Invalid Trip Title
+  detail: The TripTitle is not valid. The TripTitle cannot be null or blank, and its length should be between 1 and 20 characters.
 
 
 trip-0004:
@@ -82,7 +86,7 @@ trip-0005:
 
 trip-0006:
   message: EmptyPeriodUpdate Error
-  detail: The period of a scheduled trip cannot be updated to an empty period.
+  detail: It is not possible to move the schedule in the specified order. The order value cannot be null or negative, and it should be a valid order value in the day or the temporary storage.
 
 trip-0007:
   message: NoTripDeleteAuthority
@@ -92,6 +96,9 @@ trip-0008:
   message: NoTripDetailSearchAuthority
   detail: You do not have the authority to retrieve detailed information about this trip.
 
+trip-0009:
+  message: Too Long TripPeriod
+  detail: The TripPeriod is too long. The maximum allowed TripPeriod is 10 days.
 
 # Day 관련
 day-0001:
@@ -128,6 +135,13 @@ schedule-0006:
   message: InvalidScheduleMoveTargetOrder
   detail: Unable to move the schedule to the specified order. It is outside the valid order range.
 
+schedule-0007:
+  message: Schedule Create Failed - Null TripId
+  detail: The TripId required for generating the schedule is missing.
+
+schedule-0008:
+  message: Invalid Schedule Title
+  detail: The ScheduleTitle is not valid. The ScheduleTitle cannot be a null or empty string, and its length must be between 1 and 20 characters
 
 # 장소 관련
 place-0001:

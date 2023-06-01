@@ -1,11 +1,10 @@
+
 package com.cosain.trilo.unit.trip.infra.repository;
 
 import com.cosain.trilo.support.RepositoryTest;
 import com.cosain.trilo.trip.domain.entity.Schedule;
 import com.cosain.trilo.trip.domain.entity.Trip;
-import com.cosain.trilo.trip.domain.vo.Coordinate;
-import com.cosain.trilo.trip.domain.vo.Place;
-import com.cosain.trilo.trip.domain.vo.ScheduleIndex;
+import com.cosain.trilo.trip.domain.vo.*;
 import com.cosain.trilo.trip.infra.dto.ScheduleDetail;
 import com.cosain.trilo.trip.infra.dto.ScheduleSummary;
 import com.cosain.trilo.trip.infra.repository.schedule.ScheduleQueryRepository;
@@ -34,14 +33,14 @@ public class ScheduleQueryRepositoryTest {
     @Test
     void findScheduleTest(){
         // given
-        Trip trip = Trip.create("제목", 1L);
+        Trip trip = Trip.create(TripTitle.of("제목"), 1L);
         em.persist(trip);
         Schedule schedule = Schedule.builder()
                 .trip(trip)
-                .title("Test Schedule")
+                .scheduleTitle(ScheduleTitle.of("Test Schedule"))
                 .place(Place.of("장소 1", "광산구", Coordinate.of(62.62, 62.62)))
                 .scheduleIndex(ScheduleIndex.ZERO_INDEX)
-                .content("Test Content")
+                .scheduleContent(ScheduleContent.of("일정 본문"))
                 .build();
         em.persist(schedule);
         em.flush();
@@ -52,13 +51,12 @@ public class ScheduleQueryRepositoryTest {
         // then
         assertThat(dto.getScheduleId()).isEqualTo(schedule.getId());
         assertThat(dto.getScheduleId()).isEqualTo(schedule.getId());
-        assertThat(dto.getTitle()).isEqualTo(schedule.getTitle());
+        assertThat(dto.getTitle()).isEqualTo(schedule.getScheduleTitle().getValue());
         assertThat(dto.getPlaceName()).isEqualTo(schedule.getPlace().getPlaceName());
         assertThat(dto.getCoordinate().getLatitude()).isEqualTo(schedule.getPlace().getCoordinate().getLatitude());
         assertThat(dto.getCoordinate().getLatitude()).isEqualTo(schedule.getPlace().getCoordinate().getLongitude());
         assertThat(dto.getOrder()).isEqualTo(schedule.getScheduleIndex().getValue());
-        assertThat(dto.getContent()).isEqualTo(schedule.getContent());
-
+        assertThat(dto.getContent()).isEqualTo(schedule.getScheduleContent().getValue());
     }
 
     @Nested
@@ -70,7 +68,7 @@ public class ScheduleQueryRepositoryTest {
         @DisplayName("tripId 가 일치하고 dayId 가 null 인 일정들이 페이지의 크기만큼 조회된다.")
         void findTest(){
             // given
-            Trip trip = Trip.create("제목", 1L);
+            Trip trip = Trip.create(TripTitle.of("제목"), 1L);
             em.persist(trip);
             Schedule schedule = createSchedule(trip, 1L);
             em.persist(schedule);
@@ -87,7 +85,7 @@ public class ScheduleQueryRepositoryTest {
         @DisplayName("scheduleIndex 기준 오름차순으로 조회된다.")
         void sortTest(){
             // given
-            Trip trip = Trip.create("제목", 1L);
+            Trip trip = Trip.create(TripTitle.of("제목"), 1L);
             em.persist(trip);
             Schedule schedule1 = createSchedule(trip, 1L);
             Schedule schedule2 = createSchedule(trip, 2L);
@@ -109,10 +107,10 @@ public class ScheduleQueryRepositoryTest {
         private Schedule createSchedule(Trip trip, long scheduleIndexValue){
             return Schedule.builder()
                     .trip(trip)
-                    .title("Test Schedule")
+                    .scheduleTitle(ScheduleTitle.of("Test Schedule"))
                     .place(Place.of("장소 1", "광산구", Coordinate.of(62.62, 62.62)))
                     .scheduleIndex(ScheduleIndex.of(scheduleIndexValue))
-                    .content("Test Content")
+                    .scheduleContent(ScheduleContent.of("일정 본문"))
                     .build();
         }
     }

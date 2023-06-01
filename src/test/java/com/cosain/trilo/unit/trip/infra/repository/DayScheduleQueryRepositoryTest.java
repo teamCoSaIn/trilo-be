@@ -4,9 +4,7 @@ import com.cosain.trilo.support.RepositoryTest;
 import com.cosain.trilo.trip.domain.entity.Day;
 import com.cosain.trilo.trip.domain.entity.Schedule;
 import com.cosain.trilo.trip.domain.entity.Trip;
-import com.cosain.trilo.trip.domain.vo.Coordinate;
-import com.cosain.trilo.trip.domain.vo.Place;
-import com.cosain.trilo.trip.domain.vo.ScheduleIndex;
+import com.cosain.trilo.trip.domain.vo.*;
 import com.cosain.trilo.trip.infra.repository.day.DayScheduleQueryRepository;
 import com.cosain.trilo.trip.infra.dto.DayScheduleDetail;
 import jakarta.persistence.EntityManager;
@@ -31,7 +29,7 @@ public class DayScheduleQueryRepositoryTest {
     @Test
     void Day_조회를_하면_해당_Day정보와_해당_Day에_속한_Schedule들의_요약정보와_함께_조회된다(){
         // given
-        Trip trip = Trip.create("여행제목", 1L);
+        Trip trip = Trip.create(TripTitle.of("여행제목"), 1L);
         em.persist(trip);
 
         Day day1 = Day.of(LocalDate.of(2023, 5, 10), trip);
@@ -68,10 +66,10 @@ public class DayScheduleQueryRepositoryTest {
         return Schedule.builder()
                 .trip(trip)
                 .day(day)
-                .title("Test Schedule")
+                .scheduleTitle(ScheduleTitle.of("Test Schedule"))
                 .place(Place.of("장소 1", "광산구", Coordinate.of(62.62, 62.62)))
                 .scheduleIndex(ScheduleIndex.of(scheduleIndexValue))
-                .content("Test Content")
+                .scheduleContent(ScheduleContent.of("일정 본문"))
                 .build();
     }
 }

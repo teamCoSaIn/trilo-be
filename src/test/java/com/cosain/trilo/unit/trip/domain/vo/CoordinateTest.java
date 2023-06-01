@@ -19,10 +19,45 @@ public class CoordinateTest {
     @DisplayName("Coordinate 생성 테스트")
     class CreateCoordinate_from_of_method {
 
+        @Test
+        @DisplayName("위도가 누락되면 InvalidCoordinateException 발생")
+        public void nullLatitudeTest() {
+            // given
+            Double latitude =  null;
+            Double longitude = 123.771;
+
+            // when & then
+            assertThatThrownBy(() -> Coordinate.of(latitude, longitude))
+                    .isInstanceOf(InvalidCoordinateException.class);
+        }
+
+        @Test
+        @DisplayName("경도가 누락되면 InvalidCoordinateException 발생")
+        public void nullLongitudeTest() {
+            // given
+            Double latitude =  37.1246;
+            Double longitude = null;
+
+            // when & then
+            assertThatThrownBy(() -> Coordinate.of(latitude, longitude))
+                    .isInstanceOf(InvalidCoordinateException.class);
+        }
+
+        @Test
+        @DisplayName("위도, 경도가 모두 누락되면 InvalidCoordinateException 발생")
+        public void nullLatitudeAndLongitudeTest() {
+            // given
+            Double latitude =  null;
+            Double longitude = null;
+
+            // when & then
+            assertThatThrownBy(() -> Coordinate.of(latitude, longitude))
+                    .isInstanceOf(InvalidCoordinateException.class);
+        }
 
         @ParameterizedTest
         @ValueSource(doubles = {-255, -123.12, -91, -90.001, 90.001, 91, 100.123, 255})
-        @DisplayName("위도의 범위가 -90보다 작거나, 90보다 크면 InvalidLatitudeException이 발생한다.")
+        @DisplayName("위도의 범위가 -90보다 작거나, 90보다 크면 InvalidCoordinateException이 발생한다.")
         public void when_invalid_latitude_it_throws_InvalidCoordinateException(double invalidLatitude) {
             // given
             double longitude = 135.172;
@@ -50,7 +85,6 @@ public class CoordinateTest {
         public void createSuccess() {
             // given
             double latitude = 37.72221;
-
             double longitude = 137.86523;
 
             // when

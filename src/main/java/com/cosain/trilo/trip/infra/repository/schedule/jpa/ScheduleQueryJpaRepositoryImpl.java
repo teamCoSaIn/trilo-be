@@ -23,7 +23,7 @@ public class ScheduleQueryJpaRepositoryImpl implements ScheduleQueryJpaRepositor
     @Override
     public Optional<ScheduleDetail> findScheduleDetailById(Long scheduleId) {
         return Optional.ofNullable(query.select(
-            new QScheduleDetail(schedule.id, schedule.day.id, schedule.title, schedule.place.placeName, schedule.place.coordinate.latitude, schedule.place.coordinate.longitude, schedule.scheduleIndex.value, schedule.content))
+            new QScheduleDetail(schedule.id, schedule.day.id, schedule.scheduleTitle.value, schedule.place.placeName, schedule.place.coordinate.latitude, schedule.place.coordinate.longitude, schedule.scheduleIndex.value, schedule.scheduleContent.value))
                 .from(schedule)
                 .where(schedule.id.eq(scheduleId))
                 .fetchOne());
@@ -31,7 +31,7 @@ public class ScheduleQueryJpaRepositoryImpl implements ScheduleQueryJpaRepositor
 
     @Override
     public Slice<ScheduleSummary> findTemporaryScheduleListByTripId(Long tripId, Pageable pageable) {
-        JPAQuery<ScheduleSummary> jpaQuery = query.select(new QScheduleSummary(schedule.id, schedule.title, schedule.place.placeName, schedule.place.placeId, schedule.place.coordinate.latitude, schedule.place.coordinate.longitude))
+        JPAQuery<ScheduleSummary> jpaQuery = query.select(new QScheduleSummary(schedule.id, schedule.scheduleTitle.value, schedule.place.placeName, schedule.place.placeId, schedule.place.coordinate.latitude, schedule.place.coordinate.longitude))
                 .from(schedule)
                 .where(schedule.trip.id.eq(tripId).and(schedule.day.id.isNull()))
                 .orderBy(schedule.scheduleIndex.value.asc())

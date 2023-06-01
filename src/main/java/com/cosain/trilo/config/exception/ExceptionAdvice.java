@@ -1,20 +1,30 @@
 package com.cosain.trilo.config.exception;
 
 import com.cosain.trilo.common.dto.BasicErrorResponse;
+import com.cosain.trilo.common.dto.ValidationErrorResponse;
 import com.cosain.trilo.common.exception.CustomException;
+import com.cosain.trilo.common.exception.CustomValidationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.TypeMismatchException;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MissingRequestCookieException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+
+import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -39,6 +49,21 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
     }
 
     /**
+     * 요청 데이터 형식 또는 데이터 타입이 올바르지 않을 때에 대한 예외 API
+     */
+    @Override
+    protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+        log.info("요청 데이터 형식이 올바르지 않음");
+        String errorCode = "request-0001";
+        String errorMessage = getMessage(errorCode + ".message");
+        String errorDetail = getMessage(errorCode + ".detail");
+
+        return ResponseEntity
+                .badRequest()
+                .body(BasicErrorResponse.of(errorCode, errorMessage, errorDetail));
+    }
+
+    /**
      * 쿠키 누락 예외
      * TODO: 어떤 쿠키가 누락됐는지 API에 별도의 리스트를 추가해서 전달하면 좋을 것 같다.
      */
@@ -53,6 +78,45 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
         log.info("[{}] errorMessage={}", errorCode, errorMessage);
         log.info("-----> errorDetail={}", errorDetail);
         return BasicErrorResponse.of(errorCode, errorMessage, errorDetail);
+    }
+
+    /**
+     * URL의 파라미터 변수 또는 쿼리 파라미터의 타입 에러
+     */
+    @Override
+    protected ResponseEntity<Object> handleTypeMismatch(TypeMismatchException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+        log.info("URL의 파라미터 변수 또는 쿼리 파라미터의 타입 에러");
+
+        String errorCode = "request-0004";
+        String errorMessage = getMessage(errorCode + ".message");
+        String errorDetail = getMessage(errorCode + ".detail");
+
+        log.info("[{}] errorMessage={}", errorCode, errorMessage);
+        log.info("-----> errorDetail={}", errorDetail);
+        var response = BasicErrorResponse.of(errorCode, errorMessage, errorDetail);
+        return ResponseEntity.badRequest().body(response);
+    }
+
+    @ExceptionHandler(CustomValidationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ValidationErrorResponse handleCustomValidationException(CustomValidationException ex) {
+        String errorCode = "request-0003";
+        String errorMessage = getMessage(errorCode + ".message");
+        String errorDetail = getMessage(errorCode + ".detail");
+
+        var response = ValidationErrorResponse.of(errorCode, errorMessage, errorDetail);
+        List<CustomException> exceptions = ex.getExceptions();
+        addExceptionsToValidationErrorResponse(response, exceptions);
+        return response;
+    }
+
+    private void addExceptionsToValidationErrorResponse(ValidationErrorResponse response, List<CustomException> exceptions) {
+        for (CustomException ex : exceptions) {
+            String errorCode = ex.getErrorCode();
+            String errorMessage = getMessage(errorCode + ".message");
+            String errorDetail = getMessage(errorCode + ".detail");
+            response.addError(errorCode, errorMessage, errorDetail);
+        }
     }
 
     @ExceptionHandler(AuthenticationException.class)

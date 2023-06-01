@@ -17,6 +17,14 @@ request-0002:
   message: Missing Request Cookie
   detail: 요청에 필요한 쿠키가 누락 됐습니다. 요청에 필요한 쿠키가 존재하는 지, 제대로 된 값인지 다시 확인해주세요.
 
+request-0003:
+  message: Not Valid Request Parameter
+  detail : 유효하지 않은 파라미터가 전달됐습니다. 요청 파라미터의 유효성을 다시 확인해주세요.
+
+request-0004:
+  message: Invalid Parameter Type in URL or Query Parameter
+  detail : URL의 파라미터 변수 또는 쿼리 파라미터의 타입이 올바르지 않습니다.
+
 
 # 인증/인가 관련
 auth-0001:
@@ -64,13 +72,8 @@ trip-0001:
   detail: 일치하는 식별자의 Trip을 찾을 수 없습니다.
 
 trip-0002:
-  message: Empty Trip Title
-  detail: 여행의 제목은 null 또는 공백일 수 없습니다.
-
-trip-0003:
-  message: Invalid Trip Title Length
-  detail: 여행 제목의 길이는 {min}자 이상 {max}자 이하여야 합니다.
-
+  message: Invalid Trip Title
+  detail: 여행 제목이 올바르지 않습니다. 여행 제목은 null 또는 공백으로만 구성된 문자열일 수 없고, 길이는 1자 이상 20자 이하여야 합니다.
 
 trip-0004:
   message: No Trip Update Authority
@@ -91,6 +94,10 @@ trip-0007:
 trip-0008:
   message: NoTripDetailSearchAuthority
   detail: 해당 여행을 단건 조회할 권한이 없습니다.
+
+trip-0009:
+  message: Too Long TripPeriod
+  detail: 여행 기간이 너무 깁니다. 여행의 최대 일수는 10일까지만 허용됩니다.
 
 
 # Day 관련
@@ -126,7 +133,15 @@ schedule-0005:
 
 schedule-0006:
   message: InvalidScheduleMoveTargetOrder
-  detail: 일정을 해당 순서로 이동시킬 수 없습니다. 유효한 순서 범위를 벗어납니다.
+  detail: 일정을 해당 순서로 이동시킬 수 없습니다. 순서값은 null 또는 음수일 수 없으며, 옮기려는 day 또는 임시보관함에서 유효한 순서값이여야합니다.
+
+schedule-0007:
+  message: Schedule Create Failed - Null TripId
+  detail: 일정 생성 시 필요한 TripId가 누락됐습니다.
+
+schedule-0008:
+  message: Invalid Schedule Title
+  detail: 일정 제목이 올바르지 않습니다. 일정 제목은 null 또는 공백으로만 구성된 문자열일 수 없고, 길이는 1자 이상 20자 이하여야 합니다.
 
 
 # 장소 관련

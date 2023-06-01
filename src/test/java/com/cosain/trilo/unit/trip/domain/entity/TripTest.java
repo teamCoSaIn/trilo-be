@@ -26,7 +26,7 @@ public class TripTest {
     class When_Create {
 
         // given
-        private final String title = "제목";
+        private final TripTitle title = TripTitle.of("제목");
         private final Long tripperId = 1L;
 
         @Test
@@ -36,7 +36,7 @@ public class TripTest {
             Trip trip = Trip.create(title, tripperId);
 
             // then
-            assertThat(trip.getTitle()).isEqualTo("제목");
+            assertThat(trip.getTripTitle().getValue()).isEqualTo("제목");
         }
 
         @Test
@@ -58,16 +58,16 @@ public class TripTest {
         @DisplayName("새로운 title이 변경되어 적용된다.")
         public void trip_has_changed_title() {
             // given
-            String beforeTitle = "변경 전 제목";
+            TripTitle beforeTitle = TripTitle.of("변경 전 제목");
             Long tripperId = 1L;
             Trip trip = Trip.create(beforeTitle, tripperId);
 
             // when
-            String newTitle = "변경 후 제목";
+            TripTitle newTitle = TripTitle.of("변경 후 제목");
             trip.changeTitle(newTitle);
 
             // then
-            assertThat(trip.getTitle()).isEqualTo("변경 후 제목");
+            assertThat(trip.getTripTitle()).isEqualTo(newTitle);
         }
 
     }
@@ -220,7 +220,7 @@ public class TripTest {
                 decidedTrip = Trip.builder()
                         .id(tripId)
                         .tripperId(tripperId)
-                        .title("여행 제목")
+                        .tripTitle(TripTitle.of("여행 제목"))
                         .tripPeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 5)))
                         .status(TripStatus.DECIDED)
                         .build();
@@ -606,12 +606,12 @@ public class TripTest {
             @DisplayName("인덱스가 최대 범위를 벗어나면, ScheduleIndexRangeException 발생")
             @Test
             public void when_new_index_range_is_over_max_index_value_then_it_throws_ScheduleIndexRangeException() {
-                Trip trip = Trip.create("여행 제목", 1L);
+                Trip trip = Trip.create(TripTitle.of("여행 제목"), 1L);
 
                 Schedule schedule1 = Schedule.builder()
                         .day(null)
                         .trip(trip)
-                        .title("일정 제목1")
+                        .scheduleTitle(ScheduleTitle.of("일정 제목1"))
                         .place(Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)))
                         .scheduleIndex(ScheduleIndex.of(ScheduleIndex.MAX_INDEX_VALUE))
                         .build();
@@ -620,17 +620,17 @@ public class TripTest {
 
                 // when & then
                 assertThatThrownBy(() ->
-                        trip.createSchedule(null, "일정제목2", Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523))))
+                        trip.createSchedule(null, ScheduleTitle.of("일정제목2"), Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523))))
                         .isInstanceOf(ScheduleIndexRangeException.class);
             }
 
             @DisplayName("인덱스가 최대 범위를 벗어나지 않으면, 정상적으로 다음 순서의 Schedule 생성됨")
             @Test
             public void successTest() {
-                Trip trip = Trip.create("여행 제목", 1L);
+                Trip trip = Trip.create(TripTitle.of("여행 제목"), 1L);
 
-                Schedule schedule1 = trip.createSchedule(null, "일정 제목1", Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
-                Schedule schedule2 = trip.createSchedule(null, "일정 제목2", Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule1 = trip.createSchedule(null, ScheduleTitle.of("일정 제목1"), Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule2 = trip.createSchedule(null, ScheduleTitle.of("일정 제목2"), Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
 
                 assertThat(schedule1.getScheduleIndex()).isEqualTo(ScheduleIndex.ZERO_INDEX);
                 assertThat(schedule2.getScheduleIndex()).isEqualTo(ScheduleIndex.of(ScheduleIndex.DEFAULT_SEQUENCE_GAP));
@@ -648,7 +648,7 @@ public class TripTest {
                 Trip trip = Trip.builder()
                         .id(1L)
                         .tripperId(1L)
-                        .title("여행 제목1")
+                        .tripTitle(TripTitle.of("여행 제목1"))
                         .status(TripStatus.DECIDED)
                         .tripPeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 1)))
                         .build();
@@ -664,7 +664,7 @@ public class TripTest {
                 Trip otherTrip = Trip.builder()
                         .id(2L)
                         .tripperId(2L)
-                        .title("여행제목2")
+                        .tripTitle(TripTitle.of("여행제목2"))
                         .status(TripStatus.DECIDED)
                         .tripPeriod(TripPeriod.of(LocalDate.of(2023, 3, 2), LocalDate.of(2023, 3, 2)))
                         .build();
@@ -677,7 +677,7 @@ public class TripTest {
                 otherTrip.getDays().add(otherTripDay);
 
                 // when & then
-                assertThatThrownBy(() -> trip.createSchedule(otherTripDay, "일정 제목", Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523))))
+                assertThatThrownBy(() -> trip.createSchedule(otherTripDay, ScheduleTitle.of("일정 제목"), Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523))))
                         .isInstanceOf(InvalidTripDayException.class);
             }
 
@@ -687,7 +687,7 @@ public class TripTest {
                 Trip trip = Trip.builder()
                         .id(1L)
                         .tripperId(1L)
-                        .title("여행 제목1")
+                        .tripTitle(TripTitle.of("여행 제목1"))
                         .status(TripStatus.DECIDED)
                         .tripPeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 1)))
                         .build();
@@ -706,7 +706,7 @@ public class TripTest {
                 Schedule schedule1 = Schedule.builder()
                         .day(day)
                         .trip(trip)
-                        .title("일정 제목1")
+                        .scheduleTitle(ScheduleTitle.of("일정 제목1"))
                         .place(Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)))
                         .scheduleIndex(ScheduleIndex.of(ScheduleIndex.MAX_INDEX_VALUE))
                         .build();
@@ -715,7 +715,7 @@ public class TripTest {
 
                 // when & then
                 assertThatThrownBy(() ->
-                        trip.createSchedule(day, "일정제목2", Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523))))
+                        trip.createSchedule(day, ScheduleTitle.of("일정제목2"), Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523))))
                         .isInstanceOf(ScheduleIndexRangeException.class);
             }
 
@@ -725,7 +725,7 @@ public class TripTest {
                 Trip trip = Trip.builder()
                         .id(1L)
                         .tripperId(1L)
-                        .title("여행 제목1")
+                        .tripTitle(TripTitle.of("여행 제목1"))
                         .status(TripStatus.DECIDED)
                         .tripPeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 1)))
                         .build();
@@ -738,8 +738,8 @@ public class TripTest {
 
                 trip.getDays().add(day);
 
-                Schedule schedule1 = trip.createSchedule(day, "일정 제목1", Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
-                Schedule schedule2 = trip.createSchedule(day, "일정 제목2", Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule1 = trip.createSchedule(day, ScheduleTitle.of("일정 제목1"), Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule2 = trip.createSchedule(day, ScheduleTitle.of("일정 제목2"), Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
 
                 assertThat(schedule1.getScheduleIndex()).isEqualTo(ScheduleIndex.ZERO_INDEX);
                 assertThat(schedule2.getScheduleIndex()).isEqualTo(ScheduleIndex.of(ScheduleIndex.DEFAULT_SEQUENCE_GAP));
@@ -759,9 +759,9 @@ public class TripTest {
             @Test
             public void when_targetOrder_is_under_zero_then_it_throws_InvalidScheduleMoveTargetOrderException() {
                 // given
-                Trip trip = Trip.create("여행제목", 1L);
+                Trip trip = Trip.create(TripTitle.of("여행제목"), 1L);
                 Day day = null;
-                Schedule schedule = trip.createSchedule(day, "일정제목", Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule = trip.createSchedule(day, ScheduleTitle.of("일정제목"), Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
 
                 // when & then
                 assertThatThrownBy(() -> trip.moveSchedule(schedule, day, -1))
@@ -771,11 +771,11 @@ public class TripTest {
             @DisplayName("targetOrder가 임시보관함 크기를 넘어가는 경우 InvalidScheduleMoveTargetOrderException 발생")
             @Test
             public void when_targetOrder_is_over_temporary_storage_max_size_then_it_throws_InvalidScheduleMoveTargetOrderException() {
-                Trip trip = Trip.create("여행제목", 1L);
+                Trip trip = Trip.create(TripTitle.of("여행제목"), 1L);
                 Day day = null;
 
-                Schedule schedule1 = trip.createSchedule(day, "일정제목", Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
-                Schedule schedule2 = trip.createSchedule(day, "일정제목", Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule1 = trip.createSchedule(day, ScheduleTitle.of("일정제목"), Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule2 = trip.createSchedule(day, ScheduleTitle.of("일정제목"), Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
 
                 // when & then
                 assertThatThrownBy(() -> trip.moveSchedule(schedule1, day, 3))
@@ -785,11 +785,11 @@ public class TripTest {
             @DisplayName("임시보관함 내에서, 자신의 기존 순서로 이동할 경우, 아무런 변화도 일어나지 않는다.")
             @Test
             public void when_move_to_same_position_then_nothing_changed() {
-                Trip trip = Trip.create("여행제목", 1L);
+                Trip trip = Trip.create(TripTitle.of("여행제목"), 1L);
                 Day day = null;
 
-                Schedule schedule1 = trip.createSchedule(day, "일정제목1", Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
-                Schedule schedule2 = trip.createSchedule(day, "일정제목2", Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule1 = trip.createSchedule(day, ScheduleTitle.of("일정제목1"), Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule2 = trip.createSchedule(day, ScheduleTitle.of("일정제목2"), Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
 
                 // when
                 ScheduleMoveDto scheduleMoveDto = trip.moveSchedule(schedule2, day, 1);
@@ -812,11 +812,11 @@ public class TripTest {
             @DisplayName("임시보관함 내에 기존의 순서 다음으로 이동시키려 할 경우, 아무런 변화도 일어나지 않는다.")
             @Test
             public void when_move_to_after_currentOrder_then_nothing_changed() {
-                Trip trip = Trip.create("여행제목", 1L);
+                Trip trip = Trip.create(TripTitle.of("여행제목"), 1L);
                 Day day = null;
 
-                Schedule schedule1 = trip.createSchedule(day, "일정제목1", Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
-                Schedule schedule2 = trip.createSchedule(day, "일정제목2", Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule1 = trip.createSchedule(day, ScheduleTitle.of("일정제목1"), Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule2 = trip.createSchedule(day, ScheduleTitle.of("일정제목2"), Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
 
                 // when
                 ScheduleMoveDto scheduleMoveDto = trip.moveSchedule(schedule2, day, 2);
@@ -839,11 +839,11 @@ public class TripTest {
             @DisplayName("targetOrder가 임시보관함 크기와 똑같은 값이고, 끝 ScheduleIndex 범위가 안전하면 맨 뒤로 이동한다.")
             @Test
             public void when_targetOrder_isEqualTo_TemporaryStorageSize_and_tail_scheduleIndex_isSafe_schedule_move_to_Tail() {
-                Trip trip = Trip.create("여행제목", 1L);
+                Trip trip = Trip.create(TripTitle.of("여행제목"), 1L);
                 Day day = null;
 
-                Schedule schedule1 = trip.createSchedule(day, "일정제목1", Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
-                Schedule schedule2 = trip.createSchedule(day, "일정제목2", Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule1 = trip.createSchedule(day, ScheduleTitle.of("일정제목1"), Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule2 = trip.createSchedule(day, ScheduleTitle.of("일정제목2"), Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
 
                 // when
                 ScheduleMoveDto scheduleMoveDto = trip.moveSchedule(schedule1, day, 2);
@@ -863,13 +863,13 @@ public class TripTest {
             @DisplayName("targetOrder가 임시보관함 크기와 똑같은 값이고, 끝 ScheduleIndex 범위가 안전하지 않으면 ScheduleIndexRangeException 발생")
             @Test
             public void when_targetOrder_isEqualTo_TemporaryStorageSize_and_tail_scheduleIndex_is_unSafe_it_throws_ScheduleIndexRangeException() {
-                Trip trip = Trip.create("여행제목", 1L);
+                Trip trip = Trip.create(TripTitle.of("여행제목"), 1L);
                 Day day = null;
 
                 Schedule schedule1 = Schedule.builder()
                         .day(day)
                         .trip(trip)
-                        .title("일정제목1")
+                        .scheduleTitle(ScheduleTitle.of("일정제목1"))
                         .place(Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)))
                         .scheduleIndex(ScheduleIndex.ZERO_INDEX)
                         .build();
@@ -877,7 +877,7 @@ public class TripTest {
                 Schedule schedule2 = Schedule.builder()
                         .day(day)
                         .trip(trip)
-                        .title("일정제목2")
+                        .scheduleTitle(ScheduleTitle.of("일정제목2"))
                         .place(Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)))
                         .scheduleIndex(ScheduleIndex.of(ScheduleIndex.MAX_INDEX_VALUE))
                         .build();
@@ -894,11 +894,11 @@ public class TripTest {
             @DisplayName("targetOrder가 0이고, 맨 앞 ScheduleIndex 범위가 안전하면 맨 앞으로 이동한다.")
             @Test
             public void when_targetOrder_isEqualTo_Zero_and_head_scheduleIndex_is_Safe_then_schedule_move_to_Head() {
-                Trip trip = Trip.create("여행제목", 1L);
+                Trip trip = Trip.create(TripTitle.of("여행제목"), 1L);
                 Day day = null;
 
-                Schedule schedule1 = trip.createSchedule(day, "일정제목1", Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
-                Schedule schedule2 = trip.createSchedule(day, "일정제목2", Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule1 = trip.createSchedule(day, ScheduleTitle.of("일정제목1"), Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule2 = trip.createSchedule(day, ScheduleTitle.of("일정제목2"), Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
 
                 // when
                 ScheduleMoveDto scheduleMoveDto = trip.moveSchedule(schedule2, day, 0);
@@ -918,13 +918,13 @@ public class TripTest {
             @DisplayName("targetOrder가 0이고, 맨 앞 ScheduleIndex 범위가 안전하지 않으면 ScheduleIndexRangeException 발생")
             @Test
             public void when_targetOrder_isEqualTo_Zero_and_head_scheduleIndex_is_unSafe_it_throws_ScheduleIndexRangeException() {
-                Trip trip = Trip.create("여행제목", 1L);
+                Trip trip = Trip.create(TripTitle.of("여행제목"), 1L);
                 Day day = null;
 
                 Schedule schedule1 = Schedule.builder()
                         .day(day)
                         .trip(trip)
-                        .title("일정제목1")
+                        .scheduleTitle(ScheduleTitle.of("일정제목1"))
                         .place(Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)))
                         .scheduleIndex(ScheduleIndex.of(ScheduleIndex.MIN_INDEX_VALUE))
                         .build();
@@ -932,7 +932,7 @@ public class TripTest {
                 Schedule schedule2 = Schedule.builder()
                         .day(day)
                         .trip(trip)
-                        .title("일정제목2")
+                        .scheduleTitle(ScheduleTitle.of("일정제목2"))
                         .place(Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)))
                         .scheduleIndex(ScheduleIndex.ZERO_INDEX)
                         .build();
@@ -949,12 +949,12 @@ public class TripTest {
             @DisplayName("targetOrder가 다른 일정의 순서이고, 해당 순서 앞과 간격이 충분하면 중간 인덱스가 부여된다.")
             @Test
             public void testMiddleInsert_Success() {
-                Trip trip = Trip.create("여행제목", 1L);
+                Trip trip = Trip.create(TripTitle.of("여행제목"), 1L);
                 Day day = null;
 
-                Schedule schedule1 = trip.createSchedule(day, "일정제목1", Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
-                Schedule schedule2 = trip.createSchedule(day, "일정제목2", Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
-                Schedule schedule3 = trip.createSchedule(day, "일정제목3", Place.of("place-id333", "place 이름333", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule1 = trip.createSchedule(day, ScheduleTitle.of("일정제목1"), Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule2 = trip.createSchedule(day, ScheduleTitle.of("일정제목2"), Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule3 = trip.createSchedule(day, ScheduleTitle.of("일정제목3"), Place.of("place-id333", "place 이름333", Coordinate.of(37.72221, 137.86523)));
 
                 // when
                 ScheduleMoveDto scheduleMoveDto = trip.moveSchedule(schedule1, day, 2);
@@ -974,13 +974,13 @@ public class TripTest {
             @DisplayName("targetOrder가 다른 일정의 순서이고, 해당 순서 앞과 간격이 충분하지 않으면 MidScheduleIndexConflictException 발생")
             @Test
             public void testMiddleInsert_Failure() {
-                Trip trip = Trip.create("여행제목", 1L);
+                Trip trip = Trip.create(TripTitle.of("여행제목"), 1L);
                 Day day = null;
 
                 Schedule schedule1 = Schedule.builder()
                         .day(day)
                         .trip(trip)
-                        .title("일정제목1")
+                        .scheduleTitle(ScheduleTitle.of("일정제목1"))
                         .place(Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)))
                         .scheduleIndex(ScheduleIndex.ZERO_INDEX)
                         .build();
@@ -988,7 +988,7 @@ public class TripTest {
                 Schedule schedule2 = Schedule.builder()
                         .day(day)
                         .trip(trip)
-                        .title("일정제목2")
+                        .scheduleTitle(ScheduleTitle.of("일정제목2"))
                         .place(Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)))
                         .scheduleIndex(ScheduleIndex.of(10))
                         .build();
@@ -996,7 +996,7 @@ public class TripTest {
                 Schedule schedule3 = Schedule.builder()
                         .day(day)
                         .trip(trip)
-                        .title("일정제목3")
+                        .scheduleTitle(ScheduleTitle.of("일정제목3"))
                         .place(Place.of("place-id333", "place 이름333", Coordinate.of(37.72221, 137.86523)))
                         .scheduleIndex(ScheduleIndex.of(11))
                         .build();
@@ -1020,13 +1020,13 @@ public class TripTest {
             @DisplayName("targetDay가 Trip의 Day가 아니면, InvalidTripDayException 발생")
             public void when_targetDay_is_not_in_trip_then_it_throws_InvalidTripDayException() {
                 // given
-                Trip trip = Trip.create("여행제목", 1L);
+                Trip trip = Trip.create(TripTitle.of("여행제목"), 1L);
 
-                Trip otherTrip = Trip.create("다른 여행 제목", 1L);
+                Trip otherTrip = Trip.create(TripTitle.of("다른 여행 제목"), 1L);
                 otherTrip.changePeriod(TripPeriod.of(LocalDate.of(2023, 4, 1), LocalDate.of(2023, 4, 1)));
 
                 Day beforeDay = null;
-                Schedule schedule = trip.createSchedule(beforeDay, "일정제목", Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule = trip.createSchedule(beforeDay, ScheduleTitle.of("일정제목"), Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
 
                 Day targetDay = otherTrip.getDays().get(0);
 
@@ -1040,10 +1040,10 @@ public class TripTest {
             @Test
             public void when_targetOrder_is_under_zero_then_it_throws_InvalidScheduleMoveTargetOrderException() {
                 // given
-                Trip trip = Trip.create("여행제목", 1L);
+                Trip trip = Trip.create(TripTitle.of("여행제목"), 1L);
                 trip.changePeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 1)));
                 Day beforeDay = null;
-                Schedule schedule = trip.createSchedule(beforeDay, "일정제목", Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule = trip.createSchedule(beforeDay, ScheduleTitle.of("일정제목"), Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
 
                 Day targetDay = trip.getDays().get(0);
 
@@ -1055,14 +1055,14 @@ public class TripTest {
             @DisplayName("targetOrder가 Schedules 크기를 넘어가는 경우 InvalidScheduleMoveTargetOrderException 발생")
             @Test
             public void when_targetOrder_is_over_day_schedules_max_size_then_it_throws_InvalidScheduleMoveTargetOrderException() {
-                Trip trip = Trip.create("여행제목", 1L);
+                Trip trip = Trip.create(TripTitle.of("여행제목"), 1L);
                 trip.changePeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 1)));
 
                 Day beforeDay = null;
-                Schedule schedule1 = trip.createSchedule(beforeDay, "일정제목", Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule1 = trip.createSchedule(beforeDay, ScheduleTitle.of("일정제목"), Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
 
                 Day targetDay = trip.getDays().get(0);
-                Schedule schedule2 = trip.createSchedule(targetDay, "일정제목2", Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule2 = trip.createSchedule(targetDay, ScheduleTitle.of("일정제목2"), Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
 
                 // when & then
                 assertThatThrownBy(() -> trip.moveSchedule(schedule1, targetDay, 2))
@@ -1073,14 +1073,14 @@ public class TripTest {
             @DisplayName("targetOrder가 Schedules 크기와 똑같은 값이고, 끝 ScheduleIndex 범위가 안전하면 맨 뒤로 이동한다.")
             @Test
             public void when_targetOrder_isEqualTo_SchedulesSize_and_tail_scheduleIndex_isSafe_schedule_move_to_Tail() {
-                Trip trip = Trip.create("여행제목", 1L);
+                Trip trip = Trip.create(TripTitle.of("여행제목"), 1L);
                 trip.changePeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 1)));
 
                 Day beforeDay = null;
                 Day targetDay = trip.getDays().get(0);
 
-                Schedule schedule1 = trip.createSchedule(beforeDay, "일정제목1", Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
-                Schedule schedule2 = trip.createSchedule(targetDay, "일정제목2", Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule1 = trip.createSchedule(beforeDay, ScheduleTitle.of("일정제목1"), Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule2 = trip.createSchedule(targetDay, ScheduleTitle.of("일정제목2"), Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
 
                 // when
                 ScheduleMoveDto scheduleMoveDto = trip.moveSchedule(schedule1, targetDay, 1);
@@ -1102,7 +1102,7 @@ public class TripTest {
             @DisplayName("targetOrder가 Schedules 크기와 똑같은 값이고, 끝 ScheduleIndex 범위가 안전하지 않으면 ScheduleIndexRangeException 발생")
             @Test
             public void when_targetOrder_isEqualTo_SchedulesSize_and_tail_scheduleIndex_is_unSafe_it_throws_ScheduleIndexRangeException() {
-                Trip trip = Trip.create("여행제목", 1L);
+                Trip trip = Trip.create(TripTitle.of("여행제목"), 1L);
                 trip.changePeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 1)));
 
                 Day beforeDay = null;
@@ -1111,7 +1111,7 @@ public class TripTest {
                 Schedule schedule1 = Schedule.builder()
                         .day(beforeDay)
                         .trip(trip)
-                        .title("일정제목1")
+                        .scheduleTitle(ScheduleTitle.of("일정제목1"))
                         .place(Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)))
                         .scheduleIndex(ScheduleIndex.ZERO_INDEX)
                         .build();
@@ -1119,7 +1119,7 @@ public class TripTest {
                 Schedule schedule2 = Schedule.builder()
                         .day(targetDay)
                         .trip(trip)
-                        .title("일정제목2")
+                        .scheduleTitle(ScheduleTitle.of("일정제목2"))
                         .place(Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)))
                         .scheduleIndex(ScheduleIndex.of(ScheduleIndex.MAX_INDEX_VALUE))
                         .build();
@@ -1136,14 +1136,14 @@ public class TripTest {
             @DisplayName("targetOrder가 0이고, 맨 앞 ScheduleIndex 범위가 안전하면 맨 앞로 이동한다.")
             @Test
             public void when_targetOrder_isEqualTo_Zero_and_head_scheduleIndex_isSafe_schedule_move_to_Head() {
-                Trip trip = Trip.create("여행제목", 1L);
+                Trip trip = Trip.create(TripTitle.of("여행제목"), 1L);
                 trip.changePeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 1)));
 
                 Day beforeDay = null;
                 Day targetDay = trip.getDays().get(0);
 
-                Schedule schedule1 = trip.createSchedule(beforeDay, "일정제목1", Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
-                Schedule schedule2 = trip.createSchedule(targetDay, "일정제목2", Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule1 = trip.createSchedule(beforeDay, ScheduleTitle.of("일정제목1"), Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule2 = trip.createSchedule(targetDay, ScheduleTitle.of("일정제목2"), Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
 
                 // when
                 ScheduleMoveDto scheduleMoveDto = trip.moveSchedule(schedule1, targetDay, 0);
@@ -1165,7 +1165,7 @@ public class TripTest {
             @DisplayName("targetOrder가 0이고, 맨 앞 ScheduleIndex 범위가 안전하지 않으면 ScheduleIndexRangeException 발생")
             @Test
             public void when_targetOrder_isEqualTo_Zero_and_head_scheduleIndex_is_unSafe_it_throws_ScheduleIndexRangeException() {
-                Trip trip = Trip.create("여행제목", 1L);
+                Trip trip = Trip.create(TripTitle.of("여행제목"), 1L);
                 trip.changePeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 1)));
 
                 Day beforeDay = null;
@@ -1174,7 +1174,7 @@ public class TripTest {
                 Schedule schedule1 = Schedule.builder()
                         .day(beforeDay)
                         .trip(trip)
-                        .title("일정제목1")
+                        .scheduleTitle(ScheduleTitle.of("일정제목1"))
                         .place(Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)))
                         .scheduleIndex(ScheduleIndex.ZERO_INDEX)
                         .build();
@@ -1182,7 +1182,7 @@ public class TripTest {
                 Schedule schedule2 = Schedule.builder()
                         .day(targetDay)
                         .trip(trip)
-                        .title("일정제목2")
+                        .scheduleTitle(ScheduleTitle.of("일정제목2"))
                         .place(Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)))
                         .scheduleIndex(ScheduleIndex.of(ScheduleIndex.MIN_INDEX_VALUE))
                         .build();
@@ -1199,15 +1199,15 @@ public class TripTest {
             @DisplayName("targetOrder가 다른 일정의 순서이고, 해당 순서 앞과 간격이 충분하면 중간 인덱스가 부여된다.")
             @Test
             public void testMiddleInsert_Success() {
-                Trip trip = Trip.create("여행제목", 1L);
+                Trip trip = Trip.create(TripTitle.of("여행제목"), 1L);
                 trip.changePeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 1)));
 
                 Day beforeDay = null;
                 Day targetDay = trip.getDays().get(0);
 
-                Schedule schedule1 = trip.createSchedule(beforeDay, "일정제목1", Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
-                Schedule schedule2 = trip.createSchedule(targetDay, "일정제목2", Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
-                Schedule schedule3 = trip.createSchedule(targetDay, "일정제목3", Place.of("place-id333", "place 이름333", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule1 = trip.createSchedule(beforeDay, ScheduleTitle.of("일정제목1"), Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule2 = trip.createSchedule(targetDay, ScheduleTitle.of("일정제목2"), Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule3 = trip.createSchedule(targetDay, ScheduleTitle.of("일정제목3"), Place.of("place-id333", "place 이름333", Coordinate.of(37.72221, 137.86523)));
 
                 // when
                 ScheduleMoveDto scheduleMoveDto = trip.moveSchedule(schedule1, targetDay, 1);
@@ -1230,7 +1230,7 @@ public class TripTest {
             @DisplayName("targetOrder가 다른 일정의 순서이고, 해당 순서 앞과 간격이 충분하지 않으면 MidScheduleIndexConflictException 발생")
             @Test
             public void testMiddleInsert_Failure() {
-                Trip trip = Trip.create("여행제목", 1L);
+                Trip trip = Trip.create(TripTitle.of("여행제목"), 1L);
                 trip.changePeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 1)));
 
                 Day beforeDay = null;
@@ -1239,7 +1239,7 @@ public class TripTest {
                 Schedule schedule1 = Schedule.builder()
                         .day(beforeDay)
                         .trip(trip)
-                        .title("일정제목1")
+                        .scheduleTitle(ScheduleTitle.of("일정제목1"))
                         .place(Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)))
                         .scheduleIndex(ScheduleIndex.ZERO_INDEX)
                         .build();
@@ -1247,7 +1247,7 @@ public class TripTest {
                 Schedule schedule2 = Schedule.builder()
                         .day(targetDay)
                         .trip(trip)
-                        .title("일정제목2")
+                        .scheduleTitle(ScheduleTitle.of("일정제목2"))
                         .place(Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)))
                         .scheduleIndex(ScheduleIndex.of(10))
                         .build();
@@ -1255,7 +1255,7 @@ public class TripTest {
                 Schedule schedule3 = Schedule.builder()
                         .day(targetDay)
                         .trip(trip)
-                        .title("일정제목3")
+                        .scheduleTitle(ScheduleTitle.of("일정제목3"))
                         .place(Place.of("place-id333", "place 이름333", Coordinate.of(37.72221, 137.86523)))
                         .scheduleIndex(ScheduleIndex.of(11))
                         .build();
@@ -1279,12 +1279,12 @@ public class TripTest {
             @DisplayName("targetDay가 Trip의 Day가 아니면, InvalidTripDayException 발생")
             public void when_targetDay_is_not_in_trip_then_it_throws_InvalidTripDayException() {
                 // given
-                Trip trip = Trip.create("여행제목", 1L);
+                Trip trip = Trip.create(TripTitle.of("여행제목"), 1L);
                 trip.changePeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 2)));
                 Day beforeDay = trip.getDays().get(0);
-                Schedule schedule = trip.createSchedule(beforeDay, "여행 제목", Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule = trip.createSchedule(beforeDay, ScheduleTitle.of("여행 제목"), Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
 
-                Trip otherTrip = Trip.create("다른 여행 제목", 1L);
+                Trip otherTrip = Trip.create(TripTitle.of("다른 여행 제목"), 1L);
                 otherTrip.changePeriod(TripPeriod.of(LocalDate.of(2023, 4, 1), LocalDate.of(2023, 4, 1)));
                 Day targetDay = otherTrip.getDays().get(0);
 
@@ -1297,10 +1297,10 @@ public class TripTest {
             @Test
             public void when_targetOrder_is_under_zero_then_it_throws_InvalidScheduleMoveTargetOrderException() {
                 // given
-                Trip trip = Trip.create("여행제목", 1L);
+                Trip trip = Trip.create(TripTitle.of("여행제목"), 1L);
                 trip.changePeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 2)));
                 Day beforeDay = trip.getDays().get(0);
-                Schedule schedule = trip.createSchedule(beforeDay, "일정제목", Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule = trip.createSchedule(beforeDay, ScheduleTitle.of("일정제목"), Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
 
                 Day targetDay = trip.getDays().get(1);
 
@@ -1312,15 +1312,15 @@ public class TripTest {
             @DisplayName("targetOrder가 Schedules 크기를 넘어가는 경우 InvalidScheduleMoveTargetOrderException 발생")
             @Test
             public void when_targetOrder_is_over_day_schedules_max_size_then_it_throws_InvalidScheduleMoveTargetOrderException() {
-                Trip trip = Trip.create("여행제목", 1L);
+                Trip trip = Trip.create(TripTitle.of("여행제목"), 1L);
                 trip.changePeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 2)));
 
                 Day beforeDay = trip.getDays().get(0);
-                Schedule schedule1 = trip.createSchedule(beforeDay, "일정제목", Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule1 = trip.createSchedule(beforeDay, ScheduleTitle.of("일정제목"), Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
 
 
                 Day targetDay = trip.getDays().get(1);
-                Schedule schedule2 = trip.createSchedule(targetDay, "일정제목2", Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule2 = trip.createSchedule(targetDay, ScheduleTitle.of("일정제목2"), Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
 
                 // when & then
                 assertThatThrownBy(() -> trip.moveSchedule(schedule1, targetDay, 2))
@@ -1330,12 +1330,12 @@ public class TripTest {
             @DisplayName("같은 Day의 기존의 순서로 이동할 경우, 아무런 변화도 일어나지 않는다.")
             @Test
             public void when_move_to_same_day_and_same_position_then_nothing_changed() {
-                Trip trip = Trip.create("여행제목", 1L);
+                Trip trip = Trip.create(TripTitle.of("여행제목"), 1L);
                 trip.changePeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 1)));
                 Day day = trip.getDays().get(0);
 
-                Schedule schedule1 = trip.createSchedule(day, "일정제목1", Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
-                Schedule schedule2 = trip.createSchedule(day, "일정제목2", Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule1 = trip.createSchedule(day, ScheduleTitle.of("일정제목1"), Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule2 = trip.createSchedule(day, ScheduleTitle.of("일정제목2"), Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
 
                 // when
                 ScheduleMoveDto scheduleMoveDto = trip.moveSchedule(schedule2, day, 1);
@@ -1358,12 +1358,12 @@ public class TripTest {
             @DisplayName("같은 Day의 기존의 순서 다음으로 이동시키려 할 경우, 아무런 변화도 일어나지 않는다.")
             @Test
             public void when_move_to_same_day_and_after_currentOrder_then_nothing_changed() {
-                Trip trip = Trip.create("여행제목", 1L);
+                Trip trip = Trip.create(TripTitle.of("여행제목"), 1L);
                 trip.changePeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 1)));
                 Day day = trip.getDays().get(0);
 
-                Schedule schedule1 = trip.createSchedule(day, "일정제목1", Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
-                Schedule schedule2 = trip.createSchedule(day, "일정제목2", Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule1 = trip.createSchedule(day, ScheduleTitle.of("일정제목1"), Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule2 = trip.createSchedule(day, ScheduleTitle.of("일정제목2"), Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
 
                 // when
                 ScheduleMoveDto scheduleMoveDto = trip.moveSchedule(schedule2, day, 2);
@@ -1387,14 +1387,14 @@ public class TripTest {
             @DisplayName("targetOrder가 Schedules 크기와 똑같은 값이고, 끝 ScheduleIndex 범위가 안전하면 맨 뒤로 이동한다.")
             @Test
             public void when_targetOrder_isEqualTo_SchedulesSize_and_tail_scheduleIndex_isSafe_schedule_move_to_Tail() {
-                Trip trip = Trip.create("여행제목", 1L);
+                Trip trip = Trip.create(TripTitle.of("여행제목"), 1L);
                 trip.changePeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 2)));
 
                 Day beforeDay = trip.getDays().get(0);
                 Day targetDay = trip.getDays().get(1);
 
-                Schedule schedule1 = trip.createSchedule(beforeDay, "일정제목1", Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
-                Schedule schedule2 = trip.createSchedule(targetDay, "일정제목2", Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule1 = trip.createSchedule(beforeDay, ScheduleTitle.of("일정제목1"), Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule2 = trip.createSchedule(targetDay, ScheduleTitle.of("일정제목2"), Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
 
                 // when
                 ScheduleMoveDto scheduleMoveDto = trip.moveSchedule(schedule1, targetDay, 1);
@@ -1416,7 +1416,7 @@ public class TripTest {
             @DisplayName("targetOrder가 Schedules 크기와 똑같은 값이고, 끝 ScheduleIndex 범위가 안전하지 않으면 ScheduleIndexRangeException 발생")
             @Test
             public void when_targetOrder_isEqualTo_SchedulesSize_and_tail_scheduleIndex_is_unSafe_it_throws_ScheduleIndexRangeException() {
-                Trip trip = Trip.create("여행제목", 1L);
+                Trip trip = Trip.create(TripTitle.of("여행제목"), 1L);
                 trip.changePeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 2)));
 
                 Day beforeDay = trip.getDays().get(0);
@@ -1425,7 +1425,7 @@ public class TripTest {
                 Schedule schedule1 = Schedule.builder()
                         .day(beforeDay)
                         .trip(trip)
-                        .title("일정제목1")
+                        .scheduleTitle(ScheduleTitle.of("일정제목1"))
                         .place(Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)))
                         .scheduleIndex(ScheduleIndex.ZERO_INDEX)
                         .build();
@@ -1433,7 +1433,7 @@ public class TripTest {
                 Schedule schedule2 = Schedule.builder()
                         .day(targetDay)
                         .trip(trip)
-                        .title("일정제목2")
+                        .scheduleTitle(ScheduleTitle.of("일정제목2"))
                         .place(Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)))
                         .scheduleIndex(ScheduleIndex.of(ScheduleIndex.MAX_INDEX_VALUE))
                         .build();
@@ -1450,14 +1450,14 @@ public class TripTest {
             @DisplayName("targetOrder가 0이고, 맨 앞 ScheduleIndex 범위가 안전하면 맨 앞으로 이동한다.")
             @Test
             public void when_targetOrder_isEqualTo_Zero_and_head_scheduleIndex_isSafe_schedule_move_to_Head() {
-                Trip trip = Trip.create("여행제목", 1L);
+                Trip trip = Trip.create(TripTitle.of("여행제목"), 1L);
                 trip.changePeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 2)));
 
                 Day beforeDay = trip.getDays().get(0);
                 Day targetDay = trip.getDays().get(1);
 
-                Schedule schedule1 = trip.createSchedule(beforeDay, "일정제목1", Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
-                Schedule schedule2 = trip.createSchedule(targetDay, "일정제목2", Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule1 = trip.createSchedule(beforeDay, ScheduleTitle.of("일정제목1"), Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule2 = trip.createSchedule(targetDay, ScheduleTitle.of("일정제목2"), Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
 
                 // when
                 ScheduleMoveDto scheduleMoveDto = trip.moveSchedule(schedule1, targetDay, 0);
@@ -1479,7 +1479,7 @@ public class TripTest {
             @DisplayName("targetOrder가 0이고, 맨 앞 ScheduleIndex 범위가 안전하지 않으면 ScheduleIndexRangeException 발생")
             @Test
             public void when_targetOrder_isEqualTo_Zero_and_head_scheduleIndex_is_unSafe_it_throws_ScheduleIndexRangeException() {
-                Trip trip = Trip.create("여행제목", 1L);
+                Trip trip = Trip.create(TripTitle.of("여행제목"), 1L);
                 trip.changePeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 2)));
 
                 Day beforeDay = trip.getDays().get(0);
@@ -1488,7 +1488,7 @@ public class TripTest {
                 Schedule schedule1 = Schedule.builder()
                         .day(beforeDay)
                         .trip(trip)
-                        .title("일정제목1")
+                        .scheduleTitle(ScheduleTitle.of("일정제목1"))
                         .place(Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)))
                         .scheduleIndex(ScheduleIndex.ZERO_INDEX)
                         .build();
@@ -1496,7 +1496,7 @@ public class TripTest {
                 Schedule schedule2 = Schedule.builder()
                         .day(targetDay)
                         .trip(trip)
-                        .title("일정제목2")
+                        .scheduleTitle(ScheduleTitle.of("일정제목2"))
                         .place(Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)))
                         .scheduleIndex(ScheduleIndex.of(ScheduleIndex.MIN_INDEX_VALUE))
                         .build();
@@ -1513,15 +1513,15 @@ public class TripTest {
             @DisplayName("targetOrder가 다른 일정의 순서이고, 해당 순서 앞과 간격이 충분하면 중간 인덱스가 부여된다.")
             @Test
             public void testMiddleInsert_Success() {
-                Trip trip = Trip.create("여행제목", 1L);
+                Trip trip = Trip.create(TripTitle.of("여행제목"), 1L);
                 trip.changePeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 2)));
 
                 Day beforeDay = trip.getDays().get(0);
                 Day targetDay = trip.getDays().get(1);
 
-                Schedule schedule1 = trip.createSchedule(beforeDay, "일정제목1", Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
-                Schedule schedule2 = trip.createSchedule(targetDay, "일정제목2", Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
-                Schedule schedule3 = trip.createSchedule(targetDay, "일정제목3", Place.of("place-id333", "place 이름333", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule1 = trip.createSchedule(beforeDay, ScheduleTitle.of("일정제목1"), Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule2 = trip.createSchedule(targetDay, ScheduleTitle.of("일정제목2"), Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule3 = trip.createSchedule(targetDay, ScheduleTitle.of("일정제목3"), Place.of("place-id333", "place 이름333", Coordinate.of(37.72221, 137.86523)));
 
                 // when
                 ScheduleMoveDto scheduleMoveDto = trip.moveSchedule(schedule1, targetDay, 1);
@@ -1544,7 +1544,7 @@ public class TripTest {
             @DisplayName("targetOrder가 다른 일정의 순서이고, 해당 순서 앞과 간격이 충분하지 않으면 MidScheduleIndexConflictException 발생")
             @Test
             public void testMiddleInsert_Failure() {
-                Trip trip = Trip.create("여행제목", 1L);
+                Trip trip = Trip.create(TripTitle.of("여행제목"), 1L);
                 trip.changePeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 2)));
 
                 Day beforeDay = trip.getDays().get(0);
@@ -1553,7 +1553,7 @@ public class TripTest {
                 Schedule schedule1 = Schedule.builder()
                         .day(beforeDay)
                         .trip(trip)
-                        .title("일정제목1")
+                        .scheduleTitle(ScheduleTitle.of("일정제목1"))
                         .place(Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)))
                         .scheduleIndex(ScheduleIndex.ZERO_INDEX)
                         .build();
@@ -1561,7 +1561,7 @@ public class TripTest {
                 Schedule schedule2 = Schedule.builder()
                         .day(targetDay)
                         .trip(trip)
-                        .title("일정제목2")
+                        .scheduleTitle(ScheduleTitle.of("일정제목2"))
                         .place(Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)))
                         .scheduleIndex(ScheduleIndex.of(10))
                         .build();
@@ -1569,7 +1569,7 @@ public class TripTest {
                 Schedule schedule3 = Schedule.builder()
                         .day(targetDay)
                         .trip(trip)
-                        .title("일정제목3")
+                        .scheduleTitle(ScheduleTitle.of("일정제목3"))
                         .place(Place.of("place-id333", "place 이름333", Coordinate.of(37.72221, 137.86523)))
                         .scheduleIndex(ScheduleIndex.of(11))
                         .build();
@@ -1593,10 +1593,10 @@ public class TripTest {
             @Test
             public void when_targetOrder_is_under_zero_then_it_throws_InvalidScheduleMoveTargetOrderException() {
                 // given
-                Trip trip = Trip.create("여행제목", 1L);
+                Trip trip = Trip.create(TripTitle.of("여행제목"), 1L);
                 trip.changePeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 1)));
                 Day beforeDay = trip.getDays().get(0);
-                Schedule schedule = trip.createSchedule(beforeDay, "일정제목", Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule = trip.createSchedule(beforeDay, ScheduleTitle.of("일정제목"), Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
 
                 Day targetDay = null;
 
@@ -1608,13 +1608,13 @@ public class TripTest {
             @DisplayName("targetOrder가 임시보관함 크기를 넘어가는 경우 InvalidScheduleMoveTargetOrderException 발생")
             @Test
             public void when_targetOrder_is_over_temporary_storage_max_size_then_it_throws_InvalidScheduleMoveTargetOrderException() {
-                Trip trip = Trip.create("여행제목", 1L);
+                Trip trip = Trip.create(TripTitle.of("여행제목"), 1L);
                 trip.changePeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 1)));
                 Day beforeDay = trip.getDays().get(0);
                 Day targetDay = null;
 
-                Schedule schedule1 = trip.createSchedule(beforeDay, "일정제목", Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
-                Schedule schedule2 = trip.createSchedule(targetDay, "일정제목", Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule1 = trip.createSchedule(beforeDay, ScheduleTitle.of("일정제목"), Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule2 = trip.createSchedule(targetDay, ScheduleTitle.of("일정제목"), Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
 
                 // when & then
                 assertThatThrownBy(() -> trip.moveSchedule(schedule1, targetDay, 2))
@@ -1625,14 +1625,14 @@ public class TripTest {
             @DisplayName("targetOrder가 임시보관함 크기와 똑같은 값이고, 끝 ScheduleIndex 범위가 안전하면 맨 뒤로 이동한다.")
             @Test
             public void when_targetOrder_isEqualTo_temporaryStorageSize_and_tail_scheduleIndex_isSafe_schedule_move_to_Tail() {
-                Trip trip = Trip.create("여행제목", 1L);
+                Trip trip = Trip.create(TripTitle.of("여행제목"), 1L);
                 trip.changePeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 1)));
 
                 Day beforeDay = trip.getDays().get(0);
                 Day targetDay = null;
 
-                Schedule schedule1 = trip.createSchedule(beforeDay, "일정제목1", Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
-                Schedule schedule2 = trip.createSchedule(targetDay, "일정제목2", Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule1 = trip.createSchedule(beforeDay, ScheduleTitle.of("일정제목1"), Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule2 = trip.createSchedule(targetDay, ScheduleTitle.of("일정제목2"), Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
 
                 // when
                 ScheduleMoveDto scheduleMoveDto = trip.moveSchedule(schedule1, targetDay, 1);
@@ -1654,7 +1654,7 @@ public class TripTest {
             @DisplayName("targetOrder가 임시보관함 크기와 똑같은 값이고, 끝 ScheduleIndex 범위가 안전하지 않으면 ScheduleIndexRangeException 발생")
             @Test
             public void when_targetOrder_isEqualTo_temporaryStorageSize_and_tail_scheduleIndex_is_unSafe_it_throws_ScheduleIndexRangeException() {
-                Trip trip = Trip.create("여행제목", 1L);
+                Trip trip = Trip.create(TripTitle.of("여행제목"), 1L);
                 trip.changePeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 2)));
 
                 Day beforeDay = trip.getDays().get(0);
@@ -1663,7 +1663,7 @@ public class TripTest {
                 Schedule schedule1 = Schedule.builder()
                         .day(beforeDay)
                         .trip(trip)
-                        .title("일정제목1")
+                        .scheduleTitle(ScheduleTitle.of("일정제목1"))
                         .place(Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)))
                         .scheduleIndex(ScheduleIndex.ZERO_INDEX)
                         .build();
@@ -1671,7 +1671,7 @@ public class TripTest {
                 Schedule schedule2 = Schedule.builder()
                         .day(targetDay)
                         .trip(trip)
-                        .title("일정제목2")
+                        .scheduleTitle(ScheduleTitle.of("일정제목2"))
                         .place(Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)))
                         .scheduleIndex(ScheduleIndex.of(ScheduleIndex.MAX_INDEX_VALUE))
                         .build();
@@ -1689,14 +1689,14 @@ public class TripTest {
             @DisplayName("targetOrder가 0이고, 맨 앞 ScheduleIndex 범위가 안전하면 맨 앞으로 이동한다.")
             @Test
             public void when_targetOrder_isEqualTo_Zero_and_Head_scheduleIndex_isSafe_schedule_move_to_Head() {
-                Trip trip = Trip.create("여행제목", 1L);
+                Trip trip = Trip.create(TripTitle.of("여행제목"), 21L);
                 trip.changePeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 1)));
 
                 Day beforeDay = trip.getDays().get(0);
                 Day targetDay = null;
 
-                Schedule schedule1 = trip.createSchedule(beforeDay, "일정제목1", Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
-                Schedule schedule2 = trip.createSchedule(targetDay, "일정제목2", Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule1 = trip.createSchedule(beforeDay, ScheduleTitle.of("일정제목1"), Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule2 = trip.createSchedule(targetDay, ScheduleTitle.of("일정제목2"), Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
 
                 // when
                 ScheduleMoveDto scheduleMoveDto = trip.moveSchedule(schedule1, targetDay, 0);
@@ -1718,7 +1718,7 @@ public class TripTest {
             @DisplayName("targetOrder가 0이고, 끝 ScheduleIndex 범위가 안전하지 않으면 ScheduleIndexRangeException 발생")
             @Test
             public void when_targetOrder_isEqualTo_Zero_and_Head_scheduleIndex_is_unSafe_it_throws_ScheduleIndexRangeException() {
-                Trip trip = Trip.create("여행제목", 1L);
+                Trip trip = Trip.create(TripTitle.of("여행제목"), 1L);
                 trip.changePeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 2)));
 
                 Day beforeDay = trip.getDays().get(0);
@@ -1727,7 +1727,7 @@ public class TripTest {
                 Schedule schedule1 = Schedule.builder()
                         .day(beforeDay)
                         .trip(trip)
-                        .title("일정제목1")
+                        .scheduleTitle(ScheduleTitle.of("일정제목1"))
                         .place(Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)))
                         .scheduleIndex(ScheduleIndex.ZERO_INDEX)
                         .build();
@@ -1735,7 +1735,7 @@ public class TripTest {
                 Schedule schedule2 = Schedule.builder()
                         .day(targetDay)
                         .trip(trip)
-                        .title("일정제목2")
+                        .scheduleTitle(ScheduleTitle.of("일정제목2"))
                         .place(Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)))
                         .scheduleIndex(ScheduleIndex.of(ScheduleIndex.MIN_INDEX_VALUE))
                         .build();
@@ -1752,15 +1752,15 @@ public class TripTest {
             @DisplayName("targetOrder가 다른 일정의 순서이고, 해당 순서 앞과 간격이 충분하면 중간 인덱스가 부여된다.")
             @Test
             public void testMiddleInsert_Success() {
-                Trip trip = Trip.create("여행제목", 1L);
+                Trip trip = Trip.create(TripTitle.of("여행제목"), 1L);
                 trip.changePeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 1)));
 
                 Day beforeDay = trip.getDays().get(0);
                 Day targetDay = null;
 
-                Schedule schedule1 = trip.createSchedule(beforeDay, "일정제목1", Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
-                Schedule schedule2 = trip.createSchedule(targetDay, "일정제목2", Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
-                Schedule schedule3 = trip.createSchedule(targetDay, "일정제목3", Place.of("place-id333", "place 이름333", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule1 = trip.createSchedule(beforeDay, ScheduleTitle.of("일정제목1"), Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule2 = trip.createSchedule(targetDay, ScheduleTitle.of("일정제목2"), Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)));
+                Schedule schedule3 = trip.createSchedule(targetDay, ScheduleTitle.of("일정제목3"), Place.of("place-id333", "place 이름333", Coordinate.of(37.72221, 137.86523)));
 
                 // when
                 ScheduleMoveDto scheduleMoveDto = trip.moveSchedule(schedule1, targetDay, 1);
@@ -1783,7 +1783,7 @@ public class TripTest {
             @DisplayName("targetOrder가 다른 일정의 순서이고, 해당 순서 앞과 간격이 충분하지 않으면 MidScheduleIndexConflictException 발생")
             @Test
             public void testMiddleInsert_Failure() {
-                Trip trip = Trip.create("여행제목", 1L);
+                Trip trip = Trip.create(TripTitle.of("여행제목"), 1L);
                 trip.changePeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 1)));
 
                 Day beforeDay = trip.getDays().get(0);
@@ -1793,7 +1793,7 @@ public class TripTest {
                 Schedule schedule1 = Schedule.builder()
                         .day(beforeDay)
                         .trip(trip)
-                        .title("일정제목1")
+                        .scheduleTitle(ScheduleTitle.of("일정제목1"))
                         .place(Place.of("place-id111", "place 이름111", Coordinate.of(37.72221, 137.86523)))
                         .scheduleIndex(ScheduleIndex.ZERO_INDEX)
                         .build();
@@ -1801,7 +1801,7 @@ public class TripTest {
                 Schedule schedule2 = Schedule.builder()
                         .day(targetDay)
                         .trip(trip)
-                        .title("일정제목2")
+                        .scheduleTitle(ScheduleTitle.of("일정제목2"))
                         .place(Place.of("place-id222", "place 이름222", Coordinate.of(37.72221, 137.86523)))
                         .scheduleIndex(ScheduleIndex.of(10))
                         .build();
@@ -1809,7 +1809,7 @@ public class TripTest {
                 Schedule schedule3 = Schedule.builder()
                         .day(targetDay)
                         .trip(trip)
-                        .title("일정제목3")
+                        .scheduleTitle(ScheduleTitle.of("일정제목3"))
                         .place(Place.of("place-id333", "place 이름333", Coordinate.of(37.72221, 137.86523)))
                         .scheduleIndex(ScheduleIndex.of(11))
                         .build();
