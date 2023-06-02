@@ -14,7 +14,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.restdocs.payload.JsonFieldType;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
@@ -27,6 +26,8 @@ import static org.mockito.Mockito.verify;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.put;
+import static org.springframework.restdocs.payload.JsonFieldType.NUMBER;
+import static org.springframework.restdocs.payload.JsonFieldType.STRING;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
@@ -81,23 +82,23 @@ public class TripUpdateControllerDocsTest extends RestDocsTestSupport {
                         ),
                         requestFields(
                                 fieldWithPath("title")
-                                        .type(JsonFieldType.STRING)
+                                        .type(STRING)
                                         .description("여행 제목")
                                         .attributes(key("constraints").value("null 또는 공백일 수 없으며, 길이는 1-20자까지만 허용됩니다.")),
                                 fieldWithPath("startDate")
-                                        .type(JsonFieldType.STRING)
+                                        .type(STRING)
                                         .optional()
                                         .description("여행 시작 일자 (형식 : yyyy-MM-dd)")
                                         .attributes(key("constraints").value("startDate,endDate는 한쪽만 null이여선 안 되며(둘다 null은 가능), endDate가 startDate보다 앞서선 안 됩니다. 여행 일수는 최대 10일까지 허용됩니다.")),
                                 fieldWithPath("endDate")
-                                        .type(JsonFieldType.STRING)
+                                        .type(STRING)
                                         .optional()
                                         .description("여행 종료 일자 (형식 : yyyy-MM-dd)")
                                         .attributes(key("constraints").value("startDate 참고"))
                         ),
                         responseFields(
                                 fieldWithPath("updatedTripId")
-                                        .type(JsonFieldType.NUMBER)
+                                        .type(NUMBER)
                                         .description("수정된 여행 식별자(id)")
                         )
                 ));
