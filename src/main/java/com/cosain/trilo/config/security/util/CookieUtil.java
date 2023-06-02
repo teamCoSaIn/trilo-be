@@ -3,14 +3,12 @@ package com.cosain.trilo.config.security.util;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.SerializationUtils;
 
 import java.util.Base64;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
-@Slf4j
 public class CookieUtil {
 
     private static final String AUTH_COOKIE_NAME = "refreshToken";
