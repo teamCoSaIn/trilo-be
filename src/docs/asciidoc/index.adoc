@@ -59,5 +59,58 @@ include::{snippets}/trip-create-controller-docs-test/success-test/http-response.
 
 서버는 요청 사항에 맞게 여행을 생성하고, 생성된 여행의 식별자를 반환합니다.
 
+---
+
 === Trip 수정
-operation::trip-update-controller-docs-test/trip-update-doc-test[snippets = 'http-request,path-parameters,request-headers,request-fields,http-response,response-fields']
+
+==== 기본 정보
+- 메서드 : PUT
+- URL : `/api/trips/{tripId}`
+- 인증방식 : 액세스 토큰
+
+요청한 여행에 대해서 요청한 제목, 기간으로 여행의 상태를 수정합니다.
+수정이 성공됐을 경우, 다시 여행의 식별자를 응답합니다.
+
+
+==== 요청
+===== 헤더
+include::{snippets}/trip-update-controller-docs-test/trip-update-doc-test/request-headers.adoc[]
+===== 경로 변수(PathVariable)
+include::{snippets}/trip-update-controller-docs-test/trip-update-doc-test/path-parameters.adoc[]
+
+- 유효한 여행 식별자(tripId)를 전달해야합니다.
+
+===== 본문
+include::{snippets}/trip-update-controller-docs-test/trip-update-doc-test/request-fields.adoc[]
+
+===== 기간 설정 주의 사항
+사용자가 시작일과 종료일을 전달한다면 여행의 기간이 해당 기간에 맞게 설정됩니다.
+기존에 기간이 설정되어있지 않은 경우(여행을 처음 생성한 상태를 유지할 때) 기간의 초기화가 이 시점에 이루어집니다.
+
+만약 기존에 기간이 정해져있는 상태이고 각각의 Day마다 일정이 있을 때, 새로 변경된 기간에 속하지 않는 Day의 일정들은 임시보관함으로 일괄 이동됩니다.
+예를 들어, 2023년 3월 1일부터 2023년 3월 3일까지 잡혀진 여행 기간을 2023년 3월 3일부터 2023년 3월 5일까지의 여행 기간으로 변경할 경우, 새로운 여행 기간에 속하지 않는
+2023년 3월 1일부터 2023년 3월 2일까지의 Day에 속한 일정들은 모두 임시보관함으로 이동됩니다.
+
+
+또, 기존에 기간이 정해져있는 여행에 대해 시작일과 종료일을 둘다 null로 변경할 수 없습니다. 여행 기간이 정해져 있지 않은 상태는 여행 생성 이후 초기화 직전까지에만 가능하며
+한번 기간을 초기화한 경우 그 이후에는 기간이 없는 상태로 돌릴 수 없습니다.
+
+여행 기간은 최대 10일까지 설정할 수 있습니다. 그 이상을 넘어가는 기간에 대해 설정할 수 없습니다.
+
+==== 응답
+===== 본문
+include::{snippets}/trip-update-controller-docs-test/trip-update-doc-test/response-fields.adoc[]
+
+==== 예제
+===== 요청
+include::{snippets}/trip-update-controller-docs-test/trip-update-doc-test/http-request.adoc[]
+
+사용자는 경로변수를 통해 어떤 여행을 수정할 것인지 지정하고, 요청 본문에 변경할 제목, 기간(시작일, 종료일)을 전달합니다.
+
+===== 응답
+include::{snippets}/trip-update-controller-docs-test/trip-update-doc-test/http-response.adoc[]
+
+
+서버는 요청 사항에 맞게 여행을 수정하고, 수정된 여행의 식별자를 다시 반환합니다.
+
+---
