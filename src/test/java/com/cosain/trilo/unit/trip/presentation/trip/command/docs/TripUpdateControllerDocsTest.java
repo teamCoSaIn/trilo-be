@@ -23,13 +23,15 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.Mockito.verify;
-import static org.springframework.data.redis.connection.DataType.STRING;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.put;
+import static org.springframework.restdocs.payload.JsonFieldType.NUMBER;
+import static org.springframework.restdocs.payload.JsonFieldType.STRING;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.restdocs.snippet.Attributes.key;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(TripUpdateController.class)
@@ -46,7 +48,8 @@ public class TripUpdateControllerDocsTest extends RestDocsTestSupport {
     private final String ACCESS_TOKEN = "Bearer accessToken";
 
     @Test
-    void 여행_수정_요청() throws Exception {
+    @DisplayName("인증된 사용자의 여행 수정 요청 -> 성공")
+    void tripUpdateDocTest() throws Exception {
 
         // given
         mockingForLoginUserAnnotation();
@@ -70,18 +73,33 @@ public class TripUpdateControllerDocsTest extends RestDocsTestSupport {
                 .andExpect(status().isOk())
                 .andDo(restDocs.document(
                         requestHeaders(
-                                headerWithName(HttpHeaders.AUTHORIZATION).description("Bearer 타입 AccessToken")
+                                headerWithName(HttpHeaders.AUTHORIZATION)
+                                        .description("Bearer 타입 AccessToken")
                         ),
                         pathParameters(
-                                parameterWithName("tripId").description("수정할 여행 ID")
+                                parameterWithName("tripId")
+                                        .description("수정할 여행 ID")
                         ),
                         requestFields(
-                                fieldWithPath("title").type(STRING).description("여행 제목"),
-                                fieldWithPath("startDate").type(STRING).description("여행 시작 일자 (yyyy-MM-dd) "),
-                                fieldWithPath("endDate").type(STRING).description("여행 종료 일자 (yyyy-MM-dd)")
+                                fieldWithPath("title")
+                                        .type(STRING)
+                                        .description("여행 제목")
+                                        .attributes(key("constraints").value("null 또는 공백일 수 없으며, 길이는 1-20자까지만 허용됩니다.")),
+                                fieldWithPath("startDate")
+                                        .type(STRING)
+                                        .optional()
+                                        .description("여행 시작 일자 (형식 : yyyy-MM-dd)")
+                                        .attributes(key("constraints").value("startDate,endDate는 한쪽만 null이여선 안 되며(둘다 null은 가능), endDate가 startDate보다 앞서선 안 됩니다. 여행 일수는 최대 10일까지 허용됩니다.")),
+                                fieldWithPath("endDate")
+                                        .type(STRING)
+                                        .optional()
+                                        .description("여행 종료 일자 (형식 : yyyy-MM-dd)")
+                                        .attributes(key("constraints").value("startDate 참고"))
                         ),
                         responseFields(
-                                fieldWithPath("updatedTripId").type(STRING).description("수정된 여행 ID")
+                                fieldWithPath("updatedTripId")
+                                        .type(NUMBER)
+                                        .description("수정된 여행 식별자(id)")
                         )
                 ));
 
