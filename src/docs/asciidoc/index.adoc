@@ -60,4 +60,4 @@ include::{snippets}/trip-create-controller-docs-test/success-test/http-response.
 서버는 요청 사항에 맞게 여행을 생성하고, 생성된 여행의 식별자를 반환합니다.
 
 === Trip 수정
-operation::trip-update-controller-docs-test/여행_수정_요청[snippets = 'http-request,path-parameters,request-headers,request-fields,http-response,response-fields']
+operation::trip-update-controller-docs-test/trip-update-doc-test[snippets = 'http-request,path-parameters,request-headers,request-fields,http-response,response-fields']
