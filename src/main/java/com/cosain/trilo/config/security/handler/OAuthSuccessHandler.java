@@ -5,6 +5,7 @@ import com.cosain.trilo.auth.domain.repository.TokenRepository;
 import com.cosain.trilo.auth.infra.TokenAnalyzer;
 import com.cosain.trilo.auth.infra.TokenProvider;
 import com.cosain.trilo.auth.presentation.dto.AuthResponse;
+import com.cosain.trilo.config.security.HttpCookieOAuth2AuthorizationRequestRepository;
 import com.cosain.trilo.config.security.util.CookieUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
@@ -28,6 +29,7 @@ public class OAuthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
     private final TokenAnalyzer tokenAnalyzer;
     private final TokenRepository tokenRepository;
     private final ObjectMapper objectMapper;
+    private final HttpCookieOAuth2AuthorizationRequestRepository cookieOAuth2AuthorizationRequestRepository;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
@@ -38,6 +40,7 @@ public class OAuthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
         Long tokenExpiry = tokenAnalyzer.getTokenRemainExpiryFrom(refreshToken);
         tokenRepository.saveRefreshToken(RefreshToken.of(refreshToken, tokenExpiry));
 
+        cookieOAuth2AuthorizationRequestRepository.removeAuthorizationRequestCookies(request, response);
         CookieUtil.addAuthCookie(response, refreshToken, tokenExpiry);
         response.setStatus(HttpStatus.OK.value());
         objectMapper.writeValue(response.getWriter(), AuthResponse.from(accessToken));
