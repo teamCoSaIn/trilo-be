@@ -139,3 +139,18 @@ include::{snippets}/single-trip-query-controller-docs-test/여행_단건_조회/
 include::{snippets}/single-trip-query-controller-docs-test/여행_단건_조회/http-response.adoc[]
 
 ---
+
+==== Schedule 조회
+===== 요청
+====== 헤더
+include::{snippets}/single-schedule-query-controller-docs-test/일정_단건_조회/request-headers.adoc[]
+====== 경로 변수
+include::{snippets}/single-schedule-query-controller-docs-test/일정_단건_조회/path-parameters.adoc[]
+===== 응답
+====== 본문
+include::{snippets}/single-schedule-query-controller-docs-test/일정_단건_조회/response-fields.adoc[]
+===== 예제
+====== 요청
+include::{snippets}/single-schedule-query-controller-docs-test/일정_단건_조회/http-request.adoc[]
+====== 응답
+include::{snippets}/single-schedule-query-controller-docs-test/일정_단건_조회/http-response.adoc[]
