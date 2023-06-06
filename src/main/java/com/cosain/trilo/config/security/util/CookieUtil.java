@@ -7,21 +7,8 @@ import org.springframework.util.SerializationUtils;
 
 import java.util.Base64;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 
 public class CookieUtil {
-
-    private static final String AUTH_COOKIE_NAME = "refreshToken";
-
-    public static void addAuthCookie(HttpServletResponse response, String refreshToken, Long tokenExpiry){
-        int maxAge = (int) TimeUnit.MICROSECONDS.toSeconds(tokenExpiry);
-        Cookie cookie = new Cookie(AUTH_COOKIE_NAME, refreshToken);
-        cookie.setHttpOnly(true);
-        cookie.setMaxAge(maxAge);
-        response.addCookie(cookie);
-
-    }
-
     public static Optional<Cookie> getCookie(HttpServletRequest request, String name) {
         Cookie[] cookies = request.getCookies();
         if (cookies != null && cookies.length > 0) {
