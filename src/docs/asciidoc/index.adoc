@@ -11,13 +11,13 @@
 === 인증 URI
 
 ==== 구글 URI
-operation::o-auth2-login-test/구글_인증_url_요청[snippets = 'http-request,http-response,response-fields']
+operation::o-auth2-login-test/구글_인증_url_요청[snippets = 'http-request,http-response']
 
 ==== 네이버 URI
-operation::o-auth2-login-test/네이버_인증_url_요청[snippets = 'http-request,http-response,response-fields']
+operation::o-auth2-login-test/네이버_인증_url_요청[snippets = 'http-request,http-response']
 
 ==== 카카오 URI
-operation::o-auth2-login-test/카카오_인증_url_요청[snippets = 'http-request,http-response,response-fields']
+operation::o-auth2-login-test/카카오_인증_url_요청[snippets = 'http-request,http-response']
 
 === 로그아웃
 operation::auth-rest-controller-docs-test/로그아웃_요청[snippets = 'http-request,request-headers,http-response']
@@ -112,5 +112,30 @@ include::{snippets}/trip-update-controller-docs-test/trip-update-doc-test/http-r
 
 
 서버는 요청 사항에 맞게 여행을 수정하고, 수정된 여행의 식별자를 다시 반환합니다.
+
+---
+
+=== Trip 조회
+
+==== 기본정보
+
+- 메서드 : GET
+- URL : `/api/trips/{tripId}`
+- 인증 방식 : 엑세스 토큰
+
+==== 요청
+===== 헤더
+include::{snippets}/single-trip-query-controller-docs-test/여행_단건_조회/request-headers.adoc[]
+===== 경로 변수
+include::{snippets}/single-trip-query-controller-docs-test/여행_단건_조회/path-parameters.adoc[]
+==== 응답
+===== 본문
+include::{snippets}/single-trip-query-controller-docs-test/여행_단건_조회/response-fields.adoc[]
+
+==== 예제
+===== 요청
+include::{snippets}/single-trip-query-controller-docs-test/여행_단건_조회/http-request.adoc[]
+===== 응답
+include::{snippets}/single-trip-query-controller-docs-test/여행_단건_조회/http-response.adoc[]
 
 ---
