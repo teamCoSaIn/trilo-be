@@ -67,4 +67,11 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
             WHERE s.trip.id = :tripId
             """)
     int findTripScheduleCount(@Param("tripId") Long tripId);
+
+    @Query("""
+            SELECT COUNT(s)
+            FROM Schedule as s
+            WHERE s.day.id = :dayId
+            """)
+    int findDayScheduleCount(@Param("dayId") Long dayId);
 }

@@ -528,4 +528,58 @@ public class ScheduleRepositoryTest {
                 .build();
     }
 
+    @Nested
+    @DisplayName("findDayScheduleCount : Day에 속한 일정의 갯수를 가져온다.")
+    class FindDayScheduleCountTest {
+
+        @DisplayName("Day에 아무 일정도 없음 -> 0 반환")
+        @Test
+        void noDayScheduleTest() {
+            Trip trip = Trip.builder()
+                    .tripperId(1L)
+                    .tripTitle(TripTitle.of("여행 제목"))
+                    .status(TripStatus.DECIDED)
+                    .tripPeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 1)))
+                    .build();
+            em.persist(trip);
+
+            Day day = Day.of(LocalDate.of(2023,3,1), trip);
+            em.persist(day);
+
+            int scheduleTripCount = scheduleRepository.findDayScheduleCount(day.getId());
+            assertThat(scheduleTripCount).isEqualTo(0);
+        }
+
+        @DisplayName("Day에 일정 3개 -> 3 반환")
+        @Test
+        void threeDayScheduleTest() {
+            Trip trip = Trip.builder()
+                    .tripperId(1L)
+                    .tripTitle(TripTitle.of("여행 제목"))
+                    .status(TripStatus.DECIDED)
+                    .tripPeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 2)))
+                    .build();
+            em.persist(trip);
+
+            Day day1 = Day.of(LocalDate.of(2023,3,1), trip);
+            Day day2 = Day.of(LocalDate.of(2023,3,2), trip);
+            em.persist(day1);
+            em.persist(day2);
+
+            Schedule schedule1 = trip.createSchedule(day1, ScheduleTitle.of("일정제목1"), Place.of("장소식별자1", "장소명1", Coordinate.of(34.127, 124.7771)));
+            Schedule schedule2 = trip.createSchedule(day1, ScheduleTitle.of("일정제목2"), Place.of("장소식별자2", "장소명2", Coordinate.of(34.127, 124.7771)));
+            Schedule schedule3 = trip.createSchedule(day1, ScheduleTitle.of("일정제목3"), Place.of("장소식별자3", "장소명3", Coordinate.of(34.127, 124.7771)));
+            Schedule schedule4 = trip.createSchedule(day2, ScheduleTitle.of("일정제목4"), Place.of("장소식별자4", "장소명4", Coordinate.of(34.127, 124.7771)));
+            Schedule schedule5 = trip.createSchedule(day2, ScheduleTitle.of("일정제목5"), Place.of("장소식별자5", "장소명5", Coordinate.of(34.127, 124.7771)));
+            em.persist(schedule1);
+            em.persist(schedule2);
+            em.persist(schedule3);
+            em.persist(schedule4);
+            em.persist(schedule5);
+
+            int scheduleTripCount = scheduleRepository.findDayScheduleCount(day1.getId());
+            assertThat(scheduleTripCount).isEqualTo(3);
+        }
+    }
+
 }
