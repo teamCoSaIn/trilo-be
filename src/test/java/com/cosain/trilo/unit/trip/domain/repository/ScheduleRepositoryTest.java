@@ -430,6 +430,93 @@ public class ScheduleRepositoryTest {
         }
     }
 
+    @Nested
+    @DisplayName("findTripScheduleCount : 여행에 속한 일정의 갯수를 가져온다.")
+    class FindTripScheduleCountTest {
+
+        @DisplayName("아무 일정도 없을 때 0 반환")
+        @Test
+        public void emptyScheduleTest() {
+            Trip trip = Trip.create(TripTitle.of("여행 제목"), 1L);
+            em.persist(trip);
+
+            int scheduleTripCount = scheduleRepository.findTripScheduleCount(trip.getId());
+            assertThat(scheduleTripCount).isEqualTo(0);
+        }
+
+        @DisplayName("임시보관함 일정 2개 -> 2 반환")
+        @Test
+        public void temporaryStorageScheduleTest() {
+            Trip trip = Trip.create(TripTitle.of("여행 제목"), 1L);
+            em.persist(trip);
+
+            Schedule schedule1 = trip.createSchedule(null, ScheduleTitle.of("일정제목1"), Place.of("장소식별자1", "장소명1", Coordinate.of(34.127, 124.7771)));
+            Schedule schedule2 = trip.createSchedule(null, ScheduleTitle.of("일정제목2"), Place.of("장소식별자2", "장소명2", Coordinate.of(34.127, 124.7771)));
+            em.persist(schedule1);
+            em.persist(schedule2);
+
+            int scheduleTripCount = scheduleRepository.findTripScheduleCount(trip.getId());
+            assertThat(scheduleTripCount).isEqualTo(2);
+        }
+
+        @DisplayName("Trip의 어떤 Day에 일정 3개 -> 3 반환")
+        @Test
+        public void dayScheduleScheduleTest() {
+            Trip trip = Trip.builder()
+                    .tripperId(1L)
+                    .tripTitle(TripTitle.of("여행 제목"))
+                    .status(TripStatus.DECIDED)
+                    .tripPeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 1)))
+                    .build();
+            em.persist(trip);
+
+            Day day = Day.of(LocalDate.of(2023,3,1), trip);
+            em.persist(day);
+
+            Schedule schedule1 = trip.createSchedule(day, ScheduleTitle.of("일정제목1"), Place.of("장소식별자1", "장소명1", Coordinate.of(34.127, 124.7771)));
+            Schedule schedule2 = trip.createSchedule(day, ScheduleTitle.of("일정제목2"), Place.of("장소식별자2", "장소명2", Coordinate.of(34.127, 124.7771)));
+            Schedule schedule3 = trip.createSchedule(day, ScheduleTitle.of("일정제목3"), Place.of("장소식별자3", "장소명2", Coordinate.of(34.127, 124.7771)));
+            em.persist(schedule1);
+            em.persist(schedule2);
+            em.persist(schedule3);
+
+            int scheduleTripCount = scheduleRepository.findTripScheduleCount(trip.getId());
+            assertThat(scheduleTripCount).isEqualTo(3);
+        }
+
+        @DisplayName("Trip의 임시보관함, 여러 Day에 일정 -> 여행 소속 일정 갯수 반환")
+        @Test
+        public void manyDayScheduleTest() {
+            Trip trip = Trip.builder()
+                    .tripperId(1L)
+                    .tripTitle(TripTitle.of("여행 제목"))
+                    .status(TripStatus.DECIDED)
+                    .tripPeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 3)))
+                    .build();
+            em.persist(trip);
+
+            Day day1 = Day.of(LocalDate.of(2023,3,1), trip);
+            Day day2 = Day.of(LocalDate.of(2023,3,2), trip);
+            Day day3 = Day.of(LocalDate.of(2023,3,3), trip);
+            em.persist(day1);
+            em.persist(day2);
+            em.persist(day3);
+
+            Schedule schedule1 = trip.createSchedule(day1, ScheduleTitle.of("일정제목1"), Place.of("장소식별자1", "장소명1", Coordinate.of(34.127, 124.7771)));
+            Schedule schedule2 = trip.createSchedule(day2, ScheduleTitle.of("일정제목2"), Place.of("장소식별자2", "장소명2", Coordinate.of(34.127, 124.7771)));
+            Schedule schedule3 = trip.createSchedule(day3, ScheduleTitle.of("일정제목3"), Place.of("장소식별자3", "장소명2", Coordinate.of(34.127, 124.7771)));
+            Schedule schedule4 = trip.createSchedule(null, ScheduleTitle.of("일정제목4"), Place.of("장소식별자3", "장소명2", Coordinate.of(34.127, 124.7771)));
+            em.persist(schedule1);
+            em.persist(schedule2);
+            em.persist(schedule3);
+            em.persist(schedule4);
+
+            int scheduleTripCount = scheduleRepository.findTripScheduleCount(trip.getId());
+            assertThat(scheduleTripCount).isEqualTo(4);
+        }
+
+    }
+
 
     private Schedule buildDummySchedule(Trip trip, Day day, ScheduleIndex scheduleIndex) {
         return Schedule.builder()

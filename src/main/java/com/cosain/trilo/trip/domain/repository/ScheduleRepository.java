@@ -60,4 +60,11 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
                     "WHERE " +
                     "   s1.day_id IN :dayIds", nativeQuery = true)
     int moveSchedulesToTemporaryStorage(@Param("tripId") Long tripId, @Param("dayIds") List<Long> dayIds);
+
+    @Query("""
+            SELECT COUNT(s)
+            FROM Schedule as s
+            WHERE s.trip.id = :tripId
+            """)
+    int findTripScheduleCount(@Param("tripId") Long tripId);
 }
