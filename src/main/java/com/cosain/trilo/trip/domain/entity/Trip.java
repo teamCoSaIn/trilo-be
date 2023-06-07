@@ -26,6 +26,8 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Trip {
 
+    public static final int MAX_TRIP_SCHEDULE_COUNT = 110;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "trip_id")

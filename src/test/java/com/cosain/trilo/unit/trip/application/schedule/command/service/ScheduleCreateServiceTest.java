@@ -1,6 +1,7 @@
 package com.cosain.trilo.unit.trip.application.schedule.command.service;
 
 import com.cosain.trilo.fixture.TripFixture;
+import com.cosain.trilo.trip.application.exception.TooManyTripScheduleException;
 import com.cosain.trilo.trip.application.schedule.command.usecase.dto.ScheduleCreateCommand;
 import com.cosain.trilo.trip.application.exception.NoScheduleCreateAuthorityException;
 import com.cosain.trilo.trip.application.schedule.command.service.ScheduleCreateService;
@@ -89,6 +90,7 @@ public class ScheduleCreateServiceTest {
             given(dayRepository.findByIdWithTrip(eq(dayId))).willReturn(Optional.of(day));
             given(tripRepository.findById(eq(tripId))).willReturn(Optional.of(trip));
             given(scheduleRepository.save(any(Schedule.class))).willReturn(createdSchedule);
+            given(scheduleRepository.findTripScheduleCount(eq(tripId))).willReturn(0);
 
             // when
             scheduleCreateService.createSchedule(tripperId, scheduleCreateCommand);
@@ -98,6 +100,7 @@ public class ScheduleCreateServiceTest {
             verify(tripRepository, times(1)).findById(eq(tripId));
             verify(scheduleRepository, times(0)).relocateDaySchedules(eq(tripId), eq(dayId));
             verify(scheduleRepository, times(1)).save(any(Schedule.class));
+            verify(scheduleRepository, times(1)).findTripScheduleCount(eq(tripId));
         }
 
         @Test
@@ -187,6 +190,7 @@ public class ScheduleCreateServiceTest {
 
             given(scheduleRepository.relocateDaySchedules(eq(tripId), eq(dayId))).willReturn(1);
             given(scheduleRepository.save(any(Schedule.class))).willReturn(createdSchedule);
+            given(scheduleRepository.findTripScheduleCount(tripId)).willReturn(0);
 
             // when
             scheduleCreateService.createSchedule(tripperId, scheduleCreateCommand);
@@ -196,6 +200,7 @@ public class ScheduleCreateServiceTest {
             verify(tripRepository, times(2)).findById(eq(tripId));
             verify(scheduleRepository, times(1)).relocateDaySchedules(eq(tripId), eq(dayId));
             verify(scheduleRepository, times(1)).save(any(Schedule.class));
+            verify(scheduleRepository, times(1)).findTripScheduleCount(eq(tripId));
         }
     }
 
@@ -236,6 +241,7 @@ public class ScheduleCreateServiceTest {
 
             given(tripRepository.findById(eq(tripId))).willReturn(Optional.of(trip));
             given(scheduleRepository.save(any(Schedule.class))).willReturn(createdSchedule);
+            given(scheduleRepository.findTripScheduleCount(eq(tripId))).willReturn(0);
 
             // when
             scheduleCreateService.createSchedule(tripperId, scheduleCreateCommand);
@@ -245,6 +251,7 @@ public class ScheduleCreateServiceTest {
             verify(tripRepository, times(1)).findById(eq(tripId));
             verify(scheduleRepository, times(0)).relocateDaySchedules(eq(tripId), isNull());
             verify(scheduleRepository, times(1)).save(any(Schedule.class));
+            verify(scheduleRepository, times(1)).findTripScheduleCount(eq(tripId));
         }
 
         @Test
@@ -297,6 +304,7 @@ public class ScheduleCreateServiceTest {
                     .thenReturn(Optional.of(rediscoveredTrip));
             given(scheduleRepository.relocateDaySchedules(eq(tripId), isNull())).willReturn(1);
             given(scheduleRepository.save(any(Schedule.class))).willReturn(newSchedule);
+            given(scheduleRepository.findTripScheduleCount(eq(tripId))).willReturn(0);
 
             // when
             scheduleCreateService.createSchedule(tripperId, scheduleCreateCommand);
@@ -306,6 +314,7 @@ public class ScheduleCreateServiceTest {
             verify(tripRepository, times(2)).findById(eq(tripId));
             verify(scheduleRepository, times(1)).relocateDaySchedules(eq(tripId), isNull());
             verify(scheduleRepository, times(1)).save(any(Schedule.class));
+            verify(scheduleRepository, times(1)).findTripScheduleCount(eq(tripId));
         }
 
     }
@@ -337,6 +346,44 @@ public class ScheduleCreateServiceTest {
                 .isInstanceOf(NoScheduleCreateAuthorityException.class);
         verify(dayRepository).findByIdWithTrip(eq(dayId));
         verify(tripRepository).findById(eq(tripId));
+    }
+
+    @Test
+    @DisplayName("여행에 일정이 너무 많이 있으면, TooManyTripScheduleException이 발생한다.")
+    public void tooManyTripScheduleTest() {
+        // given
+        Long tripperId = 1L;
+        Long tripId = 2L;
+
+        Trip trip = Trip.builder()
+                .id(tripId)
+                .tripperId(tripperId)
+                .tripTitle(TripTitle.of("여행 제목"))
+                .status(TripStatus.DECIDED)
+                .tripPeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 1)))
+                .build();
+
+        ScheduleCreateCommand scheduleCreateCommand = ScheduleCreateCommand.builder()
+                .dayId(null)
+                .tripId(tripId)
+                .scheduleTitle(ScheduleTitle.of("일정 제목"))
+                .place(Place.of("장소 식별자", "장소명", Coordinate.of(23.21, 23.24)))
+                .build();
+
+
+        given(tripRepository.findById(eq(tripId))).willReturn(Optional.of(trip));
+        given(scheduleRepository.findTripScheduleCount(eq(tripId))).willReturn(110);
+
+        // when
+        assertThatThrownBy(() -> scheduleCreateService.createSchedule(tripperId, scheduleCreateCommand))
+                .isInstanceOf(TooManyTripScheduleException.class);
+
+        // then
+        verify(dayRepository, times(0)).findByIdWithTrip(isNull());
+        verify(tripRepository, times(1)).findById(eq(tripId));
+        verify(scheduleRepository, times(0)).relocateDaySchedules(eq(tripId), isNull());
+        verify(scheduleRepository, times(0)).save(any(Schedule.class));
+        verify(scheduleRepository, times(1)).findTripScheduleCount(eq(tripId));
     }
 
 }
