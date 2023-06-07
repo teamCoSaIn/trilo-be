@@ -1,9 +1,7 @@
 package com.cosain.trilo.trip.application.schedule.command.service;
 
+import com.cosain.trilo.trip.application.exception.*;
 import com.cosain.trilo.trip.application.schedule.command.usecase.dto.ScheduleCreateCommand;
-import com.cosain.trilo.trip.application.exception.DayNotFoundException;
-import com.cosain.trilo.trip.application.exception.NoScheduleCreateAuthorityException;
-import com.cosain.trilo.trip.application.exception.TripNotFoundException;
 import com.cosain.trilo.trip.application.schedule.command.usecase.ScheduleCreateUseCase;
 import com.cosain.trilo.trip.domain.entity.Day;
 import com.cosain.trilo.trip.domain.entity.Schedule;
@@ -33,12 +31,17 @@ public class ScheduleCreateService implements ScheduleCreateUseCase {
         Day day = findDay(dayId);
         Trip trip = findTrip(tripId);
         validateCreateAuthority(trip, tripperId);
+        validateTripScheduleCount(tripId);
+        validateDayScheduleCount(dayId);
 
         Schedule schedule;
         try {
             schedule = trip.createSchedule(day, createCommand.getScheduleTitle(), createCommand.getPlace());
         } catch (ScheduleIndexRangeException e) {
+            // 기존 ScheduleIndex 뒤에 일정 생성을 시도했으나, 가능한 ScheduleIndex 범위를 벗어났으므로 전체 재정렬
             scheduleRepository.relocateDaySchedules(tripId, dayId);
+
+            // 영속성 컨텍스트가 초기화 됐으므로 trip, day를 다시 가져오고 다시 작업
             trip = findTrip(trip.getId());
             day = findDay(dayId);
             schedule =  trip.createSchedule(day, createCommand.getScheduleTitle(), createCommand.getPlace());
@@ -60,6 +63,25 @@ public class ScheduleCreateService implements ScheduleCreateUseCase {
     private void validateCreateAuthority(Trip trip, Long tripperId) {
         if(!trip.getTripperId().equals(tripperId)){
             throw new NoScheduleCreateAuthorityException("여행의 소유주가 아닌 사람이, 일정을 생성하려고 함");
+        }
+    }
+
+    private void validateTripScheduleCount(Long tripId) {
+        int tripScheduleCount = scheduleRepository.findTripScheduleCount(tripId);
+
+        if (tripScheduleCount == Trip.MAX_TRIP_SCHEDULE_COUNT) {
+            throw new TooManyTripScheduleException("여행 생성 시도 -> 여행 최대 일정 갯수 초과");
+        }
+    }
+
+    private void validateDayScheduleCount(Long dayId) {
+        if (dayId == null) {
+            return;
+        }
+        int dayScheduleCount = scheduleRepository.findDayScheduleCount(dayId);
+
+        if (dayScheduleCount == Day.MAX_DAY_SCHEDULE_COUNT) {
+            throw new TooManyDayScheduleException("여행 생성 시도 -> Day의 최대 일정 갯수 초과");
         }
     }
 

@@ -143,6 +143,15 @@ schedule-0008:
   message: Invalid Schedule Title
   detail: The ScheduleTitle is not valid. The ScheduleTitle cannot be a null or empty string, and its length must be between 1 and 20 characters
 
+schedule-0009:
+  message: Too Many Trip Schedule Count
+  detail: Cannot create any more schedules for your trip. Each trip can have a maximum of 110 schedules.
+
+schedule-0010:
+  message: Too Many Day Schedule Count
+  detail: Cannot create any more schedules for your TripDay. Each TripDay can have a maximum of 10 schedules.
+
+
 # 장소 관련
 place-0001:
   message: InvalidCoordinate
