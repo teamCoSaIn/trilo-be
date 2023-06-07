@@ -22,6 +22,8 @@ import java.util.Objects;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Day {
 
+    public static final int MAX_DAY_SCHEDULE_COUNT = 10;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "day_id")

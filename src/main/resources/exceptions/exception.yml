@@ -147,6 +147,10 @@ schedule-0009:
   message: Too Many Trip Schedule Count
   detail: 여행에 더 이상 일정을 생성할 수 없습니다. 한 여행은 최대 110개의 일정을 가질 수 있습니다.
 
+schedule-0010:
+  message: Too Many Day Schedule Count
+  detail: Day에 더 이상 일정을 생성할 수 없습니다. 한 Day는 최대 10개의 일정을 가질 수 있습니다.
+
 # 장소 관련
 place-0001:
   message: InvalidCoordinate
