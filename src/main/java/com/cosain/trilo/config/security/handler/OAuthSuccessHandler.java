@@ -4,21 +4,24 @@ import com.cosain.trilo.auth.domain.RefreshToken;
 import com.cosain.trilo.auth.domain.repository.TokenRepository;
 import com.cosain.trilo.auth.infra.TokenAnalyzer;
 import com.cosain.trilo.auth.infra.TokenProvider;
-import com.cosain.trilo.auth.presentation.dto.AuthResponse;
 import com.cosain.trilo.config.security.HttpCookieOAuth2AuthorizationRequestRepository;
 import com.cosain.trilo.config.security.util.CookieUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
+import java.util.Optional;
+
+import static com.cosain.trilo.config.security.HttpCookieOAuth2AuthorizationRequestRepository.REDIRECT_URI_PARAM_COOKIE_NAME;
 
 @Slf4j
 @Component
@@ -40,10 +43,21 @@ public class OAuthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
         Long tokenExpiry = tokenAnalyzer.getTokenRemainExpiryFrom(refreshToken);
         tokenRepository.saveRefreshToken(RefreshToken.of(refreshToken, tokenExpiry));
 
+        String targetUrl = determineTargetUrl(request, response, accessToken, refreshToken);
         cookieOAuth2AuthorizationRequestRepository.removeAuthorizationRequestCookies(request, response);
-        CookieUtil.addAuthCookie(response, refreshToken, tokenExpiry);
-        response.setStatus(HttpStatus.OK.value());
-        objectMapper.writeValue(response.getWriter(), AuthResponse.from(accessToken));
+        getRedirectStrategy().sendRedirect(request, response, targetUrl);
+    }
+
+    protected String determineTargetUrl(HttpServletRequest request, HttpServletResponse response, String accessToken, String refreshToken){
+        Optional<String> redirectUri = CookieUtil.getCookie(request, REDIRECT_URI_PARAM_COOKIE_NAME)
+                .map(Cookie::getValue);
+
+        String targetUrl = redirectUri.orElse(getDefaultTargetUrl());
+
+        return UriComponentsBuilder.fromUriString(targetUrl)
+                .queryParam("accessToken", accessToken)
+                .queryParam("refreshToken", refreshToken)
+                .build().toUriString();
     }
 
 }

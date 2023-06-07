@@ -8,19 +8,31 @@
 :docinfo: shared-head
 
 == Auth API
-=== 인증 URI
 
-==== 구글 URI
-operation::o-auth2-login-test/구글_인증_url_요청[snippets = 'http-request,http-response']
+=== OAuth2 로그인
 
-==== 네이버 URI
-operation::o-auth2-login-test/네이버_인증_url_요청[snippets = 'http-request,http-response']
+- 메서드 : GET
+- URL : `/api/auth/login/{provider}?redirect_uri={redirectUri}`
 
-==== 카카오 URI
-operation::o-auth2-login-test/카카오_인증_url_요청[snippets = 'http-request,http-response']
+==== 요청
+===== 경로 변수
+include::{snippets}/o-auth2-login-test/소셜_로그인/path-parameters.adoc[]
 
-=== 로그아웃
-operation::auth-rest-controller-docs-test/로그아웃_요청[snippets = 'http-request,request-headers,http-response']
+===== 쿼리 변수
+include::{snippets}/o-auth2-login-test/소셜_로그인/query-parameters.adoc[]
+
+==== 응답
+===== 쿠키
+include::{snippets}/o-auth2-login-test/소셜_로그인/response-cookies.adoc[]
+
+==== 예제
+===== 요청
+include::{snippets}/o-auth2-login-test/소셜_로그인/http-request.adoc[]
+===== 응답
+include::{snippets}/o-auth2-login-test/소셜_로그인/http-response.adoc[]
+
+
+---
 
 === 재발급 토큰 상태 조회
 operation::auth-rest-controller-docs-test/재발급_토큰_상태_조회_요청[snippets = 'http-request,http-response,response-fields']
@@ -140,17 +152,26 @@ include::{snippets}/single-trip-query-controller-docs-test/여행_단건_조회/
 
 ---
 
-==== Schedule 조회
-===== 요청
-====== 헤더
+=== Schedule 조회
+
+==== 기본 정보
+
+- 메서드 : GET
+- URL : `/api/schedules/{scheduleId}`
+- 인증 방식 : 엑세스 토큰
+
+==== 요청
+===== 헤더
 include::{snippets}/single-schedule-query-controller-docs-test/일정_단건_조회/request-headers.adoc[]
-====== 경로 변수
+===== 경로 변수
 include::{snippets}/single-schedule-query-controller-docs-test/일정_단건_조회/path-parameters.adoc[]
-===== 응답
-====== 본문
+
+==== 응답
+===== 본문
 include::{snippets}/single-schedule-query-controller-docs-test/일정_단건_조회/response-fields.adoc[]
-===== 예제
-====== 요청
+
+==== 예제
+===== 요청
 include::{snippets}/single-schedule-query-controller-docs-test/일정_단건_조회/http-request.adoc[]
-====== 응답
+===== 응답
 include::{snippets}/single-schedule-query-controller-docs-test/일정_단건_조회/http-response.adoc[]
