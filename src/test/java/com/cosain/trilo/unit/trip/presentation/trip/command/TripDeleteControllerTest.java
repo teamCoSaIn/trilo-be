@@ -13,12 +13,14 @@ import org.springframework.security.test.context.support.WithAnonymousUser;
 
 import java.nio.charset.StandardCharsets;
 
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @DisplayName("여행 삭제 API 테스트")
 @WebMvcTest(TripDeleteController.class)
@@ -32,10 +34,11 @@ class TripDeleteControllerTest extends RestControllerTest {
     @Test
     @DisplayName("인증된 사용자의 올바른 여행 삭제 요청 -> 미구현 500")
     public void deleteTrip_with_authorizedUser() throws Exception {
+        Long tripId = 1L;
         mockingForLoginUserAnnotation();
-        willDoNothing().given(tripDeleteUseCase).deleteTrip(eq(1L), any());
+        willDoNothing().given(tripDeleteUseCase).deleteTrip(eq(tripId), any());
 
-        mockMvc.perform(delete("/api/trips/1")
+        mockMvc.perform(delete("/api/trips/" + tripId)
                         .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -43,7 +46,7 @@ class TripDeleteControllerTest extends RestControllerTest {
                 .andDo(print())
                 .andExpect(status().isNoContent())
                 .andExpect(jsonPath("$").doesNotExist());
-        verify(tripDeleteUseCase).deleteTrip(eq(1L), any());
+        verify(tripDeleteUseCase).deleteTrip(eq(tripId), any());
     }
 
     @Test
