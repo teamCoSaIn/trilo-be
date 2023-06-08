@@ -1,14 +1,13 @@
 package com.cosain.trilo.unit.trip.presentation.schedule.command;
 
 import com.cosain.trilo.support.RestControllerTest;
-import com.cosain.trilo.trip.application.schedule.command.usecase.dto.ScheduleCreateCommand;
 import com.cosain.trilo.trip.application.schedule.command.usecase.ScheduleCreateUseCase;
+import com.cosain.trilo.trip.application.schedule.command.usecase.dto.ScheduleCreateCommand;
 import com.cosain.trilo.trip.application.schedule.command.usecase.dto.factory.ScheduleCreateCommandFactory;
 import com.cosain.trilo.trip.domain.vo.Coordinate;
 import com.cosain.trilo.trip.domain.vo.Place;
 import com.cosain.trilo.trip.domain.vo.ScheduleTitle;
 import com.cosain.trilo.trip.presentation.schedule.command.ScheduleCreateController;
-import com.cosain.trilo.trip.presentation.schedule.command.dto.request.ScheduleCreateRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -20,8 +19,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 
 import java.nio.charset.StandardCharsets;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -53,18 +51,23 @@ class ScheduleCreateControllerTest extends RestControllerTest {
         String rawScheduleTitle = "일정 제목";
         String placeId = "place-id";
         String placeName = "place-Name";
-        Double latitude = 37.5642135;
-        Double longitude = 127.0016985;
+        Double latitude = 37.564213;
+        Double longitude = 127.001698;
 
-        ScheduleCreateRequest request = ScheduleCreateRequest.builder()
-                .dayId(dayId)
-                .tripId(tripId)
-                .title(rawScheduleTitle)
-                .placeId(placeId)
-                .placeName(placeName)
-                .latitude(latitude)
-                .longitude(longitude)
-                .build();
+        String requestJson = String.format("""
+                {
+                    "dayId": %d,
+                    "tripId": %d,
+                    "title": "%s",
+                    "placeId": "%s",
+                    "placeName": "%s",
+                    "coordinate": {
+                        "latitude": %f,
+                        "longitude": %f
+                    }
+                }
+                """, dayId, tripId, rawScheduleTitle, placeId, placeName, latitude, longitude);
+
 
         ScheduleCreateCommand command = ScheduleCreateCommand.builder()
                 .dayId(dayId)
@@ -73,27 +76,29 @@ class ScheduleCreateControllerTest extends RestControllerTest {
                 .place(Place.of(placeId, placeName, Coordinate.of(latitude, longitude)))
                 .build();
 
+        Long createdScheduleId = 3L;
+
         given(scheduleCreateCommandFactory.createCommand(
                 eq(dayId), eq(tripId), eq(rawScheduleTitle),
                 eq(placeId), eq(placeName),
-                eq(latitude), eq(longitude))).willReturn(command);
-        given(scheduleCreateUseCase.createSchedule(any(), any(ScheduleCreateCommand.class))).willReturn(1L);
+                eq(latitude), eq(longitude), anyList())).willReturn(command);
+        given(scheduleCreateUseCase.createSchedule(any(), any(ScheduleCreateCommand.class))).willReturn(createdScheduleId);
 
         mockMvc.perform(post("/api/schedules")
                         .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)
-                        .content(createJson(request))
+                        .content(requestJson)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                 )
                 .andDo(print())
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.scheduleId").value(1L));
+                .andExpect(jsonPath("$.scheduleId").value(createdScheduleId));
 
         verify(scheduleCreateUseCase).createSchedule(any(), any(ScheduleCreateCommand.class));
         verify(scheduleCreateCommandFactory).createCommand(
                 eq(dayId), eq(tripId), eq(rawScheduleTitle),
                 eq(placeId), eq(placeName),
-                eq(latitude), eq(longitude)
+                eq(latitude), eq(longitude), anyList()
         );
     }
 
@@ -101,15 +106,31 @@ class ScheduleCreateControllerTest extends RestControllerTest {
     @DisplayName("미인증 사용자 요청 -> 인증 실패 401")
     @WithAnonymousUser
     public void createSchedule_with_unauthorizedUser() throws Exception {
-        ScheduleCreateRequest request = ScheduleCreateRequest.builder()
-                .dayId(1L)
-                .title("일정 제목")
-                .latitude(37.5642135)
-                .longitude(127.0016985)
-                .build();
+        Long dayId = 1L;
+        Long tripId = 1L;
+        String rawScheduleTitle = "일정 제목";
+        String placeId = "place-id";
+        String placeName = "place-Name";
+        Double latitude = 37.5642;
+        Double longitude = 127.0016;
+
+        String requestJson = String.format("""
+                {
+                    "dayId": %d,
+                    "tripId": %d,
+                    "title": "%s",
+                    "placeId": "%s",
+                    "placeName": "%s",
+                    "coordinate": {
+                        "latitude": %f,
+                        "longitude": %f
+                    }
+                }
+                """, dayId, tripId, rawScheduleTitle, placeId, placeName, latitude, longitude);
+
 
         mockMvc.perform(post("/api/schedules")
-                        .content(createJson(request))
+                        .content(requestJson)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                 )
@@ -152,8 +173,10 @@ class ScheduleCreateControllerTest extends RestControllerTest {
                     "title": 괄호로 감싸지지 않은 문자열,
                     "placeId": "place-5964",
                     "placeName": "장소명",
-                    "latitude": 35.1234,
-                    "longitude": 123.1212
+                    "coordinate": {
+                        "latitude": 34.124,
+                        "longitude": 123.124
+                    }
                 }
                 """;
 
@@ -177,16 +200,16 @@ class ScheduleCreateControllerTest extends RestControllerTest {
         String invalidTypeContent = """
                 {
                     "dayId": 1,
-                    "tripId": "숫자가 아닌 값",
+                    "tripId": 7,
                     "title": "제목",
                     "placeId": "place-5964",
                     "placeName": "장소명",
-                    "latitude": "숫자가 아닌 위도값",
-                    "longitude": "숫자가 아닌 경도값"
+                    "coordinate": {
+                        "latitude": "숫자가 아닌 위도값",
+                        "longitude": "숫자가 아닌 경도값"
+                    }
                 }
                 """;
-
-
         mockMvc.perform(post("/api/schedules")
                         .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)
                         .content(invalidTypeContent)

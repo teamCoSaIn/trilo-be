@@ -1,5 +1,6 @@
 package com.cosain.trilo.unit.trip.application.schedule.command.dto.factory;
 
+import com.cosain.trilo.common.exception.CustomException;
 import com.cosain.trilo.common.exception.CustomValidationException;
 import com.cosain.trilo.trip.application.exception.NullTripIdException;
 import com.cosain.trilo.trip.application.schedule.command.usecase.dto.ScheduleCreateCommand;
@@ -11,6 +12,9 @@ import com.cosain.trilo.trip.domain.vo.Place;
 import com.cosain.trilo.trip.domain.vo.ScheduleTitle;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowableOfType;
@@ -31,13 +35,14 @@ public class ScheduleCreateCommandFactoryTest {
         String placeName = "place-name";
         Double latitude = 39.123;
         Double longitude = 123.7712;
+        List<CustomException> exceptions = new ArrayList<>();
 
         // when
         CustomValidationException cve = catchThrowableOfType(
                 () -> scheduleCreateCommandFactory.createCommand(
                         dayId, tripId, rawScheduleTitle,
                         placeId, placeName,
-                        latitude, longitude),
+                        latitude, longitude, exceptions),
                 CustomValidationException.class);
 
         // then
@@ -57,13 +62,15 @@ public class ScheduleCreateCommandFactoryTest {
         String placeName = "place-name";
         Double latitude = 39.123;
         Double longitude = 123.7712;
+        List<CustomException> exceptions = new ArrayList<>();
+
 
         // when
         CustomValidationException cve = catchThrowableOfType(
                 () -> scheduleCreateCommandFactory.createCommand(
                         dayId, tripId, rawScheduleTitle,
                         placeId, placeName,
-                        latitude, longitude),
+                        latitude, longitude, exceptions),
                 CustomValidationException.class);
 
         // then
@@ -83,13 +90,14 @@ public class ScheduleCreateCommandFactoryTest {
         String placeName = "place-name";
         Double latitude = 39.123;
         Double longitude = 123.7712;
+        List<CustomException> exceptions = new ArrayList<>();
 
         // when
         CustomValidationException cve = catchThrowableOfType(
                 () -> scheduleCreateCommandFactory.createCommand(
                         dayId, tripId, rawScheduleTitle,
                         placeId, placeName,
-                        latitude, longitude),
+                        latitude, longitude, exceptions),
                 CustomValidationException.class);
 
         // then
@@ -109,13 +117,14 @@ public class ScheduleCreateCommandFactoryTest {
         String placeName = "place-name";
         Double latitude = 39.123;
         Double longitude = 123.7712;
+        List<CustomException> exceptions = new ArrayList<>();
 
         // when
         CustomValidationException cve = catchThrowableOfType(
                 () -> scheduleCreateCommandFactory.createCommand(
                         dayId, tripId, rawScheduleTitle,
                         placeId, placeName,
-                        latitude, longitude),
+                        latitude, longitude, exceptions),
                 CustomValidationException.class);
 
         // then
@@ -135,13 +144,14 @@ public class ScheduleCreateCommandFactoryTest {
         String placeName = "place-name";
         Double latitude = 39.123;
         Double longitude = 123.7712;
+        List<CustomException> exceptions = new ArrayList<>();
 
         // when
         CustomValidationException cve = catchThrowableOfType(
                 () -> scheduleCreateCommandFactory.createCommand(
                         dayId, tripId, rawScheduleTitle,
                         placeId, placeName,
-                        latitude, longitude),
+                        latitude, longitude, exceptions),
                 CustomValidationException.class);
 
         // then
@@ -161,13 +171,14 @@ public class ScheduleCreateCommandFactoryTest {
         String placeName = "place-name";
         Double latitude = null;
         Double longitude = 123.7712;
+        List<CustomException> exceptions = new ArrayList<>();
 
         // when
         CustomValidationException cve = catchThrowableOfType(
                 () -> scheduleCreateCommandFactory.createCommand(
                         dayId, tripId, rawScheduleTitle,
                         placeId, placeName,
-                        latitude, longitude),
+                        latitude, longitude, exceptions),
                 CustomValidationException.class);
 
         // then
@@ -187,13 +198,14 @@ public class ScheduleCreateCommandFactoryTest {
         String placeName = "place-name";
         Double latitude = 39.123;
         Double longitude = null;
+        List<CustomException> exceptions = new ArrayList<>();
 
         // when
         CustomValidationException cve = catchThrowableOfType(
                 () -> scheduleCreateCommandFactory.createCommand(
                         dayId, tripId, rawScheduleTitle,
                         placeId, placeName,
-                        latitude, longitude),
+                        latitude, longitude, exceptions),
                 CustomValidationException.class);
 
         // then
@@ -213,13 +225,14 @@ public class ScheduleCreateCommandFactoryTest {
         String placeName = "place-name";
         Double latitude = null;
         Double longitude = null;
+        List<CustomException> exceptions = new ArrayList<>();
 
         // when
         CustomValidationException cve = catchThrowableOfType(
                 () -> scheduleCreateCommandFactory.createCommand(
                         dayId, tripId, rawScheduleTitle,
                         placeId, placeName,
-                        latitude, longitude),
+                        latitude, longitude, exceptions),
                 CustomValidationException.class);
 
         // then
@@ -239,13 +252,14 @@ public class ScheduleCreateCommandFactoryTest {
         String placeName = "place-name";
         Double latitude = Coordinate.MIN_LATITUDE - 0.001;
         Double longitude = 127.123;
+        List<CustomException> exceptions = new ArrayList<>();
 
         // when
         CustomValidationException cve = catchThrowableOfType(
                 () -> scheduleCreateCommandFactory.createCommand(
                         dayId, tripId, rawScheduleTitle,
                         placeId, placeName,
-                        latitude, longitude),
+                        latitude, longitude, exceptions),
                 CustomValidationException.class);
 
         // then
@@ -265,13 +279,14 @@ public class ScheduleCreateCommandFactoryTest {
         String placeName = "place-name";
         Double latitude = Coordinate.MAX_LATITUDE + 0.001;
         Double longitude = 127.123;
+        List<CustomException> exceptions = new ArrayList<>();
 
         // when
         CustomValidationException cve = catchThrowableOfType(
                 () -> scheduleCreateCommandFactory.createCommand(
                         dayId, tripId, rawScheduleTitle,
                         placeId, placeName,
-                        latitude, longitude),
+                        latitude, longitude, exceptions),
                 CustomValidationException.class);
 
         // then
@@ -291,13 +306,14 @@ public class ScheduleCreateCommandFactoryTest {
         String placeName = "place-name";
         Double latitude = 37.1234;
         Double longitude = Coordinate.MIN_LONGITUDE - 0.001;
+        List<CustomException> exceptions = new ArrayList<>();
 
         // when
         CustomValidationException cve = catchThrowableOfType(
                 () -> scheduleCreateCommandFactory.createCommand(
                         dayId, tripId, rawScheduleTitle,
                         placeId, placeName,
-                        latitude, longitude),
+                        latitude, longitude, exceptions),
                 CustomValidationException.class);
 
         // then
@@ -317,13 +333,14 @@ public class ScheduleCreateCommandFactoryTest {
         String placeName = "place-name";
         Double latitude = 37.1234;
         Double longitude = Coordinate.MAX_LONGITUDE + 0.001;
+        List<CustomException> exceptions = new ArrayList<>();
 
         // when
         CustomValidationException cve = catchThrowableOfType(
                 () -> scheduleCreateCommandFactory.createCommand(
                         dayId, tripId, rawScheduleTitle,
                         placeId, placeName,
-                        latitude, longitude),
+                        latitude, longitude, exceptions),
                 CustomValidationException.class);
 
         // then
@@ -343,13 +360,14 @@ public class ScheduleCreateCommandFactoryTest {
         String placeName = "place-name";
         Double latitude = null;
         Double longitude = 37.124;
+        List<CustomException> exceptions = new ArrayList<>();
 
         // when
         CustomValidationException cve = catchThrowableOfType(
                 () -> scheduleCreateCommandFactory.createCommand(
                         dayId, tripId, rawScheduleTitle,
                         placeId, placeName,
-                        latitude, longitude),
+                        latitude, longitude, exceptions),
                 CustomValidationException.class);
 
         // then
@@ -371,13 +389,13 @@ public class ScheduleCreateCommandFactoryTest {
         String placeName = "place-name";
         Double latitude = 37.11924;
         Double longitude = 123.1274;
+        List<CustomException> exceptions = new ArrayList<>();
 
         // when
         ScheduleCreateCommand command = scheduleCreateCommandFactory.createCommand(
                 dayId, tripId, rawScheduleTitle,
                 placeId, placeName,
-                latitude, longitude);
-
+                latitude, longitude, exceptions);
 
         // then
         assertThat(command).isNotNull();
