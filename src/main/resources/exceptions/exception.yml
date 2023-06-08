@@ -154,4 +154,8 @@ schedule-0010:
 # 장소 관련
 place-0001:
   message: InvalidCoordinate
-  detail: 위도 또는 경도의 범위가 유효하지 않습니다.
+  detail: 위도 또는 경도가 누락됐거나, 범위가 유효하지 않습니다. 위도는 -90 이상 90 이하여야 하며, 경도는 -180 이상 180 미만이여야 합니다.
+
+place-0002:
+  message: Null Coordinate
+  detail: 좌표가 누락됐습니다. 좌표는 필수입니다.
