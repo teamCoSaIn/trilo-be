@@ -212,3 +212,30 @@ include::{snippets}/single-schedule-query-controller-docs-test/일정_단건_조
 include::{snippets}/single-schedule-query-controller-docs-test/일정_단건_조회/http-request.adoc[]
 ===== 응답
 include::{snippets}/single-schedule-query-controller-docs-test/일정_단건_조회/http-response.adoc[]
+
+---
+
+=== Day 조회
+
+==== 기본 정보
+
+- 메서드 : GET
+- URL : '/api/days/{dayId}'
+- 인증 방식 : 엑세스 토큰
+
+==== 요청
+===== 헤더
+include::{snippets}/single-day-query-controller-docs-test/day_단건_조회/request-headers.adoc[]
+===== 경로 변수
+include::{snippets}/single-day-query-controller-docs-test/day_단건_조회/path-parameters.adoc[]
+
+==== 응답
+===== 본문
+include::{snippets}/single-day-query-controller-docs-test/day_단건_조회/response-fields.adoc[]
+
+==== 예제
+===== 요청
+include::{snippets}/single-day-query-controller-docs-test/day_단건_조회/http-request.adoc[]
+===== 응답
+include::{snippets}/single-day-query-controller-docs-test/day_단건_조회/http-response.adoc[]
+---
