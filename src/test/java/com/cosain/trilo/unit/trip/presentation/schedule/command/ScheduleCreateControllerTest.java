@@ -1,12 +1,16 @@
 package com.cosain.trilo.unit.trip.presentation.schedule.command;
 
+import com.cosain.trilo.common.exception.CustomException;
+import com.cosain.trilo.common.exception.CustomValidationException;
 import com.cosain.trilo.support.RestControllerTest;
 import com.cosain.trilo.trip.application.schedule.command.usecase.ScheduleCreateUseCase;
 import com.cosain.trilo.trip.application.schedule.command.usecase.dto.ScheduleCreateCommand;
 import com.cosain.trilo.trip.application.schedule.command.usecase.dto.factory.ScheduleCreateCommandFactory;
+import com.cosain.trilo.trip.domain.exception.InvalidCoordinateException;
 import com.cosain.trilo.trip.domain.vo.Coordinate;
 import com.cosain.trilo.trip.domain.vo.Place;
 import com.cosain.trilo.trip.domain.vo.ScheduleTitle;
+import com.cosain.trilo.trip.presentation.exception.NullRequestCoordinateException;
 import com.cosain.trilo.trip.presentation.schedule.command.ScheduleCreateController;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,7 +22,11 @@ import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
 
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
@@ -221,6 +229,60 @@ class ScheduleCreateControllerTest extends RestControllerTest {
                 .andExpect(jsonPath("$.errorCode").value("request-0001"))
                 .andExpect(jsonPath("$.errorMessage").exists())
                 .andExpect(jsonPath("$.errorDetail").exists());
+    }
+
+    @Test
+    @DisplayName("좌표 누락 데이터 -> 입력 검증 실패 400 예외")
+    public void createSchedule_with_nullCoordinate() throws Exception {
+        mockingForLoginUserAnnotation();
+
+        Long dayId = 1L;
+        Long tripId = 1L;
+        String rawScheduleTitle = "일정 제목";
+        String placeId = "place-id";
+        String placeName = "place-Name";
+
+        String requestJson = String.format("""
+                {
+                    "dayId": %d,
+                    "tripId": %d,
+                    "title": "%s",
+                    "placeId": "%s",
+                    "placeName": "%s"
+                }
+                """, dayId, tripId, rawScheduleTitle, placeId, placeName); // 좌표 누락됨
+
+        List<CustomException> exceptions = new ArrayList<>();
+        exceptions.add(new NullRequestCoordinateException());
+        exceptions.add(new InvalidCoordinateException());
+
+        given(scheduleCreateCommandFactory.createCommand(
+                eq(dayId), eq(tripId), eq(rawScheduleTitle),
+                eq(placeId), eq(placeName), isNull(), isNull(), anyList()))
+                .willThrow(new CustomValidationException(exceptions));
+
+
+        mockMvc.perform(post("/api/schedules")
+                        .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)
+                        .content(requestJson)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errorCode").value("request-0003"))
+                .andExpect(jsonPath("$.errorMessage").exists())
+                .andExpect(jsonPath("$.errorDetail").exists())
+                .andExpect(jsonPath("$.errors", hasSize(2)))
+                .andExpect(jsonPath("$.errors[*].errorCode", hasItem("place-0001")))
+                .andExpect(jsonPath("$.errors[*].errorCode", hasItem("place-0002")))
+                .andExpect(jsonPath("$.errors[*].errorMessage").exists())
+                .andExpect(jsonPath("$.errors[*].errorDetail").exists());
+
+        verify(scheduleCreateCommandFactory).createCommand(
+                eq(dayId), eq(tripId), eq(rawScheduleTitle),
+                eq(placeId), eq(placeName), isNull(), isNull(), anyList()
+        );
     }
 
 }
