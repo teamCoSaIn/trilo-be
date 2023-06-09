@@ -9,7 +9,6 @@ import com.cosain.trilo.trip.domain.vo.Place;
 import com.cosain.trilo.trip.domain.vo.ScheduleTitle;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -18,10 +17,7 @@ public class ScheduleCreateCommandFactory {
     public ScheduleCreateCommand createCommand(
             Long dayId, Long tripId, String title,
             String placeId, String placeName,
-            Double latitude, Double longitude) {
-
-        List<CustomException> exceptions = new ArrayList<>();
-
+            Double latitude, Double longitude, List<CustomException> exceptions) {
         validateTripIdNotNull(tripId, exceptions);
 
         ScheduleTitle scheduleTitle = makeScheduleTitle(title, exceptions);

@@ -155,4 +155,8 @@ schedule-0010:
 # 장소 관련
 place-0001:
   message: InvalidCoordinate
-  detail: The latitude or longitude range is invalid.
+  detail: The latitude or longitude is missing or the range is not valid. Latitude must be between -90 and 90, and longitude must be between -180 and less than 180.
+
+place-0002:
+  message: Null Coordinate
+  detail: Coordinate is missing. Coordinates is mandatory.
