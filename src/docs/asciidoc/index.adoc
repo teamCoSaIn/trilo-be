@@ -7,6 +7,8 @@
 :sectlinks:
 :docinfo: shared-head
 
+'''
+
 == Auth API
 
 === OAuth2 로그인
@@ -31,13 +33,15 @@ include::{snippets}/auth-rest-controller-docs-test/로그인_요청/http-request
 ===== 응답
 include::{snippets}/auth-rest-controller-docs-test/로그인_요청/http-response.adoc[]
 
----
+'''
 
 === 재발급 토큰 상태 조회
 operation::auth-rest-controller-docs-test/재발급_토큰_상태_조회_요청[snippets = 'http-request,http-response,response-fields']
 
 === 접근 토큰 재발급
 operation::auth-rest-controller-docs-test/접근토큰_재발급_요청[snippets = 'http-request,http-response,response-fields']
+
+'''
 
 == Trip API
 
@@ -70,7 +74,7 @@ include::{snippets}/trip-create-controller-docs-test/success-test/http-response.
 
 서버는 요청 사항에 맞게 여행을 생성하고, 생성된 여행의 식별자를 반환합니다.
 
----
+'''
 
 === Trip 수정
 
@@ -124,7 +128,7 @@ include::{snippets}/trip-update-controller-docs-test/trip-update-doc-test/http-r
 
 서버는 요청 사항에 맞게 여행을 수정하고, 수정된 여행의 식별자를 다시 반환합니다.
 
----
+'''
 
 === Trip 삭제
 
@@ -162,7 +166,7 @@ include::{snippets}/trip-delete-controller-docs-test/trip-delete-doc-test/http-r
 상태코드 204 No Content가 전달됩니다.
 
 
----
+'''
 
 === Trip 조회
 
@@ -187,7 +191,7 @@ include::{snippets}/single-trip-query-controller-docs-test/여행_단건_조회/
 ===== 응답
 include::{snippets}/single-trip-query-controller-docs-test/여행_단건_조회/http-response.adoc[]
 
----
+'''
 
 === Schedule 생성
 
@@ -201,6 +205,11 @@ include::{snippets}/single-trip-query-controller-docs-test/여행_단건_조회/
 어느 Trip의 어느 Day에 일정을 생성할 지 지정할 수 있으며, day가 null 이면 해당 Trip(여행)의 임시보관함에 일정이 생성됩니다.
 이 때, 전달된 식별자의 Day가 해당 Trip에 속하지 않을 경우, 예외가 발생합니다.
 
+===== 일정 갯수 제약 조건
+- 여행 당 일정 갯수 제한 : 1개의 여행은 내부의 Day, 임시보관함을 통틀어 총 110개까지 일정을 가질 수 있습니다. 기존에 110개의 일정이 생성되어 있다면
+더 이상 일정을 생성할 수 없습니다.
+- Day 당 일정 갯수 제한 : 1개의 Day는 총 10개까지 일정을 가질 수 있습니다. 어떤 Day에 일정이 10개 생성되어 있다면 해당 Day에는 더 이상 일정을 생성할 수 없습니다.
+- 임시보관함 일정 생성 제한 : 임시보관함에는 '여행 당 일정 갯수 제한'의 갯수 제한 범위 내에서 일정을 자유롭게 추가할 수 있습니다.
 
 ==== 요청
 ===== 헤더
@@ -216,12 +225,9 @@ include::{snippets}/schedule-create-controller-docs-test/schedule-create-doc-tes
 ===== 본문
 include::{snippets}/schedule-create-controller-docs-test/schedule-create-doc-test/response-fields.adoc[]
 
-
-
 ==== 예제
 ===== 요청
 include::{snippets}/schedule-create-controller-docs-test/schedule-create-doc-test/http-request.adoc[]
-
 
 사용자는 어느 Trip의 어느 Day에 일정을 생성할 것인지 지정합니다. 이 때, Trip Id가 null 이면 임시보관함에 삽입되고, dayId가 null 이 아니면
 해당 day에 일정이 생성됩니다. (단, 해당 식별자의 Day가 Trip에 속해야합니다!)
@@ -232,7 +238,44 @@ include::{snippets}/schedule-create-controller-docs-test/schedule-create-doc-tes
 
 일정이 정상적으로 생성되면, 생성된 일정(Schedule)의 식별자가 반환되고, 상태코드로 201 Created가 전달됩니다.
 
----
+'''
+
+
+=== Schedule 수정
+
+==== 기본 정보
+- 메서드 : PUT
+- URL : `/api/schedules/{scheduleId}`
+- 인증 방식 : 액세스 토큰
+
+요청 Schedule의 제목과 본문을 수정하는 API입니다.
+이때, Trip, Schedule의 소유자가 아닌 사람이 일정을 수정하려 시도할 경우 예외가 발생합니다.
+
+==== 요청
+===== 헤더
+include::{snippets}/schedule-update-controller-docs-test/schedule-update-doc-test/request-headers.adoc[]
+===== 경로 변수
+include::{snippets}/schedule-update-controller-docs-test/schedule-update-doc-test/path-parameters.adoc[]
+===== 본문
+include::{snippets}/schedule-update-controller-docs-test/schedule-update-doc-test/request-fields.adoc[]
+
+==== 응답
+===== 본문
+include::{snippets}/schedule-update-controller-docs-test/schedule-update-doc-test/response-fields.adoc[]
+
+
+==== 예제
+===== 요청
+include::{snippets}/schedule-update-controller-docs-test/schedule-update-doc-test/http-request.adoc[]
+
+사용자는 경로 변수를 통해 수정하고자 하는 여행의 식별자를 전달하고, 본문을 통해 어떤 제목/본문으로 변경할지 전달합니다.
+
+===== 응답
+include::{snippets}/schedule-update-controller-docs-test/schedule-update-doc-test/http-response.adoc[]
+
+정상적으로 일정이 수정됐을 경우, 일정의 식별자를 본문으로 담고 상태코드 200 Ok 를 함께 응답합니다.
+
+'''
 
 === Schedule 조회
 
@@ -258,7 +301,7 @@ include::{snippets}/single-schedule-query-controller-docs-test/일정_단건_조
 ===== 응답
 include::{snippets}/single-schedule-query-controller-docs-test/일정_단건_조회/http-response.adoc[]
 
----
+'''
 
 === Day 조회
 
@@ -283,4 +326,5 @@ include::{snippets}/single-day-query-controller-docs-test/day_단건_조회/resp
 include::{snippets}/single-day-query-controller-docs-test/day_단건_조회/http-request.adoc[]
 ===== 응답
 include::{snippets}/single-day-query-controller-docs-test/day_단건_조회/http-response.adoc[]
----
+
+'''

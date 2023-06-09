@@ -11,7 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Getter
-@ToString(of = {"id", "title", "content", "place", "scheduleIndex"})
+@ToString(of = {"id", "scheduleTitle", "scheduleContent", "place", "scheduleIndex"})
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "schedules")
 @Entity
