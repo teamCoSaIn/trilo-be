@@ -1,10 +1,15 @@
 package com.cosain.trilo.auth.presentation;
 
 import com.cosain.trilo.auth.application.AuthService;
+import com.cosain.trilo.auth.application.dto.LoginResult;
 import com.cosain.trilo.auth.presentation.dto.AuthResponse;
 import com.cosain.trilo.auth.presentation.dto.RefreshTokenStatusResponse;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,5 +35,16 @@ public class AuthRestController {
     @PostMapping("/logout")
     public void logout(@RequestHeader(value = "Authorization") String authHeaderValue, @CookieValue(value = "refreshToken", required = true) String refreshToken){
         authService.logout(authHeaderValue, refreshToken);
+    }
+
+    @GetMapping("/login/{provider}")
+    @ResponseStatus(HttpStatus.OK)
+    public AuthResponse login(@RequestParam @NotEmpty String code, @RequestParam("redirect_uri") @NotEmpty String redirectUri, @PathVariable @NotEmpty String provider, HttpServletResponse response){
+        LoginResult loginResult = authService.login(code, provider, redirectUri);
+        Cookie cookie = new Cookie("refreshToken", loginResult.getRefreshToken());
+        cookie.setMaxAge(3600);
+        cookie.setPath("/");
+        response.addCookie(cookie);
+        return AuthResponse.from(loginResult.getAccessToken());
     }
 }
