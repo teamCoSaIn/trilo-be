@@ -39,7 +39,7 @@ public class AuthRestController {
 
     @GetMapping("/login/{provider}")
     @ResponseStatus(HttpStatus.OK)
-    public AuthResponse login(@RequestParam @NotEmpty String code, @RequestParam("redirect_uri") @NotEmpty String redirectUri, @PathVariable @NotEmpty String provider, HttpServletResponse response){
+    public AuthResponse login(@RequestParam @NotEmpty String code, @RequestParam("redirect_uri") @NotEmpty String redirectUri, @PathVariable String provider, HttpServletResponse response){
         LoginResult loginResult = authService.login(code, provider, redirectUri);
         Cookie cookie = new Cookie("refreshToken", loginResult.getRefreshToken());
         cookie.setMaxAge(3600);
