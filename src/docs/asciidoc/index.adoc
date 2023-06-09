@@ -193,6 +193,35 @@ include::{snippets}/single-trip-query-controller-docs-test/여행_단건_조회/
 
 '''
 
+=== 임시보관함 조회
+
+==== 기본 정보
+
+- 메서드 : GET
+- URL : `/api/trips/{tripId}/temporary-storage`
+- 인증 방식 : 엑세스 토큰
+
+==== 요청
+===== 헤더
+include::{snippets}/trip-temporary-storage-query-controller-docs-test/임시보관함_조회/request-headers.adoc[]
+===== 경로 변수
+include::{snippets}/trip-temporary-storage-query-controller-docs-test/임시보관함_조회/path-parameters.adoc[]
+
+==== 응답
+===== 본문
+include::{snippets}/trip-temporary-storage-query-controller-docs-test/임시보관함_조회/response-fields.adoc[]
+===== TempSchedules
+include::{snippets}/trip-temporary-storage-query-controller-docs-test/임시보관함_조회/response-fields-tempSchedules.adoc[]
+===== Coordinate
+include::{snippets}/trip-temporary-storage-query-controller-docs-test/임시보관함_조회/response-fields-coordinate.adoc[]
+==== 예제
+===== 요청
+include::{snippets}/trip-temporary-storage-query-controller-docs-test/임시보관함_조회/http-request.adoc[]
+===== 응답
+include::{snippets}/trip-temporary-storage-query-controller-docs-test/임시보관함_조회/http-response.adoc[]
+
+'''
+
 === Schedule 생성
 
 ==== 기본 정보
