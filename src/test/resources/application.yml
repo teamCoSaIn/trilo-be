@@ -84,5 +84,11 @@ jwt:
   access-token-expiry: 1800000 # 1시간... ? 하루 추후 논의 : FE분들과도 논의
   refresh-token-expiry: 10800000 # 3시간... ? 한달
 
+oauth2:
+  kakao:
+    client-id: secretsecretsecret
+    token-uri: https://kauth.kakao.com/oauth/token
+    user-info-uri: https://kapi.kakao.com/v2/user/me
+
 deploy-module:
   version: 0.0.7

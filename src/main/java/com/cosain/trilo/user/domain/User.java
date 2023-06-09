@@ -1,6 +1,6 @@
 package com.cosain.trilo.user.domain;
 
-import com.cosain.trilo.config.security.dto.OAuthAttributes;
+import com.cosain.trilo.auth.infra.OAuthProfileDto;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -43,19 +43,18 @@ public class User {
         this.role = role;
     }
 
-    public static User from(OAuthAttributes oAuthAttributes) {
+    public static User from(OAuthProfileDto oAuthProfileDto) {
         return User.builder()
-                .name(oAuthAttributes.getName())
-                .email(oAuthAttributes.getEmail())
-                .authProvider(oAuthAttributes.getAuthProvider())
-                .profileImageUrl(oAuthAttributes.getProfileImageUrl())
+                .name(oAuthProfileDto.getName())
+                .email(oAuthProfileDto.getEmail())
+                .profileImageUrl(oAuthProfileDto.getProfileImageUrl())
                 .role(Role.MEMBER)
+                .authProvider(oAuthProfileDto.getProvider())
                 .build();
     }
 
-    public void updateUserByOAuthInfo(OAuthAttributes oAuthAttributes) {
-        this.name = oAuthAttributes.getName();
-        this.profileImageUrl = oAuthAttributes.getProfileImageUrl();
+    public void updateUserByOauthProfile(OAuthProfileDto oAuthProfileDto) {
+        this.name = oAuthProfileDto.getName();
+        this.profileImageUrl = oAuthProfileDto.getProfileImageUrl();
     }
-
 }
