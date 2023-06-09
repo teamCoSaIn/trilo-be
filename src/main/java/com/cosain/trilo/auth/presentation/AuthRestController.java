@@ -3,14 +3,15 @@ package com.cosain.trilo.auth.presentation;
 import com.cosain.trilo.auth.application.AuthService;
 import com.cosain.trilo.auth.application.dto.LoginResult;
 import com.cosain.trilo.auth.presentation.dto.AuthResponse;
+import com.cosain.trilo.auth.presentation.dto.OauthLoginRequest;
 import com.cosain.trilo.auth.presentation.dto.RefreshTokenStatusResponse;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.validation.constraints.NotEmpty;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
@@ -39,8 +40,8 @@ public class AuthRestController {
 
     @GetMapping("/login/{provider}")
     @ResponseStatus(HttpStatus.OK)
-    public AuthResponse login(@RequestParam @NotEmpty String code, @RequestParam("redirect_uri") @NotEmpty String redirectUri, @PathVariable String provider, HttpServletResponse response){
-        LoginResult loginResult = authService.login(code, provider, redirectUri);
+    public AuthResponse login(@Validated @ModelAttribute OauthLoginRequest oauthLoginRequest, @PathVariable String provider, HttpServletResponse response){
+        LoginResult loginResult = authService.login(oauthLoginRequest.getCode(), provider, oauthLoginRequest.getRedirect_uri());
         Cookie cookie = new Cookie("refreshToken", loginResult.getRefreshToken());
         cookie.setMaxAge(3600);
         cookie.setPath("/");
