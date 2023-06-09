@@ -6,4 +6,5 @@ public interface TokenProvider {
     String createAccessToken(final Authentication authentication);
     String createAccessToken(final String email);
     String createRefreshToken(final Authentication authentication);
+    String createRefreshToken(final String email);
 }

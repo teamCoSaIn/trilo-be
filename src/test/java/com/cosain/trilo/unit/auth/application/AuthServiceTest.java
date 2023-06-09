@@ -1,13 +1,18 @@
 package com.cosain.trilo.unit.auth.application;
 
 import com.cosain.trilo.auth.application.AuthService;
+import com.cosain.trilo.auth.application.dto.LoginResult;
 import com.cosain.trilo.auth.domain.repository.TokenRepository;
-import com.cosain.trilo.auth.infra.repository.RefreshTokenRepository;
+import com.cosain.trilo.auth.infra.OAuthProfileDto;
 import com.cosain.trilo.auth.infra.TokenAnalyzer;
 import com.cosain.trilo.auth.infra.TokenProvider;
+import com.cosain.trilo.auth.infra.oauth.kakao.KakaoClient;
 import com.cosain.trilo.auth.presentation.dto.RefreshTokenStatusResponse;
 import com.cosain.trilo.common.exception.NotExistRefreshTokenException;
 import com.cosain.trilo.common.exception.NotValidTokenException;
+import com.cosain.trilo.user.domain.AuthProvider;
+import com.cosain.trilo.user.domain.User;
+import com.cosain.trilo.user.domain.UserRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,9 +20,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Optional;
+
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 
@@ -31,8 +37,13 @@ class AuthServiceTest {
     private TokenAnalyzer tokenAnalyzer;
     @Mock
     private TokenProvider tokenProvider;
+    @Mock
+    private UserRepository userRepository;
+    @Mock
+    private KakaoClient kakaoClient;
 
     private final String ACCESS_TOKEN = "slkdfjasjeoifjse.siejfoajseifjasolef.sliejfaisjelfsjefsdcv";
+    private final String REFRESH_TOKEN = "slkdfjasjeoifjse.siejfoajseifjasolef.dfaesgasegasefasdfase";
 
     @Test
     void ACCESS_토큰_재발급(){
@@ -96,6 +107,33 @@ class AuthServiceTest {
         // then
         then(tokenRepository).should().saveLogoutAccessToken(any());
         then(tokenRepository).should().deleteRefreshTokenById(any());
+    }
+
+    @Test
+    void 로그인_정상_동작_확인_테스트(){
+        // given
+        String code = "Authorization Code";
+        String provider = "kakao";
+        String redirect_uri = "http://localhost:3000/oauth2/callback";
+        String email = "slifjelsijflsiej@nate.com";
+        OAuthProfileDto oAuthProfileDto = OAuthProfileDto.builder()
+                .email(email)
+                .name("홍길동")
+                .provider(AuthProvider.KAKAO)
+                .profileImageUrl("image_url")
+                .build();
+        given(userRepository.findByEmail(eq(email))).willReturn(Optional.ofNullable(User.from(oAuthProfileDto)));
+        given(kakaoClient.getAccessToken(eq(code), eq(redirect_uri))).willReturn(ACCESS_TOKEN);
+        given(kakaoClient.getProfile(eq(ACCESS_TOKEN))).willReturn(oAuthProfileDto);
+        given(tokenProvider.createAccessToken(anyString())).willReturn(ACCESS_TOKEN);
+        given(tokenProvider.createRefreshToken(anyString())).willReturn(REFRESH_TOKEN);
+
+        // when
+        LoginResult loginResult = authService.login(code, provider, redirect_uri);
+
+        // then
+        Assertions.assertThat(loginResult.getAccessToken()).isEqualTo(ACCESS_TOKEN);
+        Assertions.assertThat(loginResult.getRefreshToken()).isEqualTo(REFRESH_TOKEN);
     }
 
 }
