@@ -12,25 +12,24 @@
 === OAuth2 로그인
 
 - 메서드 : GET
-- URL : `/api/auth/login/{provider}?redirect_uri={redirectUri}`
+- URL : `/api/auth/login/{provider}?redirect_uri={redirectUri}&code={Authorization_Code}`
 
 ==== 요청
 ===== 경로 변수
-include::{snippets}/o-auth2-login-test/소셜_로그인/path-parameters.adoc[]
-
+include::{snippets}/auth-rest-controller-docs-test/로그인_요청/path-parameters.adoc[]
 ===== 쿼리 변수
-include::{snippets}/o-auth2-login-test/소셜_로그인/query-parameters.adoc[]
-
+include::{snippets}/auth-rest-controller-docs-test/로그인_요청/query-parameters.adoc[]
 ==== 응답
-===== 쿠키
-include::{snippets}/o-auth2-login-test/소셜_로그인/response-cookies.adoc[]
+===== 헤더
+include::{snippets}/auth-rest-controller-docs-test/로그인_요청/response-headers.adoc[]
+===== 본문
+include::{snippets}/auth-rest-controller-docs-test/로그인_요청/response-fields.adoc[]
 
 ==== 예제
 ===== 요청
-include::{snippets}/o-auth2-login-test/소셜_로그인/http-request.adoc[]
+include::{snippets}/auth-rest-controller-docs-test/로그인_요청/http-request.adoc[]
 ===== 응답
-include::{snippets}/o-auth2-login-test/소셜_로그인/http-response.adoc[]
-
+include::{snippets}/auth-rest-controller-docs-test/로그인_요청/http-response.adoc[]
 
 ---
 

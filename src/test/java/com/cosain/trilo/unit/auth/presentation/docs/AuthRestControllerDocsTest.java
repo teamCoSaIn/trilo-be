@@ -1,6 +1,7 @@
 package com.cosain.trilo.unit.auth.presentation.docs;
 
 import com.cosain.trilo.auth.application.AuthService;
+import com.cosain.trilo.auth.application.dto.LoginResult;
 import com.cosain.trilo.auth.presentation.AuthRestController;
 import com.cosain.trilo.auth.presentation.dto.RefreshTokenStatusResponse;
 import com.cosain.trilo.support.RestDocsTestSupport;
@@ -9,18 +10,20 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 
-import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
-import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import org.springframework.security.test.context.support.WithMockUser;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
+import static org.springframework.restdocs.headers.HeaderDocumentation.*;
 import static org.springframework.restdocs.payload.JsonFieldType.BOOLEAN;
 import static org.springframework.restdocs.payload.JsonFieldType.STRING;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(AuthRestController.class)
@@ -74,6 +77,36 @@ class AuthRestControllerDocsTest extends RestDocsTestSupport {
                     requestHeaders(
                             headerWithName(HttpHeaders.AUTHORIZATION).description("Bearer 타입 AccessToken")
                     )
+                ));
+    }
+
+    @Test
+    void 로그인_요청() throws Exception{
+
+        String provider = "kakao";
+        given(authService.login(anyString(), anyString(), anyString())).willReturn(LoginResult.of("accessToken", "refreshToken"));
+
+        mockMvc.perform(RestDocumentationRequestBuilders.get(BASE_URL + "/login/{provider}", provider)
+                        .param("code", "Authorization code")
+                        .param("redirect_uri", "http://localhost:3000/oauth2/callback")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(restDocs.document(
+                    pathParameters(
+                            parameterWithName("provider").description("소셜 로그인 제공자 ex) kakao, google, naver")
+                    ),
+                    queryParameters(
+                            parameterWithName("code").description("Authorization Code"),
+                            parameterWithName("redirect_uri").description("처음 Authorization Code 를 발급 받을 때 지정한 Redirect URI")
+                    ),
+                    responseFields(
+                            fieldWithPath("authType").type(STRING).description("인증 타입 (Bearer)"),
+                            fieldWithPath("accessToken").description("AccessToken")
+                    ),
+                    responseHeaders(
+                            headerWithName("Set-Cookie").description("RefreshToken")
+                    )
+
                 ));
     }
 
