@@ -4,10 +4,10 @@ import com.cosain.trilo.auth.application.dto.LoginResult;
 import com.cosain.trilo.auth.domain.LogoutAccessToken;
 import com.cosain.trilo.auth.domain.RefreshToken;
 import com.cosain.trilo.auth.domain.repository.TokenRepository;
+import com.cosain.trilo.auth.infra.OAuthClient;
 import com.cosain.trilo.auth.infra.OAuthProfileDto;
 import com.cosain.trilo.auth.infra.TokenAnalyzer;
 import com.cosain.trilo.auth.infra.TokenProvider;
-import com.cosain.trilo.auth.infra.oauth.kakao.KakaoClient;
 import com.cosain.trilo.auth.presentation.dto.RefreshTokenStatusResponse;
 import com.cosain.trilo.common.exception.NotExistRefreshTokenException;
 import com.cosain.trilo.common.exception.NotValidTokenException;
@@ -28,7 +28,7 @@ public class AuthService {
     private final TokenRepository tokenRepository;
     private final TokenProvider tokenProvider;
     private final TokenAnalyzer tokenAnalyzer;
-    private final KakaoClient oAuthClient;
+    private final OAuthClient oAuthClient;
     private final UserRepository userRepository;
 
     @Transactional

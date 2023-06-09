@@ -3,10 +3,10 @@ package com.cosain.trilo.unit.auth.application;
 import com.cosain.trilo.auth.application.AuthService;
 import com.cosain.trilo.auth.application.dto.LoginResult;
 import com.cosain.trilo.auth.domain.repository.TokenRepository;
+import com.cosain.trilo.auth.infra.OAuthClient;
 import com.cosain.trilo.auth.infra.OAuthProfileDto;
 import com.cosain.trilo.auth.infra.TokenAnalyzer;
 import com.cosain.trilo.auth.infra.TokenProvider;
-import com.cosain.trilo.auth.infra.oauth.kakao.KakaoClient;
 import com.cosain.trilo.auth.presentation.dto.RefreshTokenStatusResponse;
 import com.cosain.trilo.common.exception.NotExistRefreshTokenException;
 import com.cosain.trilo.common.exception.NotValidTokenException;
@@ -40,7 +40,7 @@ class AuthServiceTest {
     @Mock
     private UserRepository userRepository;
     @Mock
-    private KakaoClient kakaoClient;
+    private OAuthClient oAuthClient;
 
     private final String ACCESS_TOKEN = "slkdfjasjeoifjse.siejfoajseifjasolef.sliejfaisjelfsjefsdcv";
     private final String REFRESH_TOKEN = "slkdfjasjeoifjse.siejfoajseifjasolef.dfaesgasegasefasdfase";
@@ -123,8 +123,8 @@ class AuthServiceTest {
                 .profileImageUrl("image_url")
                 .build();
         given(userRepository.findByEmail(eq(email))).willReturn(Optional.ofNullable(User.from(oAuthProfileDto)));
-        given(kakaoClient.getAccessToken(eq(code), eq(redirect_uri))).willReturn(ACCESS_TOKEN);
-        given(kakaoClient.getProfile(eq(ACCESS_TOKEN))).willReturn(oAuthProfileDto);
+        given(oAuthClient.getAccessToken(eq(code), eq(redirect_uri))).willReturn(ACCESS_TOKEN);
+        given(oAuthClient.getProfile(eq(ACCESS_TOKEN))).willReturn(oAuthProfileDto);
         given(tokenProvider.createAccessToken(anyString())).willReturn(ACCESS_TOKEN);
         given(tokenProvider.createRefreshToken(anyString())).willReturn(REFRESH_TOKEN);
 
