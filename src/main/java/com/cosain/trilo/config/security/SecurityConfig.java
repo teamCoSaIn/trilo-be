@@ -23,6 +23,8 @@ import org.springframework.web.cors.CorsUtils;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 
+import java.util.List;
+
 import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 
 @Configuration
@@ -76,7 +78,8 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource configurationSource() {
         var configuration = new CorsConfiguration();
-        configuration.addAllowedOriginPattern("*");
+//        configuration.addAllowedOriginPattern("*");
+        configuration.setAllowedOrigins(List.of("http://localhost:3000","http://www.cosain-trilo.com","http://cosain-trilo.com"));
         configuration.addAllowedMethod("*");
         configuration.addAllowedHeader("*");
         configuration.addExposedHeader("*");
