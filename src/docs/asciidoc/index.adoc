@@ -138,6 +138,7 @@ include::{snippets}/trip-update-controller-docs-test/trip-update-doc-test/http-r
 여행이 삭제되면, 여행에 속해있는 Day 및 일정들도 모두 일괄적으로 삭제됩니다.
 
 ==== 요청
+===== 헤더
 include::{snippets}/trip-delete-controller-docs-test/trip-delete-doc-test/request-headers.adoc[]
 
 ===== 경로 변수(PathVariable)
@@ -186,6 +187,51 @@ include::{snippets}/single-trip-query-controller-docs-test/여행_단건_조회/
 include::{snippets}/single-trip-query-controller-docs-test/여행_단건_조회/http-request.adoc[]
 ===== 응답
 include::{snippets}/single-trip-query-controller-docs-test/여행_단건_조회/http-response.adoc[]
+
+---
+
+=== Schedule 생성
+
+==== 기본 정보
+
+- 메서드 : POST
+- URL : `/api/schedules`
+- 인증 방식 : 액세스 토큰
+
+일정을 생성합니다.
+어느 Trip의 어느 Day에 일정을 생성할 지 지정할 수 있으며, day가 null 이면 해당 Trip(여행)의 임시보관함에 일정이 생성됩니다.
+이 때, 전달된 식별자의 Day가 해당 Trip에 속하지 않을 경우, 예외가 발생합니다.
+
+
+==== 요청
+===== 헤더
+include::{snippets}/schedule-create-controller-docs-test/schedule-create-doc-test/request-headers.adoc[]
+
+===== 본문
+include::{snippets}/schedule-create-controller-docs-test/schedule-create-doc-test/request-fields.adoc[]
+
+===== 좌표(Coordinate) 타입
+include::{snippets}/schedule-create-controller-docs-test/schedule-create-doc-test/request-fields-beneath-coordinate.adoc[]
+
+==== 응답
+===== 본문
+include::{snippets}/schedule-create-controller-docs-test/schedule-create-doc-test/response-fields.adoc[]
+
+
+
+==== 예제
+===== 요청
+include::{snippets}/schedule-create-controller-docs-test/schedule-create-doc-test/http-request.adoc[]
+
+
+사용자는 어느 Trip의 어느 Day에 일정을 생성할 것인지 지정합니다. 이 때, Trip Id가 null 이면 임시보관함에 삽입되고, dayId가 null 이 아니면
+해당 day에 일정이 생성됩니다. (단, 해당 식별자의 Day가 Trip에 속해야합니다!)
+
+
+===== 응답
+include::{snippets}/schedule-create-controller-docs-test/schedule-create-doc-test/http-response.adoc[]
+
+일정이 정상적으로 생성되면, 생성된 일정(Schedule)의 식별자가 반환되고, 상태코드로 201 Created가 전달됩니다.
 
 ---
 
