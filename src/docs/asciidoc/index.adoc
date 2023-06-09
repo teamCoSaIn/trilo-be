@@ -277,6 +277,43 @@ include::{snippets}/schedule-update-controller-docs-test/schedule-update-doc-tes
 
 '''
 
+=== Schedule 삭제
+
+==== 기본정보
+- 메서드 : DELETE
+- URL : `/api/schedules/{scheduleId}`
+- 인증방식 : 액세스 토큰
+
+요청한 일정을 삭제합니다. 여행, 일정의 소유자만 일정을 삭제할 수 있고, 일정이 실제로 존재해야합니다.(일정이 존재하지 않을 경우 예외가 발생합니다.)
+
+==== 요청
+===== 헤더
+include::{snippets}/schedule-delete-controller-docs-test/schedule-delete-doc-test/request-headers.adoc[]
+===== 경로 변수(PathVariable)
+include::{snippets}/schedule-delete-controller-docs-test/schedule-delete-doc-test/path-parameters.adoc[]
+
+- 유효한 일정 식별자(scheduleId)를 전달해야합니다.
+
+==== 응답
+===== 본문
+성공적으로 일정이 삭제될 경우 본문에 아무 내용도 전달되지 않고, 상태코드로 204 No Content만 전달됩니다.
+
+==== 예제
+===== 요청
+include::{snippets}/schedule-delete-controller-docs-test/schedule-delete-doc-test/http-request.adoc[]
+
+사용자는 경로변수를 통해 어떤 일정을 삭제할 것인지 지정합니다.
+
+===== 응답
+include::{snippets}/schedule-delete-controller-docs-test/schedule-delete-doc-test/http-response.adoc[]
+
+일정이 성공적으로 삭제되면, 응답 본문에 아무 것도 담기지 않은 채 상태코드 204 No Content가 전달됩니다.
+
+
+'''
+
+
+
 === Schedule 조회
 
 ==== 기본 정보
