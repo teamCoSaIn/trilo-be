@@ -7,6 +7,7 @@ import com.cosain.trilo.trip.presentation.trip.query.TripTemporaryStorageQueryCo
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.SliceImpl;
 import org.springframework.http.HttpHeaders;
@@ -23,8 +24,7 @@ import static org.springframework.restdocs.headers.HeaderDocumentation.headerWit
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.payload.JsonFieldType.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
-import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
-import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.restdocs.request.RequestDocumentation.*;
 
 @WebMvcTest(TripTemporaryStorageQueryController.class)
 public class TripTemporaryStorageQueryControllerDocsTest extends RestDocsTestSupport {
@@ -36,20 +36,29 @@ public class TripTemporaryStorageQueryControllerDocsTest extends RestDocsTestSup
     @Test
     void 임시보관함_조회() throws Exception{
         Long tripId = 1L;
+        int page = 0;
+        int size = 2;
         mockingForLoginUserAnnotation();
         ScheduleSummary scheduleSummary1 = new ScheduleSummary(1L, "제목", "장소 이름","장소 식별자", 33.33, 33.33);
         ScheduleSummary scheduleSummary2 = new ScheduleSummary(2L, "제목", "장소 이름","장소 식별자",33.33, 33.33);
         SliceImpl<ScheduleSummary> scheduleSummaries = new SliceImpl<>(List.of(scheduleSummary1, scheduleSummary2));
-        given(temporarySearchUseCase.searchTemporary(eq(tripId), any(Pageable.class))).willReturn(scheduleSummaries);
+        Pageable pageable = PageRequest.of(page, size);
+        given(temporarySearchUseCase.searchTemporary(eq(tripId), eq(pageable))).willReturn(scheduleSummaries);
 
         mockMvc.perform(RestDocumentationRequestBuilders.get("/api/trips/{tripId}/temporary-storage", tripId)
                 .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)
+                .param("page", String.valueOf(page))
+                .param("size", String.valueOf(size))
                 .characterEncoding(StandardCharsets.UTF_8)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(restDocs.document(
                         requestHeaders(
                                 headerWithName(HttpHeaders.AUTHORIZATION)
                                         .description("Bearer 타입 AccessToken")
+                        ),
+                        queryParameters(
+                                parameterWithName("page").description("요청할 페이지"),
+                                parameterWithName("size").description("가져올 데이터 개수")
                         ),
                         pathParameters(
                                 parameterWithName("tripId").description("조회할 여행 ID")

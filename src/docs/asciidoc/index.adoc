@@ -231,6 +231,8 @@ include::{snippets}/tripper-trip-list-query-controller-docs-test/사용자_여�
 include::{snippets}/trip-temporary-storage-query-controller-docs-test/임시보관함_조회/request-headers.adoc[]
 ===== 경로 변수
 include::{snippets}/trip-temporary-storage-query-controller-docs-test/임시보관함_조회/path-parameters.adoc[]
+===== 쿼리 변수
+include::{snippets}/trip-temporary-storage-query-controller-docs-test/임시보관함_조회/query-parameters.adoc[]
 
 ==== 응답
 ===== 본문
