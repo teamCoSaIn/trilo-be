@@ -7,11 +7,13 @@ import com.querydsl.core.group.GroupBy;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 
+import java.util.List;
 import java.util.Optional;
 
 import static com.cosain.trilo.trip.domain.entity.QDay.day;
 import static com.cosain.trilo.trip.domain.entity.QSchedule.schedule;
 import static com.querydsl.core.group.GroupBy.groupBy;
+import static com.querydsl.core.group.GroupBy.list;
 
 @RequiredArgsConstructor
 public class DayQueryJpaRepositoryImpl implements DayQueryJpaRepositoryCustom{
@@ -41,5 +43,29 @@ public class DayQueryJpaRepositoryImpl implements DayQueryJpaRepositoryCustom{
                 ))).get(dayId);
 
         return Optional.ofNullable(dayScheduleDetail);
+    }
+
+    @Override
+    public List<DayScheduleDetail> findDayScheduleListByTripId(Long tripId){
+
+        return query.from(day)
+                .leftJoin(day.schedules, schedule)
+                .where(day.trip.id.eq(tripId))
+                .orderBy(day.tripDate.asc(), schedule.scheduleIndex.value.asc())
+                .transform(
+                        groupBy(day.id).list(new QDayScheduleDetail(
+                                day.id,
+                                day.trip.id,
+                                day.tripDate,
+                                list(new QScheduleSummary(
+                                        schedule.id,
+                                        schedule.scheduleTitle.value,
+                                        schedule.place.placeName,
+                                        schedule.place.placeId,
+                                        schedule.place.coordinate.latitude,
+                                        schedule.place.coordinate.longitude
+                                ))
+                        ))
+                );
     }
 }

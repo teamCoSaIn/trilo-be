@@ -2,9 +2,9 @@ package com.cosain.trilo.unit.trip.application.day.query;
 
 import com.cosain.trilo.trip.application.day.query.service.DaySearchService;
 import com.cosain.trilo.trip.application.exception.DayNotFoundException;
-import com.cosain.trilo.trip.infra.dto.ScheduleSummary;
-import com.cosain.trilo.trip.infra.repository.day.DayScheduleQueryRepository;
 import com.cosain.trilo.trip.infra.dto.DayScheduleDetail;
+import com.cosain.trilo.trip.infra.dto.ScheduleSummary;
+import com.cosain.trilo.trip.infra.repository.day.DayQueryRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,10 +14,14 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -30,7 +34,7 @@ public class DaySearchServiceTest {
     private DaySearchService daySearchService;
 
     @Mock
-    private DayScheduleQueryRepository dayQueryRepository;
+    private DayQueryRepository dayQueryRepository;
 
     @Test
     void Day_단건_조회(){
@@ -57,6 +61,19 @@ public class DaySearchServiceTest {
 
         // when & then
         Assertions.assertThatThrownBy(() -> daySearchService.searchDeySchedule(dayId)).isInstanceOf(DayNotFoundException.class);
+    }
+
+    @Test
+    void Day_목록_조회(){
+        // given
+        Long tripId = 1L;
+        List<DayScheduleDetail> dayScheduleDetails = new ArrayList<>();
+        given(dayQueryRepository.findDayScheduleListByTripId(eq(tripId))).willReturn(dayScheduleDetails);
+        // when
+        List<DayScheduleDetail> daysWithSchedulesByTripId = daySearchService.searchDaySchedules(tripId);
+        // then
+        verify(dayQueryRepository).findDayScheduleListByTripId(eq(tripId));
+        assertThat(daysWithSchedulesByTripId).isEqualTo(dayScheduleDetails);
     }
 
 
