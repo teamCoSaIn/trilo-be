@@ -149,7 +149,7 @@ schedule-0009:
 
 schedule-0010:
   message: Too Many Day Schedule Count
-  detail: Cannot create any more schedules for your TripDay. Each TripDay can have a maximum of 10 schedules.
+  detail: You cannot put any more schedule on the designated day. Each day can have a maximum of 10 schedules.
 
 
 # 장소 관련

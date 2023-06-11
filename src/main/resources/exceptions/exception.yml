@@ -149,7 +149,7 @@ schedule-0009:
 
 schedule-0010:
   message: Too Many Day Schedule Count
-  detail: Day에 더 이상 일정을 생성할 수 없습니다. 한 Day는 최대 10개의 일정을 가질 수 있습니다.
+  detail: 지정 Day에 더 이상 일정을 둘 수 없습니다. 한 Day는 최대 10개의 일정을 가질 수 있습니다.
 
 # 장소 관련
 place-0001:
