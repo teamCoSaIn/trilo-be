@@ -51,6 +51,7 @@ public class DayQueryJpaRepositoryImpl implements DayQueryJpaRepositoryCustom{
         return query.from(day)
                 .leftJoin(day.schedules, schedule)
                 .where(day.trip.id.eq(tripId))
+                .orderBy(day.tripDate.asc(), schedule.scheduleIndex.value.asc())
                 .transform(
                         groupBy(day.id).list(new QDayScheduleDetail(
                                 day.id,
