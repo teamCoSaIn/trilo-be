@@ -2,6 +2,7 @@ package com.cosain.trilo.trip.application.schedule.command.service;
 
 import com.cosain.trilo.trip.application.exception.NoScheduleMoveAuthorityException;
 import com.cosain.trilo.trip.application.exception.ScheduleNotFoundException;
+import com.cosain.trilo.trip.application.exception.TooManyDayScheduleException;
 import com.cosain.trilo.trip.application.schedule.command.usecase.dto.ScheduleMoveCommand;
 import com.cosain.trilo.trip.application.exception.DayNotFoundException;
 import com.cosain.trilo.trip.application.schedule.command.usecase.dto.ScheduleMoveResult;
@@ -15,8 +16,11 @@ import com.cosain.trilo.trip.domain.exception.ScheduleIndexRangeException;
 import com.cosain.trilo.trip.domain.repository.DayRepository;
 import com.cosain.trilo.trip.domain.repository.ScheduleRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Objects;
 
 @RequiredArgsConstructor
 @Service
@@ -34,6 +38,7 @@ public class ScheduleMoveService implements ScheduleMoveUseCase {
         Trip trip = schedule.getTrip();
 
         validateScheduleMoveAuthority(trip, moveTripperId);
+        validateTargetDayScheduleCount(schedule, targetDay);
 
         ScheduleMoveDto moveDto;
         try {
@@ -47,6 +52,18 @@ public class ScheduleMoveService implements ScheduleMoveUseCase {
             moveDto = trip.moveSchedule(schedule, targetDay, moveCommand.getTargetOrder());
         }
         return ScheduleMoveResult.from(moveDto);
+    }
+
+    private void validateTargetDayScheduleCount(Schedule schedule, Day targetDay) {
+        Long beforeDayId = schedule.getDay() == null ? null : schedule.getDay().getId();
+        Long afterDayId = targetDay == null ? null : targetDay.getId();
+
+        if (Objects.equals(beforeDayId, afterDayId) || afterDayId == null) {
+            return;
+        }
+        if (scheduleRepository.findDayScheduleCount(afterDayId) == Day.MAX_DAY_SCHEDULE_COUNT) {
+            throw new TooManyDayScheduleException("옮기려는 Day 자리에 일정이 가득참");
+        }
     }
 
 
