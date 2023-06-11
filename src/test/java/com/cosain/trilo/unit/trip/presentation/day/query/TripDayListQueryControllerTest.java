@@ -34,7 +34,7 @@ class TripDayListQueryControllerTest extends RestControllerTest {
     private final String ACCESS_TOKEN = "Bearer accessToken";
 
     @Test
-    @DisplayName("인증된 사용자 요청")
+    @DisplayName("Day 목록 조회 -> 성공")
     @WithMockUser
     public void findTripDayList_with_authorizedUser() throws Exception {
 
