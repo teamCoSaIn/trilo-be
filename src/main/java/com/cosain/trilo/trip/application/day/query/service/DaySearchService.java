@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -22,5 +24,10 @@ public class DaySearchService implements DaySearchUseCase {
 
     private DayScheduleDetail findDayWithScheduleByDayId(Long dayId){
         return dayQueryRepository.findDayWithSchedulesByDayId(dayId).orElseThrow(DayNotFoundException::new);
+    }
+
+    @Override
+    public List<DayScheduleDetail> findDaysWithSchedulesByTripId(Long tripId){
+        return dayQueryRepository.findDayScheduleListByTripId(tripId);
     }
 }
