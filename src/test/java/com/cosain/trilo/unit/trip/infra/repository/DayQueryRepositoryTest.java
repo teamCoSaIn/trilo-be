@@ -5,23 +5,25 @@ import com.cosain.trilo.trip.domain.entity.Day;
 import com.cosain.trilo.trip.domain.entity.Schedule;
 import com.cosain.trilo.trip.domain.entity.Trip;
 import com.cosain.trilo.trip.domain.vo.*;
-import com.cosain.trilo.trip.infra.repository.day.DayScheduleQueryRepository;
 import com.cosain.trilo.trip.infra.dto.DayScheduleDetail;
+import com.cosain.trilo.trip.infra.dto.ScheduleSummary;
+import com.cosain.trilo.trip.infra.repository.day.DayQueryRepository;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RepositoryTest
 @DisplayName("DayQueryRepositoryTest 테스트")
-public class DayScheduleQueryRepositoryTest {
+public class DayQueryRepositoryTest {
 
     @Autowired
-    private DayScheduleQueryRepository dayQueryRepository;
+    private DayQueryRepository dayQueryRepository;
 
     @Autowired
     private EntityManager em;
@@ -72,4 +74,42 @@ public class DayScheduleQueryRepositoryTest {
                 .scheduleContent(ScheduleContent.of("일정 본문"))
                 .build();
     }
+
+    @Test
+    void Day_목록_조회() {
+        // given
+        Trip trip = Trip.create(TripTitle.of("여행제목"), 1L);
+        em.persist(trip);
+
+        Day day1 = Day.of(LocalDate.of(2023, 5, 10), trip);
+        Day day2 = Day.of(LocalDate.of(2023, 5, 20), trip);
+        em.persist(day1);
+        em.persist(day2);
+
+        Schedule schedule1 = createSchedule(trip, day1,10000L);
+        Schedule schedule2 = createSchedule(trip, day1,20000L);
+        Schedule schedule3 = createSchedule(trip, day1,30000L);
+        Schedule schedule4 = createSchedule(trip, day2,10000L);
+
+        em.persist(schedule1);
+        em.persist(schedule2);
+        em.persist(schedule3);
+        em.persist(schedule4);
+        em.flush();
+
+        // when
+        List<DayScheduleDetail> dayScheduleDetails = dayQueryRepository.findDayScheduleListByTripId(trip.getId());
+        DayScheduleDetail dayScheduleDetail1 = dayScheduleDetails.get(0);
+        DayScheduleDetail dayScheduleDetail2 = dayScheduleDetails.get(1);
+        List<ScheduleSummary> schedules1 = dayScheduleDetail1.getSchedules();
+        List<ScheduleSummary> schedules2 = dayScheduleDetail2.getSchedules();
+
+        // then
+        assertThat(dayScheduleDetails.size()).isEqualTo(2);
+        assertThat(dayScheduleDetail1.getDayId()).isEqualTo(day1.getId());
+        assertThat(dayScheduleDetail2.getDayId()).isEqualTo(day2.getId());
+        assertThat(schedules1.size()).isEqualTo(3);
+        assertThat(schedules2.size()).isEqualTo(1);
+    }
+
 }

@@ -3,7 +3,7 @@ package com.cosain.trilo.unit.trip.application.day.query;
 import com.cosain.trilo.trip.application.day.query.service.DaySearchService;
 import com.cosain.trilo.trip.application.exception.DayNotFoundException;
 import com.cosain.trilo.trip.infra.dto.ScheduleSummary;
-import com.cosain.trilo.trip.infra.repository.day.DayScheduleQueryRepository;
+import com.cosain.trilo.trip.infra.repository.day.DayQueryRepository;
 import com.cosain.trilo.trip.infra.dto.DayScheduleDetail;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -30,7 +30,7 @@ public class DaySearchServiceTest {
     private DaySearchService daySearchService;
 
     @Mock
-    private DayScheduleQueryRepository dayQueryRepository;
+    private DayQueryRepository dayQueryRepository;
 
     @Test
     void Day_단건_조회(){
