@@ -7,5 +7,5 @@ import java.util.List;
 public interface DaySearchUseCase {
     DayScheduleDetail searchDeySchedule(Long dayId);
 
-    List<DayScheduleDetail> findDaysWithSchedulesByTripId(Long tripId);
+    List<DayScheduleDetail> searchDaySchedules(Long tripId);
 }

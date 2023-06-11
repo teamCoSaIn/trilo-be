@@ -27,7 +27,7 @@ public class DaySearchService implements DaySearchUseCase {
     }
 
     @Override
-    public List<DayScheduleDetail> findDaysWithSchedulesByTripId(Long tripId){
+    public List<DayScheduleDetail> searchDaySchedules(Long tripId){
         return dayQueryRepository.findDayScheduleListByTripId(tripId);
     }
 }

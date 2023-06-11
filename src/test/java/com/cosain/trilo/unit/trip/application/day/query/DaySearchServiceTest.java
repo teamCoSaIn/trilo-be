@@ -70,7 +70,7 @@ public class DaySearchServiceTest {
         List<DayScheduleDetail> dayScheduleDetails = new ArrayList<>();
         given(dayQueryRepository.findDayScheduleListByTripId(eq(tripId))).willReturn(dayScheduleDetails);
         // when
-        List<DayScheduleDetail> daysWithSchedulesByTripId = daySearchService.findDaysWithSchedulesByTripId(tripId);
+        List<DayScheduleDetail> daysWithSchedulesByTripId = daySearchService.searchDaySchedules(tripId);
         // then
         verify(dayQueryRepository).findDayScheduleListByTripId(eq(tripId));
         assertThat(daysWithSchedulesByTripId).isEqualTo(dayScheduleDetails);
