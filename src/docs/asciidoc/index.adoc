@@ -401,7 +401,7 @@ include::{snippets}/single-schedule-query-controller-docs-test/일정_단건_조
 ==== 기본 정보
 
 - 메서드 : GET
-- URL : '/api/days/{dayId}'
+- URL : `/api/days/{dayId}`
 - 인증 방식 : 엑세스 토큰
 
 ==== 요청
@@ -421,3 +421,32 @@ include::{snippets}/single-day-query-controller-docs-test/day_단건_조회/http
 include::{snippets}/single-day-query-controller-docs-test/day_단건_조회/http-response.adoc[]
 
 '''
+
+=== Day 전체 목록 조회
+
+==== 기본 정보
+
+- 메서드 : GET
+- URL : `/api/trips/{tripId}/days`
+- 인증 방식 : 엑세스 토큰
+
+==== 요청
+===== 헤더
+include::{snippets}/trip-day-list-query-controller-docs-test/day_목록_조회/request-headers.adoc[]
+===== 경로 변수
+include::{snippets}/trip-day-list-query-controller-docs-test/day_목록_조회/path-parameters.adoc[]
+==== 응답
+===== 본문
+include::{snippets}/trip-day-list-query-controller-docs-test/day_목록_조회/response-fields.adoc[]
+====== Days
+include::{snippets}/trip-day-list-query-controller-docs-test/day_목록_조회/response-fields-days.adoc[]
+====== Schedules
+include::{snippets}/trip-day-list-query-controller-docs-test/day_목록_조회/response-fields-schedules.adoc[]
+====== Coordinate
+include::{snippets}/trip-day-list-query-controller-docs-test/day_목록_조회/response-fields-coordinate.adoc[]
+==== 예제
+===== 요청
+include::{snippets}/trip-day-list-query-controller-docs-test/day_목록_조회/http-request.adoc[]
+===== 응답
+include::{snippets}/trip-day-list-query-controller-docs-test/day_목록_조회/http-response.adoc[]
+
