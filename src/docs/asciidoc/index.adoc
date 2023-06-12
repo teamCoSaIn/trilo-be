@@ -42,23 +42,38 @@ include::{snippets}/auth-rest-controller-docs-test/로그인_요청/http-respons
 - 메서드 : GET
 - URL : `/api/auth/token/refresh-token-info`
 
-===== 요청
-====== 쿠키
+==== 요청
+===== 쿠키
 include::{snippets}/auth-rest-controller-docs-test/재발급_토큰_상태_조회_요청/request-cookies.adoc[]
-===== 응답
-====== 본문
+==== 응답
+===== 본문
 include::{snippets}/auth-rest-controller-docs-test/재발급_토큰_상태_조회_요청/response-fields.adoc[]
-===== 예제
-====== 요청
+==== 예제
+===== 요청
 include::{snippets}/auth-rest-controller-docs-test/재발급_토큰_상태_조회_요청/http-request.adoc[]
-====== 응답
+===== 응답
 include::{snippets}/auth-rest-controller-docs-test/재발급_토큰_상태_조회_요청/http-response.adoc[]
 
 ---
 
 === 접근 토큰 재발급
-operation::auth-rest-controller-docs-test/접근토큰_재발급_요청[snippets = 'http-request,http-response,response-fields']
 
+==== 기본 정보
+
+- 메서드 : POST
+- URL : `/api/auth/reissue`
+
+==== 요청
+===== 쿠키
+include::{snippets}/auth-rest-controller-docs-test/접근토큰_재발급_요청/request-cookies.adoc[]
+==== 응답
+===== 본문
+include::{snippets}/auth-rest-controller-docs-test/접근토큰_재발급_요청/response-fields.adoc[]
+==== 예제
+===== 요청
+include::{snippets}/auth-rest-controller-docs-test/접근토큰_재발급_요청/http-request.adoc[]
+===== 응답
+include::{snippets}/auth-rest-controller-docs-test/접근토큰_재발급_요청/http-response.adoc[]
 '''
 
 == Trip API

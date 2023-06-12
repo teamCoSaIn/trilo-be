@@ -46,6 +46,9 @@ class AuthRestControllerDocsTest extends RestDocsTestSupport {
                         .cookie(new Cookie("refreshToken", "refreshToken")))
                 .andExpect(status().isOk())
                 .andDo(restDocs.document(
+                        requestCookies(
+                                cookieWithName("refreshToken").description("접근 토큰 발급에 사용될 재발급 토큰")
+                        ),
                         responseFields(
                                 fieldWithPath("authType").type(STRING).description("인증 타입 (Bearer)"),
                                 fieldWithPath("accessToken").type(STRING).description("재발급한 접근 토큰")
