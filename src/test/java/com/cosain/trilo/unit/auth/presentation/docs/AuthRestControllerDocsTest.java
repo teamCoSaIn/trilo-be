@@ -83,6 +83,9 @@ class AuthRestControllerDocsTest extends RestDocsTestSupport {
                 .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken"))
                 .andExpect(status().isOk())
                 .andDo(restDocs.document(
+                    requestCookies(
+                            cookieWithName("refreshToken").description("삭제할 재발급 토큰")
+                    ),
                     requestHeaders(
                             headerWithName(HttpHeaders.AUTHORIZATION).description("Bearer 타입 AccessToken")
                     )

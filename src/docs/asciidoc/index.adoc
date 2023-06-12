@@ -13,6 +13,7 @@
 
 === OAuth2 로그인
 
+==== 기본 정보
 - 메서드 : GET
 - URL : `/api/auth/login/{provider}?redirect_uri={redirectUri}&code={Authorization_Code}`
 
@@ -34,6 +35,26 @@ include::{snippets}/auth-rest-controller-docs-test/로그인_요청/http-request
 include::{snippets}/auth-rest-controller-docs-test/로그인_요청/http-response.adoc[]
 
 '''
+
+=== 로그아웃
+
+==== 기본 정보
+- 메서드 : POST
+- URL : `/api/auth/logout`
+
+==== 요청
+===== 쿠키
+include::{snippets}/auth-rest-controller-docs-test/로그아웃_요청/request-cookies.adoc[]
+===== 헤더
+include::{snippets}/auth-rest-controller-docs-test/로그아웃_요청/request-headers.adoc[]
+==== 예제
+===== 요청
+include::{snippets}/auth-rest-controller-docs-test/로그아웃_요청/http-request.adoc[]
+===== 응답
+include::{snippets}/auth-rest-controller-docs-test/로그아웃_요청/http-response.adoc[]
+
+
+---
 
 === 재발급 토큰 상태 조회
 
