@@ -396,7 +396,7 @@ include::{snippets}/single-schedule-query-controller-docs-test/일정_단건_조
 
 '''
 
-=== Day 조회
+=== Day 단건 조회
 
 ==== 기본 정보
 
@@ -413,6 +413,10 @@ include::{snippets}/single-day-query-controller-docs-test/day_단건_조회/path
 ==== 응답
 ===== 본문
 include::{snippets}/single-day-query-controller-docs-test/day_단건_조회/response-fields.adoc[]
+===== Schedules
+include::{snippets}/single-day-query-controller-docs-test/day_단건_조회/response-fields-schedules.adoc[]
+===== Coordinate
+include::{snippets}/single-day-query-controller-docs-test/day_단건_조회/response-fields-coordinate.adoc[]
 
 ==== 예제
 ===== 요청
@@ -438,11 +442,11 @@ include::{snippets}/trip-day-list-query-controller-docs-test/day_목록_조회/p
 ==== 응답
 ===== 본문
 include::{snippets}/trip-day-list-query-controller-docs-test/day_목록_조회/response-fields.adoc[]
-====== Days
+===== Days
 include::{snippets}/trip-day-list-query-controller-docs-test/day_목록_조회/response-fields-days.adoc[]
-====== Schedules
+===== Schedules
 include::{snippets}/trip-day-list-query-controller-docs-test/day_목록_조회/response-fields-schedules.adoc[]
-====== Coordinate
+===== Coordinate
 include::{snippets}/trip-day-list-query-controller-docs-test/day_목록_조회/response-fields-coordinate.adoc[]
 ==== 예제
 ===== 요청
