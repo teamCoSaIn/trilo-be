@@ -387,6 +387,99 @@ include::{snippets}/schedule-update-controller-docs-test/schedule-update-doc-tes
 
 '''
 
+
+=== Schedule 이동
+
+==== 기본정보
+- 메서드 : PATCH
+- URL : `/api/schedules/{scheduleId}`
+- 인증방식 : 액세스 토큰
+
+요청한 일정을 이동합니다. 여행의 소유자(== 일정의 소유자)만 일정을 이동할 수 있고, 일정이 실제로 존재해야합니다. (일정이 존재하지 않을 경우 예외가 발생합니다.)
+
+===== 일정의 순서
+
+각각의 Day에서 일정(Schedule)은 순서를 가집니다. 이 순서는 0,1,2,3,4,... 순입니다.
+그런데 일정을 이동시키기 위해서는 순서를 지정해야하는데 이 순서를 어떻게 지정할 지 난해할 수 있기 때문에 이 부분에 대해 설명을 하도록 하겠습니다.
+
+
+image::imgs/schedule-move1.jpg[]
+
+위의 그림에서 Day1에는 일정이 3개 있고(a,b,c) 일정 각각은 0,1,2 순서를 가집니다.
+Day2에도 일정이 4개 있고(d,e,f,g) 일정 각각은 0,1,2,3 번 순서를 가집니다.
+
+여기서 Day1의 일정(a)을 Day2의 특정 순서에 두는 상황을 가정해보겠습니다. 이 경우 지정 가능한 순서값은 0,1,2,3,4가 됩니다. 0번은 제일 맨 앞으로 이동하는 것이고,
+4번은 기존 Day2에 없던 순서이지만, 기존 마지막 순서값인 3보다 1 크므로 맨 뒤에 놓는다는 의미가 됩니다. (다만 여기서 4보다 큰 값을 지정하면 예외가 발생합니다.)
+
+이런 상황에서 Day1에 위치한 0번 위치 일정(a)을 두 일정 f, g 사이로 옮기고 싶다면, 순서값으로 3을 지정하면 됩니다.
+3번 순서는 일정 g의 자리인데 이 자리로 a를 이동시키고, g를 밀어내는 것입니다.
+
+image::imgs/schedule-move2.jpg[]
+
+우리가 지정한 일정(a)이 실제로 Day2의 2번 순서로 이동된 결과입니다. 일정 a는 f, g의 사이 3번 자리로 이동됐습니다.
+
+기존 Day1의 1,2번 순서에 있던 일정들(b,c)은 a의 자리가 비게 되므로 앞으로 밀려나서 각각 0,1 번 순서를 가지게 되었고,
+기존 Day2의 3번 순서에 있던 일정들 g는 뒤로 밀려나서 4번 순서를 가지게 되었습니다.
+
+
+image::imgs/schedule-move3.jpg[]
+
+이번에는 같은 Day(또는 임시보관함) 내부에서 일정을 이동시키는 경우를 확인해봅시다.
+
+Day 1에서, 일정이 4개 있고(a,b,c,d) 각각은 0,1,2,3 순서를 가집니다. 여기서 1번 순서에 위치한 일정(b)를 특정 순서에 두는 상황을 가정해보겠습니다.
+
+이 경우 지정 가능한 순서값은 0,1,2,3,4가 됩니다. 0번은 제일 맨 앞으로 이동하는 것이고,
+4번은 기존 Day1에 없던 순서이지만, 기존 마지막 순서값인 3보다 1 크므로 맨 뒤에 놓는다는 의미가 됩니다. (다만 여기서 4보다 큰 값을 지정하면 예외가 발생합니다.)
+
+또, 1번 순서 일정(b)을 1번 또는 2번에 놓는 시도를 할 경우 같은 자리로 이동하는 것으로 간주합니다. 1번의 경우는 기존과 똑같은 순서값이고, 2번으로 이동을 시도하는 경우 기존 1번에 위치했던 일정을 2번으로 옮기면
+앞에 있던 기존 1번자리가 비므로 다시 앞으로 밀려지므로 제자리 이동하는 것과 구조적으로 동일하기 때문입니다.
+
+여기서, 3번 위치로 일정(b)을 이동시키려면, 3을 순서값으로 지정하면 됩니다. 3번 위치는 두 일정 c, d 사이의 위치입니다.
+
+image::imgs/schedule-move4.jpg[]
+
+
+일정 b의 위치가 c 앞에서, c 뒤로 이동됐습니다.
+여기서 주의할 점은, 요청했던 순서값 3이 일정 b의 실제 순서값이 되지 않는다는 점입니다.
+
+일정 c는 기존 일정 b가 차지하고 있던 1번 순서로 밀려나가게 되어 순서값이 1로 변했습니다.
+일정 b는 c 뒤에 붙음으로서 순서값이 2가 됐습니다. 일정 d는 그 앞에 c,b가 1,2 순서를 차지하므로 기존 3번 순서값을 유지합니다.
+
+===== 일정 이동 제약 사항
+- Day 당 일정 갯수 제한 : 1개의 Day는 총 10개까지 일정을 가질 수 있습니다. 어떤 Day에 일정이 10개 생성되어 있다면 해당 Day쪽으로 일정을 이동할 수 없습니다.
+
+
+==== 요청
+===== 헤더
+include::{snippets}/schedule-move-controller-docs-test/schedule-move-doc-test/request-headers.adoc[]
+===== 경로변수
+include::{snippets}/schedule-move-controller-docs-test/schedule-move-doc-test/path-parameters.adoc[]
+===== 본문
+include::{snippets}/schedule-move-controller-docs-test/schedule-move-doc-test/request-fields.adoc[]
+
+==== 응답
+===== 본문
+include::{snippets}/schedule-move-controller-docs-test/schedule-move-doc-test/response-fields.adoc[]
+
+- `positionChanged` 값이 true인 경우에는 실제로 이동이 발생한 것에 해당합니다. 이 경우 beforeDayId와 afterDayId에 해당하는 Day 내부의 일정들의 배치가 기존과 달라졌으니 재 조회하는 것을 권장합니다.
+- `positionChanged` 값이 false인 경우에는 제자리 이동에 해당하므로 beforeDayId와 afterDayId에 해당하는 Day의 일정 배치에 변화가 없습니다.
+
+==== 예시
+===== 요청
+include::{snippets}/schedule-move-controller-docs-test/schedule-move-doc-test/http-request.adoc[]
+
+사용자는 경로 변수를 통해 일정의 식별자를 전달하고, 본문을 통해 어느 Day의 어느 순서에 일정을 이동시킬 지 지정합니다.
+
+===== 응답
+
+include::{snippets}/schedule-move-controller-docs-test/schedule-move-doc-test/http-response.adoc[]
+
+응답 본문에는 일정의 식별자값, 기존에 위치해 있던 dayId(beforeDayId)와 새로 이동한 곳의 dayId(afterDayId)가 전달됩니다.
+일정은 1번(dayId) Day에 있었다가, 2번(dayId) Day로 이동됐습니다.
+이 경우에는 다른 위치로 이동한 것에 해당하므로 positionChanged 값은 true입니다.
+
+---
+
 === Schedule 삭제
 
 ==== 기본정보
@@ -507,4 +600,3 @@ include::{snippets}/trip-day-list-query-controller-docs-test/day_목록_조회/r
 include::{snippets}/trip-day-list-query-controller-docs-test/day_목록_조회/http-request.adoc[]
 ===== 응답
 include::{snippets}/trip-day-list-query-controller-docs-test/day_목록_조회/http-response.adoc[]
-
