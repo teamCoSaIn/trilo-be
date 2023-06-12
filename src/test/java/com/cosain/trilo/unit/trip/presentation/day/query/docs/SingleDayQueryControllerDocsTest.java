@@ -21,10 +21,8 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
-import static org.springframework.restdocs.payload.JsonFieldType.NUMBER;
-import static org.springframework.restdocs.payload.JsonFieldType.STRING;
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.payload.JsonFieldType.*;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -63,18 +61,19 @@ public class SingleDayQueryControllerDocsTest extends RestDocsTestSupport {
                                 fieldWithPath("dayId").type(NUMBER).description("Day ID"),
                                 fieldWithPath("tripId").type(NUMBER).description("여행 ID"),
                                 fieldWithPath("date").type(STRING).description("여행 날짜"),
-                                fieldWithPath("schedules[0].scheduleId").type(NUMBER).description("일정 ID"),
-                                fieldWithPath("schedules[0].title").type(STRING).description("일정 제목"),
-                                fieldWithPath("schedules[0].placeName").type(STRING).description("장소 이름"),
-                                fieldWithPath("schedules[0].placeId").type(STRING).description("장소 식별자"),
-                                fieldWithPath("schedules[0].coordinate.latitude").type(NUMBER).description("위도"),
-                                fieldWithPath("schedules[0].coordinate.longitude").type(NUMBER).description("경도"),
-                                fieldWithPath("schedules[1].scheduleId").type(NUMBER).description("일정 ID"),
-                                fieldWithPath("schedules[1].title").type(STRING).description("일정 제목"),
-                                fieldWithPath("schedules[1].placeName").type(STRING).description("장소 이름"),
-                                fieldWithPath("schedules[1].placeId").type(STRING).description("장소 식별자"),
-                                fieldWithPath("schedules[1].coordinate.latitude").type(NUMBER).description("위도"),
-                                fieldWithPath("schedules[1].coordinate.longitude").type(NUMBER).description("경도")
+                                subsectionWithPath("schedules").type(ARRAY).description("일정 목록")
+                        ),
+                        responseFields(
+                                beneathPath("schedules").withSubsectionId("schedules"),
+                                fieldWithPath("scheduleId").type(NUMBER).description("일정 ID"),
+                                fieldWithPath("title").type(STRING).description("일정 제목"),
+                                fieldWithPath("placeName").type(STRING).description("장소 이름"),
+                                fieldWithPath("placeId").type(STRING).description("장소 ID"),
+                                subsectionWithPath("coordinate").type(OBJECT).description("장소의 좌표")
+                        ),
+                        responseFields(beneathPath("schedules[].coordinate").withSubsectionId("coordinate"),
+                                fieldWithPath("latitude").type(NUMBER).description("위도"),
+                                fieldWithPath("longitude").type(NUMBER).description("경도")
                         )
                 ));
     }

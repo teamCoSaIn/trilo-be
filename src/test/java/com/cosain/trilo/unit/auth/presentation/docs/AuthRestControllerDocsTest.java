@@ -11,6 +11,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.restdocs.cookies.CookieDocumentation;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 
 import org.springframework.security.test.context.support.WithMockUser;
@@ -18,6 +19,8 @@ import org.springframework.security.test.context.support.WithMockUser;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
+import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName;
+import static org.springframework.restdocs.cookies.CookieDocumentation.requestCookies;
 import static org.springframework.restdocs.headers.HeaderDocumentation.*;
 import static org.springframework.restdocs.payload.JsonFieldType.BOOLEAN;
 import static org.springframework.restdocs.payload.JsonFieldType.STRING;
@@ -43,6 +46,9 @@ class AuthRestControllerDocsTest extends RestDocsTestSupport {
                         .cookie(new Cookie("refreshToken", "refreshToken")))
                 .andExpect(status().isOk())
                 .andDo(restDocs.document(
+                        requestCookies(
+                                cookieWithName("refreshToken").description("접근 토큰 발급에 사용될 재발급 토큰")
+                        ),
                         responseFields(
                                 fieldWithPath("authType").type(STRING).description("인증 타입 (Bearer)"),
                                 fieldWithPath("accessToken").type(STRING).description("재발급한 접근 토큰")
@@ -59,6 +65,9 @@ class AuthRestControllerDocsTest extends RestDocsTestSupport {
                         .cookie(new Cookie("refreshToken", "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzd2VldF9zbWVsbEBuYXRlLmNvbSIsImlhdCI6MTY3OTg4MjQ2NiwiZXhwIjoxNjc5ODkzMjY2fQ.v0E4tjveoiOSP2GONUvfTH8-pR_zB5A9w5l5ZNPc4Wk")))
                 .andExpect(status().isOk())
                 .andDo(restDocs.document(
+                        requestCookies(
+                            cookieWithName("refreshToken").description("상태 조회할 재발급 토큰")
+                        ),
                         responseFields(
                                 fieldWithPath("availability").type(BOOLEAN).description("토큰 사용 가능 여부")
                         )
@@ -74,6 +83,9 @@ class AuthRestControllerDocsTest extends RestDocsTestSupport {
                 .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken"))
                 .andExpect(status().isOk())
                 .andDo(restDocs.document(
+                    requestCookies(
+                            cookieWithName("refreshToken").description("삭제할 재발급 토큰")
+                    ),
                     requestHeaders(
                             headerWithName(HttpHeaders.AUTHORIZATION).description("Bearer 타입 AccessToken")
                     )

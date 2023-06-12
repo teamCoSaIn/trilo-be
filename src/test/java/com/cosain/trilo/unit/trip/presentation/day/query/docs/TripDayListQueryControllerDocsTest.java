@@ -64,7 +64,7 @@ public class TripDayListQueryControllerDocsTest extends RestDocsTestSupport {
                                 fieldWithPath("dayId").type(NUMBER).description("Day ID"),
                                 fieldWithPath("tripId").type(NUMBER).description("여행 ID"),
                                 fieldWithPath("date").description(STRING).description("여행 날짜"),
-                                subsectionWithPath("schedules").type(ARRAY).description("Day 목록")
+                                subsectionWithPath("schedules").type(ARRAY).description("일정 목록")
                         ),
                         responseFields(
                                 beneathPath("days[].schedules").withSubsectionId("schedules"),

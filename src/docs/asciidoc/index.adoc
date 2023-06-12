@@ -13,6 +13,7 @@
 
 === OAuth2 로그인
 
+==== 기본 정보
 - 메서드 : GET
 - URL : `/api/auth/login/{provider}?redirect_uri={redirectUri}&code={Authorization_Code}`
 
@@ -35,12 +36,65 @@ include::{snippets}/auth-rest-controller-docs-test/로그인_요청/http-respons
 
 '''
 
+=== 로그아웃
+
+==== 기본 정보
+- 메서드 : POST
+- URL : `/api/auth/logout`
+
+==== 요청
+===== 쿠키
+include::{snippets}/auth-rest-controller-docs-test/로그아웃_요청/request-cookies.adoc[]
+===== 헤더
+include::{snippets}/auth-rest-controller-docs-test/로그아웃_요청/request-headers.adoc[]
+==== 예제
+===== 요청
+include::{snippets}/auth-rest-controller-docs-test/로그아웃_요청/http-request.adoc[]
+===== 응답
+include::{snippets}/auth-rest-controller-docs-test/로그아웃_요청/http-response.adoc[]
+
+
+---
+
 === 재발급 토큰 상태 조회
-operation::auth-rest-controller-docs-test/재발급_토큰_상태_조회_요청[snippets = 'http-request,http-response,response-fields']
+
+==== 기본 정보
+
+- 메서드 : GET
+- URL : `/api/auth/token/refresh-token-info`
+
+==== 요청
+===== 쿠키
+include::{snippets}/auth-rest-controller-docs-test/재발급_토큰_상태_조회_요청/request-cookies.adoc[]
+==== 응답
+===== 본문
+include::{snippets}/auth-rest-controller-docs-test/재발급_토큰_상태_조회_요청/response-fields.adoc[]
+==== 예제
+===== 요청
+include::{snippets}/auth-rest-controller-docs-test/재발급_토큰_상태_조회_요청/http-request.adoc[]
+===== 응답
+include::{snippets}/auth-rest-controller-docs-test/재발급_토큰_상태_조회_요청/http-response.adoc[]
+
+---
 
 === 접근 토큰 재발급
-operation::auth-rest-controller-docs-test/접근토큰_재발급_요청[snippets = 'http-request,http-response,response-fields']
 
+==== 기본 정보
+
+- 메서드 : POST
+- URL : `/api/auth/reissue`
+
+==== 요청
+===== 쿠키
+include::{snippets}/auth-rest-controller-docs-test/접근토큰_재발급_요청/request-cookies.adoc[]
+==== 응답
+===== 본문
+include::{snippets}/auth-rest-controller-docs-test/접근토큰_재발급_요청/response-fields.adoc[]
+==== 예제
+===== 요청
+include::{snippets}/auth-rest-controller-docs-test/접근토큰_재발급_요청/http-request.adoc[]
+===== 응답
+include::{snippets}/auth-rest-controller-docs-test/접근토큰_재발급_요청/http-response.adoc[]
 '''
 
 == Trip API
@@ -396,7 +450,7 @@ include::{snippets}/single-schedule-query-controller-docs-test/일정_단건_조
 
 '''
 
-=== Day 조회
+=== Day 단건 조회
 
 ==== 기본 정보
 
@@ -413,6 +467,10 @@ include::{snippets}/single-day-query-controller-docs-test/day_단건_조회/path
 ==== 응답
 ===== 본문
 include::{snippets}/single-day-query-controller-docs-test/day_단건_조회/response-fields.adoc[]
+===== Schedules
+include::{snippets}/single-day-query-controller-docs-test/day_단건_조회/response-fields-schedules.adoc[]
+===== Coordinate
+include::{snippets}/single-day-query-controller-docs-test/day_단건_조회/response-fields-coordinate.adoc[]
 
 ==== 예제
 ===== 요청
@@ -438,11 +496,11 @@ include::{snippets}/trip-day-list-query-controller-docs-test/day_목록_조회/p
 ==== 응답
 ===== 본문
 include::{snippets}/trip-day-list-query-controller-docs-test/day_목록_조회/response-fields.adoc[]
-====== Days
+===== Days
 include::{snippets}/trip-day-list-query-controller-docs-test/day_목록_조회/response-fields-days.adoc[]
-====== Schedules
+===== Schedules
 include::{snippets}/trip-day-list-query-controller-docs-test/day_목록_조회/response-fields-schedules.adoc[]
-====== Coordinate
+===== Coordinate
 include::{snippets}/trip-day-list-query-controller-docs-test/day_목록_조회/response-fields-coordinate.adoc[]
 ==== 예제
 ===== 요청
