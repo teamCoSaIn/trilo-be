@@ -75,6 +75,10 @@ public class Schedule {
         this.scheduleContent = scheduleContent;
     }
 
+    public void changeTime(ScheduleTime scheduleTime) {
+        this.scheduleTime = scheduleTime;
+    }
+
     /**
      * 일정의 day와 ScheduleIndex를 변경합니다.
      * 기존의 day 또는 임시보관함이 있으면 해당 Day와 관계를 끊고 새로운 day 또는 임시보관함과 관계를 맺습니다.
