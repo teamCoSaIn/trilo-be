@@ -24,6 +24,7 @@ public class ScheduleUpdateService implements ScheduleUpdateUseCase {
 
         schedule.changeTitle(scheduleUpdateCommand.getScheduleTitle());
         schedule.changeContent(scheduleUpdateCommand.getScheduleContent());
+        schedule.changeTime(scheduleUpdateCommand.getScheduleTime());
 
         return schedule.getId();
     }

@@ -8,6 +8,7 @@ import com.cosain.trilo.trip.domain.entity.Schedule;
 import com.cosain.trilo.trip.domain.entity.Trip;
 import com.cosain.trilo.trip.domain.repository.ScheduleRepository;
 import com.cosain.trilo.trip.domain.vo.ScheduleContent;
+import com.cosain.trilo.trip.domain.vo.ScheduleTime;
 import com.cosain.trilo.trip.domain.vo.ScheduleTitle;
 import com.cosain.trilo.trip.domain.vo.TripTitle;
 import org.assertj.core.api.Assertions;
@@ -18,6 +19,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalTime;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -37,7 +39,10 @@ public class ScheduleUpdateServiceTest {
     @DisplayName("호출이 제대로 이루어 지는지 테스트")
     public void update_schedule_test(){
         // given
-        ScheduleUpdateCommand command = new ScheduleUpdateCommand(ScheduleTitle.of("변경할 제목"), ScheduleContent.of("변경할 내용"));
+        ScheduleTitle newTitle = ScheduleTitle.of("변경할 제목");
+        ScheduleContent newContent = ScheduleContent.of("변경할 내용");
+        ScheduleTime newScheduleTime = ScheduleTime.of(LocalTime.of(13,0), LocalTime.of(13,5));
+        ScheduleUpdateCommand command = new ScheduleUpdateCommand(newTitle, newContent, newScheduleTime);
 
         Schedule schedule = Schedule.builder()
                 .trip(Trip.create(TripTitle.of("여행 제목"), 1L))
@@ -57,7 +62,10 @@ public class ScheduleUpdateServiceTest {
     @DisplayName("권한이 없는 사람이 Schedule 을 변경하려고 하면, NoScheduleUpdateAuthorityException 이 발생한다")
     public void when_no_authority_user_try_update_test(){
         // given
-        ScheduleUpdateCommand command = new ScheduleUpdateCommand(ScheduleTitle.of("변경할 제목"), ScheduleContent.of("변경할 내용"));
+        ScheduleTitle newTitle = ScheduleTitle.of("변경할 제목");
+        ScheduleContent newContent = ScheduleContent.of("변경할 내용");
+        ScheduleTime newScheduleTime = ScheduleTime.of(LocalTime.of(13,0), LocalTime.of(13,5));
+        ScheduleUpdateCommand command = new ScheduleUpdateCommand(newTitle, newContent, newScheduleTime);
 
         Schedule schedule = Schedule.builder()
                 .trip(Trip.create(TripTitle.of("여행 제목"), 2L))
@@ -75,7 +83,12 @@ public class ScheduleUpdateServiceTest {
     @DisplayName("일정이 존재하지 않는다면, ScheduleNotFoundException 이 발생한다")
     public void when_no_schedule_test(){
         // given
-        ScheduleUpdateCommand command = new ScheduleUpdateCommand(ScheduleTitle.of("변경할 제목"), ScheduleContent.of("변경할 내용"));
+        // given
+        ScheduleTitle newTitle = ScheduleTitle.of("변경할 제목");
+        ScheduleContent newContent = ScheduleContent.of("변경할 내용");
+        ScheduleTime newScheduleTime = ScheduleTime.of(LocalTime.of(13,0), LocalTime.of(13,5));
+        ScheduleUpdateCommand command = new ScheduleUpdateCommand(newTitle, newContent, newScheduleTime);
+
         given(scheduleRepository.findByIdWithTrip(anyLong())).willReturn(Optional.empty());
 
         // when & then
