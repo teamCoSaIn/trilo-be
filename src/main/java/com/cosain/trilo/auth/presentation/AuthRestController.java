@@ -1,9 +1,10 @@
 package com.cosain.trilo.auth.presentation;
 
 import com.cosain.trilo.auth.application.AuthService;
+import com.cosain.trilo.auth.application.dto.KakaoLoginParams;
 import com.cosain.trilo.auth.application.dto.LoginResult;
 import com.cosain.trilo.auth.presentation.dto.AuthResponse;
-import com.cosain.trilo.auth.presentation.dto.OauthLoginRequest;
+import com.cosain.trilo.auth.presentation.dto.KakaoOAuthLoginRequest;
 import com.cosain.trilo.auth.presentation.dto.RefreshTokenStatusResponse;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
@@ -38,10 +39,10 @@ public class AuthRestController {
         authService.logout(authHeaderValue, refreshToken);
     }
 
-    @GetMapping("/login/{provider}")
+    @PostMapping("/login/kakao")
     @ResponseStatus(HttpStatus.OK)
-    public AuthResponse login(@Validated @ModelAttribute OauthLoginRequest oauthLoginRequest, @PathVariable String provider, HttpServletResponse response){
-        LoginResult loginResult = authService.login(oauthLoginRequest.getCode(), provider, oauthLoginRequest.getRedirect_uri());
+    public AuthResponse login(@Validated @RequestBody KakaoOAuthLoginRequest kakaoOAuthLoginRequest, HttpServletResponse response){
+        LoginResult loginResult = authService.login(KakaoLoginParams.of(kakaoOAuthLoginRequest.getCode(), kakaoOAuthLoginRequest.getRedirect_uri()));
         Cookie cookie = new Cookie("refreshToken", loginResult.getRefreshToken());
         cookie.setMaxAge(3600);
         cookie.setPath("/");

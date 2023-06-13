@@ -6,7 +6,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class OauthLoginRequest {
+public class KakaoOAuthLoginRequest {
 
     @NotEmpty
     private String code;

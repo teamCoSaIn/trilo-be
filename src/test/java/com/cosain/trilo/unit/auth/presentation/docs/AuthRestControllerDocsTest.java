@@ -2,7 +2,9 @@ package com.cosain.trilo.unit.auth.presentation.docs;
 
 import com.cosain.trilo.auth.application.AuthService;
 import com.cosain.trilo.auth.application.dto.LoginResult;
+import com.cosain.trilo.auth.application.dto.OAuthLoginParams;
 import com.cosain.trilo.auth.presentation.AuthRestController;
+import com.cosain.trilo.auth.presentation.dto.KakaoOAuthLoginRequest;
 import com.cosain.trilo.auth.presentation.dto.RefreshTokenStatusResponse;
 import com.cosain.trilo.support.RestDocsTestSupport;
 import jakarta.servlet.http.Cookie;
@@ -24,9 +26,9 @@ import static org.springframework.restdocs.cookies.CookieDocumentation.requestCo
 import static org.springframework.restdocs.headers.HeaderDocumentation.*;
 import static org.springframework.restdocs.payload.JsonFieldType.BOOLEAN;
 import static org.springframework.restdocs.payload.JsonFieldType.STRING;
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(AuthRestController.class)
@@ -93,23 +95,19 @@ class AuthRestControllerDocsTest extends RestDocsTestSupport {
     }
 
     @Test
-    void 로그인_요청() throws Exception{
+    void 카카오_로그인_요청() throws Exception{
 
-        String provider = "kakao";
-        given(authService.login(anyString(), anyString(), anyString())).willReturn(LoginResult.of("accessToken", "refreshToken"));
+        KakaoOAuthLoginRequest kakaoOAuthLoginRequest = new KakaoOAuthLoginRequest("code", "http://localhost:3000/oauth2/callback");
+        given(authService.login(any(OAuthLoginParams.class))).willReturn(LoginResult.of("accessToken", "refreshToken"));
 
-        mockMvc.perform(RestDocumentationRequestBuilders.get(BASE_URL + "/login/{provider}", provider)
-                        .param("code", "Authorization code")
-                        .param("redirect_uri", "http://localhost:3000/oauth2/callback")
+        mockMvc.perform(RestDocumentationRequestBuilders.post(BASE_URL + "/login/kakao")
+                        .content(createJson(kakaoOAuthLoginRequest))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andDo(restDocs.document(
-                    pathParameters(
-                            parameterWithName("provider").description("소셜 로그인 제공자 ex) kakao, google, naver")
-                    ),
-                    queryParameters(
-                            parameterWithName("code").description("Authorization Code"),
-                            parameterWithName("redirect_uri").description("처음 Authorization Code 를 발급 받을 때 지정한 Redirect URI")
+                    requestFields(
+                            fieldWithPath("code").type(STRING).description("Authorization Code"),
+                            fieldWithPath("redirect_uri").type(STRING).description("처음 Authorization Code 를 발급 받을 때 지정한 Redirect URI")
                     ),
                     responseFields(
                             fieldWithPath("authType").type(STRING).description("인증 타입 (Bearer)"),

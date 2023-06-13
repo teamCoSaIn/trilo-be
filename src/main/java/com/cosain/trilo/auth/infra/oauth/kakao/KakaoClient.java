@@ -1,5 +1,6 @@
 package com.cosain.trilo.auth.infra.oauth.kakao;
 
+import com.cosain.trilo.auth.application.dto.OAuthLoginParams;
 import com.cosain.trilo.auth.infra.OAuthClient;
 import com.cosain.trilo.auth.infra.OAuthProfileDto;
 import com.cosain.trilo.auth.infra.oauth.kakao.dto.KakaoTokenResponse;
@@ -35,21 +36,18 @@ public class KakaoClient implements OAuthClient {
     }
 
     @Override
-    public String getAccessToken(String code, String redirectUri) {
+    public String getAccessToken(OAuthLoginParams oAuthLoginParams) {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
-        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        MultiValueMap<String, String> params = oAuthLoginParams.getParams();
         params.add("grant_type", "authorization_code");
         params.add("client_id", clientId);
-        params.add("redirect_uri", redirectUri);
-        params.add("code", code);
 
-        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
+        HttpEntity<?> request = new HttpEntity<>(params, headers);
 
-        ResponseEntity<KakaoTokenResponse> kakaoTokenResponseResponseEntity = restTemplate.postForEntity(accessTokenUrl, request, KakaoTokenResponse.class);
-        KakaoTokenResponse kakaoTokenResponse = kakaoTokenResponseResponseEntity.getBody();
+        KakaoTokenResponse kakaoTokenResponse = restTemplate.postForObject(accessTokenUrl, request, KakaoTokenResponse.class);
         return kakaoTokenResponse.getAccessToken();
     }
 
@@ -62,11 +60,9 @@ public class KakaoClient implements OAuthClient {
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("property_keys", "[\"kakao_account.profile\",\"kakao_account.nickname\",\"kakao_account.email\"]");
 
-        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
+        HttpEntity<?> request = new HttpEntity<>(params, headers);
 
-        ResponseEntity<KakaoProfileResponse> profileResponseResponseEntity = restTemplate.postForEntity(profileUrl, request, KakaoProfileResponse.class);
-        KakaoProfileResponse kakaoProfileResponse = profileResponseResponseEntity.getBody();
-
+        KakaoProfileResponse kakaoProfileResponse = restTemplate.postForObject(profileUrl, request, KakaoProfileResponse.class);
         return OAuthProfileDto.of(kakaoProfileResponse);
     }
 }

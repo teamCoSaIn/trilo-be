@@ -2,7 +2,9 @@ package com.cosain.trilo.unit.auth.presentation.api;
 
 import com.cosain.trilo.auth.application.AuthService;
 import com.cosain.trilo.auth.application.dto.LoginResult;
+import com.cosain.trilo.auth.application.dto.OAuthLoginParams;
 import com.cosain.trilo.auth.presentation.AuthRestController;
+import com.cosain.trilo.auth.presentation.dto.KakaoOAuthLoginRequest;
 import com.cosain.trilo.auth.presentation.dto.RefreshTokenStatusResponse;
 import com.cosain.trilo.support.RestControllerTest;
 import jakarta.servlet.http.Cookie;
@@ -114,35 +116,35 @@ class AuthRestControllerTest extends RestControllerTest {
     }
 
     @Test
-    void 로그인_정상_동작_확인() throws Exception{
-        String provider = "kakao";
-        given(authService.login(anyString(), anyString(), anyString())).willReturn(LoginResult.of("accessToken", "refreshToken"));
+    void 카카오_로그인_정상_동작_확인() throws Exception{
+        given(authService.login(any(OAuthLoginParams.class))).willReturn(LoginResult.of("accessToken", "refreshToken"));
+        KakaoOAuthLoginRequest kakaoOAuthLoginRequest = new KakaoOAuthLoginRequest("code", "http://localhost:3000/oauth2/callback");
 
-        mockMvc.perform(RestDocumentationRequestBuilders.get(BASE_URL + "/login/{provider}", provider)
-                        .param("code", "Authorization code")
-                        .param("redirect_uri", "http://localhost:3000/oauth2/callback")
+        mockMvc.perform(RestDocumentationRequestBuilders.post(BASE_URL + "/login/kakao")
+                        .content(createJson(kakaoOAuthLoginRequest))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
 
     @Test
-    void 로그인_요청시_쿼리_파라미터에_code가_존재하지_않으면_400_에러를_발생시킨다() throws Exception{
-        String provider = "kakao";
-        given(authService.login(anyString(), anyString(), anyString())).willReturn(LoginResult.of("accessToken", "refreshToken"));
+    void 카카오_로그인_요청시_쿼리_파라미터에_code가_존재하지_않으면_400_에러를_발생시킨다() throws Exception{
 
-        mockMvc.perform(RestDocumentationRequestBuilders.get(BASE_URL + "/login/{provider}", provider)
-                        .param("redirect_uri", "http://localhost:3000/oauth2/callback")
+        KakaoOAuthLoginRequest kakaoOAuthLoginRequest = new KakaoOAuthLoginRequest(null, "http://localhost:3000/oauth2/callback");
+        given(authService.login(any(OAuthLoginParams.class))).willReturn(LoginResult.of("accessToken", "refreshToken"));
+
+        mockMvc.perform(RestDocumentationRequestBuilders.post(BASE_URL + "/login/kakao")
+                        .content(createJson(kakaoOAuthLoginRequest))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
 
     @Test
-    void 로그인_요청시_쿼리_파라미터에_redirect_uri가_존재하지_않으면_400_에러를_발생시킨다() throws Exception{
-        String provider = "kakao";
-        given(authService.login(anyString(), anyString(), anyString())).willReturn(LoginResult.of("accessToken", "refreshToken"));
+    void 카카오_로그인_요청시_쿼리_파라미터에_redirect_uri가_존재하지_않으면_400_에러를_발생시킨다() throws Exception{
+        KakaoOAuthLoginRequest kakaoOAuthLoginRequest = new KakaoOAuthLoginRequest("code", null);
+        given(authService.login(any(OAuthLoginParams.class))).willReturn(LoginResult.of("accessToken", "refreshToken"));
 
-        mockMvc.perform(RestDocumentationRequestBuilders.get(BASE_URL + "/login/{provider}", provider)
-                        .param("code", "Authorization code")
+        mockMvc.perform(RestDocumentationRequestBuilders.post(BASE_URL + "/login/kakao")
+                        .content(createJson(kakaoOAuthLoginRequest))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
