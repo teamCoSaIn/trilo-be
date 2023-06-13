@@ -1,6 +1,7 @@
 package com.cosain.trilo.auth.infra;
 
 import com.cosain.trilo.auth.infra.oauth.kakao.dto.KakaoProfileResponse;
+import com.cosain.trilo.auth.infra.oauth.naver.dto.NaverInfoResponse;
 import com.cosain.trilo.user.domain.AuthProvider;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -28,6 +29,15 @@ public class OAuthProfileDto {
                 .email(kakaoProfileResponse.getKakaoAccount().getEmail())
                 .profileImageUrl(kakaoProfileResponse.getKakaoAccount().getProfile().getProfileImageUrl())
                 .provider(AuthProvider.KAKAO)
+                .build();
+    }
+
+    public static OAuthProfileDto of(NaverInfoResponse naverInfoResponse){
+        return OAuthProfileDto.builder()
+                .name(naverInfoResponse.getName())
+                .email(naverInfoResponse.getEmail())
+                .profileImageUrl(naverInfoResponse.getImageUrl())
+                .provider(AuthProvider.NAVER)
                 .build();
     }
 }
