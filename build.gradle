@@ -86,7 +86,7 @@ asciidoctor { // 작업 구성 설정 - 알아서..
 }
 
 asciidoctor.doFirst {
-	delete file('src/main/resources/static/docs')
+	delete file('src/main/resources/static/docs/*.html')
 }
 
 task copyDocument(type: Copy) { // asciidoctor 작업 : copy
