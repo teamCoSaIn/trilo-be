@@ -115,7 +115,6 @@ class AuthServiceTest {
     void 로그인_정상_동작_확인_테스트(){
         // given
         String code = "Authorization Code";
-        String redirect_uri = "http://localhost:3000/oauth2/callback";
         String email = "slifjelsijflsiej@nate.com";
         OAuthProfileDto oAuthProfileDto = OAuthProfileDto.builder()
                 .email(email)
@@ -130,7 +129,7 @@ class AuthServiceTest {
         given(tokenProvider.createRefreshToken(anyString())).willReturn(REFRESH_TOKEN);
 
         // when
-        LoginResult loginResult = authService.login(KakaoLoginParams.of(code, redirect_uri));
+        LoginResult loginResult = authService.login(KakaoLoginParams.of(code));
 
         // then
         Assertions.assertThat(loginResult.getAccessToken()).isEqualTo(ACCESS_TOKEN);

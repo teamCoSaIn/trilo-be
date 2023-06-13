@@ -118,7 +118,7 @@ class AuthRestControllerTest extends RestControllerTest {
     @Test
     void 카카오_로그인_정상_동작_확인() throws Exception{
         given(authService.login(any(OAuthLoginParams.class))).willReturn(LoginResult.of("accessToken", "refreshToken"));
-        KakaoOAuthLoginRequest kakaoOAuthLoginRequest = new KakaoOAuthLoginRequest("code", "http://localhost:3000/oauth2/callback");
+        KakaoOAuthLoginRequest kakaoOAuthLoginRequest = new KakaoOAuthLoginRequest("code");
 
         mockMvc.perform(RestDocumentationRequestBuilders.post(BASE_URL + "/login/kakao")
                         .content(createJson(kakaoOAuthLoginRequest))
@@ -129,7 +129,7 @@ class AuthRestControllerTest extends RestControllerTest {
     @Test
     void 카카오_로그인_요청시_쿼리_파라미터에_code가_존재하지_않으면_400_에러를_발생시킨다() throws Exception{
 
-        KakaoOAuthLoginRequest kakaoOAuthLoginRequest = new KakaoOAuthLoginRequest(null, "http://localhost:3000/oauth2/callback");
+        KakaoOAuthLoginRequest kakaoOAuthLoginRequest = new KakaoOAuthLoginRequest(null);
         given(authService.login(any(OAuthLoginParams.class))).willReturn(LoginResult.of("accessToken", "refreshToken"));
 
         mockMvc.perform(RestDocumentationRequestBuilders.post(BASE_URL + "/login/kakao")
@@ -137,17 +137,5 @@ class AuthRestControllerTest extends RestControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
-
-    @Test
-    void 카카오_로그인_요청시_쿼리_파라미터에_redirect_uri가_존재하지_않으면_400_에러를_발생시킨다() throws Exception{
-        KakaoOAuthLoginRequest kakaoOAuthLoginRequest = new KakaoOAuthLoginRequest("code", null);
-        given(authService.login(any(OAuthLoginParams.class))).willReturn(LoginResult.of("accessToken", "refreshToken"));
-
-        mockMvc.perform(RestDocumentationRequestBuilders.post(BASE_URL + "/login/kakao")
-                        .content(createJson(kakaoOAuthLoginRequest))
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
-    }
-
 
 }
