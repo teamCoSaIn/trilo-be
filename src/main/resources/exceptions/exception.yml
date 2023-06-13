@@ -109,6 +109,9 @@ day-0002:
   message: Invalid Trip-Day Relationship
   detail: Day가 Trip에 속해있지 않습니다.
 
+day-0003:
+  message: Invalid Day Color Name
+  detail : Day의 색상 이름이 누락됐거나 유효하지 않습니다. 지원하는 색상 이름 목록을 확인하여 필수로 전달해주세요.
 
 # 일정 관련
 schedule-0001:
