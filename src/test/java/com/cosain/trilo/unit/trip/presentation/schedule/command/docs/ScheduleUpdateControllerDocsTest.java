@@ -5,6 +5,7 @@ import com.cosain.trilo.trip.application.schedule.command.usecase.ScheduleUpdate
 import com.cosain.trilo.trip.application.schedule.command.usecase.dto.ScheduleUpdateCommand;
 import com.cosain.trilo.trip.application.schedule.command.usecase.dto.factory.ScheduleUpdateCommandFactory;
 import com.cosain.trilo.trip.domain.vo.ScheduleContent;
+import com.cosain.trilo.trip.domain.vo.ScheduleTime;
 import com.cosain.trilo.trip.domain.vo.ScheduleTitle;
 import com.cosain.trilo.trip.presentation.schedule.command.ScheduleUpdateController;
 import com.cosain.trilo.trip.presentation.schedule.command.dto.request.ScheduleUpdateRequest;
@@ -16,6 +17,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 
 import java.nio.charset.StandardCharsets;
+import java.time.LocalTime;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -58,10 +60,13 @@ public class ScheduleUpdateControllerDocsTest extends RestDocsTestSupport {
         Long scheduleId = 1L;
         String rawTitle = "수정 일정제목";
         String rawContent = "수정 일정내용";
-        ScheduleUpdateRequest request = new ScheduleUpdateRequest(rawTitle, rawContent);
-        ScheduleUpdateCommand command = new ScheduleUpdateCommand(ScheduleTitle.of(rawContent), ScheduleContent.of(rawContent));
+        LocalTime startTime = LocalTime.of(13,0);
+        LocalTime endTime = LocalTime.of(13,5);
 
-        given(scheduleUpdateCommandFactory.createCommand(eq(rawTitle), eq(rawContent))).willReturn(command);
+        ScheduleUpdateRequest request = new ScheduleUpdateRequest(rawTitle, rawContent, startTime, endTime);
+        ScheduleUpdateCommand command = new ScheduleUpdateCommand(ScheduleTitle.of(rawContent), ScheduleContent.of(rawContent), ScheduleTime.of(startTime, endTime));
+
+        given(scheduleUpdateCommandFactory.createCommand(eq(rawTitle), eq(rawContent), eq(startTime), eq(endTime))).willReturn(command);
         given(scheduleUpdateUseCase.updateSchedule(eq(scheduleId), any(), any(ScheduleUpdateCommand.class))).willReturn(1L);
 
         // when & then
@@ -90,7 +95,15 @@ public class ScheduleUpdateControllerDocsTest extends RestDocsTestSupport {
                                 fieldWithPath("content")
                                         .type(STRING)
                                         .optional()
-                                        .description("일정의 본문")
+                                        .description("일정의 본문"),
+                                fieldWithPath("startTime")
+                                        .type(STRING)
+                                        .optional()
+                                        .description("일정의 시작시간. null 허용"),
+                                fieldWithPath("endTime")
+                                        .type(STRING)
+                                        .optional()
+                                        .description("일정의 종료시간. null 허용")
                         ),
                         responseFields(
                                 fieldWithPath("scheduleId")
@@ -100,7 +113,7 @@ public class ScheduleUpdateControllerDocsTest extends RestDocsTestSupport {
                         )
                 ));
 
-        verify(scheduleUpdateCommandFactory).createCommand(eq(rawTitle), eq(rawContent));
+        verify(scheduleUpdateCommandFactory).createCommand(eq(rawTitle), eq(rawContent), eq(startTime), eq(endTime));
         verify(scheduleUpdateUseCase).updateSchedule(eq(scheduleId), any(), any(ScheduleUpdateCommand.class));
     }
 }

@@ -378,7 +378,7 @@ include::{snippets}/schedule-update-controller-docs-test/schedule-update-doc-tes
 ===== 요청
 include::{snippets}/schedule-update-controller-docs-test/schedule-update-doc-test/http-request.adoc[]
 
-사용자는 경로 변수를 통해 수정하고자 하는 여행의 식별자를 전달하고, 본문을 통해 어떤 제목/본문으로 변경할지 전달합니다.
+사용자는 경로 변수를 통해 수정하고자 하는 여행의 식별자를 전달하고, 본문을 통해 어떤 제목/본문으로 변경할지, 계획 시간을 어느 시간대로 변경할 지, 전달합니다.
 
 ===== 응답
 include::{snippets}/schedule-update-controller-docs-test/schedule-update-doc-test/http-response.adoc[]
