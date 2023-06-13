@@ -422,7 +422,7 @@ image::/docs/imgs/schedule-move2.jpg[]
 기존 Day2의 3번 순서에 있던 일정들 g는 뒤로 밀려나서 4번 순서를 가지게 되었습니다.
 
 
-image::/imgs/schedule-move3.jpg[]
+image::/docs/imgs/schedule-move3.jpg[]
 
 이번에는 같은 Day(또는 임시보관함) 내부에서 일정을 이동시키는 경우를 확인해봅시다.
 
