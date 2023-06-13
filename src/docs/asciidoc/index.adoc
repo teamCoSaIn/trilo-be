@@ -403,7 +403,7 @@ include::{snippets}/schedule-update-controller-docs-test/schedule-update-doc-tes
 그런데 일정을 이동시키기 위해서는 순서를 지정해야하는데 이 순서를 어떻게 지정할 지 난해할 수 있기 때문에 이 부분에 대해 설명을 하도록 하겠습니다.
 
 
-image::imgs/schedule-move1.jpg[]
+image::/docs/imgs/schedule-move1.jpg[]
 
 위의 그림에서 Day1에는 일정이 3개 있고(a,b,c) 일정 각각은 0,1,2 순서를 가집니다.
 Day2에도 일정이 4개 있고(d,e,f,g) 일정 각각은 0,1,2,3 번 순서를 가집니다.
@@ -414,7 +414,7 @@ Day2에도 일정이 4개 있고(d,e,f,g) 일정 각각은 0,1,2,3 번 순서를
 이런 상황에서 Day1에 위치한 0번 위치 일정(a)을 두 일정 f, g 사이로 옮기고 싶다면, 순서값으로 3을 지정하면 됩니다.
 3번 순서는 일정 g의 자리인데 이 자리로 a를 이동시키고, g를 밀어내는 것입니다.
 
-image::imgs/schedule-move2.jpg[]
+image::/docs/imgs/schedule-move2.jpg[]
 
 우리가 지정한 일정(a)이 실제로 Day2의 2번 순서로 이동된 결과입니다. 일정 a는 f, g의 사이 3번 자리로 이동됐습니다.
 
@@ -422,7 +422,7 @@ image::imgs/schedule-move2.jpg[]
 기존 Day2의 3번 순서에 있던 일정들 g는 뒤로 밀려나서 4번 순서를 가지게 되었습니다.
 
 
-image::imgs/schedule-move3.jpg[]
+image::/docs/imgs/schedule-move3.jpg[]
 
 이번에는 같은 Day(또는 임시보관함) 내부에서 일정을 이동시키는 경우를 확인해봅시다.
 
@@ -436,7 +436,7 @@ Day 1에서, 일정이 4개 있고(a,b,c,d) 각각은 0,1,2,3 순서를 가집�
 
 여기서, 3번 위치로 일정(b)을 이동시키려면, 3을 순서값으로 지정하면 됩니다. 3번 위치는 두 일정 c, d 사이의 위치입니다.
 
-image::imgs/schedule-move4.jpg[]
+image::/docs/imgs/schedule-move4.jpg[]
 
 
 일정 b의 위치가 c 앞에서, c 뒤로 이동됐습니다.
