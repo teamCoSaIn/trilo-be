@@ -18,6 +18,7 @@ import org.hibernate.annotations.Where;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 @Getter
 @Entity
@@ -139,9 +140,11 @@ public class Trip {
     }
 
     private List<Day> addNewDays(TripPeriod oldPeriod, TripPeriod newPeriod) {
+        Random random = new Random();
+
         List<Day> newDays = newPeriod.dateStream()
                 .filter(date -> !oldPeriod.contains(date))
-                .map(date -> Day.of(date, this))
+                .map(date -> Day.of(date, this, random))
                 .toList();
         this.days.addAll(newDays);
         return newDays;

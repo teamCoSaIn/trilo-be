@@ -68,15 +68,16 @@ public class ScheduleDeleteServiceTest {
             Long invalidTripperId = 3L;
             Long scheduleId = 4L;
 
-            Trip trip = DECIDED_TRIP.createDecided(tripId, tripOwnerId, "여행 제목", LocalDate.of(2023,3,1), LocalDate.of(2023,3,1));
-            Day day = Day.of(LocalDate.of(2023,3,1),trip);
+            Trip trip = DECIDED_TRIP.createDecided(tripId, tripOwnerId, "여행 제목", LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 1));
+            Day day = trip.getDays().get(0);
+
             Schedule schedule = Schedule.builder()
-                            .id(scheduleId)
-                            .scheduleTitle(ScheduleTitle.of("일정"))
-                            .day(day)
-                            .trip(trip)
-                            .place(Place.of("place-id", "광안리 해수욕장", Coordinate.of(35.1551, 129.1220)))
-                            .build();
+                    .id(scheduleId)
+                    .scheduleTitle(ScheduleTitle.of("일정"))
+                    .day(day)
+                    .trip(trip)
+                    .place(Place.of("place-id", "광안리 해수욕장", Coordinate.of(35.1551, 129.1220)))
+                    .build();
 
             given(scheduleRepository.findByIdWithTrip(eq(scheduleId))).willReturn(Optional.of(schedule));
 
@@ -97,8 +98,9 @@ public class ScheduleDeleteServiceTest {
         Long deleteTripperId = 2L;
         Long scheduleId = 3L;
 
-        Trip trip = DECIDED_TRIP.createDecided(tripId, tripOwnerId, "여행 제목", LocalDate.of(2023,3,1), LocalDate.of(2023,3,1));
-        Day day = Day.of(LocalDate.of(2023,3,1),trip);
+        Trip trip = DECIDED_TRIP.createDecided(tripId, tripOwnerId, "여행 제목", LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 1));
+        Day day = trip.getDays().get(0);
+
         Schedule schedule = Schedule.builder()
                 .id(scheduleId)
                 .scheduleTitle(ScheduleTitle.of("일정"))
