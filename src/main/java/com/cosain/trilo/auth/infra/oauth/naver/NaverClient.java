@@ -50,8 +50,6 @@ public class NaverClient implements OAuthClient {
 
         HttpEntity<?> request = makeAccessTokenRequest(headers, params);
 
-        System.out.println("dd");
-        log.info("dd");
         NaverTokenResponse naverTokenResponse = restTemplate.postForObject(accessTokenUrl, request, NaverTokenResponse.class);
 
         return naverTokenResponse.getAccessToken();
