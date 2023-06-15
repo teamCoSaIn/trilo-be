@@ -1,5 +1,6 @@
 package com.cosain.trilo.unit.trip.domain.repository;
 
+import com.cosain.trilo.fixture.TripFixture;
 import com.cosain.trilo.support.RepositoryTest;
 import com.cosain.trilo.trip.domain.entity.Day;
 import com.cosain.trilo.trip.domain.entity.Schedule;
@@ -122,19 +123,12 @@ public class TripRepositoryTest {
         @DisplayName("Day를 가지고 있는 Trip을 조회하면 Trip이 Day들을 가진 채 조회된다.")
         void if_trip_has_days_then_trip_and_its_trip_found(){
             // given
-            Trip trip = Trip.builder()
-                    .tripperId(1L)
-                    .tripTitle(TripTitle.of("여행 제목"))
-                    .tripPeriod(TripPeriod.of(LocalDate.of(2023,5,1), LocalDate.of(2023,5,3)))
-                    .status(TripStatus.DECIDED)
-                    .build();
-
+            Trip trip = TripFixture.DECIDED_TRIP.createDecided(null, 1L, "여행 제목", LocalDate.of(2023,5,1), LocalDate.of(2023,5,3));
             em.persist(trip);
 
-            Day day1 = Day.of(LocalDate.of(2023, 5, 1), trip);
-            Day day2 = Day.of(LocalDate.of(2023, 5, 2), trip);
-            Day day3 = Day.of(LocalDate.of(2023, 5, 3), trip);
-
+            Day day1 = trip.getDays().get(0);
+            Day day2 = trip.getDays().get(1);
+            Day day3 = trip.getDays().get(2);
             em.persist(day1);
             em.persist(day2);
             em.persist(day3);

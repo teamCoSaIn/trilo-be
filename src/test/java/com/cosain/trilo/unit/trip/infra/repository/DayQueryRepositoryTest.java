@@ -1,5 +1,6 @@
 package com.cosain.trilo.unit.trip.infra.repository;
 
+import com.cosain.trilo.fixture.TripFixture;
 import com.cosain.trilo.support.RepositoryTest;
 import com.cosain.trilo.trip.domain.entity.Day;
 import com.cosain.trilo.trip.domain.entity.Schedule;
@@ -33,11 +34,11 @@ public class DayQueryRepositoryTest {
     @Test
     void Day_조회를_하면_해당_Day정보와_해당_Day에_속한_Schedule들의_요약정보와_함께_조회된다(){
         // given
-        Trip trip = Trip.create(TripTitle.of("여행제목"), 1L);
+        Trip trip = TripFixture.DECIDED_TRIP.createDecided(null, 1L, "여행 제목", LocalDate.of(2023,5,1), LocalDate.of(2023,5,2));
         em.persist(trip);
 
-        Day day1 = Day.of(LocalDate.of(2023, 5, 10), trip);
-        Day day2 = Day.of(LocalDate.of(2023, 5, 20), trip);
+        Day day1 = trip.getDays().get(0);
+        Day day2 = trip.getDays().get(1);
         em.persist(day1);
         em.persist(day2);
 
@@ -85,11 +86,11 @@ public class DayQueryRepositoryTest {
         @DisplayName("tripId를 통해 Trip 에 매핑된 Day 들과 해당 Day 와 매핑된 Schedule 들이 조회되며 DTO 로 반환된다.")
         void findTest() {
             // given
-            Trip trip = Trip.create(TripTitle.of("여행제목"), 1L);
+            Trip trip = TripFixture.DECIDED_TRIP.createDecided(null, 1L, "여행 제목", LocalDate.of(2023,5,10), LocalDate.of(2023,5,11));
             em.persist(trip);
 
-            Day day1 = Day.of(LocalDate.of(2023, 5, 10), trip);
-            Day day2 = Day.of(LocalDate.of(2023, 5, 11), trip);
+            Day day1 = trip.getDays().get(0);
+            Day day2 = trip.getDays().get(1);
             em.persist(day1);
             em.persist(day2);
 
@@ -124,11 +125,11 @@ public class DayQueryRepositoryTest {
         void sortTest(){
 
             // given
-            Trip trip = Trip.create(TripTitle.of("여행제목"), 1L);
+            Trip trip = TripFixture.DECIDED_TRIP.createDecided(null, 1L, "여행 제목", LocalDate.of(2023,5,10), LocalDate.of(2023,5,11));
             em.persist(trip);
 
-            Day day1 = Day.of(LocalDate.of(2023, 5, 10), trip);
-            Day day2 = Day.of(LocalDate.of(2023, 5, 11), trip);
+            Day day1 = trip.getDays().get(0); // 테스트의 편의를 위해 순서를 바꿔서 저장함.
+            Day day2 = trip.getDays().get(1);
             em.persist(day2);
             em.persist(day1);
 
@@ -136,7 +137,7 @@ public class DayQueryRepositoryTest {
             Schedule schedule2 = createSchedule(trip, day1,20000L);
             Schedule schedule3 = createSchedule(trip, day1,30000L);
 
-            em.persist(schedule3);
+            em.persist(schedule3); // 테스트의 편의를 위해 순서를 바꿔서 저장함. (3,1,2 순)
             em.persist(schedule1);
             em.persist(schedule2);
             em.flush();

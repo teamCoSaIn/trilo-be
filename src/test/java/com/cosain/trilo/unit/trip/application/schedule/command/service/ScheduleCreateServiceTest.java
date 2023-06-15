@@ -336,8 +336,12 @@ public class ScheduleCreateServiceTest {
         Long tripId = 3L;
         Long dayId = 4L;
 
-        Trip trip = Trip.create(TripTitle.of("제목"), tripOwnerId);
-        Day day = Day.of(LocalDate.of(2023, 4, 5), trip);
+        Trip trip = TripFixture.DECIDED_TRIP.createDecided(tripId, tripOwnerId, "제목", LocalDate.of(2023,4,1), LocalDate.of(2023,4,1));
+        Day day = Day.builder()
+                .id(dayId)
+                .tripDate(LocalDate.of(2023,4,1))
+                .dayColor(DayColor.BLACK)
+                .build();
 
         ScheduleCreateCommand scheduleCreateCommand = ScheduleCreateCommand.builder()
                 .dayId(dayId)

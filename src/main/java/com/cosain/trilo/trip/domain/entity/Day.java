@@ -3,10 +3,7 @@ package com.cosain.trilo.trip.domain.entity;
 import com.cosain.trilo.trip.domain.dto.ScheduleMoveDto;
 import com.cosain.trilo.trip.domain.exception.InvalidScheduleMoveTargetOrderException;
 import com.cosain.trilo.trip.domain.exception.MidScheduleIndexConflictException;
-import com.cosain.trilo.trip.domain.vo.Place;
-import com.cosain.trilo.trip.domain.vo.ScheduleIndex;
-import com.cosain.trilo.trip.domain.vo.ScheduleTitle;
-import com.cosain.trilo.trip.domain.vo.TripPeriod;
+import com.cosain.trilo.trip.domain.vo.*;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -14,6 +11,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Random;
 
 @Getter
 @ToString(of = {"id", "tripDate"})
@@ -36,17 +34,18 @@ public class Day {
     @JoinColumn(name = "trip_id")
     private Trip trip;
 
+    @Enumerated(EnumType.STRING)
+    private DayColor dayColor;
+
     @OneToMany(mappedBy = "day")
     @OrderBy("scheduleIndex.value asc")
     private final List<Schedule> schedules = new ArrayList<>();
 
-    /**
-     * 비즈니스 코드에서 Day 생성은 Trip 에서만 할 수 있다.
-     */
-    public static Day of(LocalDate tripDate, Trip trip){
+    static Day of(LocalDate tripDate, Trip trip, Random random){
         return Day.builder()
                 .tripDate(tripDate)
                 .trip(trip)
+                .dayColor(DayColor.random(random))
                 .build();
     }
 
@@ -54,10 +53,11 @@ public class Day {
      * 테스트의 편의성을 위해 Builder accessLevel = PUBLIC 으로 설정
      */
     @Builder(access = AccessLevel.PUBLIC)
-    private Day(Long id, LocalDate tripDate, Trip trip, List<Schedule> schedules) {
+    private Day(Long id, LocalDate tripDate, Trip trip, DayColor dayColor, List<Schedule> schedules) {
         this.id = id;
         this.tripDate = tripDate;
         this.trip = trip;
+        this.dayColor = dayColor;
         if (schedules != null) {
             this.schedules.addAll(schedules);
         }

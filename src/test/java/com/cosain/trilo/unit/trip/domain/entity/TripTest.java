@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 
 import static com.cosain.trilo.fixture.TripFixture.UNDECIDED_TRIP;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -171,6 +172,17 @@ public class TripTest {
                 }
 
                 @Test
+                @DisplayName("모든 생성된 Day들은 색상을 가진다.")
+                public void all_createdDays_have_color() {
+                    // when
+                    var changePeriodResult = undecidedTrip.changePeriod(newPeriod);
+
+                    // then
+                    List<Day> createdDays = changePeriodResult.getCreatedDays();
+                    assertThat(createdDays).map(Day::getDayColor).allMatch(Objects::nonNull);
+                }
+
+                @Test
                 @DisplayName("Trip은 새로 생긴 날짜들을 가진다.")
                 public void trip_still_has_newDays() {
                     // when
@@ -302,6 +314,17 @@ public class TripTest {
                 }
 
                 @Test
+                @DisplayName("생성된 Day들은 모두 색상을 가진다.")
+                public void all_createdPeriod_days_have_color() {
+                    // when
+                    var changePeriodResult = decidedTrip.changePeriod(notOverlappedPeriod);
+
+                    // then
+                    List<Day> createdDays = changePeriodResult.getCreatedDays();
+                    assertThat(createdDays).map(Day::getDayColor).allMatch(Objects::nonNull);
+                }
+
+                @Test
                 @DisplayName("Trip은 새로운 기간의 Day들만 가진다")
                 public void trip_has_new_Days_only() {
                     // when
@@ -371,6 +394,17 @@ public class TripTest {
                     }
 
                     @Test
+                    @DisplayName("새로 생성된 Day들은 모두 색상을 가진다")
+                    public void all_createdDays_have_color() {
+                        // when
+                        var changePeriodResult = decidedTrip.changePeriod(backOverlappedPeriod);
+
+                        // then
+                        List<Day> createdDays = changePeriodResult.getCreatedDays();
+                        assertThat(createdDays).map(Day::getDayColor).allMatch(Objects::nonNull);
+                    }
+
+                    @Test
                     @DisplayName("Trip은 새로 변경된 기간의 Day들만 가진다.")
                     public void trip_has_newPeriod_Days_only() {
                         // when
@@ -430,6 +464,18 @@ public class TripTest {
                         List<Day> createdDays = changePeriodResult.getCreatedDays();
                         assertThat(createdDays).map(Day::getTripDate).containsExactly(
                                 LocalDate.of(2023, 2, 27), LocalDate.of(2023, 2, 28));
+                        assertThat(createdDays).map(Day::getDayColor).allMatch(Objects::nonNull);
+                    }
+
+                    @Test
+                    @DisplayName("새로 생성된 Day들은 모두 색상을 가진다.")
+                    public void all_CreatedDays_have_color() {
+                        // when
+                        var changePeriodResult = decidedTrip.changePeriod(frontOverlappedPeriod);
+
+                        // then
+                        List<Day> createdDays = changePeriodResult.getCreatedDays();
+                        assertThat(createdDays).map(Day::getDayColor).allMatch(Objects::nonNull);
                     }
 
                     @Test
@@ -554,6 +600,17 @@ public class TripTest {
                                 .containsExactly(
                                         LocalDate.of(2023, 2, 27), LocalDate.of(2023, 2, 28),
                                         LocalDate.of(2023, 3, 6), LocalDate.of(2023, 3, 7));
+                    }
+
+                    @Test
+                    @DisplayName("새로 생성된 Day들은 모두 Color를 가진다")
+                    public void all_CreatedDays_have_color() {
+                        // when
+                        var changePeriodResult = decidedTrip.changePeriod(outerOverlappedPeriod);
+
+                        // then
+                        List<Day> createdDays = changePeriodResult.getCreatedDays();
+                        assertThat(createdDays).map(Day::getDayColor).allMatch(Objects::nonNull);
                     }
 
                     @Test

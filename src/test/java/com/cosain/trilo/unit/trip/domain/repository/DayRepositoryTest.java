@@ -1,5 +1,6 @@
 package com.cosain.trilo.unit.trip.domain.repository;
 
+import com.cosain.trilo.fixture.TripFixture;
 import com.cosain.trilo.support.RepositoryTest;
 import com.cosain.trilo.trip.domain.entity.Day;
 import com.cosain.trilo.trip.domain.entity.Trip;
@@ -33,15 +34,10 @@ public class DayRepositoryTest {
     @DisplayName("findBYWithTripTest - 같이 가져온 Trip이 실제 Trip 클래스인지 함께 검증")
     public void findByIdWithTripTest() {
         // given
-        Trip trip = Trip.builder()
-                .tripperId(1L)
-                .tripTitle(TripTitle.of("여행 제목"))
-                .status(TripStatus.DECIDED)
-                .tripPeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 1)))
-                .build();
+        Trip trip = TripFixture.DECIDED_TRIP.createDecided(null, 1L, "여행 제목", LocalDate.of(2023,3,1), LocalDate.of(2023,3,1));
         em.persist(trip);
 
-        Day day = Day.of(LocalDate.of(2023, 3, 1), trip);
+        Day day = trip.getDays().get(0);
         em.persist(day);
 
         em.flush();
@@ -62,15 +58,14 @@ public class DayRepositoryTest {
     @Test
     @DisplayName("deleteAllByIds- 전달받은 Id 목록의 Day들을 삭제")
     void deleteAllByIdsTest() {
-
         // given
-        Trip trip = Trip.create(TripTitle.of("제목"), 1L);
+        Trip trip = TripFixture.DECIDED_TRIP.createDecided(null, 1L, "여행 제목", LocalDate.of(2023,5,1), LocalDate.of(2023,5,4));
         em.persist(trip);
 
-        Day day1 = Day.of(LocalDate.of(2023, 5, 1), trip);
-        Day day2 = Day.of(LocalDate.of(2023, 5, 2), trip);
-        Day day3 = Day.of(LocalDate.of(2023, 5, 3), trip);
-        Day day4 = Day.of(LocalDate.of(2023, 5, 4), trip);
+        Day day1 = trip.getDays().get(0);
+        Day day2 = trip.getDays().get(1);
+        Day day3 = trip.getDays().get(2);
+        Day day4 = trip.getDays().get(3);
 
         em.persist(day1);
         em.persist(day2);
@@ -91,18 +86,13 @@ public class DayRepositoryTest {
     @DisplayName("deleteAllByTripId로 Day를 삭제하면, 해당 여행의 모든 Day들이 삭제된다.")
     void deleteAllByTripIdTest() {
         // given
-        Trip trip = Trip.builder()
-                .tripperId(1L)
-                .tripTitle(TripTitle.of("여행 제목"))
-                .status(TripStatus.DECIDED)
-                .tripPeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 3)))
-                .build();
+        Trip trip = TripFixture.DECIDED_TRIP.createDecided(null, 1L, "여행 제목", LocalDate.of(2023,3,1), LocalDate.of(2023,3,3));
 
         em.persist(trip);
 
-        Day day1 = Day.of(LocalDate.of(2023, 3, 1), trip);
-        Day day2 = Day.of(LocalDate.of(2023, 3, 2), trip);
-        Day day3 = Day.of(LocalDate.of(2023, 3, 3), trip);
+        Day day1 = trip.getDays().get(0);
+        Day day2 = trip.getDays().get(1);
+        Day day3 = trip.getDays().get(2);
 
         em.persist(day1);
         em.persist(day2);
