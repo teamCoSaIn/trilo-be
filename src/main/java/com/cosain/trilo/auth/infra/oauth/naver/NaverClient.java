@@ -25,7 +25,7 @@ public class NaverClient implements OAuthClient {
     @Value("${oauth2.naver.client-id}")
     private String clientId;
     @Value("${oauth2.naver.client-secret}")
-    private String clinetSecret;
+    private String clientSecret;
     @Value("${oauth2.naver.token_uri}")
     private String accessTokenUrl;
     @Value("${oauth2.naver.user-info-uri}")
@@ -46,10 +46,12 @@ public class NaverClient implements OAuthClient {
         MultiValueMap<String, String> params = oAuthLoginParams.getParams();
         params.add("grant_type",grantType);
         params.add("client_id", clientId);
-        params.add("client_secret", clinetSecret);
+        params.add("client_secret", clientSecret);
 
         HttpEntity<?> request = makeAccessTokenRequest(headers, params);
 
+        System.out.println("dd");
+        log.info("dd");
         NaverTokenResponse naverTokenResponse = restTemplate.postForObject(accessTokenUrl, request, NaverTokenResponse.class);
 
         return naverTokenResponse.getAccessToken();
