@@ -35,6 +35,11 @@ include::{snippets}/auth-rest-controller-docs-test/카카오_로그인_요청/ht
 
 === 네이버 OAuth2 로그인
 
+==== 기본 정보
+
+- 메서드 : GET
+- URL : `/api/auth/login/naver`
+
 ==== 요청
 ===== 본문
 include::{snippets}/auth-rest-controller-docs-test/네이버_로그인_요청/request-fields.adoc[]
