@@ -5,6 +5,7 @@ import com.cosain.trilo.auth.application.dto.LoginResult;
 import com.cosain.trilo.auth.application.dto.OAuthLoginParams;
 import com.cosain.trilo.auth.presentation.AuthRestController;
 import com.cosain.trilo.auth.presentation.dto.KakaoOAuthLoginRequest;
+import com.cosain.trilo.auth.presentation.dto.NaverOAuthLoginRequest;
 import com.cosain.trilo.auth.presentation.dto.RefreshTokenStatusResponse;
 import com.cosain.trilo.support.RestDocsTestSupport;
 import jakarta.servlet.http.Cookie;
@@ -13,13 +14,10 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.restdocs.cookies.CookieDocumentation;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
-
 import org.springframework.security.test.context.support.WithMockUser;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName;
 import static org.springframework.restdocs.cookies.CookieDocumentation.requestCookies;
@@ -27,8 +25,6 @@ import static org.springframework.restdocs.headers.HeaderDocumentation.*;
 import static org.springframework.restdocs.payload.JsonFieldType.BOOLEAN;
 import static org.springframework.restdocs.payload.JsonFieldType.STRING;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
-import static org.springframework.restdocs.request.RequestDocumentation.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(AuthRestController.class)
@@ -116,6 +112,31 @@ class AuthRestControllerDocsTest extends RestDocsTestSupport {
                             headerWithName("Set-Cookie").description("RefreshToken")
                     )
 
+                ));
+    }
+
+    @Test
+    void 네이버_로그인_요청() throws Exception {
+
+        given(authService.login(any(OAuthLoginParams.class))).willReturn(LoginResult.of("accessToken", "refreshToken"));
+        NaverOAuthLoginRequest naverOAuthLoginRequest = new NaverOAuthLoginRequest("code", "state");
+
+        mockMvc.perform(RestDocumentationRequestBuilders.post(BASE_URL + "/login/naver")
+                        .content(createJson(naverOAuthLoginRequest))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(restDocs.document(
+                   requestFields(
+                           fieldWithPath("code").type(STRING).description("Authorization Code"),
+                           fieldWithPath("state").type(STRING).description("")
+                   ),
+                   responseFields(
+                           fieldWithPath("authType").type(STRING).description("인증 타입 (Bearer)"),
+                           fieldWithPath("accessToken").description("AccessToken")
+                   ),
+                   responseHeaders(
+                           headerWithName("Set-Cookie").description("RefreshToken")
+                   )
                 ));
     }
 

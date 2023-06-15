@@ -11,7 +11,7 @@
 
 == Auth API
 
-=== OAuth2 로그인
+=== 카카오 OAuth2 로그인
 
 ==== 기본 정보
 - 메서드 : GET
@@ -32,6 +32,21 @@ include::{snippets}/auth-rest-controller-docs-test/카카오_로그인_요청/ht
 include::{snippets}/auth-rest-controller-docs-test/카카오_로그인_요청/http-response.adoc[]
 
 '''
+
+=== 네이버 OAuth2 로그인
+
+==== 요청
+===== 본문
+include::{snippets}/auth-rest-controller-docs-test/네이버_로그인_요청/request-fields.adoc[]
+==== 응답
+include::{snippets}/auth-rest-controller-docs-test/네이버_로그인_요청/response-fields.adoc[]
+==== 예제
+===== 요청
+include::{snippets}/auth-rest-controller-docs-test/네이버_로그인_요청/http-request.adoc[]
+===== 응답
+include::{snippets}/auth-rest-controller-docs-test/네이버_로그인_요청/http-response.adoc[]
+
+---
 
 === 로그아웃
 
