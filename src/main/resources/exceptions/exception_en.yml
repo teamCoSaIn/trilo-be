@@ -113,6 +113,10 @@ day-0003:
   message: Invalid Day Color Name
   detail: The color name of 'Day' is missing or invalid. Please provide a required color name by referring to the list of supported color names.
 
+day-0004:
+  message: NoDayUpdateAuthority
+  detail: You do not have permission to modify the specified day.
+
 # 일정 관련
 schedule-0001:
   message: ScheduleNotFound

@@ -111,7 +111,11 @@ day-0002:
 
 day-0003:
   message: Invalid Day Color Name
-  detail : Day의 색상 이름이 누락됐거나 유효하지 않습니다. 지원하는 색상 이름 목록을 확인하여 필수로 전달해주세요.
+  detail: Day의 색상 이름이 누락됐거나 유효하지 않습니다. 지원하는 색상 이름 목록을 확인하여 필수로 전달해주세요.
+
+day-0004:
+  message: NoDayUpdateAuthority
+  detail: 해당 Day를 수정할 권한이 없습니다.
 
 # 일정 관련
 schedule-0001:
