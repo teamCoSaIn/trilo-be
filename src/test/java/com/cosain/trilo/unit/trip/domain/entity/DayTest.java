@@ -3,19 +3,35 @@ package com.cosain.trilo.unit.trip.domain.entity;
 import com.cosain.trilo.fixture.TripFixture;
 import com.cosain.trilo.trip.domain.entity.Day;
 import com.cosain.trilo.trip.domain.entity.Trip;
+import com.cosain.trilo.trip.domain.vo.DayColor;
 import com.cosain.trilo.trip.domain.vo.TripPeriod;
-import com.cosain.trilo.trip.domain.vo.TripTitle;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.time.LocalDate;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @DisplayName("[TripCommand] Day 테스트")
 public class DayTest {
+
+    @ParameterizedTest
+    @ValueSource(strings = {"RED", "ORANGE", "PURPLE"})
+    @DisplayName("Day의 색상 변경 테스트")
+    public void changeColorTest(String colorName) {
+        Trip trip = TripFixture.DECIDED_TRIP.createDecided(1L, 1L, "제목", LocalDate.of(2023,5,1), LocalDate.of(2023,5,1));
+        Day day = trip.getDays().get(0);
+
+        DayColor color = DayColor.of(colorName);
+        day.changeColor(color);
+
+        assertThat(color.name()).isEqualTo(colorName);
+    }
 
     @Nested
     @DisplayName("isIn 메서드 테스트")
