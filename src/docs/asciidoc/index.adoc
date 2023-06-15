@@ -11,30 +11,47 @@
 
 == Auth API
 
-=== OAuth2 로그인
+=== 카카오 OAuth2 로그인
 
 ==== 기본 정보
 - 메서드 : GET
-- URL : `/api/auth/login/{provider}?redirect_uri={redirectUri}&code={Authorization_Code}`
+- URL : `/api/auth/login/kakao`
 
 ==== 요청
-===== 경로 변수
-include::{snippets}/auth-rest-controller-docs-test/로그인_요청/path-parameters.adoc[]
-===== 쿼리 변수
-include::{snippets}/auth-rest-controller-docs-test/로그인_요청/query-parameters.adoc[]
+===== 본문
+include::{snippets}/auth-rest-controller-docs-test/카카오_로그인_요청/request-fields.adoc[]
 ==== 응답
 ===== 헤더
-include::{snippets}/auth-rest-controller-docs-test/로그인_요청/response-headers.adoc[]
+include::{snippets}/auth-rest-controller-docs-test/카카오_로그인_요청/response-headers.adoc[]
 ===== 본문
-include::{snippets}/auth-rest-controller-docs-test/로그인_요청/response-fields.adoc[]
-
+include::{snippets}/auth-rest-controller-docs-test/카카오_로그인_요청/response-fields.adoc[]
 ==== 예제
 ===== 요청
-include::{snippets}/auth-rest-controller-docs-test/로그인_요청/http-request.adoc[]
+include::{snippets}/auth-rest-controller-docs-test/카카오_로그인_요청/http-request.adoc[]
 ===== 응답
-include::{snippets}/auth-rest-controller-docs-test/로그인_요청/http-response.adoc[]
+include::{snippets}/auth-rest-controller-docs-test/카카오_로그인_요청/http-response.adoc[]
 
 '''
+
+=== 네이버 OAuth2 로그인
+
+==== 기본 정보
+
+- 메서드 : GET
+- URL : `/api/auth/login/naver`
+
+==== 요청
+===== 본문
+include::{snippets}/auth-rest-controller-docs-test/네이버_로그인_요청/request-fields.adoc[]
+==== 응답
+include::{snippets}/auth-rest-controller-docs-test/네이버_로그인_요청/response-fields.adoc[]
+==== 예제
+===== 요청
+include::{snippets}/auth-rest-controller-docs-test/네이버_로그인_요청/http-request.adoc[]
+===== 응답
+include::{snippets}/auth-rest-controller-docs-test/네이버_로그인_요청/http-response.adoc[]
+
+---
 
 === 로그아웃
 

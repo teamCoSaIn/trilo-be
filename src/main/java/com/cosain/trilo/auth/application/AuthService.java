@@ -1,10 +1,10 @@
 package com.cosain.trilo.auth.application;
 
 import com.cosain.trilo.auth.application.dto.LoginResult;
+import com.cosain.trilo.auth.application.dto.OAuthLoginParams;
 import com.cosain.trilo.auth.domain.LogoutAccessToken;
 import com.cosain.trilo.auth.domain.RefreshToken;
 import com.cosain.trilo.auth.domain.repository.TokenRepository;
-import com.cosain.trilo.auth.infra.OAuthClient;
 import com.cosain.trilo.auth.infra.OAuthProfileDto;
 import com.cosain.trilo.auth.infra.TokenAnalyzer;
 import com.cosain.trilo.auth.infra.TokenProvider;
@@ -28,7 +28,7 @@ public class AuthService {
     private final TokenRepository tokenRepository;
     private final TokenProvider tokenProvider;
     private final TokenAnalyzer tokenAnalyzer;
-    private final OAuthClient oAuthClient;
+    private final OAuthProfileRequestService OAuthProfileRequestService;
     private final UserRepository userRepository;
 
     @Transactional
@@ -84,9 +84,9 @@ public class AuthService {
     }
 
     @Transactional
-    public LoginResult login(String code, String provider, String redirectUri){
+    public LoginResult login(OAuthLoginParams oAuthLoginParams){
 
-        OAuthProfileDto oAuthProfileDto = getUserProfileResponse(code, redirectUri);
+        OAuthProfileDto oAuthProfileDto = getUserProfileResponse(oAuthLoginParams);
         User user = addOrUpdateUser(oAuthProfileDto);
 
         String accessToken = tokenProvider.createAccessToken(user.getEmail());
@@ -98,9 +98,8 @@ public class AuthService {
         return LoginResult.of(accessToken, refreshToken);
     }
 
-    private OAuthProfileDto getUserProfileResponse(String code, String redirectUri) {
-        String accessToken = oAuthClient.getAccessToken(code, redirectUri);
-        return oAuthClient.getProfile(accessToken);
+    private OAuthProfileDto getUserProfileResponse(OAuthLoginParams oAuthLoginParams) {
+        return OAuthProfileRequestService.request(oAuthLoginParams);
     }
 
     private User addOrUpdateUser(OAuthProfileDto oAuthProfileDto){
