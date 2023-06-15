@@ -127,7 +127,7 @@ class AuthRestControllerTest extends RestControllerTest {
     }
 
     @Test
-    void 카카오_로그인_요청시_쿼리_파라미터에_code가_존재하지_않으면_400_에러를_발생시킨다() throws Exception{
+    void 카카오_로그인_요청시_본문에_code가_존재하지_않으면_400_에러를_발생시킨다() throws Exception{
 
         KakaoOAuthLoginRequest kakaoOAuthLoginRequest = new KakaoOAuthLoginRequest(null);
         given(authService.login(any(OAuthLoginParams.class))).willReturn(LoginResult.of("accessToken", "refreshToken"));
