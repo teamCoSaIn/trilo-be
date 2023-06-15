@@ -3,8 +3,10 @@ package com.cosain.trilo.auth.presentation;
 import com.cosain.trilo.auth.application.AuthService;
 import com.cosain.trilo.auth.application.dto.KakaoLoginParams;
 import com.cosain.trilo.auth.application.dto.LoginResult;
+import com.cosain.trilo.auth.application.dto.NaverLoginParams;
 import com.cosain.trilo.auth.presentation.dto.AuthResponse;
 import com.cosain.trilo.auth.presentation.dto.KakaoOAuthLoginRequest;
+import com.cosain.trilo.auth.presentation.dto.NaverOAuthLoginRequest;
 import com.cosain.trilo.auth.presentation.dto.RefreshTokenStatusResponse;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
@@ -43,10 +45,24 @@ public class AuthRestController {
     @ResponseStatus(HttpStatus.OK)
     public AuthResponse login(@Validated @RequestBody KakaoOAuthLoginRequest kakaoOAuthLoginRequest, HttpServletResponse response){
         LoginResult loginResult = authService.login(KakaoLoginParams.of(kakaoOAuthLoginRequest.getCode()));
-        Cookie cookie = new Cookie("refreshToken", loginResult.getRefreshToken());
-        cookie.setMaxAge(3600);
-        cookie.setPath("/");
+        Cookie cookie = makeRefreshTokenCookie(loginResult.getRefreshToken());
         response.addCookie(cookie);
         return AuthResponse.from(loginResult.getAccessToken());
+    }
+
+    @PostMapping("/login/naver")
+    @ResponseStatus(HttpStatus.OK)
+    public AuthResponse login(@Validated @RequestBody NaverOAuthLoginRequest naverOAuthLoginRequest, HttpServletResponse response){
+        LoginResult loginResult = authService.login(NaverLoginParams.of(naverOAuthLoginRequest.getCode(), naverOAuthLoginRequest.getState()));
+        Cookie cookie = makeRefreshTokenCookie(loginResult.getRefreshToken());
+        response.addCookie(cookie);
+        return AuthResponse.from(loginResult.getAccessToken());
+    }
+
+    private Cookie makeRefreshTokenCookie(String refreshTokenStr){
+        Cookie cookie = new Cookie("refreshToken", refreshTokenStr);
+        cookie.setMaxAge(3600);
+        cookie.setPath("/");
+        return cookie;
     }
 }
