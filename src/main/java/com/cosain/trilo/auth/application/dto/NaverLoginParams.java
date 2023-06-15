@@ -4,27 +4,31 @@ import com.cosain.trilo.user.domain.AuthProvider;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
-public class KakaoLoginParams implements OAuthLoginParams{
+public class NaverLoginParams implements OAuthLoginParams{
 
     private String code;
+    private String state;
 
-    public KakaoLoginParams(String code) {
+    public NaverLoginParams(String code, String state) {
         this.code = code;
+        this.state = state;
     }
 
-    public static KakaoLoginParams of(String code){
-        return new KakaoLoginParams(code);
+    public static NaverLoginParams of(String code, String state){
+        return new NaverLoginParams(code, state);
     }
 
     @Override
     public AuthProvider authProvider() {
-        return AuthProvider.KAKAO;
+        return AuthProvider.NAVER;
     }
 
     @Override
     public MultiValueMap<String, String> getParams() {
+
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("code", code);
+        params.add("state", state);
         return params;
     }
 }

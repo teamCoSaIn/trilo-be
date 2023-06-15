@@ -1,11 +1,11 @@
 package com.cosain.trilo.unit.auth.application;
 
 import com.cosain.trilo.auth.application.AuthService;
+import com.cosain.trilo.auth.application.OAuthProfileRequestService;
 import com.cosain.trilo.auth.application.dto.KakaoLoginParams;
 import com.cosain.trilo.auth.application.dto.LoginResult;
 import com.cosain.trilo.auth.application.dto.OAuthLoginParams;
 import com.cosain.trilo.auth.domain.repository.TokenRepository;
-import com.cosain.trilo.auth.infra.OAuthClient;
 import com.cosain.trilo.auth.infra.OAuthProfileDto;
 import com.cosain.trilo.auth.infra.TokenAnalyzer;
 import com.cosain.trilo.auth.infra.TokenProvider;
@@ -42,8 +42,7 @@ class AuthServiceTest {
     @Mock
     private UserRepository userRepository;
     @Mock
-    private OAuthClient oAuthClient;
-
+    private OAuthProfileRequestService OAuthProfileRequestService;
     private final String ACCESS_TOKEN = "slkdfjasjeoifjse.siejfoajseifjasolef.sliejfaisjelfsjefsdcv";
     private final String REFRESH_TOKEN = "slkdfjasjeoifjse.siejfoajseifjasolef.dfaesgasegasefasdfase";
 
@@ -123,8 +122,7 @@ class AuthServiceTest {
                 .profileImageUrl("image_url")
                 .build();
         given(userRepository.findByEmail(eq(email))).willReturn(Optional.ofNullable(User.from(oAuthProfileDto)));
-        given(oAuthClient.getAccessToken(any(OAuthLoginParams.class))).willReturn(ACCESS_TOKEN);
-        given(oAuthClient.getProfile(eq(ACCESS_TOKEN))).willReturn(oAuthProfileDto);
+        given(OAuthProfileRequestService.request(any(OAuthLoginParams.class))).willReturn(oAuthProfileDto);
         given(tokenProvider.createAccessToken(anyString())).willReturn(ACCESS_TOKEN);
         given(tokenProvider.createRefreshToken(anyString())).willReturn(REFRESH_TOKEN);
 

@@ -3,36 +3,34 @@ package com.cosain.trilo.auth.infra.oauth.kakao;
 import com.cosain.trilo.auth.application.dto.OAuthLoginParams;
 import com.cosain.trilo.auth.infra.OAuthClient;
 import com.cosain.trilo.auth.infra.OAuthProfileDto;
-import com.cosain.trilo.auth.infra.oauth.kakao.dto.KakaoTokenResponse;
 import com.cosain.trilo.auth.infra.oauth.kakao.dto.KakaoProfileResponse;
+import com.cosain.trilo.auth.infra.oauth.kakao.dto.KakaoTokenResponse;
+import com.cosain.trilo.user.domain.AuthProvider;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 @Component
+@RequiredArgsConstructor
 public class KakaoClient implements OAuthClient {
 
-    private final String clientId;
-    private final String accessTokenUrl;
+    @Value("${oauth2.kakao.client-id}")
+    private String clientId;
+    @Value("${oauth2.kakao.token-uri}")
+    private String accessTokenUrl;
+    @Value("${oauth2.kakao.user-info-uri}")
+    private String profileUrl;
+
     private final RestTemplate restTemplate;
-    private final String profileUrl;
-    public KakaoClient(
-            @Value("${oauth2.kakao.client-id}") String clientId,
-            @Value("${oauth2.kakao.token-uri}") String accessTokenUrl,
-            @Value("${oauth2.kakao.user-info-uri}") String profileUrl,
-            RestTemplateBuilder restTemplateBuilder
-    ){
-        this.clientId = clientId;
-        this.accessTokenUrl = accessTokenUrl;
-        this.profileUrl = profileUrl;
-        this.restTemplate = restTemplateBuilder.build();
+    @Override
+    public AuthProvider authProvider() {
+        return AuthProvider.KAKAO;
     }
 
     @Override
