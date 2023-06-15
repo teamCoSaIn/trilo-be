@@ -64,6 +64,14 @@ public class Day {
     }
 
     /**
+     * Day의 색상을 변경합니다.
+     * @param dayColor : 변경할 색상
+     */
+    public void changeColor(DayColor dayColor) {
+        this.dayColor = dayColor;
+    }
+
+    /**
      * Day가 지정 TripPeriod에 속하는 지 여부를 반환합니다.
      * @param tripPeriod : 기간
      * @return 소속 여부
