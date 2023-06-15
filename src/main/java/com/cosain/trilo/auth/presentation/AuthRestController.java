@@ -44,7 +44,7 @@ public class AuthRestController {
     @PostMapping("/login/kakao")
     @ResponseStatus(HttpStatus.OK)
     public AuthResponse login(@Validated @RequestBody KakaoOAuthLoginRequest kakaoOAuthLoginRequest, HttpServletResponse response){
-        LoginResult loginResult = authService.login(KakaoLoginParams.of(kakaoOAuthLoginRequest.getCode()));
+        LoginResult loginResult = authService.login(KakaoLoginParams.of(kakaoOAuthLoginRequest.getCode(), kakaoOAuthLoginRequest.getRedirect_uri()));
         Cookie cookie = makeRefreshTokenCookie(loginResult.getRefreshToken());
         response.addCookie(cookie);
         return AuthResponse.from(loginResult.getAccessToken());

@@ -8,12 +8,15 @@ public class KakaoLoginParams implements OAuthLoginParams{
 
     private String code;
 
-    public KakaoLoginParams(String code) {
+    private String redirectUri;
+
+    private KakaoLoginParams(String code, String redirectUri) {
         this.code = code;
+        this.redirectUri = redirectUri;
     }
 
-    public static KakaoLoginParams of(String code){
-        return new KakaoLoginParams(code);
+    public static KakaoLoginParams of(String code, String redirectUri){
+        return new KakaoLoginParams(code, redirectUri);
     }
 
     @Override
@@ -25,6 +28,7 @@ public class KakaoLoginParams implements OAuthLoginParams{
     public MultiValueMap<String, String> getParams() {
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("code", code);
+        params.add("redirect_uri", redirectUri);
         return params;
     }
 }

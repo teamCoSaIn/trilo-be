@@ -13,4 +13,7 @@ public class KakaoOAuthLoginRequest {
     @NotEmpty
     private String code;
 
+    @NotEmpty
+    private String redirect_uri;
+
 }

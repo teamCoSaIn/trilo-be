@@ -93,7 +93,7 @@ class AuthRestControllerDocsTest extends RestDocsTestSupport {
     @Test
     void 카카오_로그인_요청() throws Exception{
 
-        KakaoOAuthLoginRequest kakaoOAuthLoginRequest = new KakaoOAuthLoginRequest("code");
+        KakaoOAuthLoginRequest kakaoOAuthLoginRequest = new KakaoOAuthLoginRequest("code", "redirect_uri");
         given(authService.login(any(OAuthLoginParams.class))).willReturn(LoginResult.of("accessToken", "refreshToken"));
 
         mockMvc.perform(RestDocumentationRequestBuilders.post(BASE_URL + "/login/kakao")
@@ -102,7 +102,8 @@ class AuthRestControllerDocsTest extends RestDocsTestSupport {
                 .andExpect(status().isOk())
                 .andDo(restDocs.document(
                     requestFields(
-                            fieldWithPath("code").type(STRING).description("Authorization Code")
+                            fieldWithPath("code").type(STRING).description("Authorization Code"),
+                            fieldWithPath("redirect_uri").type(STRING).description("인증 코드 발급에 사용했던 Redirect Uri")
                     ),
                     responseFields(
                             fieldWithPath("authType").type(STRING).description("인증 타입 (Bearer)"),

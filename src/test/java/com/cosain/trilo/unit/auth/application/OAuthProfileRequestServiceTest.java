@@ -31,7 +31,7 @@ public class OAuthProfileRequestServiceTest {
         List<OAuthClient> oAuthClientList = Collections.singletonList(oAuthClientMock);
         OAuthProfileRequestService = new OAuthProfileRequestService(oAuthClientList);
 
-        OAuthLoginParams oAuthLoginParams = new KakaoLoginParams("code");
+        OAuthLoginParams oAuthLoginParams = KakaoLoginParams.of("code", "redirectUri");
         OAuthProfileRequestService.request(oAuthLoginParams);
 
         verify(oAuthClientMock).getAccessToken(any());
