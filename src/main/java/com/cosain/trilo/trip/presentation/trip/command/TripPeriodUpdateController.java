@@ -2,6 +2,7 @@ package com.cosain.trilo.trip.presentation.trip.command;
 
 import com.cosain.trilo.common.LoginUser;
 import com.cosain.trilo.trip.application.trip.command.usecase.TripPeriodUpdateUseCase;
+import com.cosain.trilo.trip.application.trip.command.usecase.dto.TripPeriodUpdateCommand;
 import com.cosain.trilo.trip.application.trip.command.usecase.dto.factory.TripPeriodUpdateCommandFactory;
 import com.cosain.trilo.trip.presentation.trip.command.dto.request.TripPeriodUpdateRequest;
 import com.cosain.trilo.trip.presentation.trip.command.dto.response.TripPeriodUpdateResponse;
@@ -22,6 +23,10 @@ public class TripPeriodUpdateController {
     @PutMapping("/api/trips/{tripId}/period")
     @ResponseStatus(HttpStatus.OK)
     public TripPeriodUpdateResponse updateTrip(@LoginUser User user, @PathVariable Long tripId, @RequestBody TripPeriodUpdateRequest request) {
-        return null;
+        Long tripperId = user.getId();
+        TripPeriodUpdateCommand updateCommand = tripPeriodUpdateCommandFactory.createCommand(request.getStartDate(), request.getEndDate());
+
+        tripPeriodUpdateUseCase.updateTripPeriod(tripId, tripperId, updateCommand);
+        return new TripPeriodUpdateResponse(tripId);
     }
 }
