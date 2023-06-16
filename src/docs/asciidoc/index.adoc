@@ -209,6 +209,45 @@ include::{snippets}/trip-update-controller-docs-test/trip-update-doc-test/http-r
 
 '''
 
+
+=== Trip 제목 수정
+
+==== 기본 정보
+- 메서드 : PUT
+- URL : `/api/trips/{tripId}/color`
+- 인증방식 : 액세스 토큰
+
+요청한 여행에 대해서 요청한 제목으로 여행의 제목을 수정합니다.
+수정이 성공됐을 경우, 다시 여행의 식별자를 응답합니다.
+
+==== 요청
+===== 헤더
+include::{snippets}/trip-title-update-controller-docs-test/update-trip-title_with_authorized-user/request-headers.adoc[]
+===== 경로 변수(PathVariable)
+include::{snippets}/trip-title-update-controller-docs-test/update-trip-title_with_authorized-user/path-parameters.adoc[]
+
+- 유효한 여행 식별자(tripId)를 전달해야합니다.
+
+===== 본문
+include::{snippets}/trip-title-update-controller-docs-test/update-trip-title_with_authorized-user/request-fields.adoc[]
+
+==== 응답
+===== 본문
+include::{snippets}/trip-title-update-controller-docs-test/update-trip-title_with_authorized-user/http-request.adoc[]
+
+==== 예제
+===== 요청
+include::{snippets}/trip-title-update-controller-docs-test/update-trip-title_with_authorized-user/http-request.adoc[]
+
+사용자는 경로변수를 통해 어떤 여행을 수정할 것인지 지정하고, 요청 본문에 변경할 제목을 전달합니다.
+
+===== 응답
+include::{snippets}/trip-title-update-controller-docs-test/update-trip-title_with_authorized-user/http-response.adoc[]
+
+서버는 요청 사항에 맞게 여행의 제목을 수정하고, 수정된 여행의 식별자를 다시 반환합니다.
+
+'''
+
 === Trip 삭제
 
 ==== 기본정보
