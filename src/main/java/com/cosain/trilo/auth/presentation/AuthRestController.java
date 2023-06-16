@@ -10,11 +10,11 @@ import com.cosain.trilo.auth.presentation.dto.NaverOAuthLoginRequest;
 import com.cosain.trilo.auth.presentation.dto.RefreshTokenStatusResponse;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
@@ -43,7 +43,7 @@ public class AuthRestController {
 
     @PostMapping("/login/kakao")
     @ResponseStatus(HttpStatus.OK)
-    public AuthResponse login(@Validated @RequestBody KakaoOAuthLoginRequest kakaoOAuthLoginRequest, HttpServletResponse response){
+    public AuthResponse login(@Valid @RequestBody KakaoOAuthLoginRequest kakaoOAuthLoginRequest, HttpServletResponse response){
         LoginResult loginResult = authService.login(KakaoLoginParams.of(kakaoOAuthLoginRequest.getCode(), kakaoOAuthLoginRequest.getRedirect_uri()));
         Cookie cookie = makeRefreshTokenCookie(loginResult.getRefreshToken());
         response.addCookie(cookie);
@@ -52,7 +52,7 @@ public class AuthRestController {
 
     @PostMapping("/login/naver")
     @ResponseStatus(HttpStatus.OK)
-    public AuthResponse login(@Validated @RequestBody NaverOAuthLoginRequest naverOAuthLoginRequest, HttpServletResponse response){
+    public AuthResponse login(@Valid @RequestBody NaverOAuthLoginRequest naverOAuthLoginRequest, HttpServletResponse response){
         LoginResult loginResult = authService.login(NaverLoginParams.of(naverOAuthLoginRequest.getCode(), naverOAuthLoginRequest.getState()));
         Cookie cookie = makeRefreshTokenCookie(loginResult.getRefreshToken());
         response.addCookie(cookie);
