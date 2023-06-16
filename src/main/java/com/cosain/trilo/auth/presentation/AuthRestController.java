@@ -42,15 +42,16 @@ public class AuthRestController {
     }
 
     @PostMapping("/login/kakao")
-    @ResponseStatus(HttpStatus.OK)
-    public AuthResponse login(@Valid @RequestBody KakaoOAuthLoginRequest kakaoOAuthLoginRequest, HttpServletResponse response){
+    public ResponseEntity<AuthResponse> login(@Valid @RequestBody KakaoOAuthLoginRequest kakaoOAuthLoginRequest, HttpServletResponse response){
         LoginResult loginResult = authService.login(KakaoLoginParams.of(kakaoOAuthLoginRequest.getCode(), kakaoOAuthLoginRequest.getRedirect_uri()));
         Cookie cookie = makeRefreshTokenCookie(loginResult.getRefreshToken());
         response.addCookie(cookie);
-        return AuthResponse.from(loginResult.getAccessToken());
+        AuthResponse authResponse = AuthResponse.from(loginResult.getAccessToken());
+        return ResponseEntity.ok(authResponse);
     }
 
     @PostMapping("/login/naver")
+    @ResponseBody
     @ResponseStatus(HttpStatus.OK)
     public AuthResponse login(@Valid @RequestBody NaverOAuthLoginRequest naverOAuthLoginRequest, HttpServletResponse response){
         LoginResult loginResult = authService.login(NaverLoginParams.of(naverOAuthLoginRequest.getCode(), naverOAuthLoginRequest.getState()));
