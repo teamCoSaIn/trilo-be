@@ -568,6 +568,56 @@ include::{snippets}/single-schedule-query-controller-docs-test/일정_단건_조
 
 '''
 
+=== Day 색상 변경
+
+==== 기본 정보
+- 메서드 : PUT
+- URL : `/api/days/{dayId}/color`
+- 인증 방식 : 엑세스 토큰
+
+Day에 지정되어 있는 색상을 변경합니다.
+
+본래 Day가 생성된 시점에는 랜덤한 색상으로 초기화되지만, 이 API를 통해 Day의 색상을 변경할 수 있습니다.
+
+==== 요청
+===== 헤더
+include::{snippets}/day-color-update-controller-docs-test/day-color-update-docs-test/request-headers.adoc[]
+
+===== 경로 변수
+include::{snippets}/day-color-update-controller-docs-test/day-color-update-docs-test/path-parameters.adoc[]
+
+===== 본문
+include::{snippets}/day-color-update-controller-docs-test/day-color-update-docs-test/request-fields.adoc[]
+
+===== 지원 색상
+- `RED`
+- `ORANGE`
+- `LIGHT_GREEN`
+- `GREEN`
+- `BLUE`
+- `PURPLE`
+- `VIOLET`
+- `BLACK`
+
+대소문자를 구분하지 않습니다. 색상을 변경하실 때는 위 색상 이름들 중 하나를 문자열로 전달해주시면 됩니다.
+
+==== 응답
+===== 본문
+include::{snippets}/day-color-update-controller-docs-test/day-color-update-docs-test/response-fields.adoc[]
+
+==== 예시
+===== 요청
+include::{snippets}/day-color-update-controller-docs-test/day-color-update-docs-test/http-request.adoc[]
+
+사용자는 경로 변수를 통해 어느 day의 색상을 수정할 지 전달하고, 본문을 통해 색상 이름을 전달합니다.
+
+===== 응답
+include::{snippets}/day-color-update-controller-docs-test/day-color-update-docs-test/http-response.adoc[]
+
+서버는 요청에 따라 day의 색상을 변경 후, day의 식별자를 본문에 담아 상태코드 200 Ok과 함께 응답합니다.
+
+'''
+
 === Day 단건 조회
 
 ==== 기본 정보
