@@ -2,6 +2,7 @@ package com.cosain.trilo.trip.presentation.trip.command;
 
 import com.cosain.trilo.common.LoginUser;
 import com.cosain.trilo.trip.application.trip.command.usecase.TripTitleUpdateUseCase;
+import com.cosain.trilo.trip.application.trip.command.usecase.dto.TripTitleUpdateCommand;
 import com.cosain.trilo.trip.application.trip.command.usecase.dto.factory.TripTitleUpdateCommandFactory;
 import com.cosain.trilo.trip.presentation.trip.command.dto.request.TripTitleUpdateRequest;
 import com.cosain.trilo.trip.presentation.trip.command.dto.request.TripTitleUpdateResponse;
@@ -22,6 +23,11 @@ public class TripTitleUpdateController {
     @PutMapping("/api/trips/{tripId}/title")
     @ResponseStatus(HttpStatus.OK)
     public TripTitleUpdateResponse updateTrip(@LoginUser User user, @PathVariable Long tripId, @RequestBody TripTitleUpdateRequest request) {
-        return null;
+        Long tripperId = user.getId();
+
+        TripTitleUpdateCommand updateCommand = tripTitleUpdateCommandFactory.createCommand(request.getTitle());
+        tripTitleUpdateUseCase.updateTripTitle(tripId, tripperId, updateCommand);
+
+        return new TripTitleUpdateResponse(tripId);
     }
 }
