@@ -4,6 +4,7 @@ import com.cosain.trilo.auth.application.AuthService;
 import com.cosain.trilo.auth.application.dto.LoginResult;
 import com.cosain.trilo.auth.application.dto.OAuthLoginParams;
 import com.cosain.trilo.auth.presentation.AuthRestController;
+import com.cosain.trilo.auth.presentation.dto.GoogleOAuthLoginRequest;
 import com.cosain.trilo.auth.presentation.dto.KakaoOAuthLoginRequest;
 import com.cosain.trilo.auth.presentation.dto.NaverOAuthLoginRequest;
 import com.cosain.trilo.auth.presentation.dto.RefreshTokenStatusResponse;
@@ -129,7 +130,7 @@ class AuthRestControllerDocsTest extends RestDocsTestSupport {
                 .andDo(restDocs.document(
                    requestFields(
                            fieldWithPath("code").type(STRING).description("Authorization Code"),
-                           fieldWithPath("state").type(STRING).description("")
+                           fieldWithPath("state").type(STRING).description("Authorization Code 발급시 전달했던 redirect_uri")
                    ),
                    responseFields(
                            fieldWithPath("authType").type(STRING).description("인증 타입 (Bearer)"),
@@ -138,6 +139,31 @@ class AuthRestControllerDocsTest extends RestDocsTestSupport {
                    responseHeaders(
                            headerWithName("Set-Cookie").description("RefreshToken")
                    )
+                ));
+    }
+
+    @Test
+    void 구글_로그인_요청() throws Exception {
+
+        given(authService.login(any(OAuthLoginParams.class))).willReturn(LoginResult.of("accessToken", "refreshToken"));
+        GoogleOAuthLoginRequest googleOAuthLoginRequest = new GoogleOAuthLoginRequest("code", "redirectUrl");
+
+        mockMvc.perform(RestDocumentationRequestBuilders.post(BASE_URL + "/login/google")
+                        .content(createJson(googleOAuthLoginRequest))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(restDocs.document(
+                        requestFields(
+                                fieldWithPath("code").type(STRING).description("Authorization Code"),
+                                fieldWithPath("redirect_uri").type(STRING).description("Authorization Code 발급시 전달했던 redirect_uri")
+                        ),
+                        responseFields(
+                                fieldWithPath("authType").type(STRING).description("인증 타입 (Bearer)"),
+                                fieldWithPath("accessToken").description("AccessToken")
+                        ),
+                        responseHeaders(
+                                headerWithName("Set-Cookie").description("RefreshToken")
+                        )
                 ));
     }
 
