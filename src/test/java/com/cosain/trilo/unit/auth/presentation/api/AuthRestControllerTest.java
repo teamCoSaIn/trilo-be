@@ -4,6 +4,7 @@ import com.cosain.trilo.auth.application.AuthService;
 import com.cosain.trilo.auth.application.dto.LoginResult;
 import com.cosain.trilo.auth.application.dto.OAuthLoginParams;
 import com.cosain.trilo.auth.presentation.AuthRestController;
+import com.cosain.trilo.auth.presentation.dto.GoogleOAuthLoginRequest;
 import com.cosain.trilo.auth.presentation.dto.KakaoOAuthLoginRequest;
 import com.cosain.trilo.auth.presentation.dto.NaverOAuthLoginRequest;
 import com.cosain.trilo.auth.presentation.dto.RefreshTokenStatusResponse;
@@ -185,5 +186,38 @@ class AuthRestControllerTest extends RestControllerTest {
                 .andExpect(status().isBadRequest());
     }
 
+
+    @Test
+    void 구글_로그인_정상_동작_확인() throws Exception{
+        given(authService.login(any(OAuthLoginParams.class))).willReturn(LoginResult.of("accessToken", "refreshToken"));
+        GoogleOAuthLoginRequest googleOAuthLoginRequest = new GoogleOAuthLoginRequest("code", "redirect_uri");
+
+        mockMvc.perform(RestDocumentationRequestBuilders.post(BASE_URL + "/login/google")
+                        .content(createJson(googleOAuthLoginRequest))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void 구글_로그인_요청시_본문에_code가_존재하지_않으면_400_에러를_발생시킨다() throws Exception{
+        given(authService.login(any(OAuthLoginParams.class))).willReturn(LoginResult.of("accessToken", "refreshToken"));
+        GoogleOAuthLoginRequest googleOAuthLoginRequest = new GoogleOAuthLoginRequest(null, "redirect_uri");
+
+        mockMvc.perform(RestDocumentationRequestBuilders.post(BASE_URL + "/login/google")
+                        .content(createJson(googleOAuthLoginRequest))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void 구글_로그인_요청시_본문에_redirect_uri가_존재하지_않으면_400_에러를_발생시킨다() throws Exception{
+        given(authService.login(any(OAuthLoginParams.class))).willReturn(LoginResult.of("accessToken", "refreshToken"));
+        GoogleOAuthLoginRequest googleOAuthLoginRequest = new GoogleOAuthLoginRequest("code", null);
+
+        mockMvc.perform(RestDocumentationRequestBuilders.post(BASE_URL + "/login/google")
+                        .content(createJson(googleOAuthLoginRequest))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
 
 }
