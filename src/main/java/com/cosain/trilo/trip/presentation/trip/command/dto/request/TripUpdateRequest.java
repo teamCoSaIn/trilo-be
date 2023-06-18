@@ -1,6 +1,5 @@
 package com.cosain.trilo.trip.presentation.trip.command.dto.request;
 
-import com.cosain.trilo.trip.application.trip.command.usecase.dto.TripUpdateCommand;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
