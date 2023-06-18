@@ -1,13 +1,11 @@
 package com.cosain.trilo.auth.presentation;
 
 import com.cosain.trilo.auth.application.AuthService;
+import com.cosain.trilo.auth.application.dto.GoogleLoginParams;
 import com.cosain.trilo.auth.application.dto.KakaoLoginParams;
 import com.cosain.trilo.auth.application.dto.LoginResult;
 import com.cosain.trilo.auth.application.dto.NaverLoginParams;
-import com.cosain.trilo.auth.presentation.dto.AuthResponse;
-import com.cosain.trilo.auth.presentation.dto.KakaoOAuthLoginRequest;
-import com.cosain.trilo.auth.presentation.dto.NaverOAuthLoginRequest;
-import com.cosain.trilo.auth.presentation.dto.RefreshTokenStatusResponse;
+import com.cosain.trilo.auth.presentation.dto.*;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -55,6 +53,16 @@ public class AuthRestController {
     @ResponseStatus(HttpStatus.OK)
     public AuthResponse login(@Valid @RequestBody NaverOAuthLoginRequest naverOAuthLoginRequest, HttpServletResponse response){
         LoginResult loginResult = authService.login(NaverLoginParams.of(naverOAuthLoginRequest.getCode(), naverOAuthLoginRequest.getState()));
+        Cookie cookie = makeRefreshTokenCookie(loginResult.getRefreshToken());
+        response.addCookie(cookie);
+        return AuthResponse.from(loginResult.getAccessToken());
+    }
+
+    @PostMapping("/login/google")
+    @ResponseBody
+    @ResponseStatus(HttpStatus.OK)
+    public AuthResponse login(@Valid @RequestBody GoogleOAuthLoginRequest googleOAuthLoginRequest, HttpServletResponse response){
+        LoginResult loginResult = authService.login(GoogleLoginParams.of(googleOAuthLoginRequest.getCode(), googleOAuthLoginRequest.getRedirect_uri()));
         Cookie cookie = makeRefreshTokenCookie(loginResult.getRefreshToken());
         response.addCookie(cookie);
         return AuthResponse.from(loginResult.getAccessToken());
