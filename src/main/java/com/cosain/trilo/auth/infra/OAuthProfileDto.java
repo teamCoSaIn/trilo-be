@@ -1,5 +1,6 @@
 package com.cosain.trilo.auth.infra;
 
+import com.cosain.trilo.auth.infra.oauth.google.dto.GoogleInfoResponse;
 import com.cosain.trilo.auth.infra.oauth.kakao.dto.KakaoProfileResponse;
 import com.cosain.trilo.auth.infra.oauth.naver.dto.NaverInfoResponse;
 import com.cosain.trilo.user.domain.AuthProvider;
@@ -38,6 +39,15 @@ public class OAuthProfileDto {
                 .email(naverInfoResponse.getEmail())
                 .profileImageUrl(naverInfoResponse.getImageUrl())
                 .provider(AuthProvider.NAVER)
+                .build();
+    }
+
+    public static OAuthProfileDto of(GoogleInfoResponse googleInfoResponse){
+        return OAuthProfileDto.builder()
+                .name(googleInfoResponse.getName())
+                .email(googleInfoResponse.getEmail())
+                .profileImageUrl(googleInfoResponse.getImageUrl())
+                .provider(AuthProvider.GOOGLE)
                 .build();
     }
 }
