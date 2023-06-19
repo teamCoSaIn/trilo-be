@@ -46,7 +46,7 @@ public class ScheduleQueryRepositoryTest {
         em.flush();
 
         // when
-        ScheduleDetail dto = scheduleQueryRepository.findScheduleDetailByScheduleId(schedule.getId()).get();
+        ScheduleDetail dto = scheduleQueryRepository.findScheduleDetailById(schedule.getId()).get();
 
         // then
         assertThat(dto.getScheduleId()).isEqualTo(schedule.getId());

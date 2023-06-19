@@ -33,7 +33,7 @@ public class ScheduleDetailSearchServiceTest {
     void searchScheduleDetailTest(){
         // given
         ScheduleDetail scheduleDetail = new ScheduleDetail(1L, 1L, "제목", "장소 이름", 24.24, 24.24, 3L, "내용");
-        given(scheduleQueryRepository.findScheduleDetailByScheduleId(anyLong())).willReturn(Optional.of(scheduleDetail));
+        given(scheduleQueryRepository.findScheduleDetailById(anyLong())).willReturn(Optional.of(scheduleDetail));
 
         // when
         ScheduleDetail dto = scheduleDetailSearchService.searchScheduleDetail(anyLong());
@@ -56,7 +56,7 @@ public class ScheduleDetailSearchServiceTest {
     @DisplayName("조회한 일정이 없을 경우 ScheduleNotFoundException 이 발생한다 ")
     void searchScheduleDetail_Fail_ScheduleNotFound() {
         // given
-        given(scheduleQueryRepository.findScheduleDetailByScheduleId(anyLong())).willReturn(Optional.empty());
+        given(scheduleQueryRepository.findScheduleDetailById(anyLong())).willReturn(Optional.empty());
 
         // when & then
         Assertions.assertThatThrownBy(() -> scheduleDetailSearchService.searchScheduleDetail(1L)).isInstanceOf(ScheduleNotFoundException.class);
