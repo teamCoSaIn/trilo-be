@@ -4,8 +4,8 @@ import com.cosain.trilo.trip.application.exception.TripNotFoundException;
 import com.cosain.trilo.trip.domain.vo.TripStatus;
 import com.cosain.trilo.trip.application.exception.NoTripDetailSearchAuthorityException;
 import com.cosain.trilo.trip.application.trip.query.service.TripDetailSearchService;
-import com.cosain.trilo.trip.infra.repository.trip.TripQueryRepository;
 import com.cosain.trilo.trip.infra.dto.TripDetail;
+import com.cosain.trilo.trip.infra.repository.trip.TripQueryRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -37,13 +37,13 @@ public class TripDetailSearchServiceTest {
     void called_test(){
         // given
         TripDetail tripDetail = new TripDetail(1L, 1L, "제목", TripStatus.DECIDED, LocalDate.of(2023, 5, 10), LocalDate.of(2023, 5, 15));
-        given(tripQueryRepository.findTripDetailByTripId(anyLong())).willReturn(Optional.of(tripDetail));
+        given(tripQueryRepository.findTripDetailById(anyLong())).willReturn(Optional.of(tripDetail));
 
         // when
         TripDetail dto = tripDetailSearchService.searchTripDetail(1L, 1L);
 
         // then
-        verify(tripQueryRepository).findTripDetailByTripId(anyLong());
+        verify(tripQueryRepository).findTripDetailById(anyLong());
         assertThat(dto.getTripId()).isEqualTo(tripDetail.getTripId());
         assertThat(dto.getStatus()).isEqualTo(tripDetail.getStatus());
         assertThat(dto.getStartDate()).isEqualTo(tripDetail.getStartDate());
@@ -56,7 +56,7 @@ public class TripDetailSearchServiceTest {
 
         // given
         TripDetail tripDetail = new TripDetail(1L, 1L, "제목", TripStatus.DECIDED, LocalDate.of(2023, 5, 10), LocalDate.of(2023, 5, 15));
-        given(tripQueryRepository.findTripDetailByTripId(anyLong())).willReturn(Optional.of(tripDetail));
+        given(tripQueryRepository.findTripDetailById(anyLong())).willReturn(Optional.of(tripDetail));
 
         // when && then
         assertThatThrownBy(() -> tripDetailSearchService.searchTripDetail(1L, 2L))
@@ -68,7 +68,7 @@ public class TripDetailSearchServiceTest {
     @DisplayName("조회한 Trip이 없을 경우 TripNotFoundException 이 발생한다.")
     void when_the_trip_is_not_exist_is_throws_TripNotFoundException(){
         // given
-        given(tripQueryRepository.findTripDetailByTripId(anyLong())).willReturn(Optional.empty());
+        given(tripQueryRepository.findTripDetailById(anyLong())).willReturn(Optional.empty());
 
         // when & then
         assertThatThrownBy(() -> tripDetailSearchService.searchTripDetail(2L, 1L))

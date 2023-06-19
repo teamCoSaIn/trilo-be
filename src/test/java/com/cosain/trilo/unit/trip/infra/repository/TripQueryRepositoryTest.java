@@ -43,7 +43,7 @@ public class TripQueryRepositoryTest {
         em.persist(trip);
 
         // when
-        TripDetail tripDetail = tripQueryRepository.findTripDetailByTripId(1L).get();
+        TripDetail tripDetail = tripQueryRepository.findTripDetailById(1L).get();
 
         // then
         assertThat(tripDetail.getTitle()).isEqualTo(trip.getTripTitle().getValue());

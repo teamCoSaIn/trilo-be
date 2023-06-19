@@ -27,7 +27,7 @@ public class TripDetailSearchService implements TripDetailSearchUseCase {
     }
 
     private TripDetail findTripDetail(Long tripId){
-        return tripQueryRepository.findTripDetailByTripId(tripId).orElseThrow(TripNotFoundException::new);
+        return tripQueryRepository.findTripDetailById(tripId).orElseThrow(TripNotFoundException::new);
     }
 
     private void validateTripDetailQueryAuthority(TripDetail tripDetail, Long tripperId){
