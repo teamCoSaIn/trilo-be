@@ -7,9 +7,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @EnableJpaRepositories(
         value = {"com.cosain.trilo.trip.domain.repository",
                 "com.cosain.trilo.user.domain",
-                "com.cosain.trilo.trip.infra.repository.trip.jpa",
-                "com.cosain.trilo.trip.infra.repository.schedule.jpa",
-                "com.cosain.trilo.trip.infra.repository.day.jpa"
+                "com.cosain.trilo.trip.infra.repository"
         }
 )
 public class JpaConfig {

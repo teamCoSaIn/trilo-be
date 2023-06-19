@@ -21,7 +21,7 @@ public class ScheduleDetailSearchService implements ScheduleDetailSearchUseCase 
     }
 
     private ScheduleDetail findSchedule(Long scheduleId) {
-        return scheduleQueryRepository.findScheduleDetailByScheduleId(scheduleId).orElseThrow(ScheduleNotFoundException::new);
+        return scheduleQueryRepository.findScheduleDetailById(scheduleId).orElseThrow(ScheduleNotFoundException::new);
     }
 
 }
