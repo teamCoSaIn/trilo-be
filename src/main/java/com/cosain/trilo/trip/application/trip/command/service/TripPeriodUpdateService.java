@@ -2,23 +2,23 @@ package com.cosain.trilo.trip.application.trip.command.service;
 
 import com.cosain.trilo.trip.application.exception.NoTripUpdateAuthorityException;
 import com.cosain.trilo.trip.application.exception.TripNotFoundException;
-import com.cosain.trilo.trip.application.trip.command.usecase.dto.TripUpdateCommand;
-import com.cosain.trilo.trip.application.trip.command.usecase.TripUpdateUseCase;
+import com.cosain.trilo.trip.application.trip.command.usecase.TripPeriodUpdateUseCase;
+import com.cosain.trilo.trip.application.trip.command.usecase.dto.TripPeriodUpdateCommand;
 import com.cosain.trilo.trip.domain.entity.Day;
 import com.cosain.trilo.trip.domain.entity.Trip;
 import com.cosain.trilo.trip.domain.repository.DayRepository;
 import com.cosain.trilo.trip.domain.repository.ScheduleRepository;
 import com.cosain.trilo.trip.domain.repository.TripRepository;
 import com.cosain.trilo.trip.domain.vo.TripPeriod;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class TripUpdateService implements TripUpdateUseCase {
+public class TripPeriodUpdateService implements TripPeriodUpdateUseCase {
 
     private final TripRepository tripRepository;
     private final DayRepository dayRepository;
@@ -26,11 +26,9 @@ public class TripUpdateService implements TripUpdateUseCase {
 
     @Override
     @Transactional
-    public void updateTrip(Long tripId, Long tripperId, TripUpdateCommand updateCommand) {
+    public void updateTripPeriod(Long tripId, Long tripperId, TripPeriodUpdateCommand updateCommand) {
         Trip trip = findTrip(tripId);
         validateTripUpdateAuthority(trip, tripperId);
-
-        trip.changeTitle(updateCommand.getTripTitle());
         changePeriod(trip, updateCommand.getTripPeriod());
     }
 

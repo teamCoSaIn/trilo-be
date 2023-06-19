@@ -1,14 +1,17 @@
 package com.cosain.trilo.unit.trip.application.trip.command.service;
 
-import com.cosain.trilo.trip.application.trip.command.usecase.dto.TripUpdateCommand;
 import com.cosain.trilo.trip.application.exception.NoTripUpdateAuthorityException;
 import com.cosain.trilo.trip.application.exception.TripNotFoundException;
-import com.cosain.trilo.trip.application.trip.command.service.TripUpdateService;
+import com.cosain.trilo.trip.application.trip.command.service.TripPeriodUpdateService;
+import com.cosain.trilo.trip.application.trip.command.usecase.dto.TripPeriodUpdateCommand;
+import com.cosain.trilo.trip.domain.entity.Day;
 import com.cosain.trilo.trip.domain.entity.Trip;
 import com.cosain.trilo.trip.domain.repository.DayRepository;
 import com.cosain.trilo.trip.domain.repository.ScheduleRepository;
 import com.cosain.trilo.trip.domain.repository.TripRepository;
+import com.cosain.trilo.trip.domain.vo.DayColor;
 import com.cosain.trilo.trip.domain.vo.TripPeriod;
+import com.cosain.trilo.trip.domain.vo.TripStatus;
 import com.cosain.trilo.trip.domain.vo.TripTitle;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -19,10 +22,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.IntStream;
 
-import static com.cosain.trilo.fixture.TripFixture.DECIDED_TRIP;
-import static com.cosain.trilo.fixture.TripFixture.UNDECIDED_TRIP;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
@@ -30,11 +33,11 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-@DisplayName("[TripCommand] TripUpdateService 테스트")
-public class TripUpdateServiceTest {
+@DisplayName("[TripCommand] TripPeriodUpdateService 테스트")
+public class TripPeriodUpdateServiceTest {
 
     @InjectMocks
-    private TripUpdateService tripUpdateService;
+    private TripPeriodUpdateService tripPeriodUpdateService;
 
     @Mock
     private TripRepository tripRepository;
@@ -46,38 +49,40 @@ public class TripUpdateServiceTest {
     private ScheduleRepository scheduleRepository;
 
     @Test
-    @DisplayName("존재하지 않는 여행을 수정하려 하면, TripNotFoundException 발생")
+    @DisplayName("존재하지 않는 여행의 기간을 수정하려 하면, TripNotFoundException 발생")
     public void if_update_not_exist_trip_then_it_throws_TripNotFoundException() {
         // given
         Long tripId = 1L;
         Long tripperId = 2L;
-        TripUpdateCommand updateCommand = new TripUpdateCommand(
-                TripTitle.of("수정할 제목"),
-                TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 3))
-        );
+
+        LocalDate startDate = LocalDate.of(2023, 3, 1);
+        LocalDate endDate = LocalDate.of(2023, 3, 3);
+
+        TripPeriodUpdateCommand updateCommand = createCommand(startDate, endDate);
         given(tripRepository.findByIdWithDays(eq(tripId))).willReturn(Optional.empty());
 
         // when & then
-        assertThatThrownBy(() -> tripUpdateService.updateTrip(tripId, tripperId, updateCommand))
+        assertThatThrownBy(() -> tripPeriodUpdateService.updateTripPeriod(tripId, tripperId, updateCommand))
                 .isInstanceOf(TripNotFoundException.class);
         verify(tripRepository).findByIdWithDays(eq(tripId));
     }
 
     @Test
-    public void 여행_상태가_UNDECIDED이고_날짜와_제목을_수정할_때() throws Exception {
+    public void unDecidedTripPeriod_initTest() throws Exception {
         // given
         Long tripId = 1L;
         Long tripperId = 2L;
-        TripUpdateCommand updateCommand = new TripUpdateCommand(
-                TripTitle.of("수정할 제목"),
-                TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 3))
-        );
 
-        Trip trip = UNDECIDED_TRIP.createUndecided(tripId, tripperId, "여행 제목");
+        LocalDate startDate = LocalDate.of(2023, 3, 1);
+        LocalDate endDate = LocalDate.of(2023, 3, 3);
+
+        TripPeriodUpdateCommand updateCommand = createCommand(startDate, endDate);
+
+        Trip trip = mockUnDecidedTrip(tripId, tripperId);
         given(tripRepository.findByIdWithDays(eq(tripId))).willReturn(Optional.of(trip));
 
         // when
-        tripUpdateService.updateTrip(tripId, tripperId, updateCommand);
+        tripPeriodUpdateService.updateTripPeriod(tripId, tripperId, updateCommand);
 
         // then
         verify(tripRepository, times(1)).findByIdWithDays(eq(tripId));
@@ -93,22 +98,21 @@ public class TripUpdateServiceTest {
         Long tripId = 1L;
         Long tripperId = 2L;
 
-        TripUpdateCommand updateCommand = new TripUpdateCommand(
-                TripTitle.of("수정할 제목"),
-                TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 5))
-        );
-        Trip trip = DECIDED_TRIP.createDecided(tripId, tripperId, "여행 제목", LocalDate.of(2023, 3, 3), LocalDate.of(2023, 3, 7));
-        given(tripRepository.findByIdWithDays(eq(tripId))).willReturn(Optional.of(trip));
+        TripPeriodUpdateCommand updateCommand = createCommand(LocalDate.of(2023, 3, 2), LocalDate.of(2023,3,5));
+        Trip trip = mockDecidedTrip(tripId, tripperId, LocalDate.of(2023,3,1), LocalDate.of(2023,3,4), 1L);
+
+        given(tripRepository.findByIdWithDays(eq(tripId))).willReturn(Optional.of(trip)); // trip 조회 일어남.
+
         given(scheduleRepository.relocateDaySchedules(eq(tripId), isNull())).willReturn(0);
         given(scheduleRepository.moveSchedulesToTemporaryStorage(eq(tripId), anyList())).willReturn(0);
         given(dayRepository.deleteAllByIds(anyList())).willReturn(2);
 
         // when
-        tripUpdateService.updateTrip(tripId, tripperId, updateCommand);
+        tripPeriodUpdateService.updateTripPeriod(tripId, tripperId, updateCommand);
 
         // then
         verify(tripRepository, times(1)).findByIdWithDays(anyLong());
-        verify(dayRepository, times(1)).saveAll(anyList());
+        verify(dayRepository, times(1)).saveAll(anyList()); // 생성된 Day가 있으므로 호출됨
         verify(scheduleRepository, times(1)).relocateDaySchedules(eq(tripId), isNull());
         verify(scheduleRepository, times(1)).moveSchedulesToTemporaryStorage(eq(tripId), anyList());
         verify(dayRepository, times(1)).deleteAllByIds(anyList());
@@ -126,20 +130,63 @@ public class TripUpdateServiceTest {
             Long tripperId = 2L;
             Long noAuthorityTripperId = 3L;
 
-            TripUpdateCommand updateCommand = new TripUpdateCommand(
-                    TripTitle.of("수정할 제목"),
-                    TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 3))
-            );
-            Trip trip = UNDECIDED_TRIP.createUndecided(tripId, tripperId, "여행 제목");
+            TripPeriodUpdateCommand updateCommand = createCommand(LocalDate.of(2023,3,1), LocalDate.of(2023,3,3));
+
+            Trip trip = mockUnDecidedTrip(tripId, tripperId);
             given(tripRepository.findByIdWithDays(eq(tripId))).willReturn(Optional.of(trip));
 
             // when & then
-            assertThatThrownBy(() -> tripUpdateService.updateTrip(tripId, noAuthorityTripperId, updateCommand))
+            assertThatThrownBy(() -> tripPeriodUpdateService.updateTripPeriod(tripId, noAuthorityTripperId, updateCommand))
                     .isInstanceOf(NoTripUpdateAuthorityException.class);
 
             verify(tripRepository, times(1)).findByIdWithDays(eq(tripId));
         }
 
+    }
+
+    private TripPeriodUpdateCommand createCommand(LocalDate startDate, LocalDate endDate) {
+        return new TripPeriodUpdateCommand(TripPeriod.of(startDate, endDate));
+    }
+
+    private Trip mockUnDecidedTrip(Long id, Long tripperId) {
+        return Trip.builder()
+                .id(id)
+                .tripperId(tripperId)
+                .tripTitle(TripTitle.of("여행 제목"))
+                .tripPeriod(TripPeriod.empty())
+                .status(TripStatus.UNDECIDED)
+                .build();
+    }
+
+    private Trip mockDecidedTrip(Long id, Long tripperId, LocalDate startDate, LocalDate endDate, Long startDayId) {
+        TripPeriod period = TripPeriod.of(startDate, endDate);
+        Trip trip = Trip.builder()
+                .id(id)
+                .tripperId(tripperId)
+                .tripTitle(TripTitle.of("여행 제목"))
+                .tripPeriod(TripPeriod.empty())
+                .status(TripStatus.UNDECIDED)
+                .build();
+
+        List<Day> days = mockDays(period, trip, startDayId);
+        trip.getDays().addAll(days);
+        return trip;
+    }
+
+    private List<Day> mockDays(TripPeriod period, Trip trip, Long startDayId) {
+        List<LocalDate> dates = period.dateStream().toList();
+        return IntStream.range(0, dates.size())
+                .mapToObj(idx -> createDay(trip, startDayId, dates, idx))
+                .toList();
+    }
+
+    private Day createDay(Trip trip, Long startDayId, List<LocalDate> dates, int idx) {
+        return Day.builder()
+                .id(startDayId + idx)
+                .tripDate(dates.get(idx))
+                .trip(trip)
+                .dayColor(DayColor.BLACK)
+                .build();
     }
 
 }

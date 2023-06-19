@@ -36,7 +36,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(TripTitleUpdateController.class)
-@DisplayName("여행 수정 API DOCS 테스트")
+@DisplayName("여행 제목 수정 API DOCS 테스트")
 public class TripTitleUpdateControllerDocsTest extends RestDocsTestSupport {
 
     @MockBean
