@@ -5,17 +5,20 @@ import com.cosain.trilo.support.RepositoryTest;
 import com.cosain.trilo.trip.domain.entity.Trip;
 import com.cosain.trilo.trip.domain.vo.TripPeriod;
 import com.cosain.trilo.trip.domain.vo.TripStatus;
+import com.cosain.trilo.trip.domain.vo.TripTitle;
 import com.cosain.trilo.trip.infra.dto.TripDetail;
 import com.cosain.trilo.trip.infra.dto.TripSummary;
-import com.cosain.trilo.trip.domain.vo.TripTitle;
 import com.cosain.trilo.trip.infra.repository.trip.TripQueryRepository;
+import com.cosain.trilo.trip.presentation.trip.query.dto.request.TripPageCondition;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
+import org.springframework.test.annotation.DirtiesContext;
 
 import java.time.LocalDate;
 
@@ -32,6 +35,7 @@ public class TripQueryRepositoryTest {
     private EntityManager em;
 
     @Test
+    @DirtiesContext
     void findTripDetailTest(){
         // given
         Trip trip = Trip.builder()
@@ -59,47 +63,59 @@ public class TripQueryRepositoryTest {
     class findTripDetailListByTripperIdTest{
 
         @Test
-        @DisplayName("여행의 TipperId가 일치하는 여행들이 요청된 페이지의 크기만큼 조회된다")
+        @DirtiesContext
+        @DisplayName("여행의 TipperId가 일치하는 여행들이 커서에 해당하는 tripId 미만 row가 size 만큼 조회된다")
         void findTest(){
             // given
+            Long tripperId = 1L;
+            Long tripId = 3L;
+            int size = 2;
+            TripPageCondition tripPageCondition = new TripPageCondition(tripperId, tripId);
+            Pageable pageable = PageRequest.ofSize(size);
             Trip trip1 = Trip.builder()
-                    .tripperId(1L)
+                    .tripperId(tripperId)
                     .tripTitle(TripTitle.of("제목 1"))
                     .status(TripStatus.DECIDED)
                     .tripPeriod(TripPeriod.of(LocalDate.of(2023, 5, 5), LocalDate.of(2023, 5, 10)))
                     .build();
 
             Trip trip2 = Trip.builder()
-                    .tripperId(1L)
+                    .tripperId(tripperId)
                     .tripTitle(TripTitle.of("제목 2"))
                     .status(TripStatus.DECIDED)
                     .tripPeriod(TripPeriod.of(LocalDate.of(2023, 5, 5), LocalDate.of(2023, 5, 10)))
                     .build();
 
-
             em.persist(trip1);
             em.persist(trip2);
 
+            System.out.println(trip1.getId() +" "+ trip2.getId());
+
             // when
-            Slice<TripSummary> tripSummariesByTripperId = tripQueryRepository.findTripSummariesByTripperId(1L, PageRequest.of(0, 2));
+            Slice<TripSummary> tripSummariesByTripperId = tripQueryRepository.findTripSummariesByTripperId(tripPageCondition, pageable);
 
             // then
             assertThat(tripSummariesByTripperId.getContent().size()).isEqualTo(2);
         }
 
         @Test
+        @DirtiesContext
         @DisplayName("가장 최근에 생성된 여행 순으로 조회된다")
         void sortTest(){
             // given
+            Long tripperId = 1L;
+            Long tripId = 3L;
+            TripPageCondition tripPageCondition = new TripPageCondition(tripperId, tripId);
+            Pageable pageable = PageRequest.ofSize(3);
             Trip trip1 = Trip.builder()
-                    .tripperId(1L)
+                    .tripperId(tripperId)
                     .tripTitle(TripTitle.of("제목 1"))
                     .status(TripStatus.DECIDED)
                     .tripPeriod(TripPeriod.of(LocalDate.of(2023, 5, 5), LocalDate.of(2023, 5, 10)))
                     .build();
 
             Trip trip2 = Trip.builder()
-                    .tripperId(1L)
+                    .tripperId(tripperId)
                     .tripTitle(TripTitle.of("제목 2"))
                     .status(TripStatus.DECIDED)
                     .tripPeriod(TripPeriod.of(LocalDate.of(2023, 5, 5), LocalDate.of(2023, 5, 10)))
@@ -110,7 +126,7 @@ public class TripQueryRepositoryTest {
             em.persist(trip2);
 
             // when
-            Slice<TripSummary> tripSummariesByTripperId = tripQueryRepository.findTripSummariesByTripperId(1L, PageRequest.of(0, 2));
+            Slice<TripSummary> tripSummariesByTripperId = tripQueryRepository.findTripSummariesByTripperId(tripPageCondition,pageable);
 
 
             // then
@@ -119,6 +135,7 @@ public class TripQueryRepositoryTest {
         }
 
         @Test
+        @DirtiesContext
         void existByIdTest(){
             // given
             Trip trip = Trip.builder()
