@@ -6,6 +6,7 @@ import com.cosain.trilo.trip.application.trip.query.usecase.TripListSearchUseCas
 import com.cosain.trilo.trip.domain.vo.TripStatus;
 import com.cosain.trilo.trip.infra.dto.TripSummary;
 import com.cosain.trilo.trip.presentation.trip.query.TripperTripListQueryController;
+import com.cosain.trilo.trip.presentation.trip.query.dto.request.TripPageCondition;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -49,9 +50,9 @@ class TripperTripListQueryControllerTest extends RestControllerTest {
         TripSummary tripSummary2 = new TripSummary(2L, 1L, "제목 2", TripStatus.UNDECIDED, null, null);
         TripSummary tripSummary3 = new TripSummary(3L, 1L, "제목 3", TripStatus.DECIDED, LocalDate.of(2023, 4,4), LocalDate.of(2023, 4, 5));
         Pageable pageable = PageRequest.of(0, 3);
-        SliceImpl<TripSummary> tripDetails = new SliceImpl<>(List.of(tripSummary1, tripSummary2, tripSummary3), pageable, true);
+        SliceImpl<TripSummary> tripDetails = new SliceImpl<>(List.of(tripSummary3, tripSummary2, tripSummary1), pageable, true);
 
-        given(tripListSearchUseCase.searchTripSummaries(eq(1L), any(Pageable.class))).willReturn(tripDetails);
+        given(tripListSearchUseCase.searchTripSummaries(any(TripPageCondition.class), any(Pageable.class))).willReturn(tripDetails);
 
         // when & then
         mockMvc.perform(get("/api/trips?tripper-id=1")

@@ -5,6 +5,7 @@ import com.cosain.trilo.trip.application.trip.query.service.TripListSearchServic
 import com.cosain.trilo.trip.domain.vo.TripStatus;
 import com.cosain.trilo.trip.infra.dto.TripSummary;
 import com.cosain.trilo.trip.infra.repository.trip.TripQueryRepository;
+import com.cosain.trilo.trip.presentation.trip.query.dto.request.TripPageCondition;
 import com.cosain.trilo.user.domain.UserRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -49,11 +50,12 @@ public class TripListSearchServiceTest {
 
         Slice<TripSummary> tripSummaries = new PageImpl<>(List.of(tripSummary1, tripSummary2));
 
+        TripPageCondition tripPageCondition = new TripPageCondition(1L, 1L);
         given(userRepository.findById(eq(1L))).willReturn(Optional.of(KAKAO_MEMBER.create()));
-        given(tripQueryRepository.findTripSummariesByTripperId(tripperId, pageable)).willReturn(tripSummaries);
+        given(tripQueryRepository.findTripSummariesByTripperId(tripPageCondition, pageable)).willReturn(tripSummaries);
 
         // when
-        Slice<TripSummary> searchTripSummaries = tripListSearchService.searchTripSummaries(tripperId, pageable);
+        Slice<TripSummary> searchTripSummaries = tripListSearchService.searchTripSummaries(tripPageCondition, pageable);
 
         // then
         assertThat(searchTripSummaries).isNotNull();
@@ -70,10 +72,11 @@ public class TripListSearchServiceTest {
         // given
         Long tripperId = 1L;
         Pageable pageable = PageRequest.of(0, 10);
+        TripPageCondition tripPageCondition = new TripPageCondition(1L, 1L);
         given(userRepository.findById(tripperId)).willReturn(Optional.empty());
 
         // when & then
-        assertThatThrownBy(() -> tripListSearchService.searchTripSummaries(tripperId, pageable)).isInstanceOf(TripperNotFoundException.class);
+        assertThatThrownBy(() -> tripListSearchService.searchTripSummaries(tripPageCondition, pageable)).isInstanceOf(TripperNotFoundException.class);
 
     }
 

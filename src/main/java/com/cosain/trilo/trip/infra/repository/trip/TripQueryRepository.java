@@ -4,14 +4,17 @@ import com.cosain.trilo.trip.infra.dto.QTripDetail;
 import com.cosain.trilo.trip.infra.dto.QTripSummary;
 import com.cosain.trilo.trip.infra.dto.TripDetail;
 import com.cosain.trilo.trip.infra.dto.TripSummary;
+import com.cosain.trilo.trip.presentation.trip.query.dto.request.TripPageCondition;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import static com.cosain.trilo.trip.domain.entity.QTrip.trip;
@@ -40,19 +43,34 @@ public class TripQueryRepository{
                 .fetchOne());
     }
 
-    public Slice<TripSummary> findTripSummariesByTripperId(Long tripperId, Pageable pageable) {
+    public Slice<TripSummary> findTripSummariesByTripperId(TripPageCondition tripPageCondition, Pageable pageable) {
         JPAQuery<TripSummary> jpaQuery = query.select(new QTripSummary(trip.id, trip.tripperId, trip.tripTitle.value, trip.status, trip.tripPeriod.startDate, trip.tripPeriod.endDate))
                 .from(trip)
-                .where(trip.tripperId.eq(tripperId))
+                .where(
+                        trip.tripperId.eq(tripPageCondition.getTripperId()),
+                        ltTripId(tripPageCondition.getTripId())
+                )
                 .orderBy(trip.id.desc())
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize());
+                .limit(pageable.getPageSize() + 1);
 
-        long totalCount = query.from(trip)
-                .where(trip.tripperId.eq(tripperId))
-                .fetchCount();
+        List<TripSummary> result = jpaQuery.fetch();
+        boolean hasNext = isHasNext(result, pageable);
 
-        return new PageImpl<>(jpaQuery.fetch(), pageable, totalCount);
+        return new SliceImpl<>(result, pageable, hasNext);
+    }
+
+    private boolean isHasNext(List<?> result, Pageable pageable){
+        boolean hasNext = false;
+        if(result.size() > pageable.getPageSize()){
+            hasNext = true;
+            result.remove(pageable.getPageSize());
+        }
+        return hasNext;
+    }
+
+    private BooleanExpression ltTripId(Long tripId){
+        if(tripId == null) return null;
+        return trip.id.lt(tripId);
     }
 
     public boolean existById(Long tripId) {

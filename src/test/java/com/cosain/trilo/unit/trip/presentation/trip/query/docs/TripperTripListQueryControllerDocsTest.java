@@ -5,6 +5,7 @@ import com.cosain.trilo.trip.application.trip.query.usecase.TripListSearchUseCas
 import com.cosain.trilo.trip.domain.vo.TripStatus;
 import com.cosain.trilo.trip.infra.dto.TripSummary;
 import com.cosain.trilo.trip.presentation.trip.query.TripperTripListQueryController;
+import com.cosain.trilo.trip.presentation.trip.query.dto.request.TripPageCondition;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -43,20 +44,20 @@ public class TripperTripListQueryControllerDocsTest extends RestDocsTestSupport 
         mockingForLoginUserAnnotation();
 
         Long tripperId = 1L;
-        int page = 0;
+        Long tripId = 5L;
         int size = 3;
-        TripSummary tripSummary1 = new TripSummary(1L, tripperId, "제목 1", TripStatus.DECIDED, LocalDate.of(2023, 3,4), LocalDate.of(2023, 4, 1));
-        TripSummary tripSummary2 = new TripSummary(2L, tripperId, "제목 2", TripStatus.UNDECIDED, null, null);
-        TripSummary tripSummary3 = new TripSummary(3L, tripperId, "제목 3", TripStatus.DECIDED, LocalDate.of(2023, 4,4), LocalDate.of(2023, 4, 5));
-        Pageable pageable = PageRequest.of(page, size);
+        TripSummary tripSummary1 = new TripSummary(4L, tripperId, "제목 1", TripStatus.DECIDED, LocalDate.of(2023, 3,4), LocalDate.of(2023, 4, 1));
+        TripSummary tripSummary2 = new TripSummary(3L, tripperId, "제목 2", TripStatus.UNDECIDED, null, null);
+        TripSummary tripSummary3 = new TripSummary(2L, tripperId, "제목 3", TripStatus.DECIDED, LocalDate.of(2023, 4,4), LocalDate.of(2023, 4, 5));
+        Pageable pageable = PageRequest.ofSize(size);
         SliceImpl<TripSummary> tripDetails = new SliceImpl<>(List.of(tripSummary1, tripSummary2, tripSummary3), pageable, true);
 
-        given(tripListSearchUseCase.searchTripSummaries(eq(tripperId), eq(pageable))).willReturn(tripDetails);
+        given(tripListSearchUseCase.searchTripSummaries(any(TripPageCondition.class), eq(pageable))).willReturn(tripDetails);
 
         // when & then
         mockMvc.perform(RestDocumentationRequestBuilders.get(BASE_URL)
-                        .param("tripper-id", String.valueOf(tripperId))
-                        .param("page", String.valueOf(page))
+                        .param("tripperId", String.valueOf(tripperId))
+                        .param("tripId", String.valueOf(tripId))
                         .param("size", String.valueOf(size))
                         .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)
                         .characterEncoding(StandardCharsets.UTF_8)
@@ -68,8 +69,8 @@ public class TripperTripListQueryControllerDocsTest extends RestDocsTestSupport 
                                         .description("Bearer 타입 AccessToken")
                         ),
                         queryParameters(
-                                parameterWithName("tripper-id").description("여행자 ID"),
-                                parameterWithName("page").description("요청할 페이지"),
+                                parameterWithName("tripperId").description("여행자 ID"),
+                                parameterWithName("tripId").optional().description("커서에 해당하는 tripId"),
                                 parameterWithName("size").description("가져올 데이터의 개수")
                         ),
                         responseFields(

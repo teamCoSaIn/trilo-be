@@ -4,6 +4,7 @@ import com.cosain.trilo.trip.application.exception.TripperNotFoundException;
 import com.cosain.trilo.trip.application.trip.query.usecase.TripListSearchUseCase;
 import com.cosain.trilo.trip.infra.dto.TripSummary;
 import com.cosain.trilo.trip.infra.repository.trip.TripQueryRepository;
+import com.cosain.trilo.trip.presentation.trip.query.dto.request.TripPageCondition;
 import com.cosain.trilo.user.domain.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,10 +23,10 @@ public class TripListSearchService implements TripListSearchUseCase {
     private final UserRepository userRepository;
 
     @Override
-    public Slice<TripSummary> searchTripSummaries(Long tripperId, Pageable pageable) {
+    public Slice<TripSummary> searchTripSummaries(TripPageCondition tripPageCondition, Pageable pageable) {
 
-        verifyTripperExists(tripperId);
-        Slice<TripSummary> tripSummaries = findTripSummaries(tripperId, pageable);
+        verifyTripperExists(tripPageCondition.getTripperId());
+        Slice<TripSummary> tripSummaries = findTripSummaries(tripPageCondition, pageable);
         return tripSummaries;
     }
 
@@ -33,8 +34,8 @@ public class TripListSearchService implements TripListSearchUseCase {
         userRepository.findById(tripperId).orElseThrow(TripperNotFoundException::new);
     }
 
-    private Slice<TripSummary> findTripSummaries(Long tripperId, Pageable pageable){
-        return tripQueryRepository.findTripSummariesByTripperId(tripperId, pageable);
+    private Slice<TripSummary> findTripSummaries(TripPageCondition tripPageCondition, Pageable pageable){
+        return tripQueryRepository.findTripSummariesByTripperId(tripPageCondition, pageable);
     }
 
 }
