@@ -50,6 +50,9 @@ public class Trip {
     @OneToMany(mappedBy = "trip")
     private final List<Day> days = new ArrayList<>();
 
+    @Embedded
+    private TripImage tripImage;
+
     @OneToMany(mappedBy = "trip")
     @Where(clause = "day_id is NULL")
     @OrderBy("scheduleIndex.value asc")
@@ -67,6 +70,7 @@ public class Trip {
                 .tripperId(tripperId)
                 .tripTitle(tripTitle)
                 .status(TripStatus.UNDECIDED)
+                .tripImage(TripImage.defaultImage())
                 .tripPeriod(TripPeriod.empty())
                 .build();
     }
@@ -75,17 +79,16 @@ public class Trip {
      * 테스트의 편의성을 위해 Builder accessLevel = PUBLIC 으로 설정
      */
     @Builder(access = AccessLevel.PUBLIC)
-    private Trip(Long id, Long tripperId, TripTitle tripTitle, TripStatus status, TripPeriod tripPeriod, List<Day> days, List<Schedule> temporaryStorage) {
+    private Trip(Long id, Long tripperId, TripTitle tripTitle, TripStatus status, TripPeriod tripPeriod, TripImage tripImage, List<Day> days, List<Schedule> temporaryStorage) {
         this.id = id;
         this.tripperId = tripperId;
         this.tripTitle = tripTitle;
         this.status = status;
         this.tripPeriod = tripPeriod;
-
+        this.tripImage = tripImage;
         if (days != null) {
             this.days.addAll(days);
         }
-
         if (temporaryStorage != null) {
             this.temporaryStorage.addAll(temporaryStorage);
         }
@@ -98,6 +101,10 @@ public class Trip {
      */
     public void changeTitle(TripTitle newTitle) {
         this.tripTitle = newTitle;
+    }
+
+    public void changeImage(TripImage tripImage) {
+        this.tripImage = tripImage;
     }
 
     /**
