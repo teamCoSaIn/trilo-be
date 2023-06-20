@@ -70,7 +70,7 @@ public class TripperTripListQueryControllerDocsTest extends RestDocsTestSupport 
                         ),
                         queryParameters(
                                 parameterWithName("tripperId").description("여행자 ID"),
-                                parameterWithName("tripId").optional().description("커서에 해당하는 tripId"),
+                                parameterWithName("tripId").optional().description("기준이 되는 여행 ID (하단 설명 참고)"),
                                 parameterWithName("size").description("가져올 데이터의 개수")
                         ),
                         responseFields(
