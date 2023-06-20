@@ -59,6 +59,15 @@ public class TripQueryRepository{
         return new SliceImpl<>(result, pageable, hasNext);
     }
 
+    /**
+     * @param result
+     * @param pageable
+     *
+     * 다음 요청값이 있는지 없는지를 반환해주는 메서드입니다. 메서드를 호출하기 전에 실제 요청 size + 1 만큼 조회 쿼리를 날린 다음
+     * 실제 size + 1 만큼의 데이터를 결과(result)로 가져온다면 결국 다음 요청할 데이터가 존재한다는 것이므로 hasNext 를 true로
+     * 설정한다음 반환하게 됩니다. 동시에 실제 요청 크기(pageable.getPageSize())보다 +1 만큼 조회했으므로
+     * remove() 메서드를 통해 리스트에 담긴 중에서 마지막 데이터를 제거합니다.
+     */
     private boolean isHasNext(List<?> result, Pageable pageable){
         boolean hasNext = false;
         if(result.size() > pageable.getPageSize()){
