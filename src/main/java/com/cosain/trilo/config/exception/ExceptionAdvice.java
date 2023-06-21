@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.util.List;
@@ -86,6 +87,7 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
     @Override
     protected ResponseEntity<Object> handleTypeMismatch(TypeMismatchException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
         log.info("URL의 파라미터 변수 또는 쿼리 파라미터의 타입 에러");
+        log.error("ex", ex);
 
         String errorCode = "request-0004";
         String errorMessage = getMessage(errorCode + ".message");
@@ -145,6 +147,19 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
         log.info("-----> errorDetail={}", errorDetail);
         return BasicErrorResponse.of(errorCode, errorMessage, errorDetail);
     }
+
+    @ExceptionHandler(MultipartException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public BasicErrorResponse handleMultipartException(MultipartException e) {
+        log.info("Multipart 요청이 아님");
+
+        String errorCode = "request-0005";
+        String errorMessage = getMessage(errorCode + ".message");
+        String errorDetail = getMessage(errorCode +".detail");
+
+        return BasicErrorResponse.of(errorCode, errorMessage, errorDetail);
+    }
+
 
     /**
      * 커스텀 예외
