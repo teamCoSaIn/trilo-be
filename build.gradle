@@ -40,6 +40,10 @@ dependencies {
 
 	implementation "com.github.gavlyukovskiy:p6spy-spring-boot-starter:${p6SpyVersion}"
 
+	// Tika : 이미지 검증
+	implementation 'org.apache.tika:tika-core:2.8.0'
+	implementation 'org.apache.tika:tika-parsers-standard-package:2.8.0'
+
 	// 테스트에서 lombok 사용
 	testCompileOnly 'org.projectlombok:lombok'
 	testAnnotationProcessor 'org.projectlombok:lombok'
