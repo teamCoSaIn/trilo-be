@@ -4,6 +4,8 @@ import com.cosain.trilo.support.RestDocsTestSupport;
 import com.cosain.trilo.trip.application.trip.query.usecase.TemporarySearchUseCase;
 import com.cosain.trilo.trip.infra.dto.ScheduleSummary;
 import com.cosain.trilo.trip.presentation.trip.query.TripTemporaryStorageQueryController;
+import com.cosain.trilo.trip.presentation.trip.query.dto.request.TempSchedulePageCondition;
+import com.cosain.trilo.trip.presentation.trip.query.dto.request.TripPageCondition;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -35,20 +37,22 @@ public class TripTemporaryStorageQueryControllerDocsTest extends RestDocsTestSup
 
     @Test
     void 임시보관함_조회() throws Exception{
+
+        // given
         Long tripId = 1L;
-        int page = 0;
+        Long scheduleId = 1L;
         int size = 2;
         mockingForLoginUserAnnotation();
-        ScheduleSummary scheduleSummary1 = new ScheduleSummary(1L, "제목", "장소 이름","장소 식별자", 33.33, 33.33);
-        ScheduleSummary scheduleSummary2 = new ScheduleSummary(2L, "제목", "장소 이름","장소 식별자",33.33, 33.33);
+        ScheduleSummary scheduleSummary1 = new ScheduleSummary(2L, "제목", "장소 이름","장소 식별자", 33.33, 33.33);
+        ScheduleSummary scheduleSummary2 = new ScheduleSummary(3L, "제목", "장소 이름","장소 식별자",33.33, 33.33);
         SliceImpl<ScheduleSummary> scheduleSummaries = new SliceImpl<>(List.of(scheduleSummary1, scheduleSummary2));
-        Pageable pageable = PageRequest.of(page, size);
-        given(temporarySearchUseCase.searchTemporary(eq(tripId), eq(pageable))).willReturn(scheduleSummaries);
+        Pageable pageable = PageRequest.ofSize(size);
+        given(temporarySearchUseCase.searchTemporary(eq(tripId), any(TempSchedulePageCondition.class),eq(pageable))).willReturn(scheduleSummaries);
 
         mockMvc.perform(RestDocumentationRequestBuilders.get("/api/trips/{tripId}/temporary-storage", tripId)
                 .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)
-                .param("page", String.valueOf(page))
                 .param("size", String.valueOf(size))
+                .param("scheduleId", String.valueOf(scheduleId))
                 .characterEncoding(StandardCharsets.UTF_8)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(restDocs.document(
@@ -57,7 +61,7 @@ public class TripTemporaryStorageQueryControllerDocsTest extends RestDocsTestSup
                                         .description("Bearer 타입 AccessToken")
                         ),
                         queryParameters(
-                                parameterWithName("page").description("요청할 페이지"),
+                                parameterWithName("scheduleId").description("기준이 되는 일정 ID (하단 설명 참고)"),
                                 parameterWithName("size").description("가져올 데이터 개수")
                         ),
                         pathParameters(

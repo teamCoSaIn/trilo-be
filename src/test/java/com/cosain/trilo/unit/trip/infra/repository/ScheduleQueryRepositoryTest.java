@@ -8,6 +8,7 @@ import com.cosain.trilo.trip.domain.vo.*;
 import com.cosain.trilo.trip.infra.dto.ScheduleDetail;
 import com.cosain.trilo.trip.infra.dto.ScheduleSummary;
 import com.cosain.trilo.trip.infra.repository.schedule.ScheduleQueryRepository;
+import com.cosain.trilo.trip.presentation.trip.query.dto.request.TempSchedulePageCondition;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -16,6 +17,8 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 import org.springframework.test.annotation.DirtiesContext;
+
+import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -65,20 +68,28 @@ public class ScheduleQueryRepositoryTest {
 
         @Test
         @DirtiesContext
-        @DisplayName("tripId 가 일치하고 dayId 가 null 인 일정들이 페이지의 크기만큼 조회된다.")
+        @DisplayName("tripId 가 일치하고 dayId 가 null 인 커서 보다 큰 일정들이 size 만큼 조회된다.")
         void findTest(){
             // given
             Trip trip = Trip.create(TripTitle.of("제목"), 1L);
             em.persist(trip);
-            Schedule schedule = createSchedule(trip, 1L);
-            em.persist(schedule);
+            Schedule schedule1 = createSchedule(trip, 10000L);
+            Schedule schedule2 = createSchedule(trip, 20000L);
+            Schedule schedule3 = createSchedule(trip, 30000L);
+            Schedule schedule4 = createSchedule(trip, 40000L);
+            em.persist(schedule1);
+            em.persist(schedule2);
+            em.persist(schedule3);
+            em.persist(schedule4);
             em.flush();
 
+            TempSchedulePageCondition tempSchedulePageCondition = new TempSchedulePageCondition(schedule1.getId());
+
             // when
-            Slice<ScheduleSummary> scheduleSummaries = scheduleQueryRepository.findTemporaryScheduleListByTripId(1L, PageRequest.of(0, 1));
+            Slice<ScheduleSummary> scheduleSummaries = scheduleQueryRepository.findTemporaryScheduleListByTripId(1L,tempSchedulePageCondition,PageRequest.ofSize(3));
 
             // then
-            assertThat(scheduleSummaries.getSize()).isEqualTo(1);
+            assertThat(scheduleSummaries.getSize()).isEqualTo(3);
         }
 
         @Test
@@ -87,31 +98,50 @@ public class ScheduleQueryRepositoryTest {
             // given
             Trip trip = Trip.create(TripTitle.of("제목"), 1L);
             em.persist(trip);
-            Schedule schedule1 = createSchedule(trip, 1L);
-            Schedule schedule2 = createSchedule(trip, 2L);
-            Schedule schedule3 = createSchedule(trip, 3L);
+            Schedule schedule1 = createSchedule(trip, 10000L);
+            Schedule schedule2 = createSchedule(trip, 20000L);
+            Schedule schedule3 = createSchedule(trip, 30000L);
             em.persist(schedule1);
             em.persist(schedule2);
             em.persist(schedule3);
             em.flush();
 
+            TempSchedulePageCondition tempSchedulePageCondition = new TempSchedulePageCondition(schedule1.getId());
+
             // when
-            Slice<ScheduleSummary> scheduleSummaries = scheduleQueryRepository.findTemporaryScheduleListByTripId(1L, PageRequest.of(0, 3));
+            Slice<ScheduleSummary> scheduleSummaries = scheduleQueryRepository.findTemporaryScheduleListByTripId(1L, tempSchedulePageCondition, PageRequest.ofSize(2));
 
             // then
-            assertThat(scheduleSummaries.getSize()).isEqualTo(3);
-            assertThat(scheduleSummaries.getContent().get(0).getScheduleId()).isEqualTo(1L);
-            assertThat(scheduleSummaries.getContent().get(1).getScheduleId()).isEqualTo(2L);
-            assertThat(scheduleSummaries.getContent().get(2).getScheduleId()).isEqualTo(3L);
+            assertThat(scheduleSummaries.getSize()).isEqualTo(2);
+            assertThat(scheduleSummaries.getContent().get(0).getScheduleId()).isEqualTo(schedule2.getId());
+            assertThat(scheduleSummaries.getContent().get(1).getScheduleId()).isEqualTo(schedule3.getId());
         }
-        private Schedule createSchedule(Trip trip, long scheduleIndexValue){
-            return Schedule.builder()
-                    .trip(trip)
-                    .scheduleTitle(ScheduleTitle.of("Test Schedule"))
-                    .place(Place.of("장소 1", "광산구", Coordinate.of(62.62, 62.62)))
-                    .scheduleIndex(ScheduleIndex.of(scheduleIndexValue))
-                    .scheduleContent(ScheduleContent.of("일정 본문"))
-                    .build();
-        }
+
+    }
+
+    @Test
+    @DirtiesContext
+    void existByIdTest(){
+        // given
+        Trip trip = Trip.create(TripTitle.of("제목"), 1L);
+        em.persist(trip);
+        Schedule schedule = createSchedule(trip, 10000L);
+        em.persist(schedule);
+        em.flush();
+
+        // when & then
+        long notExistScheduleId = 2L;
+        assertThat(scheduleQueryRepository.existById(schedule.getId())).isTrue();
+        assertThat(scheduleQueryRepository.existById(notExistScheduleId)).isFalse();
+    }
+
+    private Schedule createSchedule(Trip trip, long scheduleIndexValue){
+        return Schedule.builder()
+                .trip(trip)
+                .scheduleTitle(ScheduleTitle.of("Test Schedule"))
+                .place(Place.of("장소 1", "광산구", Coordinate.of(62.62, 62.62)))
+                .scheduleIndex(ScheduleIndex.of(scheduleIndexValue))
+                .scheduleContent(ScheduleContent.of("일정 본문"))
+                .build();
     }
 }
