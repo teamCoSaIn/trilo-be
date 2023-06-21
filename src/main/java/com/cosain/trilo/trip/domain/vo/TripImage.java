@@ -13,7 +13,7 @@ import lombok.ToString;
 @Embeddable
 public class TripImage {
 
-    public static final String DEFAULT_IMAGE_NAME = "trip-default-image-png";
+    public static final String DEFAULT_IMAGE_NAME = "trips/trip-default-image.png";
     private static final TripImage DEFAULT_IMAGE = new TripImage(DEFAULT_IMAGE_NAME);
 
     @Column(name = "image-file-name")
