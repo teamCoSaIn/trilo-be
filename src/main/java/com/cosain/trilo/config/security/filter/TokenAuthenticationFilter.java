@@ -48,8 +48,8 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
         try{
             String accessToken = getAccessTokenFromRequest(request);
             if(isValidToken(accessToken)){
-                String email = tokenAnalyzer.getEmailFromToken(accessToken);
-                User user = userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException());
+                Long userId = tokenAnalyzer.getUserIdFromToken(accessToken);
+                User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException());
                 storeUserInSecurityContext(user, request);
             }
             log.info("accessToken : {}",accessToken);

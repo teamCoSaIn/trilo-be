@@ -36,9 +36,9 @@ public class JwtTokenAnalyzer implements TokenAnalyzer {
     }
 
     @Override
-    public String getEmailFromToken(String token) {
+    public Long getUserIdFromToken(String token) {
         Claims claims = getClaims(token);
-        return claims.getSubject();
+        return Long.parseLong(claims.getSubject());
     }
 
     private Claims getClaims(String token) {

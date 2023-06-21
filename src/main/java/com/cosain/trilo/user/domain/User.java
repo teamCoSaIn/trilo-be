@@ -35,7 +35,8 @@ public class User {
     private Role role;
 
     @Builder(access = AccessLevel.PUBLIC)
-    private User(String name, String email, String profileImageUrl, AuthProvider authProvider, Role role) {
+    private User(Long id,String name, String email, String profileImageUrl, AuthProvider authProvider, Role role) {
+        this.id = id;
         this.name = name;
         this.email = email;
         this.profileImageUrl = profileImageUrl;

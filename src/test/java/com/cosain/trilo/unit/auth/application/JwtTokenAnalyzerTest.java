@@ -36,16 +36,16 @@ class JwtTokenAnalyzerTest {
     }
 
     @Test
-    void 토큰에서_이메일_추출하기(){
+    void 토큰에서_ID_추출하기(){
         // given
         User user = KAKAO_MEMBER.create();
         String accessToken = createAccessToken(user, 100000L, 1000000L, SECRET_KEY);
 
         // when
-        String emailFromToken = tokenAnalyzer.getEmailFromToken(accessToken);
+        Long userId = tokenAnalyzer.getUserIdFromToken(accessToken);
 
         // then
-        Assertions.assertThat(emailFromToken).isEqualTo(user.getEmail());
+        Assertions.assertThat(userId).isEqualTo(user.getId());
     }
 
     @Test

@@ -35,11 +35,11 @@ class JwtTokenProviderTest {
     }
 
     @Test
-    void 이메일로_접근_토큰을_생성한다(){
+    void 사용자_ID로_접근_토큰을_생성한다(){
         // given
         User user = KAKAO_MEMBER.create();
         // when
-        String accessToken = tokenProvider.createAccessToken(user.getEmail());
+        String accessToken = tokenProvider.createAccessTokenById(user.getId());
         // then
         assertThat(accessToken).isNotNull();
     }
