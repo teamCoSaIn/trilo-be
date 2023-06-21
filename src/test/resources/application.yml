@@ -117,4 +117,5 @@ cloud:
     stack:
       auto: false
     s3:
-      bucket: s3-bucket-name
+      bucket-name: s3-bucket-name
+      bucket-path: xxx.bucketpath.com/
