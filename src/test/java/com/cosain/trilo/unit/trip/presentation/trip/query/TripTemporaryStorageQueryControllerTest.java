@@ -4,10 +4,12 @@ import com.cosain.trilo.support.RestControllerTest;
 import com.cosain.trilo.trip.application.trip.query.usecase.TemporarySearchUseCase;
 import com.cosain.trilo.trip.infra.dto.ScheduleSummary;
 import com.cosain.trilo.trip.presentation.trip.query.TripTemporaryStorageQueryController;
+import com.cosain.trilo.trip.presentation.trip.query.dto.request.TempSchedulePageCondition;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.SliceImpl;
 import org.springframework.http.HttpHeaders;
@@ -39,15 +41,20 @@ class TripTemporaryStorageQueryControllerTest extends RestControllerTest {
     public void findTripTemporaryStorage_with_authorizedUser() throws Exception {
 
         // given
+        int size = 2;
         Long tripId = 1L;
+        Long scheduleId = 1L;
         mockingForLoginUserAnnotation();
-        ScheduleSummary scheduleSummary1 = new ScheduleSummary(1L, null, "제목","장소 식별자", 33.33, 33.33);
-        ScheduleSummary scheduleSummary2 = new ScheduleSummary(2L, null, "제목","장소 식별자",33.33, 33.33);
+        ScheduleSummary scheduleSummary1 = new ScheduleSummary(2L, null, "제목","장소 식별자", 33.33, 33.33);
+        ScheduleSummary scheduleSummary2 = new ScheduleSummary(3L, null, "제목","장소 식별자",33.33, 33.33);
         SliceImpl<ScheduleSummary> scheduleSummaries = new SliceImpl<>(List.of(scheduleSummary1, scheduleSummary2));
-        given(temporarySearchUseCase.searchTemporary(eq(tripId), any(Pageable.class))).willReturn(scheduleSummaries);
+        Pageable pageable = PageRequest.ofSize(size);
+        given(temporarySearchUseCase.searchTemporary(eq(tripId), any(TempSchedulePageCondition.class), eq(pageable))).willReturn(scheduleSummaries);
 
         mockMvc.perform(get("/api/trips/1/temporary-storage")
                         .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)
+                        .param("size", String.valueOf(size))
+                        .param("scheduleId", String.valueOf(scheduleId))
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.tempSchedules").isArray())

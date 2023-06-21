@@ -1,10 +1,12 @@
 package com.cosain.trilo.trip.application.trip.query.service;
 
+import com.cosain.trilo.trip.application.exception.ScheduleNotFoundException;
 import com.cosain.trilo.trip.application.exception.TripNotFoundException;
 import com.cosain.trilo.trip.application.trip.query.usecase.TemporarySearchUseCase;
 import com.cosain.trilo.trip.infra.dto.ScheduleSummary;
 import com.cosain.trilo.trip.infra.repository.schedule.ScheduleQueryRepository;
 import com.cosain.trilo.trip.infra.repository.trip.TripQueryRepository;
+import com.cosain.trilo.trip.presentation.trip.query.dto.request.TempSchedulePageCondition;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -18,11 +20,17 @@ public class TemporarySearchService implements TemporarySearchUseCase {
     private final ScheduleQueryRepository scheduleQueryRepository;
 
     @Override
-    public Slice<ScheduleSummary> searchTemporary(Long tripId, Pageable pageable) {
+    public Slice<ScheduleSummary> searchTemporary(Long tripId, TempSchedulePageCondition tempSchedulePageCondition, Pageable pageable) {
 
         verifyTripExists(tripId);
-        Slice<ScheduleSummary> scheduleSummaries = findTemporaryScheduleListByTripId(tripId, pageable);
+        verifyScheduleExists(tempSchedulePageCondition.getScheduleId());
+        Slice<ScheduleSummary> scheduleSummaries = findTemporaryScheduleListByTripId(tripId, tempSchedulePageCondition,pageable);
         return scheduleSummaries;
+    }
+
+    private void verifyScheduleExists(Long scheduleId) {
+        if(scheduleId != null && !scheduleQueryRepository.existById(scheduleId))
+            throw new ScheduleNotFoundException();
     }
 
     private void verifyTripExists(Long tripId) {
@@ -31,8 +39,9 @@ public class TemporarySearchService implements TemporarySearchUseCase {
         }
     }
 
-    private Slice<ScheduleSummary> findTemporaryScheduleListByTripId(Long tripId, Pageable pageable){
-        return scheduleQueryRepository.findTemporaryScheduleListByTripId(tripId, pageable);
+
+    private Slice<ScheduleSummary> findTemporaryScheduleListByTripId(Long tripId, TempSchedulePageCondition tempSchedulePageCondition, Pageable pageable){
+        return scheduleQueryRepository.findTemporaryScheduleListByTripId(tripId, tempSchedulePageCondition, pageable);
     }
 
 
