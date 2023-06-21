@@ -157,7 +157,7 @@ public class ImageFileTest {
     }
 
     @Test
-    @DisplayName("이미지 아님 -> NoImageFileException 발생")
+    @DisplayName("이미지 아님 -> NotImageFileException 발생")
     public void noImageFile() throws IOException {
         String name = "image";
         String fileName = "no-image.jpg"; // 확장자는 jpg인데 실제로 이미지가 아님
