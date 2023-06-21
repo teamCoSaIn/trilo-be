@@ -50,7 +50,7 @@ public class ScheduleQueryRepository {
                 .from(schedule)
                 .where(schedule.trip.id.eq(tripId),
                         schedule.day.id.isNull(),
-                        ltScheduleIndex(scheduleIndex)
+                        gtScheduleIndex(scheduleIndex)
                 )
                 .orderBy(schedule.scheduleIndex.value.asc())
                 .limit(pageable.getPageSize() + 1);
@@ -61,7 +61,7 @@ public class ScheduleQueryRepository {
         return new SliceImpl<>(results, pageable, hasNext);
     }
 
-    private BooleanExpression ltScheduleIndex(ScheduleIndex scheduleIndex){
+    private BooleanExpression gtScheduleIndex(ScheduleIndex scheduleIndex){
         if(scheduleIndex == null) return null;
         return schedule.scheduleIndex.value.gt(scheduleIndex.getValue());
     }
