@@ -341,7 +341,7 @@ include::{snippets}/single-trip-query-controller-docs-test/여행_단건_조회/
 ==== 기본 정보
 
 - 메서드 : GET
-- URL : `/api/trips?tripper-id={여행자 ID}&size={요청 데이터 개수}&tripId={조회 기준이 되는 여행 ID}`
+- URL : `/api/trips`
 - 인증 방식 : 엑세스 토큰
 
 ==== 요청
@@ -394,6 +394,9 @@ include::{snippets}/trip-temporary-storage-query-controller-docs-test/임시보�
 include::{snippets}/trip-temporary-storage-query-controller-docs-test/임시보관함_조회/http-request.adoc[]
 ===== 응답
 include::{snippets}/trip-temporary-storage-query-controller-docs-test/임시보관함_조회/http-response.adoc[]
+
+- 첫 페이지 조회 요청 시 커서, 즉 scheduleId를 쿼리 파라미터에 포함하지 않습니다. 일정 정보들이 size 만큼 조회됩니다.
+- 이후 페이지 조회 요청 시 scheduleId 를 쿼리 파라미터에 포함하게 되면 해당 ID에 해당하는 일정보다 큰 순서값을 갖는 일정들이 size 만큼 조회됩니다.
 
 '''
 

@@ -61,7 +61,7 @@ public class TripTemporaryStorageQueryControllerDocsTest extends RestDocsTestSup
                                         .description("Bearer 타입 AccessToken")
                         ),
                         queryParameters(
-                                parameterWithName("scheduleId").description("기준이 되는 일정 ID (하단 설명 참고)"),
+                                parameterWithName("scheduleId").optional().description("기준이 되는 일정 ID (하단 설명 참고)"),
                                 parameterWithName("size").description("가져올 데이터 개수")
                         ),
                         pathParameters(
