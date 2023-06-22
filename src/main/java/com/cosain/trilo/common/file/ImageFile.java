@@ -109,7 +109,7 @@ public class ImageFile {
                 throw new NotImageFileException("이미지 파일이 아닙니다.");
             }
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("파일 데이터를 가져오는데 실패함", e);
         }
     }
 
@@ -128,8 +128,12 @@ public class ImageFile {
         return ext;
     }
 
-    public InputStream getInputStream() throws IOException {
-        return multipartFile.getInputStream();
+    public InputStream getInputStream() {
+        try {
+            return multipartFile.getInputStream();
+        } catch (IOException e) {
+            throw new RuntimeException("파일 데이터(InputStream)를 가져오는 데 실패함.", e);
+        }
     }
 
     public long getSize() {
