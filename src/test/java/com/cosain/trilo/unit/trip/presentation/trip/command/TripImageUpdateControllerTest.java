@@ -20,9 +20,9 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.HttpMethod.PUT;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -55,7 +55,7 @@ public class TripImageUpdateControllerTest extends RestControllerTest {
         given(tripImageUpdateUseCase.updateTripImage(eq(tripId), any(), any(ImageFile.class)))
                 .willReturn(imagePath);
 
-        mockMvc.perform(multipart(PUT, "/api/trips/{tripId}/image", tripId)
+        mockMvc.perform(multipart(POST, "/api/trips/{tripId}/image/update", tripId)
                         .file(multipartFile)
                         .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)
                         .characterEncoding(StandardCharsets.UTF_8)
@@ -88,7 +88,7 @@ public class TripImageUpdateControllerTest extends RestControllerTest {
         given(tripImageUpdateUseCase.updateTripImage(eq(tripId), any(), any(ImageFile.class)))
                 .willReturn(imagePath);
 
-        mockMvc.perform(multipart(PUT, "/api/trips/{tripId}/image", tripId)
+        mockMvc.perform(multipart(POST, "/api/trips/{tripId}/image/update", tripId)
                         .file(multipartFile)
                         .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)
                         .characterEncoding(StandardCharsets.UTF_8)
@@ -120,7 +120,7 @@ public class TripImageUpdateControllerTest extends RestControllerTest {
         given(tripImageUpdateUseCase.updateTripImage(eq(tripId), any(), any(ImageFile.class)))
                 .willReturn(imagePath);
 
-        mockMvc.perform(multipart(PUT, "/api/trips/{tripId}/image", tripId)
+        mockMvc.perform(multipart(POST, "/api/trips/{tripId}/image/update", tripId)
                         .file(multipartFile)
                         .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)
                         .characterEncoding(StandardCharsets.UTF_8)
@@ -151,7 +151,7 @@ public class TripImageUpdateControllerTest extends RestControllerTest {
         given(tripImageUpdateUseCase.updateTripImage(eq(tripId), any(), any(ImageFile.class)))
                 .willReturn(imagePath);
 
-        mockMvc.perform(multipart(PUT, "/api/trips/{tripId}/image", tripId)
+        mockMvc.perform(multipart(POST, "/api/trips/{tripId}/image/update", tripId)
                         .file(multipartFile)
                         .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)
                         .characterEncoding(StandardCharsets.UTF_8)
@@ -178,7 +178,7 @@ public class TripImageUpdateControllerTest extends RestControllerTest {
         String contentType = "image/jpeg";
 
         MockMultipartFile multipartFile = new MockMultipartFile(name, fileName, contentType, fileInputStream);
-        mockMvc.perform(multipart(PUT, "/api/trips/{tripId}/image", tripId)
+        mockMvc.perform(multipart(POST, "/api/trips/{tripId}/image/update", tripId)
                         .file(multipartFile)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.MULTIPART_FORM_DATA)
@@ -206,7 +206,7 @@ public class TripImageUpdateControllerTest extends RestControllerTest {
         MockMultipartFile multipartFile = new MockMultipartFile(name, fileInputStream);
 
         // when & then
-        mockMvc.perform(multipart(PUT, "/api/trips/{tripId}/image", tripId)
+        mockMvc.perform(multipart(POST, "/api/trips/{tripId}/image/update", tripId)
                         .file(multipartFile)
                         .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)
                         .characterEncoding(StandardCharsets.UTF_8)
@@ -234,7 +234,7 @@ public class TripImageUpdateControllerTest extends RestControllerTest {
 
         MockMultipartFile multipartFile = new MockMultipartFile(name, fileName, contentType, fileInputStream);
 
-        mockMvc.perform(multipart(PUT, "/api/trips/{tripId}/image", invalidTripId)
+        mockMvc.perform(multipart(POST, "/api/trips/{tripId}/image/update", invalidTripId)
                         .file(multipartFile)
                         .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)
                         .characterEncoding(StandardCharsets.UTF_8)
@@ -255,7 +255,7 @@ public class TripImageUpdateControllerTest extends RestControllerTest {
         mockingForLoginUserAnnotation();
         Long tripId = 1L;
 
-        mockMvc.perform(put("/api/trips/{tripId}/image" , tripId)
+        mockMvc.perform(post("/api/trips/{tripId}/image/update" , tripId)
                         .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -283,7 +283,7 @@ public class TripImageUpdateControllerTest extends RestControllerTest {
         // MultipartFile에 파일 이름 정보가 전달되지 않은 특수상황 가정
         MockMultipartFile multipartFile = new MockMultipartFile(name, fileInputStream);
 
-        mockMvc.perform(multipart(PUT, "/api/trips/{tripId}/image", tripId)
+        mockMvc.perform(multipart(POST, "/api/trips/{tripId}/image/update", tripId)
                         .file(multipartFile)
                         .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)
                         .characterEncoding(StandardCharsets.UTF_8)
@@ -312,7 +312,7 @@ public class TripImageUpdateControllerTest extends RestControllerTest {
 
         MockMultipartFile multipartFile = new MockMultipartFile(name, fileName, contentType, fileInputStream);
 
-        mockMvc.perform(multipart(PUT, "/api/trips/{tripId}/image", tripId)
+        mockMvc.perform(multipart(POST, "/api/trips/{tripId}/image/update", tripId)
                         .file(multipartFile)
                         .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)
                         .characterEncoding(StandardCharsets.UTF_8)
@@ -341,7 +341,7 @@ public class TripImageUpdateControllerTest extends RestControllerTest {
 
         MockMultipartFile multipartFile = new MockMultipartFile(name, fileName, contentType, fileInputStream);
 
-        mockMvc.perform(multipart(PUT, "/api/trips/{tripId}/image", tripId)
+        mockMvc.perform(multipart(POST, "/api/trips/{tripId}/image/update", tripId)
                         .file(multipartFile)
                         .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)
                         .characterEncoding(StandardCharsets.UTF_8)
@@ -371,7 +371,7 @@ public class TripImageUpdateControllerTest extends RestControllerTest {
         MockMultipartFile multipartFile = new MockMultipartFile(name, fileName, contentType, fileInputStream);
 
 
-        mockMvc.perform(multipart(PUT, "/api/trips/{tripId}/image", tripId)
+        mockMvc.perform(multipart(POST, "/api/trips/{tripId}/image/update", tripId)
                         .file(multipartFile)
                         .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)
                         .characterEncoding(StandardCharsets.UTF_8)

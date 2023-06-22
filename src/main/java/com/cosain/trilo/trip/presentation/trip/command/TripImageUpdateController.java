@@ -25,7 +25,7 @@ public class TripImageUpdateController {
      * @param multipartFile : 파일
      * @return 응답 API (여행 식별자, 이미지 경로)
      */
-    @PutMapping("/api/trips/{tripId}/image")
+    @PostMapping("/api/trips/{tripId}/image/update")
     @ResponseStatus(HttpStatus.OK)
     public TripImageUpdateResponse updateTripImage(
             @LoginUser User user,
