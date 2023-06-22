@@ -64,7 +64,7 @@ public class RestControllerTest {
     protected void mockingForLoginUserAnnotation(){
         given(tokenAnalyzer.validateToken(any())).willReturn(true);
         given(tokenRepository.existsLogoutAccessTokenById(any())).willReturn(false);
-        given(userRepository.findByEmail(any())).willReturn(Optional.ofNullable(KAKAO_MEMBER.create()));
+        given(userRepository.findById(any())).willReturn(Optional.ofNullable(KAKAO_MEMBER.create()));
     }
 
 

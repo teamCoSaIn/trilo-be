@@ -47,7 +47,7 @@ public class UserPrincipal implements OAuth2User {
     }
 
 
-    public String getEmail() {
-        return user.getEmail();
+    public Long getId() {
+        return user.getId();
     }
 }

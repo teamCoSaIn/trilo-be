@@ -29,29 +29,22 @@ public class JwtTokenProvider implements TokenProvider {
         this.secretKey = Keys.hmacShaKeyFor(secretKey.getBytes());
     }
 
+
     @Override
-    public String createAccessToken(final Authentication authentication){
-        return createToken(getEmail(authentication), accessTokenExpiryMs);
+    public String createAccessTokenById(final Long id){
+
+        return createToken(String.valueOf(id), accessTokenExpiryMs);
     }
 
     @Override
-    public String createAccessToken(final String email){
-        return createToken(email, accessTokenExpiryMs);
+    public String createRefreshTokenById(Long id) {
+
+        return createToken(String.valueOf(id), refreshTokenExpiryMs);
     }
 
-    @Override
-    public String createRefreshToken(final Authentication authentication){
-        return createToken(getEmail(authentication), refreshTokenExpiryMs);
-    }
-
-    @Override
-    public String createRefreshToken(String email) {
-        return createToken(email, refreshTokenExpiryMs);
-    }
-
-    private String getEmail(final Authentication authentication){
+    private Long getUserId(final Authentication authentication){
         UserPrincipal principal = (UserPrincipal) authentication.getPrincipal();
-        return principal.getEmail();
+        return principal.getId();
     }
 
     private String createToken(final String subject, final long tokenExpiryMs){

@@ -50,8 +50,8 @@ class AuthServiceTest {
     void ACCESS_토큰_재발급(){
         given(tokenAnalyzer.validateToken(any())).willReturn(true);
         given(tokenRepository.existsRefreshTokenById(any())).willReturn(true);
-        given(tokenAnalyzer.getEmailFromToken(any())).willReturn("email");
-        given(tokenProvider.createAccessToken(anyString())).willReturn(ACCESS_TOKEN);
+        given(tokenAnalyzer.getUserIdFromToken(any())).willReturn(1L);
+        given(tokenProvider.createAccessTokenById(anyLong())).willReturn(ACCESS_TOKEN);
 
         String accessToken = authService.reissueAccessToken(any());
         Assertions.assertThat(accessToken).isEqualTo(ACCESS_TOKEN);
@@ -122,10 +122,10 @@ class AuthServiceTest {
                 .provider(AuthProvider.KAKAO)
                 .profileImageUrl("image_url")
                 .build();
-        given(userRepository.findByEmail(eq(email))).willReturn(Optional.ofNullable(User.from(oAuthProfileDto)));
+        given(userRepository.findByEmail(any())).willReturn(Optional.ofNullable(User.from(oAuthProfileDto)));
         given(OAuthProfileRequestService.request(any(OAuthLoginParams.class))).willReturn(oAuthProfileDto);
-        given(tokenProvider.createAccessToken(anyString())).willReturn(ACCESS_TOKEN);
-        given(tokenProvider.createRefreshToken(anyString())).willReturn(REFRESH_TOKEN);
+        given(tokenProvider.createAccessTokenById(any())).willReturn(ACCESS_TOKEN);
+        given(tokenProvider.createRefreshTokenById(any())).willReturn(REFRESH_TOKEN);
 
         // when
         LoginResult loginResult = authService.login(KakaoLoginParams.of(code, redirectUri));

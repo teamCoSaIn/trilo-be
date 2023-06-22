@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 
 public interface TokenAnalyzer {
     boolean validateToken(String token);
-    String getEmailFromToken(String token);
+    Long getUserIdFromToken(String token);
     LocalDateTime getTokenExpiryDateTime(String token);
     Long getTokenRemainExpiryFrom(String token);
 }
