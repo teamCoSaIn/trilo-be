@@ -29,22 +29,11 @@ public class JwtTokenProvider implements TokenProvider {
         this.secretKey = Keys.hmacShaKeyFor(secretKey.getBytes());
     }
 
-    @Override
-    public String createAccessToken(final Authentication authentication){
-        Long userId = getUserId(authentication);
-        return createToken(String.valueOf(userId) , accessTokenExpiryMs);
-    }
 
     @Override
     public String createAccessTokenById(final Long id){
 
         return createToken(String.valueOf(id), accessTokenExpiryMs);
-    }
-
-    @Override
-    public String createRefreshToken(final Authentication authentication){
-        Long userId = getUserId(authentication);
-        return createToken(String.valueOf(userId), refreshTokenExpiryMs);
     }
 
     @Override
