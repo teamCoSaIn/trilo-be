@@ -474,6 +474,9 @@ include::{snippets}/trip-temporary-storage-query-controller-docs-test/임시보�
 - Day 당 일정 갯수 제한 : 1개의 Day는 총 10개까지 일정을 가질 수 있습니다. 어떤 Day에 일정이 10개 생성되어 있다면 해당 Day에는 더 이상 일정을 생성할 수 없습니다.
 - 임시보관함 일정 생성 제한 : 임시보관함에는 '여행 당 일정 갯수 제한'의 갯수 제한 범위 내에서 일정을 자유롭게 추가할 수 있습니다.
 
+===== 기본값
+- 생성된 일정의 시작시간, 종료시간의 초깃값은 각각 0시 0분입니다.
+
 ==== 요청
 ===== 헤더
 include::{snippets}/schedule-create-controller-docs-test/schedule-create-doc-test/request-headers.adoc[]

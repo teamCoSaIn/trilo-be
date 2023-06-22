@@ -98,12 +98,10 @@ public class ScheduleUpdateControllerDocsTest extends RestDocsTestSupport {
                                         .description("일정의 본문"),
                                 fieldWithPath("startTime")
                                         .type(STRING)
-                                        .optional()
-                                        .description("일정의 시작시간. null 허용"),
+                                        .description("일정의 시작시간. 필수."),
                                 fieldWithPath("endTime")
                                         .type(STRING)
-                                        .optional()
-                                        .description("일정의 종료시간. null 허용")
+                                        .description("일정의 종료시간. 필수.")
                         ),
                         responseFields(
                                 fieldWithPath("scheduleId")
