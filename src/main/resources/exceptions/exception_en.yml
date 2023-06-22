@@ -104,6 +104,10 @@ trip-0009:
   message: Too Long TripPeriod
   detail: The TripPeriod is too long. The maximum allowed TripPeriod is 10 days.
 
+trip-0010:
+  message: TripImage Upload Failed
+  detail: Failed to save the trip image to the image repository.
+
 # Day 관련
 day-0001:
   message: DayNotFound
