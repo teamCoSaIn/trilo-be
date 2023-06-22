@@ -2,6 +2,7 @@ package com.cosain.trilo.auth.application;
 
 import com.cosain.trilo.auth.application.dto.LoginResult;
 import com.cosain.trilo.auth.application.dto.OAuthLoginParams;
+import com.cosain.trilo.auth.application.dto.ReIssueAccessTokenResult;
 import com.cosain.trilo.auth.domain.LogoutAccessToken;
 import com.cosain.trilo.auth.domain.RefreshToken;
 import com.cosain.trilo.auth.domain.repository.TokenRepository;
@@ -32,11 +33,12 @@ public class AuthService {
     private final UserRepository userRepository;
 
     @Transactional
-    public String reissueAccessToken(String refreshToken){
+    public ReIssueAccessTokenResult reissueAccessToken(String refreshToken){
         checkIfValidTokenOrThrow(refreshToken);
         checkTokenExistenceOrThrow(refreshToken);
         Long id = tokenAnalyzer.getUserIdFromToken(refreshToken);
-        return tokenProvider.createAccessTokenById(id);
+        String accessToken = tokenProvider.createAccessTokenById(id);
+        return ReIssueAccessTokenResult.of(accessToken, id);
     }
     private void checkIfValidTokenOrThrow(String refreshToken){
         if(!tokenAnalyzer.validateToken(refreshToken)){
@@ -95,7 +97,7 @@ public class AuthService {
         Long tokenExpiry = tokenAnalyzer.getTokenRemainExpiryFrom(refreshToken);
         tokenRepository.saveRefreshToken(RefreshToken.of(refreshToken, tokenExpiry));
 
-        return LoginResult.of(accessToken, refreshToken);
+        return LoginResult.of(accessToken, refreshToken, user.getId());
     }
 
     private OAuthProfileDto getUserProfileResponse(OAuthLoginParams oAuthLoginParams) {

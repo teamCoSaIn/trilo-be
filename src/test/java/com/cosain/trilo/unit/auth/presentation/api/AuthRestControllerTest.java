@@ -3,6 +3,7 @@ package com.cosain.trilo.unit.auth.presentation.api;
 import com.cosain.trilo.auth.application.AuthService;
 import com.cosain.trilo.auth.application.dto.LoginResult;
 import com.cosain.trilo.auth.application.dto.OAuthLoginParams;
+import com.cosain.trilo.auth.application.dto.ReIssueAccessTokenResult;
 import com.cosain.trilo.auth.presentation.AuthRestController;
 import com.cosain.trilo.auth.presentation.dto.GoogleOAuthLoginRequest;
 import com.cosain.trilo.auth.presentation.dto.KakaoOAuthLoginRequest;
@@ -19,7 +20,6 @@ import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.security.test.context.support.WithMockUser;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -35,7 +35,8 @@ class AuthRestControllerTest extends RestControllerTest {
     @Test
     void 쿠키를_포함한_접근_토큰_재발급_요청시_200_상태코드_반환_확인() throws Exception{
 
-        given(authService.reissueAccessToken(any())).willReturn("accessToken");
+        ReIssueAccessTokenResult result = ReIssueAccessTokenResult.of("accessToken", 1L);
+        given(authService.reissueAccessToken(any())).willReturn(result);
 
         mockMvc.perform(RestDocumentationRequestBuilders.post(BASE_URL + "/reissue")
                         .cookie(new Cookie("refreshToken", "refreshToken")))
@@ -119,7 +120,7 @@ class AuthRestControllerTest extends RestControllerTest {
 
     @Test
     void 카카오_로그인_정상_동작_확인() throws Exception{
-        given(authService.login(any(OAuthLoginParams.class))).willReturn(LoginResult.of("accessToken", "refreshToken"));
+        given(authService.login(any(OAuthLoginParams.class))).willReturn(LoginResult.of("accessToken", "refreshToken", 1L));
         KakaoOAuthLoginRequest kakaoOAuthLoginRequest = new KakaoOAuthLoginRequest("code", "redirect_uri");
 
         mockMvc.perform(RestDocumentationRequestBuilders.post(BASE_URL + "/login/kakao")
@@ -132,7 +133,7 @@ class AuthRestControllerTest extends RestControllerTest {
     void 카카오_로그인_요청시_본문에_code가_존재하지_않으면_400_에러를_발생시킨다() throws Exception{
 
         KakaoOAuthLoginRequest kakaoOAuthLoginRequest = new KakaoOAuthLoginRequest(null, "redirect_uri");
-        given(authService.login(any(OAuthLoginParams.class))).willReturn(LoginResult.of("accessToken", "refreshToken"));
+        given(authService.login(any(OAuthLoginParams.class))).willReturn(LoginResult.of("accessToken", "refreshToken", 1L));
 
         mockMvc.perform(RestDocumentationRequestBuilders.post(BASE_URL + "/login/kakao")
                         .content(createJson(kakaoOAuthLoginRequest))
@@ -143,7 +144,7 @@ class AuthRestControllerTest extends RestControllerTest {
     @Test
     void 카카오_로그인_요청시_쿼리_파라미터에_redirect_uri가_존재하지_않으면_400_에러를_발생시킨다() throws Exception{
         KakaoOAuthLoginRequest kakaoOAuthLoginRequest = new KakaoOAuthLoginRequest("code", null);
-        given(authService.login(any(OAuthLoginParams.class))).willReturn(LoginResult.of("accessToken", "refreshToken"));
+        given(authService.login(any(OAuthLoginParams.class))).willReturn(LoginResult.of("accessToken", "refreshToken", 1L));
 
         mockMvc.perform(RestDocumentationRequestBuilders.post(BASE_URL + "/login/kakao")
                         .content(createJson(kakaoOAuthLoginRequest))
@@ -153,7 +154,7 @@ class AuthRestControllerTest extends RestControllerTest {
 
     @Test
     void 네이버_로그인_정상_동작_확인() throws Exception{
-        given(authService.login(any(OAuthLoginParams.class))).willReturn(LoginResult.of("accessToken", "refreshToken"));
+        given(authService.login(any(OAuthLoginParams.class))).willReturn(LoginResult.of("accessToken", "refreshToken", 1L));
         NaverOAuthLoginRequest naverOAuthLoginRequest = new NaverOAuthLoginRequest("code", "state");
 
         mockMvc.perform(RestDocumentationRequestBuilders.post(BASE_URL + "/login/naver")
@@ -166,7 +167,7 @@ class AuthRestControllerTest extends RestControllerTest {
     void 네이버_로그인_요청시_본문에_code가_존재하지_않으면_400_에러를_발생시킨다() throws Exception{
 
         NaverOAuthLoginRequest naverOAuthLoginRequest = new NaverOAuthLoginRequest(null, "state");
-        given(authService.login(any(OAuthLoginParams.class))).willReturn(LoginResult.of("accessToken", "refreshToken"));
+        given(authService.login(any(OAuthLoginParams.class))).willReturn(LoginResult.of("accessToken", "refreshToken", 1L));
 
         mockMvc.perform(RestDocumentationRequestBuilders.post(BASE_URL + "/login/naver")
                         .content(createJson(naverOAuthLoginRequest))
@@ -178,7 +179,7 @@ class AuthRestControllerTest extends RestControllerTest {
     void 네이버_로그인_요청시_본문에_state가_존재하지_않으면_400_에러를_발생시킨다() throws Exception{
 
         NaverOAuthLoginRequest naverOAuthLoginRequest = new NaverOAuthLoginRequest("code",null);
-        given(authService.login(any(OAuthLoginParams.class))).willReturn(LoginResult.of("accessToken", "refreshToken"));
+        given(authService.login(any(OAuthLoginParams.class))).willReturn(LoginResult.of("accessToken", "refreshToken",1L));
 
         mockMvc.perform(RestDocumentationRequestBuilders.post(BASE_URL + "/login/naver")
                         .content(createJson(naverOAuthLoginRequest))
@@ -189,7 +190,7 @@ class AuthRestControllerTest extends RestControllerTest {
 
     @Test
     void 구글_로그인_정상_동작_확인() throws Exception{
-        given(authService.login(any(OAuthLoginParams.class))).willReturn(LoginResult.of("accessToken", "refreshToken"));
+        given(authService.login(any(OAuthLoginParams.class))).willReturn(LoginResult.of("accessToken", "refreshToken", 1L));
         GoogleOAuthLoginRequest googleOAuthLoginRequest = new GoogleOAuthLoginRequest("code", "redirect_uri");
 
         mockMvc.perform(RestDocumentationRequestBuilders.post(BASE_URL + "/login/google")
@@ -200,7 +201,7 @@ class AuthRestControllerTest extends RestControllerTest {
 
     @Test
     void 구글_로그인_요청시_본문에_code가_존재하지_않으면_400_에러를_발생시킨다() throws Exception{
-        given(authService.login(any(OAuthLoginParams.class))).willReturn(LoginResult.of("accessToken", "refreshToken"));
+        given(authService.login(any(OAuthLoginParams.class))).willReturn(LoginResult.of("accessToken", "refreshToken", 1L));
         GoogleOAuthLoginRequest googleOAuthLoginRequest = new GoogleOAuthLoginRequest(null, "redirect_uri");
 
         mockMvc.perform(RestDocumentationRequestBuilders.post(BASE_URL + "/login/google")
@@ -211,7 +212,7 @@ class AuthRestControllerTest extends RestControllerTest {
 
     @Test
     void 구글_로그인_요청시_본문에_redirect_uri가_존재하지_않으면_400_에러를_발생시킨다() throws Exception{
-        given(authService.login(any(OAuthLoginParams.class))).willReturn(LoginResult.of("accessToken", "refreshToken"));
+        given(authService.login(any(OAuthLoginParams.class))).willReturn(LoginResult.of("accessToken", "refreshToken", 1L));
         GoogleOAuthLoginRequest googleOAuthLoginRequest = new GoogleOAuthLoginRequest("code", null);
 
         mockMvc.perform(RestDocumentationRequestBuilders.post(BASE_URL + "/login/google")
