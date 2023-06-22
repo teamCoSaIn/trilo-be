@@ -5,6 +5,7 @@ import com.cosain.trilo.auth.application.OAuthProfileRequestService;
 import com.cosain.trilo.auth.application.dto.KakaoLoginParams;
 import com.cosain.trilo.auth.application.dto.LoginResult;
 import com.cosain.trilo.auth.application.dto.OAuthLoginParams;
+import com.cosain.trilo.auth.application.dto.ReIssueAccessTokenResult;
 import com.cosain.trilo.auth.domain.repository.TokenRepository;
 import com.cosain.trilo.auth.infra.OAuthProfileDto;
 import com.cosain.trilo.auth.infra.TokenAnalyzer;
@@ -48,13 +49,15 @@ class AuthServiceTest {
 
     @Test
     void ACCESS_토큰_재발급(){
+        Long id = 1L;
         given(tokenAnalyzer.validateToken(any())).willReturn(true);
         given(tokenRepository.existsRefreshTokenById(any())).willReturn(true);
-        given(tokenAnalyzer.getUserIdFromToken(any())).willReturn(1L);
+        given(tokenAnalyzer.getUserIdFromToken(any())).willReturn(id);
         given(tokenProvider.createAccessTokenById(anyLong())).willReturn(ACCESS_TOKEN);
 
-        String accessToken = authService.reissueAccessToken(any());
-        Assertions.assertThat(accessToken).isEqualTo(ACCESS_TOKEN);
+        ReIssueAccessTokenResult result = authService.reissueAccessToken(any());
+        Assertions.assertThat(result.getId()).isEqualTo(id);
+        Assertions.assertThat(result.getAccessToken()).isEqualTo(ACCESS_TOKEN);
     }
 
     @Test

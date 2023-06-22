@@ -1,21 +1,15 @@
 package com.cosain.trilo.auth.presentation;
 
 import com.cosain.trilo.auth.application.AuthService;
-import com.cosain.trilo.auth.application.dto.GoogleLoginParams;
-import com.cosain.trilo.auth.application.dto.KakaoLoginParams;
-import com.cosain.trilo.auth.application.dto.LoginResult;
-import com.cosain.trilo.auth.application.dto.NaverLoginParams;
+import com.cosain.trilo.auth.application.dto.*;
 import com.cosain.trilo.auth.presentation.dto.*;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@Slf4j
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
@@ -24,14 +18,17 @@ public class AuthRestController {
     private final AuthService authService;
 
     @PostMapping("/reissue")
-    public ResponseEntity<AuthResponse> reissueAccessToken(@CookieValue(value = "refreshToken", required = true) String refreshToken){
-        String accessToken = authService.reissueAccessToken(refreshToken);
-        return ResponseEntity.ok(AuthResponse.from(accessToken));
+    @ResponseStatus(HttpStatus.OK)
+    public AuthResponse reissueAccessToken(@CookieValue(value = "refreshToken", required = true) String refreshToken){
+        ReIssueAccessTokenResult result = authService.reissueAccessToken(refreshToken);
+        return AuthResponse.from(result);
     }
 
     @GetMapping("/token/refresh-token-info")
-    public ResponseEntity<RefreshTokenStatusResponse> checkRefreshTokenStatus(@CookieValue(value = "refreshToken", required = false) String refreshToken){
-        return ResponseEntity.ok(authService.createTokenStatus(refreshToken));
+    @ResponseStatus(HttpStatus.OK)
+    public RefreshTokenStatusResponse checkRefreshTokenStatus(@CookieValue(value = "refreshToken", required = false) String refreshToken){
+        RefreshTokenStatusResponse refreshTokenStatusResponse = authService.createTokenStatus(refreshToken);
+        return refreshTokenStatusResponse;
     }
 
     @PostMapping("/logout")
@@ -40,32 +37,30 @@ public class AuthRestController {
     }
 
     @PostMapping("/login/kakao")
-    public ResponseEntity<AuthResponse> login(@Valid @RequestBody KakaoOAuthLoginRequest kakaoOAuthLoginRequest, HttpServletResponse response){
+    @ResponseStatus(HttpStatus.OK)
+    public AuthResponse login(@Valid @RequestBody KakaoOAuthLoginRequest kakaoOAuthLoginRequest, HttpServletResponse response){
         LoginResult loginResult = authService.login(KakaoLoginParams.of(kakaoOAuthLoginRequest.getCode(), kakaoOAuthLoginRequest.getRedirect_uri()));
         Cookie cookie = makeRefreshTokenCookie(loginResult.getRefreshToken());
         response.addCookie(cookie);
-        AuthResponse authResponse = AuthResponse.from(loginResult.getAccessToken());
-        return ResponseEntity.ok(authResponse);
+        return  AuthResponse.from(loginResult);
     }
 
     @PostMapping("/login/naver")
-    @ResponseBody
     @ResponseStatus(HttpStatus.OK)
     public AuthResponse login(@Valid @RequestBody NaverOAuthLoginRequest naverOAuthLoginRequest, HttpServletResponse response){
         LoginResult loginResult = authService.login(NaverLoginParams.of(naverOAuthLoginRequest.getCode(), naverOAuthLoginRequest.getState()));
         Cookie cookie = makeRefreshTokenCookie(loginResult.getRefreshToken());
         response.addCookie(cookie);
-        return AuthResponse.from(loginResult.getAccessToken());
+        return AuthResponse.from(loginResult);
     }
 
     @PostMapping("/login/google")
-    @ResponseBody
     @ResponseStatus(HttpStatus.OK)
     public AuthResponse login(@Valid @RequestBody GoogleOAuthLoginRequest googleOAuthLoginRequest, HttpServletResponse response){
         LoginResult loginResult = authService.login(GoogleLoginParams.of(googleOAuthLoginRequest.getCode(), googleOAuthLoginRequest.getRedirect_uri()));
         Cookie cookie = makeRefreshTokenCookie(loginResult.getRefreshToken());
         response.addCookie(cookie);
-        return AuthResponse.from(loginResult.getAccessToken());
+        return AuthResponse.from(loginResult);
     }
 
     private Cookie makeRefreshTokenCookie(String refreshTokenStr){
