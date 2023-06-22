@@ -96,8 +96,9 @@ class AuthRestControllerDocsTest extends RestDocsTestSupport {
     @Test
     void 카카오_로그인_요청() throws Exception{
 
+        Long userId = 1L;
         KakaoOAuthLoginRequest kakaoOAuthLoginRequest = new KakaoOAuthLoginRequest("code", "redirect_uri");
-        given(authService.login(any(OAuthLoginParams.class))).willReturn(LoginResult.of("accessToken", "refreshToken", 1L));
+        given(authService.login(any(OAuthLoginParams.class))).willReturn(LoginResult.of("accessToken", "refreshToken", userId));
 
         mockMvc.perform(RestDocumentationRequestBuilders.post(BASE_URL + "/login/kakao")
                         .content(createJson(kakaoOAuthLoginRequest))
@@ -123,8 +124,9 @@ class AuthRestControllerDocsTest extends RestDocsTestSupport {
     @Test
     void 네이버_로그인_요청() throws Exception {
 
-        given(authService.login(any(OAuthLoginParams.class))).willReturn(LoginResult.of("accessToken", "refreshToken", 1L));
+        Long userId = 1L;
         NaverOAuthLoginRequest naverOAuthLoginRequest = new NaverOAuthLoginRequest("code", "state");
+        given(authService.login(any(OAuthLoginParams.class))).willReturn(LoginResult.of("accessToken", "refreshToken", userId));
 
         mockMvc.perform(RestDocumentationRequestBuilders.post(BASE_URL + "/login/naver")
                         .content(createJson(naverOAuthLoginRequest))
@@ -149,8 +151,9 @@ class AuthRestControllerDocsTest extends RestDocsTestSupport {
     @Test
     void 구글_로그인_요청() throws Exception {
 
-        given(authService.login(any(OAuthLoginParams.class))).willReturn(LoginResult.of("accessToken", "refreshToken", 1L));
+        Long userId = 1L;
         GoogleOAuthLoginRequest googleOAuthLoginRequest = new GoogleOAuthLoginRequest("code", "redirectUrl");
+        given(authService.login(any(OAuthLoginParams.class))).willReturn(LoginResult.of("accessToken", "refreshToken", userId));
 
         mockMvc.perform(RestDocumentationRequestBuilders.post(BASE_URL + "/login/google")
                         .content(createJson(googleOAuthLoginRequest))
