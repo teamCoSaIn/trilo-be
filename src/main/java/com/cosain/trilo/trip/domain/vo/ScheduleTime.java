@@ -1,5 +1,6 @@
 package com.cosain.trilo.trip.domain.vo;
 
+import com.cosain.trilo.trip.domain.exception.InvalidScheduleTimeException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.*;
@@ -22,7 +23,14 @@ public class ScheduleTime {
     private LocalTime endTime;
 
     public static ScheduleTime of(LocalTime startTime, LocalTime endTime) {
+        requiredNotNull(startTime, endTime);
         return new ScheduleTime(startTime, endTime);
+    }
+
+    private static void requiredNotNull(LocalTime startTime, LocalTime endTime) {
+        if (startTime == null || endTime == null) {
+            throw new InvalidScheduleTimeException("일정의 시작, 종료 시간은 null일 수 없음");
+        }
     }
 
     /**

@@ -164,6 +164,10 @@ schedule-0010:
   message: Too Many Day Schedule Count
   detail: 지정 Day에 더 이상 일정을 둘 수 없습니다. 한 Day는 최대 10개의 일정을 가질 수 있습니다.
 
+schedule-0011:
+  message: Invalid Schedule Time
+  detail: 일정의 시작 시간(startTime), 종료 시간(endTime)은 null 일 수 없음
+
 # 장소 관련
 place-0001:
   message: InvalidCoordinate
