@@ -49,6 +49,7 @@ public class Schedule {
                 .scheduleTitle(scheduleTitle)
                 .place(place)
                 .scheduleIndex(scheduleIndex)
+                .scheduleTime(ScheduleTime.defaultTime())
                 .build();
     }
 
@@ -62,7 +63,7 @@ public class Schedule {
         this.trip = trip;
         this.scheduleTitle = scheduleTitle;
         this.scheduleContent = scheduleContent;
-        this.scheduleTime = scheduleTime == null ? ScheduleTime.of(null, null) : scheduleTime;
+        this.scheduleTime = scheduleTime == null ? ScheduleTime.defaultTime() : scheduleTime;
         this.place = place;
         this.scheduleIndex = scheduleIndex;
     }
