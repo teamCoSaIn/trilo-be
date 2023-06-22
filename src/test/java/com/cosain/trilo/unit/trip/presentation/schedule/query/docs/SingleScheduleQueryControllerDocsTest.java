@@ -58,7 +58,7 @@ public class SingleScheduleQueryControllerDocsTest extends RestDocsTestSupport {
                                 parameterWithName("scheduleId").description("조회할 일정 ID")
                         ),
                         responseFields(
-                                fieldWithPath("scheduleId").type(NUMBER).description("여행 ID"),
+                                fieldWithPath("scheduleId").type(NUMBER).description("일정 ID"),
                                 fieldWithPath("dayId").type(NUMBER).description("Day ID"),
                                 fieldWithPath("title").type(STRING).description("일정 제목"),
                                 fieldWithPath("placeName").type(STRING).description("장소 이름"),
