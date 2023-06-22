@@ -56,7 +56,7 @@ class AuthServiceTest {
         given(tokenProvider.createAccessTokenById(anyLong())).willReturn(ACCESS_TOKEN);
 
         ReIssueAccessTokenResult result = authService.reissueAccessToken(any());
-        Assertions.assertThat(result.getId()).isEqualTo(id);
+        Assertions.assertThat(result.getUserId()).isEqualTo(id);
         Assertions.assertThat(result.getAccessToken()).isEqualTo(ACCESS_TOKEN);
     }
 
