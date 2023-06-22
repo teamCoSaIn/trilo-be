@@ -40,6 +40,10 @@ dependencies {
 
 	implementation "com.github.gavlyukovskiy:p6spy-spring-boot-starter:${p6SpyVersion}"
 
+	// Tika : 이미지 검증
+	implementation 'org.apache.tika:tika-core:2.8.0'
+	implementation 'org.apache.tika:tika-parsers-standard-package:2.8.0'
+
 	// 테스트에서 lombok 사용
 	testCompileOnly 'org.projectlombok:lombok'
 	testAnnotationProcessor 'org.projectlombok:lombok'
@@ -47,6 +51,9 @@ dependencies {
 	// REST Docs
 	asciidoctorExtensions 'org.springframework.restdocs:spring-restdocs-asciidoctor' // (3) 스니펫 조각들 연동할 수 있는 의존성
 	testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc' // (4) mockMvc 사용(@WebMvcTest 활용, Controller Layer 단위 테스트)
+
+	// aws
+	implementation 'io.awspring.cloud:spring-cloud-starter-aws:2.4.4'
 
 	// Security
 	implementation 'org.springframework.boot:spring-boot-starter-security'

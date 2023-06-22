@@ -106,3 +106,16 @@ oauth2:
 
 deploy-module:
   version: 0.0.7
+
+cloud:
+  aws:
+    credentials: # s3 사용자 접근 정보
+      access-key: access-key
+      secret-key: secret-key
+    region: # 리전
+      static: region
+    stack:
+      auto: false
+    s3:
+      bucket-name: s3-bucket-name
+      bucket-path: xxx.bucketpath.com/

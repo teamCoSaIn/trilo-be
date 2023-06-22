@@ -25,6 +25,9 @@ request-0004:
   message: Invalid Parameter Type in URL or Query Parameter
   detail : URL의 파라미터 변수 또는 쿼리 파라미터의 타입이 올바르지 않습니다.
 
+request-0005:
+  message: Not Multipart request
+  detail: 이 API는 Multipart 요청을 필요로 합니다. Multipart 요청으로 보내주세요.
 
 # 인증/인가 관련
 auth-0001:
@@ -99,6 +102,9 @@ trip-0009:
   message: Too Long TripPeriod
   detail: 여행 기간이 너무 깁니다. 여행의 최대 일수는 10일까지만 허용됩니다.
 
+trip-0010:
+  message: TripImage Upload Failed
+  detail: 이미지 저장소에 여행 이미지를 저장하는데 실패했습니다.
 
 # Day 관련
 day-0001:
@@ -166,3 +172,25 @@ place-0001:
 place-0002:
   message: Null Coordinate
   detail: 좌표가 누락됐습니다. 좌표는 필수입니다.
+
+
+# 파일 관련
+file-0001:
+  message: Empty File
+  detail: 파일이 없거나, 내용이 비어있는 파일입니다.
+
+file-0002:
+  message: No File Name
+  detail: 파일의 이름이 없습니다.
+
+file-0003:
+  message: No File Extension
+  detail: 파일의 확장자가 없습니다.
+
+file-0004:
+  message: Not Image File Extension
+  detail: 파일의 확장자가 이미지 파일 확장자가 아닙니다. (jpg, jpeg, gif, png, webp)
+
+file-0005:
+  message: Not Image File
+  detail: 파일이 이미지가 아닙니다.

@@ -55,8 +55,8 @@ public class TripPeriodUpdateControllerDocsTest extends RestDocsTestSupport {
         mockingForLoginUserAnnotation();
 
         Long tripId = 1L;
-        LocalDate startDate = LocalDate.of(2023,4,1);
-        LocalDate endDate = LocalDate.of(2023,4,5);
+        LocalDate startDate = LocalDate.of(2023, 4, 1);
+        LocalDate endDate = LocalDate.of(2023, 4, 5);
 
         TripPeriodUpdateRequest request = new TripPeriodUpdateRequest(startDate, endDate);
         TripPeriodUpdateCommand command = new TripPeriodUpdateCommand(TripPeriod.of(startDate, endDate));
@@ -72,7 +72,8 @@ public class TripPeriodUpdateControllerDocsTest extends RestDocsTestSupport {
                 )
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.tripId").value(tripId)) .andDo(restDocs.document(
+                .andExpect(jsonPath("$.tripId").value(tripId))
+                .andDo(restDocs.document(
                         requestHeaders(
                                 headerWithName(HttpHeaders.AUTHORIZATION)
                                         .description("Bearer 타입 AccessToken")

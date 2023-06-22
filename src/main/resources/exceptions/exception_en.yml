@@ -25,6 +25,10 @@ request-0004:
   message: Invalid Parameter Type in URL or Query Parameter
   detail : The type of the URL parameter or query parameter is invalid.
 
+request-0005:
+  message: Not Multipart request
+  detail: This API requires a multipart request. Please send it as a multipart request.
+
 
 # 인증/인가 관련
 auth-0001:
@@ -100,6 +104,10 @@ trip-0009:
   message: Too Long TripPeriod
   detail: The TripPeriod is too long. The maximum allowed TripPeriod is 10 days.
 
+trip-0010:
+  message: TripImage Upload Failed
+  detail: Failed to save the trip image to the image repository.
+
 # Day 관련
 day-0001:
   message: DayNotFound
@@ -167,3 +175,24 @@ place-0001:
 place-0002:
   message: Null Coordinate
   detail: Coordinate is missing. Coordinates is mandatory.
+
+# 파일 관련
+file-0001:
+  message: Empty File
+  detail: The file is either missing or it is an empty file.
+
+file-0002:
+  message: No File Name
+  detail: The file does not have a name.
+
+file-0003:
+  message: No File Extension
+  detail: The file does not have an extension.
+
+file-0004:
+  message: Not Image File Extension
+  detail: The file extension is not an image file extension. (jpg, jpeg, gif, png, webp)
+
+file-0005:
+  message: Not Image File
+  detail: The file is not an image.
