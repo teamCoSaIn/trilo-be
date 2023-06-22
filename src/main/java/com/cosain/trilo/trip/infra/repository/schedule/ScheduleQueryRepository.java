@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.cosain.trilo.trip.domain.entity.QSchedule.schedule;
-import static com.cosain.trilo.trip.domain.entity.QTrip.trip;
 
 @Repository
 @RequiredArgsConstructor
@@ -29,7 +28,7 @@ public class ScheduleQueryRepository {
 
     public Optional<ScheduleDetail> findScheduleDetailById(Long scheduleId) {
         return Optional.ofNullable(query.select(
-            new QScheduleDetail(schedule.id, schedule.day.id, schedule.scheduleTitle.value, schedule.place.placeName, schedule.place.coordinate.latitude, schedule.place.coordinate.longitude, schedule.scheduleIndex.value, schedule.scheduleContent.value))
+            new QScheduleDetail(schedule.id, schedule.day.id, schedule.scheduleTitle.value, schedule.place.placeName, schedule.place.coordinate.latitude, schedule.place.coordinate.longitude, schedule.scheduleIndex.value, schedule.scheduleContent.value, schedule.scheduleTime.startTime, schedule.scheduleTime.endTime))
                 .from(schedule)
                 .where(schedule.id.eq(scheduleId))
                 .fetchOne());
