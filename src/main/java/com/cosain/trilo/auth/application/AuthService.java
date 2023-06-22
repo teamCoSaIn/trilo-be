@@ -36,9 +36,9 @@ public class AuthService {
     public ReIssueAccessTokenResult reissueAccessToken(String refreshToken){
         checkIfValidTokenOrThrow(refreshToken);
         checkTokenExistenceOrThrow(refreshToken);
-        Long id = tokenAnalyzer.getUserIdFromToken(refreshToken);
-        String accessToken = tokenProvider.createAccessTokenById(id);
-        return ReIssueAccessTokenResult.of(accessToken, id);
+        Long userId = tokenAnalyzer.getUserIdFromToken(refreshToken);
+        String accessToken = tokenProvider.createAccessTokenById(userId);
+        return ReIssueAccessTokenResult.of(accessToken, userId);
     }
     private void checkIfValidTokenOrThrow(String refreshToken){
         if(!tokenAnalyzer.validateToken(refreshToken)){

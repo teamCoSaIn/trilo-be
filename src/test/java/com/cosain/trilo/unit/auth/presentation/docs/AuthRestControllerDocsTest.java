@@ -50,7 +50,7 @@ class AuthRestControllerDocsTest extends RestDocsTestSupport {
                                 cookieWithName("refreshToken").description("접근 토큰 발급에 사용될 재발급 토큰")
                         ),
                         responseFields(
-                                fieldWithPath("id").type(NUMBER).description("사용자 ID"),
+                                fieldWithPath("userId").type(NUMBER).description("사용자 ID"),
                                 fieldWithPath("authType").type(STRING).description("인증 타입 (Bearer)"),
                                 fieldWithPath("accessToken").type(STRING).description("재발급한 접근 토큰")
                         )
@@ -110,7 +110,7 @@ class AuthRestControllerDocsTest extends RestDocsTestSupport {
                             fieldWithPath("redirect_uri").type(STRING).description("인증 코드 발급에 사용했던 Redirect Uri")
                     ),
                     responseFields(
-                            fieldWithPath("id").type(NUMBER).description("사용자 ID"),
+                            fieldWithPath("userId").type(NUMBER).description("사용자 ID"),
                             fieldWithPath("authType").type(STRING).description("인증 타입 (Bearer)"),
                             fieldWithPath("accessToken").description("AccessToken")
                     ),
@@ -138,7 +138,7 @@ class AuthRestControllerDocsTest extends RestDocsTestSupport {
                            fieldWithPath("state").type(STRING).description("Authorization Code 발급시 전달했던 redirect_uri")
                    ),
                    responseFields(
-                           fieldWithPath("id").type(NUMBER).description("사용자 ID"),
+                           fieldWithPath("userId").type(NUMBER).description("사용자 ID"),
                            fieldWithPath("authType").type(STRING).description("인증 타입 (Bearer)"),
                            fieldWithPath("accessToken").description("AccessToken")
                    ),
@@ -165,7 +165,7 @@ class AuthRestControllerDocsTest extends RestDocsTestSupport {
                                 fieldWithPath("redirect_uri").type(STRING).description("Authorization Code 발급시 전달했던 redirect_uri")
                         ),
                         responseFields(
-                                fieldWithPath("id").type(NUMBER).description("사용자 ID"),
+                                fieldWithPath("userId").type(NUMBER).description("사용자 ID"),
                                 fieldWithPath("authType").type(STRING).description("인증 타입 (Bearer)"),
                                 fieldWithPath("accessToken").description("AccessToken")
                         ),
