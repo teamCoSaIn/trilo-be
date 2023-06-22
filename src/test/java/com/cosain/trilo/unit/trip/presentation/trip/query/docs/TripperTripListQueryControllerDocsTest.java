@@ -79,9 +79,9 @@ public class TripperTripListQueryControllerDocsTest extends RestDocsTestSupport 
                         )
                 )).andDo(restDocs.document(
                         responseFields(beneathPath("trips").withSubsectionId("trips"),
-                                fieldWithPath("id").type(NUMBER).description("여행 ID"),
+                                fieldWithPath("tripId").type(NUMBER).description("여행 ID"),
                                 fieldWithPath("tripperId").type(NUMBER).description("여행자 ID"),
-                                fieldWithPath("title").type(STRING).description("제목"),
+                                fieldWithPath("title").type(STRING).description("여행 제목"),
                                 fieldWithPath("status").type(STRING).description("여행 상태"),
                                 fieldWithPath("startDate").type(STRING).description("여행 시작 날짜"),
                                 fieldWithPath("endDate").type(STRING).description("여행 끝 날짜")

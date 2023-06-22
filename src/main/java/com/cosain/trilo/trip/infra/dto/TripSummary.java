@@ -8,7 +8,7 @@ import java.time.LocalDate;
 @Getter
 public class TripSummary {
 
-    private long id;
+    private long tripId;
     private long tripperId;
     private String title;
     private String status;
@@ -16,8 +16,8 @@ public class TripSummary {
     private LocalDate endDate;
 
     @QueryProjection
-    public TripSummary(long id, long tripperId, String title, Enum status, LocalDate startDate, LocalDate endDate) {
-        this.id = id;
+    public TripSummary(long tripId, long tripperId, String title, Enum status, LocalDate startDate, LocalDate endDate) {
+        this.tripId = tripId;
         this.tripperId = tripperId;
         this.title = title;
         this.status = status.name();
