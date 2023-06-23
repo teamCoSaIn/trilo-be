@@ -61,10 +61,10 @@ public class SingleScheduleQueryControllerDocsTest extends RestDocsTestSupport {
                                 fieldWithPath("placeName").type(STRING).description("장소 이름"),
                                 fieldWithPath("order").type(NUMBER).description("일정 순서"),
                                 fieldWithPath("content").type(STRING).description("일정 내용"),
-                                fieldWithPath("coordinate").type("Coordinate").description("장소의 좌표"),
+                                fieldWithPath("coordinate").type("Coordinate").description("장소의 좌표 ( 하단 표 참고 )"),
                                 fieldWithPath("coordinate.latitude").ignored(),
                                 fieldWithPath("coordinate.longitude").ignored(),
-                                fieldWithPath("scheduleTime").type("ScheduleTime").description("일정 시간 계획"),
+                                fieldWithPath("scheduleTime").type("ScheduleTime").description("일정 시간 계획 ( 하단 표 참고 )"),
                                 fieldWithPath("scheduleTime.startTime").ignored(),
                                 fieldWithPath("scheduleTime.endTime").ignored()
                         ),
