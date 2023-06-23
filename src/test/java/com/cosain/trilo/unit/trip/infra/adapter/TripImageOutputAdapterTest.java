@@ -48,12 +48,10 @@ public class TripImageOutputAdapterTest {
 
         String fileName = "xxx/{랜덤 uuid}.jpeg";
 
-        // when
-        String fullPath = tripImageOutputAdapter.uploadImage(imageFile, fileName);
+        tripImageOutputAdapter.uploadImage(imageFile, fileName);
 
         // then
         verify(amazonS3, times(1)).putObject(eq(bucketName), eq(fileName), any(InputStream.class), any(ObjectMetadata.class));
-        assertThat(fullPath).isEqualTo(bucketPath.concat(fileName));
     }
 
     @Test

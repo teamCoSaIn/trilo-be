@@ -26,7 +26,7 @@ public class TripImageOutputAdapter {
         this.bucketPath = bucketPath;
     }
 
-    public String uploadImage(ImageFile imageFile, String uploadFileName) {
+    public void uploadImage(ImageFile imageFile, String uploadFileName) {
         ObjectMetadata objectMetadata = makeMetaData(imageFile);
         try {
             amazonS3.putObject(bucketName, uploadFileName, imageFile.getInputStream(), objectMetadata);
@@ -34,7 +34,6 @@ public class TripImageOutputAdapter {
             log.error("[S3] 여행 이미지 업로드 실패", e);
             throw new TripImageUploadFailedException("[S3] 여행 이미지 업로드 실패", e);
         }
-        return getTripImageFullPath(uploadFileName);
     }
 
     /**
