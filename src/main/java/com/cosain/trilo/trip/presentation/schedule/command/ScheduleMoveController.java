@@ -1,9 +1,9 @@
 package com.cosain.trilo.trip.presentation.schedule.command;
 
 import com.cosain.trilo.common.LoginUser;
+import com.cosain.trilo.trip.application.schedule.command.usecase.ScheduleMoveUseCase;
 import com.cosain.trilo.trip.application.schedule.command.usecase.dto.ScheduleMoveCommand;
 import com.cosain.trilo.trip.application.schedule.command.usecase.dto.ScheduleMoveResult;
-import com.cosain.trilo.trip.application.schedule.command.usecase.ScheduleMoveUseCase;
 import com.cosain.trilo.trip.application.schedule.command.usecase.dto.factory.ScheduleMoveCommandFactory;
 import com.cosain.trilo.trip.presentation.schedule.command.dto.request.ScheduleMoveRequest;
 import com.cosain.trilo.trip.presentation.schedule.command.dto.response.ScheduleMoveResponse;
@@ -21,7 +21,7 @@ public class ScheduleMoveController {
     private final ScheduleMoveUseCase scheduleMoveUseCase;
     private final ScheduleMoveCommandFactory scheduleMoveCommandFactory;
 
-    @PatchMapping("/api/schedules/{scheduleId}")
+    @PutMapping("/api/schedules/{scheduleId}/position")
     @ResponseStatus(HttpStatus.OK)
     public ScheduleMoveResponse moveSchedule(@LoginUser User user, @PathVariable Long scheduleId, @RequestBody ScheduleMoveRequest request) {
         Long moveTripperId = user.getId();

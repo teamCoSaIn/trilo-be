@@ -548,8 +548,8 @@ include::{snippets}/schedule-update-controller-docs-test/schedule-update-doc-tes
 === Schedule 이동
 
 ==== 기본정보
-- 메서드 : PATCH
-- URL : `/api/schedules/{scheduleId}`
+- 메서드 : PUT
+- URL : `/api/schedules/{scheduleId}/position`
 - 인증방식 : 액세스 토큰
 
 요청한 일정을 이동합니다. 여행의 소유자(== 일정의 소유자)만 일정을 이동할 수 있고, 일정이 실제로 존재해야합니다. (일정이 존재하지 않을 경우 예외가 발생합니다.)
