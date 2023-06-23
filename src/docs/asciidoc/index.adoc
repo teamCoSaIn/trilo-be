@@ -688,10 +688,9 @@ include::{snippets}/single-schedule-query-controller-docs-test/일정_단건_조
 ===== 본문
 include::{snippets}/single-schedule-query-controller-docs-test/일정_단건_조회/response-fields.adoc[]
 ===== Coordinate
-include::{snippets}/single-schedule-query-controller-docs-test/일정_단건_조회/response-fields-coordinate.adoc[]
+include::{snippets}/single-schedule-query-controller-docs-test/일정_단건_조회/response-fields-beneath-coordinate.adoc[]
 ===== ScheduleTime
-include::{snippets}/single-schedule-query-controller-docs-test/일정_단건_조회/response-fields-scheduleTime.adoc[]
-
+include::{snippets}/single-schedule-query-controller-docs-test/일정_단건_조회/response-fields-beneath-scheduleTime.adoc[]
 ==== 예제
 ===== 요청
 include::{snippets}/single-schedule-query-controller-docs-test/일정_단건_조회/http-request.adoc[]

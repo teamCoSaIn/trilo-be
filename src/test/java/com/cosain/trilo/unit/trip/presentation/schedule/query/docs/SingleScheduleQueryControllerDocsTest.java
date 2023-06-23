@@ -61,19 +61,23 @@ public class SingleScheduleQueryControllerDocsTest extends RestDocsTestSupport {
                                 fieldWithPath("placeName").type(STRING).description("장소 이름"),
                                 fieldWithPath("order").type(NUMBER).description("일정 순서"),
                                 fieldWithPath("content").type(STRING).description("일정 내용"),
-                                subsectionWithPath("coordinate").type(OBJECT).description("장소의 좌표"),
-                                subsectionWithPath("scheduleTime").type(OBJECT).description("일정 시간 계획")
+                                fieldWithPath("coordinate").type("Coordinate").description("장소의 좌표"),
+                                fieldWithPath("coordinate.latitude").ignored(),
+                                fieldWithPath("coordinate.longitude").ignored(),
+                                fieldWithPath("scheduleTime").type("ScheduleTime").description("일정 시간 계획"),
+                                fieldWithPath("scheduleTime.startTime").ignored(),
+                                fieldWithPath("scheduleTime.endTime").ignored()
                         ),
-                        responseFields(
-                                beneathPath("coordinate").withSubsectionId("coordinate"),
+                        responseFields(beneathPath("coordinate"),
                                 fieldWithPath("latitude").type(NUMBER).description("위도"),
                                 fieldWithPath("longitude").type(NUMBER).description("경도")
-                        ),
-                        responseFields(
-                                beneathPath("scheduleTime").withSubsectionId("scheduleTime"),
+                        )
+                        ,responseFields(beneathPath("scheduleTime"),
                                 fieldWithPath("startTime").type(STRING).description("일정 시작 시간"),
                                 fieldWithPath("endTime").type(STRING).description("일정 종료 시간")
                         )
+
                 ));
+
     }
 }
