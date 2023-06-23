@@ -72,6 +72,19 @@ public class TripImageOutputAdapterTest {
         verify(amazonS3, times(1)).putObject(eq(bucketName), eq(fileName), any(InputStream.class), any(ObjectMetadata.class));
     }
 
+    @Test
+    @DisplayName("getTripImageFullPath -> 여행 이미지의 전체 경로를 얻어온다.")
+    void testGetTripImageFullPath() {
+        // given
+        String fileName = "trips/1/12760-fa712554-123.jpeg";
+
+        // when
+        String fullImagePath = tripImageOutputAdapter.getTripImageFullPath(fileName);
+
+        // then
+        assertThat(fullImagePath).isEqualTo(bucketPath.concat(fileName));
+    }
+
     private ImageFile imageFileFixture(String testImageResourceFileName) throws IOException {
         String name = "image";
         String filePath = TEST_RESOURCE_PATH + testImageResourceFileName;
