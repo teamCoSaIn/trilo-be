@@ -2,6 +2,7 @@ package com.cosain.trilo.unit.trip.application.day.query;
 
 import com.cosain.trilo.trip.application.day.query.service.DaySearchService;
 import com.cosain.trilo.trip.application.exception.DayNotFoundException;
+import com.cosain.trilo.trip.domain.vo.DayColor;
 import com.cosain.trilo.trip.infra.dto.DayScheduleDetail;
 import com.cosain.trilo.trip.infra.dto.ScheduleSummary;
 import com.cosain.trilo.trip.infra.repository.day.DayQueryRepository;
@@ -41,7 +42,7 @@ public class DaySearchServiceTest {
         // given
         Long dayId = 1L;
         ScheduleSummary scheduleSummary = new ScheduleSummary(1L, "제목", "장소","장소 식별자", 33.33, 33.33);
-        DayScheduleDetail dayScheduleDetail = new DayScheduleDetail(dayId, 1L, LocalDate.of(2023, 5, 5), List.of(scheduleSummary));
+        DayScheduleDetail dayScheduleDetail = new DayScheduleDetail(dayId, 1L, LocalDate.of(2023, 5, 5), DayColor.RED, List.of(scheduleSummary));
         given(dayQueryRepository.findDayWithSchedulesByDayId(1L)).willReturn(Optional.of(dayScheduleDetail));
 
         // when

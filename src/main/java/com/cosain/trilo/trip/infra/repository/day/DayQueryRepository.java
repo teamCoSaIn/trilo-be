@@ -33,6 +33,7 @@ public class DayQueryRepository {
                         day.id,
                         day.trip.id,
                         day.tripDate,
+                        day.dayColor,
                         GroupBy.list(new QScheduleSummary(
                                 schedule.id,
                                 schedule.scheduleTitle.value,
@@ -57,6 +58,7 @@ public class DayQueryRepository {
                                 day.id,
                                 day.trip.id,
                                 day.tripDate,
+                                day.dayColor,
                                 list(new QScheduleSummary(
                                         schedule.id,
                                         schedule.scheduleTitle.value,
