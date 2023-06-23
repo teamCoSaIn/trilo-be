@@ -64,7 +64,7 @@ public class TripDayListQueryControllerDocsTest extends RestDocsTestSupport {
                                 fieldWithPath("dayId").type(NUMBER).description("Day ID"),
                                 fieldWithPath("tripId").type(NUMBER).description("여행 ID"),
                                 fieldWithPath("date").description(STRING).description("여행 날짜"),
-                                subsectionWithPath("dayColor").type("DayColor").description("하단 표 참고"),
+                                subsectionWithPath("dayColor").type("DayColor").description("색상 정보 (하단 표 참고)"),
                                 subsectionWithPath("schedules").type("Schedule[]").description("일정 목록 (하단 표 참고)")
                         ),
                         responseFields(beneathPath("days[].dayColor").withSubsectionId("dayColor"),

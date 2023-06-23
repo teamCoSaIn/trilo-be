@@ -62,7 +62,7 @@ public class SingleDayQueryControllerDocsTest extends RestDocsTestSupport {
                                 fieldWithPath("dayId").type(NUMBER).description("Day ID"),
                                 fieldWithPath("tripId").type(NUMBER).description("여행 ID"),
                                 fieldWithPath("date").type(STRING).description("여행 날짜"),
-                                fieldWithPath("dayColor").type("DayColor").description("Day 색상 (하단 표 참고)"),
+                                fieldWithPath("dayColor").type("DayColor").description("색상 정보 (하단 표 참고)"),
                                 fieldWithPath("dayColor.name").ignored(),
                                 fieldWithPath("dayColor.code").ignored(),
                                 subsectionWithPath("schedules").type(ARRAY).description("일정 목록 (하단 표 참고)")
