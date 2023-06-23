@@ -22,7 +22,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.put;
 import static org.springframework.restdocs.payload.JsonFieldType.BOOLEAN;
 import static org.springframework.restdocs.payload.JsonFieldType.NUMBER;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
@@ -43,7 +43,8 @@ public class ScheduleMoveControllerDocsTest extends RestDocsTestSupport {
     @MockBean
     private ScheduleMoveCommandFactory scheduleMoveCommandFactory;
 
-    private final String ACCESS_TOKEN = "Bearer accessToken";
+    private static final String ACCESS_TOKEN = "Bearer accessToken";
+    private static final String ENDPOINT_URL_TEMPLATE = "/api/schedules/{scheduleId}/position";
 
     @Test
     @DisplayName("인증된 사용자의 일정 이동 요청 -> 성공")
@@ -70,7 +71,7 @@ public class ScheduleMoveControllerDocsTest extends RestDocsTestSupport {
                 .willReturn(moveResult);
 
         // when & then
-        mockMvc.perform(patch("/api/schedules/{scheduleId}", scheduleId)
+        mockMvc.perform(put(ENDPOINT_URL_TEMPLATE, scheduleId)
                         .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)
                         .content(createJson(request))
                         .characterEncoding(StandardCharsets.UTF_8)

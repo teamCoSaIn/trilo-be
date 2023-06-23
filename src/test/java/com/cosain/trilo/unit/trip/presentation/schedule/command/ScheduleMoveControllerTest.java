@@ -24,6 +24,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -39,6 +40,8 @@ public class ScheduleMoveControllerTest extends RestControllerTest {
     private ScheduleMoveCommandFactory scheduleMoveCommandFactory;
 
     private final static String ACCESS_TOKEN = "Bearer accessToken";
+
+    private static final String ENDPOINT_URL_TEMPLATE = "/api/schedules/{scheduleId}/position";
 
     @Test
     @DisplayName("인증된 사용자의 올바른 요청 -> 일정 이동됨")
@@ -64,7 +67,7 @@ public class ScheduleMoveControllerTest extends RestControllerTest {
         given(scheduleMoveUseCase.moveSchedule(eq(scheduleId), any(), any(ScheduleMoveCommand.class)))
                 .willReturn(moveResult);
 
-        mockMvc.perform(patch("/api/schedules/" + scheduleId)
+        mockMvc.perform(put(ENDPOINT_URL_TEMPLATE, scheduleId)
                         .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)
                         .content(createJson(request))
                         .characterEncoding(StandardCharsets.UTF_8)
@@ -91,7 +94,7 @@ public class ScheduleMoveControllerTest extends RestControllerTest {
 
         ScheduleMoveRequest request = new ScheduleMoveRequest(targetDayId, targetOrder);
 
-        mockMvc.perform(patch("/api/schedules/" + scheduleId)
+        mockMvc.perform(put(ENDPOINT_URL_TEMPLATE, scheduleId)
                         .content(createJson(request))
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -110,8 +113,9 @@ public class ScheduleMoveControllerTest extends RestControllerTest {
         mockingForLoginUserAnnotation();
 
         String emptyContent = "";
+        Long scheduleId = 1L;
 
-        mockMvc.perform(patch("/api/schedules/1")
+        mockMvc.perform(put(ENDPOINT_URL_TEMPLATE, scheduleId)
                         .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)
                         .content(emptyContent)
                         .characterEncoding(StandardCharsets.UTF_8)
@@ -128,6 +132,8 @@ public class ScheduleMoveControllerTest extends RestControllerTest {
     @DisplayName("형식이 올바르지 않은 바디 -> 올바르지 않은 요청 데이터 형식으로 간주하고 400 예외")
     public void moveSchedule_with_invalidContent() throws Exception {
         mockingForLoginUserAnnotation();
+
+        Long scheduleId = 1L;
         String invalidContent = """
                 {
                     "targetDayId": 따옴표로 감싸지 않은 값,
@@ -135,7 +141,7 @@ public class ScheduleMoveControllerTest extends RestControllerTest {
                 }
                 """;
 
-        mockMvc.perform(patch("/api/schedules/1")
+        mockMvc.perform(put(ENDPOINT_URL_TEMPLATE, scheduleId)
                         .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)
                         .content(invalidContent)
                         .characterEncoding(StandardCharsets.UTF_8)
@@ -152,6 +158,7 @@ public class ScheduleMoveControllerTest extends RestControllerTest {
     @DisplayName("타입이 올바르지 않은 요청 데이터 -> 올바르지 않은 요청 데이터 형식으로 간주하고 400 예외")
     public void moveSchedule_with_invalidType() throws Exception {
         mockingForLoginUserAnnotation();
+        Long scheduleId = 1L;
         String invalidTypeContent = """
                 {
                     "targetDayId": 1,
@@ -159,7 +166,7 @@ public class ScheduleMoveControllerTest extends RestControllerTest {
                 }
                 """;
 
-        mockMvc.perform(patch("/api/schedules/1")
+        mockMvc.perform(put(ENDPOINT_URL_TEMPLATE, scheduleId)
                         .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)
                         .content(invalidTypeContent)
                         .characterEncoding(StandardCharsets.UTF_8)
