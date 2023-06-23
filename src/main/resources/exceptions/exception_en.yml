@@ -166,6 +166,9 @@ schedule-0010:
   message: Too Many Day Schedule Count
   detail: You cannot put any more schedule on the designated day. Each day can have a maximum of 10 schedules.
 
+schedule-0011:
+  message: Invalid Schedule Time
+  detail: The startTime and endTime of a schedule cannot be null.
 
 # 장소 관련
 place-0001:

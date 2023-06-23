@@ -2,6 +2,7 @@ package com.cosain.trilo.unit.trip.application.schedule.command.dto.factory;
 
 import com.cosain.trilo.common.exception.CustomValidationException;
 import com.cosain.trilo.trip.application.schedule.command.usecase.dto.factory.ScheduleUpdateCommandFactory;
+import com.cosain.trilo.trip.domain.exception.InvalidScheduleTimeException;
 import com.cosain.trilo.trip.domain.exception.InvalidScheduleTitleException;
 import com.cosain.trilo.trip.domain.vo.ScheduleTitle;
 import org.junit.jupiter.api.DisplayName;
@@ -95,6 +96,67 @@ public class ScheduleUpdateCommandFactoryTest {
         // then
         assertThat(cve).isNotNull();
         assertThat(cve.getExceptions()).hasSize(1);
+        assertThat(cve.getExceptions().get(0)).isInstanceOf(InvalidScheduleTitleException.class);
+    }
+
+    @DisplayName("일정의 시작 시점이 null -> 검증 예외 발생")
+    @Test
+    void startTimeNullTest() {
+        // given
+        String rawScheduleTitle = "일정 제목";
+        String rawScheduleContent = "일정 본문";
+        LocalTime startTime = null;
+        LocalTime endTime = LocalTime.of(13,5);
+
+        // when
+        CustomValidationException cve = catchThrowableOfType(
+                () -> scheduleUpdateCommandFactory.createCommand(rawScheduleTitle, rawScheduleContent, startTime, endTime),
+                CustomValidationException.class);
+
+        // then
+        assertThat(cve).isNotNull();
+        assertThat(cve.getExceptions()).hasSize(1);
+        assertThat(cve.getExceptions().get(0)).isInstanceOf(InvalidScheduleTimeException.class);
+    }
+
+    @DisplayName("일정의 종료 시점이 null -> 검증 예외 발생")
+    @Test
+    void endTimeNullTest() {
+        // given
+        String rawScheduleTitle = "일정 제목";
+        String rawScheduleContent = "일정 본문";
+        LocalTime startTime = LocalTime.of(13,5);
+        LocalTime endTime = null;
+
+        // when
+        CustomValidationException cve = catchThrowableOfType(
+                () -> scheduleUpdateCommandFactory.createCommand(rawScheduleTitle, rawScheduleContent, startTime, endTime),
+                CustomValidationException.class);
+
+        // then
+        assertThat(cve).isNotNull();
+        assertThat(cve.getExceptions()).hasSize(1);
+        assertThat(cve.getExceptions().get(0)).isInstanceOf(InvalidScheduleTimeException.class);
+    }
+
+    @DisplayName("일정 시간 둘다 null -> 검증 예외 발생")
+    @Test
+    void bothTimeNullTest() {
+        // given
+        String rawScheduleTitle = "일정 제목";
+        String rawScheduleContent = "일정 본문";
+        LocalTime startTime = null;
+        LocalTime endTime = null;
+
+        // when
+        CustomValidationException cve = catchThrowableOfType(
+                () -> scheduleUpdateCommandFactory.createCommand(rawScheduleTitle, rawScheduleContent, startTime, endTime),
+                CustomValidationException.class);
+
+        // then
+        assertThat(cve).isNotNull();
+        assertThat(cve.getExceptions()).hasSize(1);
+        assertThat(cve.getExceptions().get(0)).isInstanceOf(InvalidScheduleTimeException.class);
     }
 
 }

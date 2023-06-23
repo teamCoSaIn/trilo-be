@@ -691,6 +691,10 @@ public class TripTest {
 
                 assertThat(schedule1.getScheduleIndex()).isEqualTo(ScheduleIndex.ZERO_INDEX);
                 assertThat(schedule2.getScheduleIndex()).isEqualTo(ScheduleIndex.of(ScheduleIndex.DEFAULT_SEQUENCE_GAP));
+
+                // 생성된 일정시간들은 디폴트 시간
+                assertThat(schedule1.getScheduleTime()).isEqualTo(ScheduleTime.defaultTime());
+                assertThat(schedule2.getScheduleTime()).isEqualTo(ScheduleTime.defaultTime());
             }
         }
 
@@ -800,6 +804,10 @@ public class TripTest {
 
                 assertThat(schedule1.getScheduleIndex()).isEqualTo(ScheduleIndex.ZERO_INDEX);
                 assertThat(schedule2.getScheduleIndex()).isEqualTo(ScheduleIndex.of(ScheduleIndex.DEFAULT_SEQUENCE_GAP));
+
+                // 생성된 일정시간들은 디폴트 시간
+                assertThat(schedule1.getScheduleTime()).isEqualTo(ScheduleTime.defaultTime());
+                assertThat(schedule2.getScheduleTime()).isEqualTo(ScheduleTime.defaultTime());
             }
         }
     }
