@@ -771,7 +771,7 @@ include::{snippets}/single-day-query-controller-docs-test/day_단건_조회/path
 include::{snippets}/single-day-query-controller-docs-test/day_단건_조회/response-fields.adoc[]
 ===== DayColor
 include::{snippets}/single-day-query-controller-docs-test/day_단건_조회/response-fields-beneath-dayColor.adoc[]
-===== Schedules
+===== Schedule
 include::{snippets}/single-day-query-controller-docs-test/day_단건_조회/response-fields-schedules.adoc[]
 ===== Coordinate
 include::{snippets}/single-day-query-controller-docs-test/day_단건_조회/response-fields-coordinate.adoc[]
