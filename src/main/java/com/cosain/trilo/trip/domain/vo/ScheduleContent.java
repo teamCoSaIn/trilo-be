@@ -1,5 +1,6 @@
 package com.cosain.trilo.trip.domain.vo;
 
+import com.cosain.trilo.trip.domain.exception.InvalidScheduleContentException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.*;
@@ -11,12 +12,20 @@ import lombok.*;
 @Embeddable
 public class ScheduleContent {
 
+    private static final ScheduleContent DEFAULT_CONTENT = ScheduleContent.of("");
+
     @Column(name = "content")
     private String value;
 
     public static ScheduleContent of(String rawContent) {
-        // 추후 검증이 필요한 부분이 있으면 여기에
+        if (rawContent == null) {
+            throw new InvalidScheduleContentException("일정의 본문이 null");
+        }
         return new ScheduleContent(rawContent);
+    }
+
+    public static ScheduleContent defaultContent() {
+        return DEFAULT_CONTENT;
     }
 
     private ScheduleContent(String value) {

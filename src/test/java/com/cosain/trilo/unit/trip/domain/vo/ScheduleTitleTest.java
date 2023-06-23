@@ -4,6 +4,8 @@ import com.cosain.trilo.trip.domain.exception.InvalidScheduleTitleException;
 import com.cosain.trilo.trip.domain.vo.ScheduleTitle;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -11,6 +13,19 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @DisplayName("ScheduleTitle 테스트")
 public class ScheduleTitleTest {
+
+    @DisplayName("일정 제목이 null 아니고 20자 이하(공백 허용) -> 정상 생성")
+    @ValueSource(strings = {"일정 제목", "", "     "})
+    @ParameterizedTest
+    void successCreateTest(String rawTitle) {
+        // given : rawTitle
+
+        // when
+        ScheduleTitle title = ScheduleTitle.of(rawTitle);
+
+        // then
+        assertThat(title.getValue()).isEqualTo(rawTitle);
+    }
 
     @Test
     @DisplayName("null 제목 -> InvalidScheduleTitleException 발생")
@@ -24,49 +39,14 @@ public class ScheduleTitleTest {
     }
 
     @Test
-    @DisplayName("빈 문자열 제목 -> InvalidScheduleTitleException 발생")
-    void emptyScheduleTitleTest() {
-        // given
-        String emptyTitle = "";
-
-        // when
-        assertThatThrownBy(() -> ScheduleTitle.of(emptyTitle))
-                .isInstanceOf(InvalidScheduleTitleException.class);
-    }
-
-    @Test
-    @DisplayName("공백만으로 구성된 제목 -> InvalidScheduleTitleException 발생")
-    void whiteSpaceScheduleTitleTest() {
-        // given
-        String whiteSpaceTitle = "   ";
-
-        // when
-        assertThatThrownBy(() -> ScheduleTitle.of(whiteSpaceTitle))
-                .isInstanceOf(InvalidScheduleTitleException.class);
-    }
-
-    @Test
-    @DisplayName("제한 길이보다 긴 제목 -> InvalidScheduleTitleException 발생")
+    @DisplayName("20자보다 긴 제목 -> InvalidScheduleTitleException 발생")
     void tooLongScheduleTitleTest() {
         // given
-        String tooLongTitle = "A".repeat(ScheduleTitle.MAX_LENGTH + 1);
+        String tooLongTitle = "A".repeat(21);
 
         // when
         assertThatThrownBy(() -> ScheduleTitle.of(tooLongTitle))
                 .isInstanceOf(InvalidScheduleTitleException.class);
-    }
-
-    @Test
-    @DisplayName("정상적인 길이의 비어있지 않은 여행제목 -> 생성 성공")
-    void createScheduleTitleSuccessTest() {
-        // given
-        String normalTitle = "정상적인 제목";
-
-        // when
-        ScheduleTitle title = ScheduleTitle.of(normalTitle);
-
-        // then
-        assertThat(title.getValue()).isEqualTo(normalTitle);
     }
 
     @Test

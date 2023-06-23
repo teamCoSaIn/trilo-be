@@ -47,6 +47,7 @@ public class Schedule {
                 .day(day)
                 .trip(trip)
                 .scheduleTitle(scheduleTitle)
+                .scheduleContent(ScheduleContent.defaultContent())
                 .place(place)
                 .scheduleIndex(scheduleIndex)
                 .scheduleTime(ScheduleTime.defaultTime())
@@ -62,7 +63,7 @@ public class Schedule {
         this.day = day;
         this.trip = trip;
         this.scheduleTitle = scheduleTitle;
-        this.scheduleContent = scheduleContent;
+        this.scheduleContent = scheduleContent == null ? ScheduleContent.defaultContent() : scheduleContent;
         this.scheduleTime = scheduleTime == null ? ScheduleTime.defaultTime() : scheduleTime;
         this.place = place;
         this.scheduleIndex = scheduleIndex;
