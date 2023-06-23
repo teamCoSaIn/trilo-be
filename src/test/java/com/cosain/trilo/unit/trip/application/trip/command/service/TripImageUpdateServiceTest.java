@@ -27,6 +27,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -57,9 +58,11 @@ public class TripImageUpdateServiceTest {
         Trip trip = unDecidedTripFixture(tripId, tripperId);
         given(tripRepository.findById(eq(tripId))).willReturn(Optional.of(trip));
 
+        willDoNothing().given(tripImageOutputAdapter).uploadImage(any(ImageFile.class), anyString());
+
+
         String fullPath = String.format("https://{여행 이미지 저장소}/trips/%d/{uuid 파일명}.jpeg", tripId);
-        given(tripImageOutputAdapter.uploadImage(any(ImageFile.class), anyString()))
-                .willReturn(fullPath);
+        given(tripImageOutputAdapter.getTripImageFullPath(anyString())).willReturn(fullPath);
 
         // when
         String returnFullPath = tripImageUpdateService.updateTripImage(tripId, tripperId, imageFile);
@@ -69,6 +72,7 @@ public class TripImageUpdateServiceTest {
         assertThat(returnFullPath).isEqualTo(fullPath);
         verify(tripRepository, times(1)).findById(eq(tripId));
         verify(tripImageOutputAdapter, times(1)).uploadImage(any(ImageFile.class), anyString());
+        verify(tripImageOutputAdapter, times(1)).getTripImageFullPath(anyString());
     }
 
     @DisplayName("일치하는 식별자의 여행이 없으면 -> TripNotFoundException")

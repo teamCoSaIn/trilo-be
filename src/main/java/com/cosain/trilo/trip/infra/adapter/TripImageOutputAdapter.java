@@ -9,8 +9,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
-
 @Slf4j
 @Component
 public class TripImageOutputAdapter {
@@ -28,15 +26,23 @@ public class TripImageOutputAdapter {
         this.bucketPath = bucketPath;
     }
 
-    public String uploadImage(ImageFile file, String uploadFileName) {
-        ObjectMetadata objectMetadata = makeMetaData(file);
+    public void uploadImage(ImageFile imageFile, String uploadFileName) {
+        ObjectMetadata objectMetadata = makeMetaData(imageFile);
         try {
-            amazonS3.putObject(bucketName, uploadFileName, file.getInputStream(), objectMetadata);
+            amazonS3.putObject(bucketName, uploadFileName, imageFile.getInputStream(), objectMetadata);
         } catch (SdkClientException e) {
             log.error("[S3] 여행 이미지 업로드 실패", e);
             throw new TripImageUploadFailedException("[S3] 여행 이미지 업로드 실패", e);
         }
-        return bucketPath + uploadFileName;
+    }
+
+    /**
+     * 여행 이미지의 전체 경로(URL)을 얻어옵니다.
+     * @param uploadedFileName
+     * @return
+     */
+    public String getTripImageFullPath(String uploadedFileName) {
+        return bucketPath.concat(uploadedFileName);
     }
 
     private ObjectMetadata makeMetaData(ImageFile file) {

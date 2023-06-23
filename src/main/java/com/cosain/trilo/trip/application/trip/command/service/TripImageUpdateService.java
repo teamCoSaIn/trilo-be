@@ -44,10 +44,10 @@ public class TripImageUpdateService implements TripImageUpdateUseCase {
         validateTripUpdateAuthority(trip, tripperId); // 이미지를 수정할 권한이 있는 지 검증
 
         String uploadName = makeUploadFileName(tripId, file); // 이미지 저장소에 올릴 이름 구성
-        String fullPath = tripImageOutputAdapter.uploadImage(file, uploadName); // 이미지 저장소에 업로드 후, 전체 이미지 경로(fullPath)를 구성
-        trip.changeImage(TripImage.of(uploadName)); // 여행이미지 도메인의 실제 이미지 변경
+        tripImageOutputAdapter.uploadImage(file, uploadName); // 이미지 저장소에 업로드 후, 전체 이미지 경로(fullPath)를 구성
 
-        return fullPath; // 이미지 전체 경로를 반환
+        trip.changeImage(TripImage.of(uploadName)); // 여행이미지 도메인의 실제 이미지 변경
+        return tripImageOutputAdapter.getTripImageFullPath(uploadName); // 이미지 전체 경로를 반환
     }
 
     /**

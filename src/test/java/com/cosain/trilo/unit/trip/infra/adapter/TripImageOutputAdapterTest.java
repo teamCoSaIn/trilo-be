@@ -48,12 +48,10 @@ public class TripImageOutputAdapterTest {
 
         String fileName = "xxx/{랜덤 uuid}.jpeg";
 
-        // when
-        String fullPath = tripImageOutputAdapter.uploadImage(imageFile, fileName);
+        tripImageOutputAdapter.uploadImage(imageFile, fileName);
 
         // then
         verify(amazonS3, times(1)).putObject(eq(bucketName), eq(fileName), any(InputStream.class), any(ObjectMetadata.class));
-        assertThat(fullPath).isEqualTo(bucketPath.concat(fileName));
     }
 
     @Test
@@ -70,6 +68,19 @@ public class TripImageOutputAdapterTest {
         assertThatThrownBy(() -> tripImageOutputAdapter.uploadImage(imageFile, fileName))
                 .isInstanceOf(TripImageUploadFailedException.class);
         verify(amazonS3, times(1)).putObject(eq(bucketName), eq(fileName), any(InputStream.class), any(ObjectMetadata.class));
+    }
+
+    @Test
+    @DisplayName("getTripImageFullPath -> 여행 이미지의 전체 경로를 얻어온다.")
+    void testGetTripImageFullPath() {
+        // given
+        String fileName = "trips/1/12760-fa712554-123.jpeg";
+
+        // when
+        String fullImagePath = tripImageOutputAdapter.getTripImageFullPath(fileName);
+
+        // then
+        assertThat(fullImagePath).isEqualTo(bucketPath.concat(fileName));
     }
 
     private ImageFile imageFileFixture(String testImageResourceFileName) throws IOException {
