@@ -12,6 +12,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalTime;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -32,7 +33,7 @@ public class ScheduleDetailSearchServiceTest {
     @DisplayName("정상 호출 및 반환 테스트")
     void searchScheduleDetailTest(){
         // given
-        ScheduleDetail scheduleDetail = new ScheduleDetail(1L, 1L, "제목", "장소 이름", 24.24, 24.24, 3L, "내용");
+        ScheduleDetail scheduleDetail = new ScheduleDetail(1L, 1L, "제목", "장소 이름", 24.24, 24.24, 3L, "내용", LocalTime.of(15, 30), LocalTime.of(16, 0));
         given(scheduleQueryRepository.findScheduleDetailById(anyLong())).willReturn(Optional.of(scheduleDetail));
 
         // when

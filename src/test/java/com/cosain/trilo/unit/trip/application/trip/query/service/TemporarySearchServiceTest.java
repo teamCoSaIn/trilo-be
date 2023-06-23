@@ -3,9 +3,9 @@ package com.cosain.trilo.unit.trip.application.trip.query.service;
 import com.cosain.trilo.trip.application.exception.ScheduleNotFoundException;
 import com.cosain.trilo.trip.application.exception.TripNotFoundException;
 import com.cosain.trilo.trip.application.trip.query.service.TemporarySearchService;
+import com.cosain.trilo.trip.infra.dto.ScheduleDetail;
 import com.cosain.trilo.trip.infra.dto.ScheduleSummary;
 import com.cosain.trilo.trip.infra.repository.schedule.ScheduleQueryRepository;
-import com.cosain.trilo.trip.infra.dto.ScheduleDetail;
 import com.cosain.trilo.trip.infra.repository.trip.TripQueryRepository;
 import com.cosain.trilo.trip.presentation.trip.query.dto.request.TempSchedulePageCondition;
 import org.junit.jupiter.api.Test;
@@ -17,8 +17,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
-import org.springframework.security.core.parameters.P;
 
+import java.time.LocalTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -45,9 +45,9 @@ public class TemporarySearchServiceTest {
         Long tripId = 1L;
         Pageable pageable = Pageable.ofSize(size);
         TempSchedulePageCondition tempSchedulePageCondition = new TempSchedulePageCondition(1L);
-        ScheduleDetail scheduleDetail1 = new ScheduleDetail(2L, 1L, "제목", "장소", 33.33, 33.33, 1L, "내용");
-        ScheduleDetail scheduleDetail2 = new ScheduleDetail(3L, 1L, "제목", "장소", 33.33, 33.33, 1L, "내용");
-        ScheduleDetail scheduleDetail3 = new ScheduleDetail(4L, 1L, "제목", "장소", 33.33, 33.33, 1L, "내용");
+        ScheduleDetail scheduleDetail1 = new ScheduleDetail(2L, 1L, "제목", "장소", 33.33, 33.33, 1L, "내용", LocalTime.of(12, 10), LocalTime.of(13, 30));
+        ScheduleDetail scheduleDetail2 = new ScheduleDetail(3L, 1L, "제목", "장소", 33.33, 33.33, 1L, "내용", LocalTime.of(15, 0 ), LocalTime.of(16, 0));
+        ScheduleDetail scheduleDetail3 = new ScheduleDetail(4L, 1L, "제목", "장소", 33.33, 33.33, 1L, "내용", LocalTime.of(16, 0), LocalTime.of(17, 0));
         given(tripQueryRepository.existById(eq(tripId))).willReturn(true);
         given(scheduleQueryRepository.existById(eq(tempSchedulePageCondition.getScheduleId()))).willReturn(true);
         given(scheduleQueryRepository.findTemporaryScheduleListByTripId(eq(tripId), eq(tempSchedulePageCondition) ,eq(pageable))).willReturn(new SliceImpl(List.of(scheduleDetail1, scheduleDetail2, scheduleDetail3)));
