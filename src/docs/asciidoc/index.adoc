@@ -769,6 +769,8 @@ include::{snippets}/single-day-query-controller-docs-test/day_단건_조회/path
 ==== 응답
 ===== 본문
 include::{snippets}/single-day-query-controller-docs-test/day_단건_조회/response-fields.adoc[]
+===== DayColor
+include::{snippets}/single-day-query-controller-docs-test/day_단건_조회/response-fields-beneath-dayColor.adoc[]
 ===== Schedules
 include::{snippets}/single-day-query-controller-docs-test/day_단건_조회/response-fields-schedules.adoc[]
 ===== Coordinate
@@ -800,7 +802,9 @@ include::{snippets}/trip-day-list-query-controller-docs-test/day_목록_조회/p
 include::{snippets}/trip-day-list-query-controller-docs-test/day_목록_조회/response-fields.adoc[]
 ===== Days
 include::{snippets}/trip-day-list-query-controller-docs-test/day_목록_조회/response-fields-days.adoc[]
-===== Schedules
+===== DayColor
+include::{snippets}/trip-day-list-query-controller-docs-test/day_목록_조회/response-fields-dayColor.adoc[]
+===== Schedule
 include::{snippets}/trip-day-list-query-controller-docs-test/day_목록_조회/response-fields-schedules.adoc[]
 ===== Coordinate
 include::{snippets}/trip-day-list-query-controller-docs-test/day_목록_조회/response-fields-coordinate.adoc[]

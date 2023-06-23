@@ -2,6 +2,7 @@ package com.cosain.trilo.unit.trip.presentation.day.query;
 
 import com.cosain.trilo.support.RestControllerTest;
 import com.cosain.trilo.trip.application.day.query.usecase.DaySearchUseCase;
+import com.cosain.trilo.trip.domain.vo.DayColor;
 import com.cosain.trilo.trip.infra.dto.DayScheduleDetail;
 import com.cosain.trilo.trip.infra.dto.ScheduleSummary;
 import com.cosain.trilo.trip.presentation.day.query.TripDayListQueryController;
@@ -41,7 +42,7 @@ class TripDayListQueryControllerTest extends RestControllerTest {
         Long tripId = 1L;
         mockingForLoginUserAnnotation();
         ScheduleSummary scheduleSummary = new ScheduleSummary(1L, "제목", "장소 이름", "장소 식별자", 33.33, 33.33);
-        DayScheduleDetail dayScheduleDetail = new DayScheduleDetail(1L, 1L, LocalDate.of(2023, 5, 13), List.of(scheduleSummary));
+        DayScheduleDetail dayScheduleDetail = new DayScheduleDetail(1L, 1L, LocalDate.of(2023, 5, 13), DayColor.BLACK, List.of(scheduleSummary));
         List<DayScheduleDetail> dayScheduleDetails = List.of(dayScheduleDetail);
 
         given(daySearchUseCase.searchDaySchedules(tripId)).willReturn(dayScheduleDetails);

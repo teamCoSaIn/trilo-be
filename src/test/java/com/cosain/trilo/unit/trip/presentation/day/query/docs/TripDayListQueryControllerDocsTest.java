@@ -2,6 +2,7 @@ package com.cosain.trilo.unit.trip.presentation.day.query.docs;
 
 import com.cosain.trilo.support.RestDocsTestSupport;
 import com.cosain.trilo.trip.application.day.query.usecase.DaySearchUseCase;
+import com.cosain.trilo.trip.domain.vo.DayColor;
 import com.cosain.trilo.trip.infra.dto.Coordinate;
 import com.cosain.trilo.trip.infra.dto.DayScheduleDetail;
 import com.cosain.trilo.trip.infra.dto.ScheduleSummary;
@@ -38,7 +39,7 @@ public class TripDayListQueryControllerDocsTest extends RestDocsTestSupport {
         Long tripId = 1L;
         mockingForLoginUserAnnotation();
         ScheduleSummary scheduleSummary = new ScheduleSummary(1L, "제목", "장소 이름", "장소 식별자", 33.33, 33.33);
-        DayScheduleDetail dayScheduleDetail = new DayScheduleDetail(1L, 1L, LocalDate.of(2023, 5, 13), List.of(scheduleSummary));
+        DayScheduleDetail dayScheduleDetail = new DayScheduleDetail(1L, 1L, LocalDate.of(2023, 5, 13), DayColor.BLACK, List.of(scheduleSummary));
         List<DayScheduleDetail> dayScheduleDetails = List.of(dayScheduleDetail);
 
         given(daySearchUseCase.searchDaySchedules(tripId)).willReturn(dayScheduleDetails);
@@ -59,20 +60,23 @@ public class TripDayListQueryControllerDocsTest extends RestDocsTestSupport {
                         responseFields(
                                 subsectionWithPath("days").type(ARRAY).description("Day 목록")
                         ),
-                        responseFields(
-                                beneathPath("days").withSubsectionId("days"),
+                        responseFields(beneathPath("days").withSubsectionId("days"),
                                 fieldWithPath("dayId").type(NUMBER).description("Day ID"),
                                 fieldWithPath("tripId").type(NUMBER).description("여행 ID"),
                                 fieldWithPath("date").description(STRING).description("여행 날짜"),
-                                subsectionWithPath("schedules").type(ARRAY).description("일정 목록")
+                                subsectionWithPath("dayColor").type("DayColor").description("하단 표 참고"),
+                                subsectionWithPath("schedules").type("Schedule[]").description("일정 목록 (하단 표 참고)")
                         ),
-                        responseFields(
-                                beneathPath("days[].schedules").withSubsectionId("schedules"),
+                        responseFields(beneathPath("days[].dayColor").withSubsectionId("dayColor"),
+                                fieldWithPath("name").type(STRING).description("색상 이름"),
+                                fieldWithPath("code").type(STRING).description("색상 코드")
+                        ),
+                        responseFields(beneathPath("days[].schedules").withSubsectionId("schedules"),
                                 fieldWithPath("[].scheduleId").type(NUMBER).description("일정 ID"),
                                 fieldWithPath("[].title").type(STRING).description("일정 제목"),
                                 fieldWithPath("[].placeName").type(STRING).description("장소 이름"),
                                 fieldWithPath("[].placeId").type(STRING).description("장소 ID"),
-                                subsectionWithPath("[].coordinate").type(OBJECT).description("장소의 좌표")
+                                subsectionWithPath("[].coordinate").type("Coordinate").description("장소의 좌표 (하단 표 참고)")
                         ),
                         responseFields(beneathPath("days[].schedules[].coordinate").withSubsectionId("coordinate"),
                                 fieldWithPath("latitude").type(NUMBER).description("위도"),
