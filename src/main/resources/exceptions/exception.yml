@@ -168,6 +168,10 @@ schedule-0011:
   message: Invalid Schedule Time
   detail: 일정의 시작 시간(startTime), 종료 시간(endTime)은 null 일 수 없음
 
+schedule-0012:
+  message: Invalid Schedule Content
+  detail: 일정의 본문은 null일 수 없습니다.
+
 # 장소 관련
 place-0001:
   message: InvalidCoordinate

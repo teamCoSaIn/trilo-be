@@ -60,8 +60,8 @@ public class ScheduleUpdateControllerDocsTest extends RestDocsTestSupport {
         Long scheduleId = 1L;
         String rawTitle = "수정 일정제목";
         String rawContent = "수정 일정내용";
-        LocalTime startTime = LocalTime.of(13,0);
-        LocalTime endTime = LocalTime.of(13,5);
+        LocalTime startTime = LocalTime.of(13, 0);
+        LocalTime endTime = LocalTime.of(13, 5);
 
         ScheduleUpdateRequest request = new ScheduleUpdateRequest(rawTitle, rawContent, startTime, endTime);
         ScheduleUpdateCommand command = new ScheduleUpdateCommand(ScheduleTitle.of(rawContent), ScheduleContent.of(rawContent), ScheduleTime.of(startTime, endTime));
@@ -94,8 +94,8 @@ public class ScheduleUpdateControllerDocsTest extends RestDocsTestSupport {
                                         .attributes(key("constraints").value("null 일 수 없으며, 길이는 20자 이하까지 허용됩니다. (공백, 빈 문자열 허용)")),
                                 fieldWithPath("content")
                                         .type(STRING)
-                                        .optional()
-                                        .description("일정의 본문"),
+                                        .description("일정의 본문")
+                                        .attributes(key("constraints").value("null을 허용하지 않습니다. (공백, 빈문자열 허용)")),
                                 fieldWithPath("startTime")
                                         .type(STRING)
                                         .description("일정의 시작시간. 필수."),

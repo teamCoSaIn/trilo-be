@@ -170,6 +170,10 @@ schedule-0011:
   message: Invalid Schedule Time
   detail: The startTime and endTime of a schedule cannot be null.
 
+schedule-0012:
+  message: Invalid Schedule Content
+  detail: The schedule content cannot be null;
+
 # 장소 관련
 place-0001:
   message: InvalidCoordinate

@@ -476,6 +476,7 @@ include::{snippets}/trip-temporary-storage-query-controller-docs-test/임시보�
 
 ===== 기본값
 - 생성된 일정의 시작시간, 종료시간의 초깃값은 각각 0시 0분입니다.
+- 생성된 일정의 본문은 기본적으로 빈 문자열입니다.
 
 ==== 요청
 ===== 헤더

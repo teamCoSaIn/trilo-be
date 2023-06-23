@@ -3,6 +3,7 @@ package com.cosain.trilo.unit.trip.application.schedule.command.dto.factory;
 import com.cosain.trilo.common.exception.CustomValidationException;
 import com.cosain.trilo.trip.application.schedule.command.usecase.dto.ScheduleUpdateCommand;
 import com.cosain.trilo.trip.application.schedule.command.usecase.dto.factory.ScheduleUpdateCommandFactory;
+import com.cosain.trilo.trip.domain.exception.InvalidScheduleContentException;
 import com.cosain.trilo.trip.domain.exception.InvalidScheduleTimeException;
 import com.cosain.trilo.trip.domain.exception.InvalidScheduleTitleException;
 import com.cosain.trilo.trip.domain.vo.ScheduleContent;
@@ -41,46 +42,6 @@ public class ScheduleUpdateCommandFactoryTest {
         assertThat(scheduleUpdateCommand.getScheduleTime()).isEqualTo(ScheduleTime.of(startTime, endTime));
     }
 
-
-    @DisplayName("일정 제목 null -> 검증 예외 발생")
-    @Test
-    void nullScheduleTitleTest() {
-        // given
-        String rawScheduleTitle = null;
-        String rawScheduleContent = "일정 본문";
-        LocalTime startTime = LocalTime.of(13,0);
-        LocalTime endTime = LocalTime.of(13,5);
-
-        // when
-        CustomValidationException cve = catchThrowableOfType(
-                () -> scheduleUpdateCommandFactory.createCommand(rawScheduleTitle, rawScheduleContent, startTime, endTime),
-                CustomValidationException.class);
-
-        // then
-        assertThat(cve).isNotNull();
-        assertThat(cve.getExceptions()).hasSize(1);
-        assertThat(cve.getExceptions().get(0)).isInstanceOf(InvalidScheduleTitleException.class);
-    }
-
-    @DisplayName("일정 제목 빈 문자열 -> 정상 생성")
-    @Test
-    void emptyScheduleTitleTest() {
-        // given
-        String rawScheduleTitle = "";
-        String rawScheduleContent = "일정 본문";
-        LocalTime startTime = LocalTime.of(13,0);
-        LocalTime endTime = LocalTime.of(13,5);
-
-        // when
-        ScheduleUpdateCommand scheduleUpdateCommand = scheduleUpdateCommandFactory.createCommand(
-                rawScheduleTitle, rawScheduleContent, startTime, endTime);
-
-        // then
-        assertThat(scheduleUpdateCommand.getScheduleTitle()).isEqualTo(ScheduleTitle.of(rawScheduleTitle));
-        assertThat(scheduleUpdateCommand.getScheduleContent()).isEqualTo(ScheduleContent.of(rawScheduleContent));
-        assertThat(scheduleUpdateCommand.getScheduleTime()).isEqualTo(ScheduleTime.of(startTime, endTime));
-    }
-
     @DisplayName("제목이 20자보다 긴 문자열 -> 검증 예외 발생")
     @Test
     void tooLongScheduleTitleTest() {
@@ -100,6 +61,27 @@ public class ScheduleUpdateCommandFactoryTest {
         assertThat(cve.getExceptions()).hasSize(1);
         assertThat(cve.getExceptions().get(0)).isInstanceOf(InvalidScheduleTitleException.class);
     }
+
+    @DisplayName("일정의 본문이 null -> 검증 예외 발생")
+    @Test
+    void nullContentTest() {
+        // given
+        String rawScheduleTitle = "일정 제목";
+        String rawScheduleContent = null;
+        LocalTime startTime = LocalTime.of(13,0);
+        LocalTime endTime = LocalTime.of(13,5);
+
+        // when
+        CustomValidationException cve = catchThrowableOfType(
+                () -> scheduleUpdateCommandFactory.createCommand(rawScheduleTitle, rawScheduleContent, startTime, endTime),
+                CustomValidationException.class);
+
+        // then
+        assertThat(cve).isNotNull();
+        assertThat(cve.getExceptions()).hasSize(1);
+        assertThat(cve.getExceptions().get(0)).isInstanceOf(InvalidScheduleContentException.class);
+    }
+
 
     @DisplayName("일정의 시작 시점이 null -> 검증 예외 발생")
     @Test

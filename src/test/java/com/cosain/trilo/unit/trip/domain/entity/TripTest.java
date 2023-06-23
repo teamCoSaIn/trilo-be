@@ -695,6 +695,10 @@ public class TripTest {
                 // 생성된 일정시간들은 디폴트 시간
                 assertThat(schedule1.getScheduleTime()).isEqualTo(ScheduleTime.defaultTime());
                 assertThat(schedule2.getScheduleTime()).isEqualTo(ScheduleTime.defaultTime());
+
+                // 생성된 일정제목들은 디폴트 제목
+                assertThat(schedule1.getScheduleContent()).isEqualTo(ScheduleContent.defaultContent());
+                assertThat(schedule2.getScheduleContent()).isEqualTo(ScheduleContent.defaultContent());
             }
         }
 
@@ -808,6 +812,10 @@ public class TripTest {
                 // 생성된 일정시간들은 디폴트 시간
                 assertThat(schedule1.getScheduleTime()).isEqualTo(ScheduleTime.defaultTime());
                 assertThat(schedule2.getScheduleTime()).isEqualTo(ScheduleTime.defaultTime());
+
+                // 생성된 일정제목들은 디폴트 제목
+                assertThat(schedule1.getScheduleContent()).isEqualTo(ScheduleContent.defaultContent());
+                assertThat(schedule2.getScheduleContent()).isEqualTo(ScheduleContent.defaultContent());
             }
         }
     }
