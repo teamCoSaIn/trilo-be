@@ -12,6 +12,8 @@ import com.cosain.trilo.trip.domain.vo.Place;
 import com.cosain.trilo.trip.domain.vo.ScheduleTitle;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +25,34 @@ import static org.assertj.core.api.Assertions.catchThrowableOfType;
 public class ScheduleCreateCommandFactoryTest {
 
     private ScheduleCreateCommandFactory scheduleCreateCommandFactory = new ScheduleCreateCommandFactory();
+
+
+    @DisplayName("(표준 성공 테스트) 정상 입력 -> command 정상 생성")
+    @Test
+    void normalSuccessTest() {
+        // given
+        Long dayId = 1L;
+        Long tripId = 1L;
+        String rawScheduleTitle = "일정 제목";
+        String placeId = "place-id";
+        String placeName = "place-name";
+        Double latitude = 37.11924;
+        Double longitude = 123.1274;
+        List<CustomException> exceptions = new ArrayList<>();
+
+        // when
+        ScheduleCreateCommand command = scheduleCreateCommandFactory.createCommand(
+                dayId, tripId, rawScheduleTitle,
+                placeId, placeName,
+                latitude, longitude, exceptions);
+
+        // then
+        assertThat(command).isNotNull();
+        assertThat(command.getDayId()).isEqualTo(dayId);
+        assertThat(command.getTripId()).isEqualTo(tripId);
+        assertThat(command.getScheduleTitle()).isEqualTo(ScheduleTitle.of(rawScheduleTitle));
+        assertThat(command.getPlace()).isEqualTo(Place.of(placeId, placeName, Coordinate.of(latitude, longitude)));
+    }
 
     @DisplayName("tripId null -> 검증 예외 발생")
     @Test
@@ -51,13 +81,40 @@ public class ScheduleCreateCommandFactoryTest {
         assertThat(cve.getExceptions().get(0)).isInstanceOf(NullTripIdException.class);
     }
 
-    @DisplayName("제목 null -> 검증 예외 발생")
+    @DisplayName("일정 제목이 null 아니고 20자 이하(공백 허용) -> 정상 생성")
+    @ValueSource(strings = {"일정 제목", "", "     "})
+    @ParameterizedTest
+    void scheduleTitleSuccessTest(String rawScheduleTitle) {
+        // given
+        Long dayId = 1L;
+        Long tripId = 1L;
+        String placeId = "place-id";
+        String placeName = "place-name";
+        Double latitude = 39.123;
+        Double longitude = 123.7712;
+        List<CustomException> exceptions = new ArrayList<>();
+
+        // when
+        ScheduleCreateCommand command = scheduleCreateCommandFactory.createCommand(
+                dayId, tripId, rawScheduleTitle,
+                placeId, placeName,
+                latitude, longitude, exceptions);
+
+        // then
+        assertThat(command).isNotNull();
+        assertThat(command.getDayId()).isEqualTo(dayId);
+        assertThat(command.getTripId()).isEqualTo(tripId);
+        assertThat(command.getScheduleTitle()).isEqualTo(ScheduleTitle.of(rawScheduleTitle));
+        assertThat(command.getPlace()).isEqualTo(Place.of(placeId, placeName, Coordinate.of(latitude, longitude)));
+    }
+
+    @DisplayName("일정 제목 null -> 검증 예외 발생")
     @Test
     void nullScheduleTitleTest() {
         // given
         Long dayId = 1L;
         Long tripId = 1L;
-        String rawScheduleTitle = null;
+        String rawScheduleTitle = null; // 일정 제목이 null
         String placeId = "place-id";
         String placeName = "place-name";
         Double latitude = 39.123;
@@ -79,67 +136,13 @@ public class ScheduleCreateCommandFactoryTest {
         assertThat(cve.getExceptions().get(0)).isInstanceOf(InvalidScheduleTitleException.class);
     }
 
-    @DisplayName("제목 빈 문자열 -> 검증 예외 발생")
-    @Test
-    void emptyScheduleTitleTest() {
-        // given
-        Long dayId = 1L;
-        Long tripId = 1L;
-        String rawScheduleTitle = "";
-        String placeId = "place-id";
-        String placeName = "place-name";
-        Double latitude = 39.123;
-        Double longitude = 123.7712;
-        List<CustomException> exceptions = new ArrayList<>();
-
-        // when
-        CustomValidationException cve = catchThrowableOfType(
-                () -> scheduleCreateCommandFactory.createCommand(
-                        dayId, tripId, rawScheduleTitle,
-                        placeId, placeName,
-                        latitude, longitude, exceptions),
-                CustomValidationException.class);
-
-        // then
-        assertThat(cve).isNotNull();
-        assertThat(cve.getExceptions()).hasSize(1);
-        assertThat(cve.getExceptions().get(0)).isInstanceOf(InvalidScheduleTitleException.class);
-    }
-
-    @DisplayName("제목 공백으로만 구성된 문자열 -> 검증 예외 발생")
-    @Test
-    void whiteSpaceScheduleTitleTest() {
-        // given
-        Long dayId = 1L;
-        Long tripId = 1L;
-        String rawScheduleTitle = "    ";
-        String placeId = "place-id";
-        String placeName = "place-name";
-        Double latitude = 39.123;
-        Double longitude = 123.7712;
-        List<CustomException> exceptions = new ArrayList<>();
-
-        // when
-        CustomValidationException cve = catchThrowableOfType(
-                () -> scheduleCreateCommandFactory.createCommand(
-                        dayId, tripId, rawScheduleTitle,
-                        placeId, placeName,
-                        latitude, longitude, exceptions),
-                CustomValidationException.class);
-
-        // then
-        assertThat(cve).isNotNull();
-        assertThat(cve.getExceptions()).hasSize(1);
-        assertThat(cve.getExceptions().get(0)).isInstanceOf(InvalidScheduleTitleException.class);
-    }
-
-    @DisplayName("제목이 제한 글자수보다 긴 문자열 -> 검증 예외 발생")
+    @DisplayName("제목이 20자보다 긴 문자열 -> 검증 예외 발생")
     @Test
     void tooLongScheduleTitleTest() {
         // given
         Long dayId = 1L;
         Long tripId = 1L;
-        String rawScheduleTitle = "가".repeat(ScheduleTitle.MAX_LENGTH + 1);
+        String rawScheduleTitle = "가".repeat(21);
         String placeId = "place-id";
         String placeName = "place-name";
         Double latitude = 39.123;
@@ -378,30 +381,4 @@ public class ScheduleCreateCommandFactoryTest {
         assertThat(cve.getExceptions().get(2)).isInstanceOf(InvalidCoordinateException.class);
     }
 
-    @DisplayName("정상 입력 -> command 정상 생성")
-    @Test
-    void successTest() {
-        // given
-        Long dayId = 1L;
-        Long tripId = 1L;
-        String rawScheduleTitle = "일정 제목";
-        String placeId = "place-id";
-        String placeName = "place-name";
-        Double latitude = 37.11924;
-        Double longitude = 123.1274;
-        List<CustomException> exceptions = new ArrayList<>();
-
-        // when
-        ScheduleCreateCommand command = scheduleCreateCommandFactory.createCommand(
-                dayId, tripId, rawScheduleTitle,
-                placeId, placeName,
-                latitude, longitude, exceptions);
-
-        // then
-        assertThat(command).isNotNull();
-        assertThat(command.getDayId()).isEqualTo(dayId);
-        assertThat(command.getTripId()).isEqualTo(tripId);
-        assertThat(command.getScheduleTitle()).isEqualTo(ScheduleTitle.of(rawScheduleTitle));
-        assertThat(command.getPlace()).isEqualTo(Place.of(placeId, placeName, Coordinate.of(latitude, longitude)));
-    }
 }
