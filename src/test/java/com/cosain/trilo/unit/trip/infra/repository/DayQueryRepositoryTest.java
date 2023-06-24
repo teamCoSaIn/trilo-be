@@ -121,6 +121,27 @@ public class DayQueryRepositoryTest {
         }
 
         @Test
+        void Day에_해당하는_Schedule이_하나도_존재하지_않는_경우_ScheduleSummary_리스트의_크기는_0_이된다() {
+            // given
+            Trip trip = TripFixture.DECIDED_TRIP.createDecided(null, 1L, "여행 제목", LocalDate.of(2023,5,10), LocalDate.of(2023,5,11));
+
+            Day day1 = trip.getDays().get(0);
+            Day day2 = trip.getDays().get(1);
+            em.persist(trip);
+            em.persist(day1);
+            em.persist(day2);
+
+            // when
+            List<DayScheduleDetail> dayScheduleDetails = dayQueryRepository.findDayScheduleListByTripId(trip.getId());
+            List<ScheduleSummary> findSchedules = dayScheduleDetails.get(0).getSchedules();
+
+            assertThat(findSchedules).isEmpty();
+            assertThat(findSchedules.size()).isEqualTo(0);
+        }
+
+
+
+        @Test
         @DisplayName("여행 날짜 기준 오름차순, 일정 순서값 기준 오름 차순으로 조회된다.")
         void sortTest(){
 

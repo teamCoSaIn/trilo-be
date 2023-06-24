@@ -66,7 +66,7 @@ public class DayQueryRepository {
                                         schedule.place.placeId,
                                         schedule.place.coordinate.latitude,
                                         schedule.place.coordinate.longitude
-                                ))
+                                ).skipNulls())
                         ))
                 );
     }
