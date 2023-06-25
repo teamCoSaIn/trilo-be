@@ -2,6 +2,7 @@ package com.cosain.trilo.trip.application.trip.query.service;
 
 import com.cosain.trilo.trip.application.exception.TripperNotFoundException;
 import com.cosain.trilo.trip.application.trip.query.usecase.TripListSearchUseCase;
+import com.cosain.trilo.trip.infra.adapter.TripImageOutputAdapter;
 import com.cosain.trilo.trip.infra.dto.TripSummary;
 import com.cosain.trilo.trip.infra.repository.trip.TripQueryRepository;
 import com.cosain.trilo.trip.presentation.trip.query.dto.request.TripPageCondition;
@@ -21,13 +22,20 @@ public class TripListSearchService implements TripListSearchUseCase {
 
     private final TripQueryRepository tripQueryRepository;
     private final UserRepository userRepository;
+    private final TripImageOutputAdapter tripImageOutputAdapter;
 
     @Override
     public Slice<TripSummary> searchTripSummaries(TripPageCondition tripPageCondition, Pageable pageable) {
 
         verifyTripperExists(tripPageCondition.getTripperId());
         Slice<TripSummary> tripSummaries = findTripSummaries(tripPageCondition, pageable);
+        updateImageUrlWithPath(tripSummaries);
         return tripSummaries;
+    }
+
+    private void updateImageUrlWithPath(Slice<TripSummary> tripSummaries) {
+        tripSummaries.stream().forEach(tripSummary ->
+                tripSummary.updateImageUrl(tripImageOutputAdapter.getTripImageFullPath(tripSummary.getImageUrl())));
     }
 
     private void verifyTripperExists(Long tripperId){
