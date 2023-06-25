@@ -46,9 +46,9 @@ public class TripperTripListQueryControllerDocsTest extends RestDocsTestSupport 
         Long tripperId = 1L;
         Long tripId = 5L;
         int size = 3;
-        TripSummary tripSummary1 = new TripSummary(4L, tripperId, "제목 1", TripStatus.DECIDED, LocalDate.of(2023, 3,4), LocalDate.of(2023, 4, 1));
-        TripSummary tripSummary2 = new TripSummary(3L, tripperId, "제목 2", TripStatus.UNDECIDED, null, null);
-        TripSummary tripSummary3 = new TripSummary(2L, tripperId, "제목 3", TripStatus.DECIDED, LocalDate.of(2023, 4,4), LocalDate.of(2023, 4, 5));
+        TripSummary tripSummary1 = new TripSummary(4L, tripperId, "제목 1", TripStatus.DECIDED, LocalDate.of(2023, 3,4), LocalDate.of(2023, 4, 1), "image.jpg");
+        TripSummary tripSummary2 = new TripSummary(3L, tripperId, "제목 2", TripStatus.UNDECIDED, null, null, "image.jpg");
+        TripSummary tripSummary3 = new TripSummary(2L, tripperId, "제목 3", TripStatus.DECIDED, LocalDate.of(2023, 4,4), LocalDate.of(2023, 4, 5), "image.jpg");
         Pageable pageable = PageRequest.ofSize(size);
         SliceImpl<TripSummary> tripDetails = new SliceImpl<>(List.of(tripSummary1, tripSummary2, tripSummary3), pageable, true);
 
@@ -84,7 +84,8 @@ public class TripperTripListQueryControllerDocsTest extends RestDocsTestSupport 
                                 fieldWithPath("title").type(STRING).description("여행 제목"),
                                 fieldWithPath("status").type(STRING).description("여행 상태"),
                                 fieldWithPath("startDate").type(STRING).description("여행 시작 날짜"),
-                                fieldWithPath("endDate").type(STRING).description("여행 끝 날짜")
+                                fieldWithPath("endDate").type(STRING).description("여행 끝 날짜"),
+                                fieldWithPath("imagePath").type(STRING).description("이미지 파일 위치")
                         )
                 ));
     }

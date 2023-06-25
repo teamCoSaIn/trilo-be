@@ -3,6 +3,7 @@ package com.cosain.trilo.unit.trip.application.trip.query.service;
 import com.cosain.trilo.trip.application.exception.TripperNotFoundException;
 import com.cosain.trilo.trip.application.trip.query.service.TripListSearchService;
 import com.cosain.trilo.trip.domain.vo.TripStatus;
+import com.cosain.trilo.trip.infra.adapter.TripImageOutputAdapter;
 import com.cosain.trilo.trip.infra.dto.TripSummary;
 import com.cosain.trilo.trip.infra.repository.trip.TripQueryRepository;
 import com.cosain.trilo.trip.presentation.trip.query.dto.request.TripPageCondition;
@@ -25,7 +26,7 @@ import java.util.Optional;
 import static com.cosain.trilo.fixture.UserFixture.KAKAO_MEMBER;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 
 @ExtendWith(MockitoExtension.class)
@@ -39,18 +40,22 @@ public class TripListSearchServiceTest {
     @Mock
     private UserRepository userRepository;
 
+    @Mock
+    private TripImageOutputAdapter tripImageOutputAdapter;
+
     @Test
     @DisplayName("정상 호출 시에 호출 및 반환 테스트")
     void searchTripDetailsTest(){
         // given
         Long tripperId = 1L;
         Pageable pageable = PageRequest.of(0, 10);
-        TripSummary tripSummary1 = new TripSummary(1L, tripperId, "여행 1", TripStatus.DECIDED, LocalDate.now(), LocalDate.now());
-        TripSummary tripSummary2 = new TripSummary(2L, tripperId, "여행 2", TripStatus.UNDECIDED, LocalDate.now(), LocalDate.now());
+        TripSummary tripSummary1 = new TripSummary(1L, tripperId, "여행 1", TripStatus.DECIDED, LocalDate.now(), LocalDate.now(), "image.jpg");
+        TripSummary tripSummary2 = new TripSummary(2L, tripperId, "여행 2", TripStatus.UNDECIDED, LocalDate.now(), LocalDate.now(), "image.jpg");
 
         Slice<TripSummary> tripSummaries = new PageImpl<>(List.of(tripSummary1, tripSummary2));
 
         TripPageCondition tripPageCondition = new TripPageCondition(1L, 1L);
+        given(tripImageOutputAdapter.getTripImageFullPath(anyString())).willReturn("ImageFullPath");
         given(userRepository.findById(eq(1L))).willReturn(Optional.of(KAKAO_MEMBER.create()));
         given(tripQueryRepository.findTripSummariesByTripperId(tripPageCondition, pageable)).willReturn(tripSummaries);
 

@@ -46,9 +46,9 @@ class TripperTripListQueryControllerTest extends RestControllerTest {
         // given
         mockingForLoginUserAnnotation();
 
-        TripSummary tripSummary1 = new TripSummary(1L, 1L, "제목 1", TripStatus.DECIDED, LocalDate.of(2023, 3,4), LocalDate.of(2023, 4, 1));
-        TripSummary tripSummary2 = new TripSummary(2L, 1L, "제목 2", TripStatus.UNDECIDED, null, null);
-        TripSummary tripSummary3 = new TripSummary(3L, 1L, "제목 3", TripStatus.DECIDED, LocalDate.of(2023, 4,4), LocalDate.of(2023, 4, 5));
+        TripSummary tripSummary1 = new TripSummary(1L, 1L, "제목 1", TripStatus.DECIDED, LocalDate.of(2023, 3,4), LocalDate.of(2023, 4, 1), "image.jpg");
+        TripSummary tripSummary2 = new TripSummary(2L, 1L, "제목 2", TripStatus.UNDECIDED, null, null, "image.jpg");
+        TripSummary tripSummary3 = new TripSummary(3L, 1L, "제목 3", TripStatus.DECIDED, LocalDate.of(2023, 4,4), LocalDate.of(2023, 4, 5), "image.jpg");
         Pageable pageable = PageRequest.of(0, 3);
         SliceImpl<TripSummary> tripDetails = new SliceImpl<>(List.of(tripSummary3, tripSummary2, tripSummary1), pageable, true);
 
