@@ -35,7 +35,7 @@ public class TripListSearchService implements TripListSearchUseCase {
 
     private void updateImagePath(Slice<TripSummary> tripSummaries) {
         tripSummaries.stream().forEach(tripSummary ->
-                tripSummary.updateImageUrl(tripImageOutputAdapter.getTripImageFullPath(tripSummary.getImagePath())));
+                tripSummary.updateImagePath(tripImageOutputAdapter.getTripImageFullPath(tripSummary.getImagePath())));
     }
 
     private void verifyTripperExists(Long tripperId){

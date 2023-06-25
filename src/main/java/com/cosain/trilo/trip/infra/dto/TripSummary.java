@@ -27,7 +27,7 @@ public class TripSummary {
         this.imagePath = imageName;
     }
 
-    public void updateImageUrl(String imageUrl){
-        this.imagePath = imageUrl;
+    public void updateImagePath(String imagePath){
+        this.imagePath = imagePath;
     }
 }
