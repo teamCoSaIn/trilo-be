@@ -29,13 +29,13 @@ public class TripListSearchService implements TripListSearchUseCase {
 
         verifyTripperExists(tripPageCondition.getTripperId());
         Slice<TripSummary> tripSummaries = findTripSummaries(tripPageCondition, pageable);
-        updateImageUrlWithPath(tripSummaries);
+        updateImagePath(tripSummaries);
         return tripSummaries;
     }
 
-    private void updateImageUrlWithPath(Slice<TripSummary> tripSummaries) {
+    private void updateImagePath(Slice<TripSummary> tripSummaries) {
         tripSummaries.stream().forEach(tripSummary ->
-                tripSummary.updateImageUrl(tripImageOutputAdapter.getTripImageFullPath(tripSummary.getImageUrl())));
+                tripSummary.updateImageUrl(tripImageOutputAdapter.getTripImageFullPath(tripSummary.getImagePath())));
     }
 
     private void verifyTripperExists(Long tripperId){

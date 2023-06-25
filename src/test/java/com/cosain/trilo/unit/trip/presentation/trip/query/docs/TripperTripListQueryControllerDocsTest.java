@@ -85,7 +85,7 @@ public class TripperTripListQueryControllerDocsTest extends RestDocsTestSupport 
                                 fieldWithPath("status").type(STRING).description("여행 상태"),
                                 fieldWithPath("startDate").type(STRING).description("여행 시작 날짜"),
                                 fieldWithPath("endDate").type(STRING).description("여행 끝 날짜"),
-                                fieldWithPath("imageUrl").type(STRING).description("이미지 파일 위치")
+                                fieldWithPath("imagePath").type(STRING).description("이미지 파일 위치")
                         )
                 ));
     }
