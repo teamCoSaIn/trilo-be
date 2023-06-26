@@ -284,7 +284,7 @@ include::{snippets}/trip-period-update-controller-docs-test/update-trip-period_w
 - 인증방식 : 액세스 토큰
 
 요청한 여행의 이미지를 수정합니다.
-수정이 성공됐을 경우, 다시 여행의 식별자와 여행 이미지의 URL을 응답합니다.
+수정이 성공됐을 경우, 다시 여행의 식별자와 여행 이미지의 URL(경로)을 응답합니다.
 
 
 ==== 요청
@@ -326,7 +326,7 @@ Content-Type: image/jpeg
 ===== 응답
 include::{snippets}/trip-image-update-controller-docs-test/trip-image-update-api-docs-test/http-response.adoc[]
 
-서버는 요청 사항에 맞게 여행의 이미지을 수정하고, 수정된 여행의 식별자 및 저장 경로 URL을 반환합니다.
+서버는 요청 사항에 맞게 여행의 이미지을 수정하고, 수정된 여행의 식별자 및 저장 URL(경로)를 반환합니다.
 
 '''
 

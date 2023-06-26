@@ -14,7 +14,7 @@ public class TripSummary {
     private String status;
     private LocalDate startDate;
     private LocalDate endDate;
-    private String imagePath;
+    private String imageURL;
 
     @QueryProjection
     public TripSummary(long tripId, long tripperId, String title, Enum status, LocalDate startDate, LocalDate endDate, String imageName) {
@@ -24,10 +24,10 @@ public class TripSummary {
         this.status = status.name();
         this.startDate = startDate;
         this.endDate = endDate;
-        this.imagePath = imageName;
+        this.imageURL = imageName;
     }
 
-    public void updateImagePath(String imagePath){
-        this.imagePath = imagePath;
+    public void updateImageURL(String imageURL){
+        this.imageURL = imageURL;
     }
 }

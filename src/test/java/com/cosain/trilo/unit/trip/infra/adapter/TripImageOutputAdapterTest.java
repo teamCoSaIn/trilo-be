@@ -30,7 +30,7 @@ public class TripImageOutputAdapterTest {
     private TripImageOutputAdapter tripImageOutputAdapter;
 
     private AmazonS3 amazonS3;
-     private String bucketName;
+    private String bucketName;
     private String bucketPath;
 
     @BeforeEach
@@ -71,16 +71,16 @@ public class TripImageOutputAdapterTest {
     }
 
     @Test
-    @DisplayName("getTripImageFullPath -> 여행 이미지의 전체 경로를 얻어온다.")
-    void testGetTripImageFullPath() {
+    @DisplayName("getFullTripImageURL -> 여행 이미지의 전체 경로를 얻어온다.")
+    void testGetFUllTripImageURL() {
         // given
         String fileName = "trips/1/12760-fa712554-123.jpeg";
 
         // when
-        String fullImagePath = tripImageOutputAdapter.getTripImageFullPath(fileName);
+        String fullImageURL = tripImageOutputAdapter.getFullTripImageURL(fileName);
 
         // then
-        assertThat(fullImagePath).isEqualTo(bucketPath.concat(fileName));
+        assertThat(fullImageURL).isEqualTo(bucketPath.concat(fileName));
     }
 
     private ImageFile imageFileFixture(String testImageResourceFileName) throws IOException {

@@ -6,10 +6,10 @@ import lombok.Getter;
 public class TripImageUpdateResponse {
 
     private Long tripId;
-    private String imagePath;
+    private String imageURL;
 
-    public TripImageUpdateResponse(Long tripId, String imagePath) {
+    public TripImageUpdateResponse(Long tripId, String imageURL) {
         this.tripId = tripId;
-        this.imagePath = imagePath;
+        this.imageURL = imageURL;
     }
 }

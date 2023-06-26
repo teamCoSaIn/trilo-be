@@ -56,9 +56,9 @@ public class TripImageUpdateControllerDocsTest extends RestDocsTestSupport {
 
         MockMultipartFile multipartFile = new MockMultipartFile(name, fileName, contentType, fileInputStream);
 
-        String imagePath = String.format("https://{이미지 파일 저장소 주소}/trips/%s/{이미지 파일명}.jpeg", tripId);
+        String imageURL = String.format("https://{이미지 파일 저장소 주소}/trips/%s/{이미지 파일명}.jpeg", tripId);
         given(tripImageUpdateUseCase.updateTripImage(eq(tripId), any(), any(ImageFile.class)))
-                .willReturn(imagePath);
+                .willReturn(imageURL);
 
         mockMvc.perform(multipart("/api/trips/{tripId}/image/update", tripId)
                         .file(multipartFile)
@@ -69,7 +69,7 @@ public class TripImageUpdateControllerDocsTest extends RestDocsTestSupport {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.tripId").value(tripId))
-                .andExpect(jsonPath("$.imagePath").value(imagePath))
+                .andExpect(jsonPath("$.imageURL").value(imageURL))
                 .andDo(restDocs.document(
                         requestHeaders(headerWithName(HttpHeaders.AUTHORIZATION)
                                         .description("Bearer 타입 AccessToken")
@@ -86,9 +86,9 @@ public class TripImageUpdateControllerDocsTest extends RestDocsTestSupport {
                                 fieldWithPath("tripId")
                                         .type(NUMBER)
                                         .description("수정된 여행(trip) 식별자(id)"),
-                                fieldWithPath("imagePath")
+                                fieldWithPath("imageURL")
                                         .type(STRING)
-                                        .description("이미지가 저장된 경로 URL")
+                                        .description("이미지가 저장된 URL(경로)")
                         )
                 ));
 
