@@ -21,8 +21,8 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.http.HttpMethod.POST;
-import static org.springframework.http.HttpMethod.PUT;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -51,9 +51,9 @@ public class TripImageUpdateControllerTest extends RestControllerTest {
 
         MockMultipartFile multipartFile = new MockMultipartFile(name, fileName, contentType, fileInputStream);
 
-        String imagePath = String.format("https://{이미지 파일 저장소 주소}/trips/%s/{이미지 파일명}.jpeg", tripId);
+        String imageURL = String.format("https://{이미지 파일 저장소 주소}/trips/%s/{이미지 파일명}.jpeg", tripId);
         given(tripImageUpdateUseCase.updateTripImage(eq(tripId), any(), any(ImageFile.class)))
-                .willReturn(imagePath);
+                .willReturn(imageURL);
 
         mockMvc.perform(multipart(POST, "/api/trips/{tripId}/image/update", tripId)
                         .file(multipartFile)
@@ -64,7 +64,7 @@ public class TripImageUpdateControllerTest extends RestControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.tripId").value(tripId))
-                .andExpect(jsonPath("$.imagePath").value(imagePath));
+                .andExpect(jsonPath("$.imageURL").value(imageURL));
 
         verify(tripImageUpdateUseCase, times(1)).updateTripImage(eq(tripId), any(), any(ImageFile.class));
     }
@@ -84,9 +84,9 @@ public class TripImageUpdateControllerTest extends RestControllerTest {
 
         MockMultipartFile multipartFile = new MockMultipartFile(name, fileName, contentType, fileInputStream);
 
-        String imagePath = String.format("https://{이미지 파일 저장소 주소}/trips/%s/{이미지 파일명}.gif", tripId);
+        String imageURL = String.format("https://{이미지 파일 저장소 주소}/trips/%s/{이미지 파일명}.gif", tripId);
         given(tripImageUpdateUseCase.updateTripImage(eq(tripId), any(), any(ImageFile.class)))
-                .willReturn(imagePath);
+                .willReturn(imageURL);
 
         mockMvc.perform(multipart(POST, "/api/trips/{tripId}/image/update", tripId)
                         .file(multipartFile)
@@ -97,7 +97,7 @@ public class TripImageUpdateControllerTest extends RestControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.tripId").value(tripId))
-                .andExpect(jsonPath("$.imagePath").value(imagePath));
+                .andExpect(jsonPath("$.imageURL").value(imageURL));
 
         verify(tripImageUpdateUseCase, times(1)).updateTripImage(eq(tripId), any(), any(ImageFile.class));
     }
@@ -116,9 +116,9 @@ public class TripImageUpdateControllerTest extends RestControllerTest {
 
         MockMultipartFile multipartFile = new MockMultipartFile(name, fileName, contentType, fileInputStream);
 
-        String imagePath = String.format("https://{이미지 파일 저장소 주소}/trips/%s/{이미지 파일명}.png", tripId);
+        String imageURL = String.format("https://{이미지 파일 저장소 주소}/trips/%s/{이미지 파일명}.png", tripId);
         given(tripImageUpdateUseCase.updateTripImage(eq(tripId), any(), any(ImageFile.class)))
-                .willReturn(imagePath);
+                .willReturn(imageURL);
 
         mockMvc.perform(multipart(POST, "/api/trips/{tripId}/image/update", tripId)
                         .file(multipartFile)
@@ -129,7 +129,7 @@ public class TripImageUpdateControllerTest extends RestControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.tripId").value(tripId))
-                .andExpect(jsonPath("$.imagePath").value(imagePath));
+                .andExpect(jsonPath("$.imageURL").value(imageURL));
 
         verify(tripImageUpdateUseCase, times(1)).updateTripImage(eq(tripId), any(), any(ImageFile.class));
     }
@@ -147,9 +147,9 @@ public class TripImageUpdateControllerTest extends RestControllerTest {
         String contentType = "image/webp";
 
         MockMultipartFile multipartFile = new MockMultipartFile(name, fileName, contentType, fileInputStream);
-        String imagePath = String.format("https://{이미지 파일 저장소 주소}/trips/%s/{이미지 파일명}.webp", tripId);
+        String imageURL = String.format("https://{이미지 파일 저장소 주소}/trips/%s/{이미지 파일명}.webp", tripId);
         given(tripImageUpdateUseCase.updateTripImage(eq(tripId), any(), any(ImageFile.class)))
-                .willReturn(imagePath);
+                .willReturn(imageURL);
 
         mockMvc.perform(multipart(POST, "/api/trips/{tripId}/image/update", tripId)
                         .file(multipartFile)
@@ -160,7 +160,7 @@ public class TripImageUpdateControllerTest extends RestControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.tripId").value(tripId))
-                .andExpect(jsonPath("$.imagePath").value(imagePath));
+                .andExpect(jsonPath("$.imageURL").value(imageURL));
 
         verify(tripImageUpdateUseCase, times(1)).updateTripImage(eq(tripId), any(), any(ImageFile.class));
     }

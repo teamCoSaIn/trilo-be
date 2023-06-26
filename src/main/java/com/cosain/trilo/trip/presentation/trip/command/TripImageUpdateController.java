@@ -35,8 +35,8 @@ public class TripImageUpdateController {
         Long tripperId = user.getId();
         ImageFile imageFile = ImageFile.from(multipartFile);
 
-        String imagePath = tripImageUpdateUseCase.updateTripImage(tripId, tripperId, imageFile);
-        return new TripImageUpdateResponse(tripId, imagePath);
+        String imageURL = tripImageUpdateUseCase.updateTripImage(tripId, tripperId, imageFile);
+        return new TripImageUpdateResponse(tripId, imageURL);
     }
 
 }

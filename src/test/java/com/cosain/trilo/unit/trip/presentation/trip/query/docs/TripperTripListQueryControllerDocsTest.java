@@ -6,6 +6,7 @@ import com.cosain.trilo.trip.domain.vo.TripStatus;
 import com.cosain.trilo.trip.infra.dto.TripSummary;
 import com.cosain.trilo.trip.presentation.trip.query.TripperTripListQueryController;
 import com.cosain.trilo.trip.presentation.trip.query.dto.request.TripPageCondition;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -29,6 +30,7 @@ import static org.springframework.restdocs.payload.JsonFieldType.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(TripperTripListQueryController.class)
@@ -40,7 +42,8 @@ public class TripperTripListQueryControllerDocsTest extends RestDocsTestSupport 
     private final String ACCESS_TOKEN = "Bearer accessToken";
 
     @Test
-    void 사용자_여행_목록_조회() throws Exception{
+    @DisplayName("여행자(사용자)의 여행 목록 조회 문서화 테스트")
+    void tripperTripListQueryDocsTest() throws Exception{
         mockingForLoginUserAnnotation();
 
         Long tripperId = 1L;
@@ -62,7 +65,16 @@ public class TripperTripListQueryControllerDocsTest extends RestDocsTestSupport 
                         .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpectAll(status().isOk())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.hasNext").value(true))
+                .andExpect(jsonPath("$.trips").isNotEmpty())
+                .andExpect(jsonPath("$.trips.[*].tripId").exists())
+                .andExpect(jsonPath("$.trips.[*].tripperId").exists())
+                .andExpect(jsonPath("$.trips.[*].title").exists())
+                .andExpect(jsonPath("$.trips.[*].status").exists())
+                .andExpect(jsonPath("$.trips.[*].startDate").exists())
+                .andExpect(jsonPath("$.trips.[*].endDate").exists())
+                .andExpect(jsonPath("$.trips.[*].imageURL").exists())
                 .andDo(restDocs.document(
                         requestHeaders(
                                 headerWithName(HttpHeaders.AUTHORIZATION)
@@ -85,7 +97,7 @@ public class TripperTripListQueryControllerDocsTest extends RestDocsTestSupport 
                                 fieldWithPath("status").type(STRING).description("여행 상태"),
                                 fieldWithPath("startDate").type(STRING).description("여행 시작 날짜"),
                                 fieldWithPath("endDate").type(STRING).description("여행 끝 날짜"),
-                                fieldWithPath("imagePath").type(STRING).description("이미지 파일 위치")
+                                fieldWithPath("imageURL").type(STRING).description("이미지가 저장된 URL(경로)")
                         )
                 ));
     }

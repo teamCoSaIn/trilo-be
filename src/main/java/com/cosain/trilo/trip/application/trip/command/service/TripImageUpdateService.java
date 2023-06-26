@@ -29,7 +29,7 @@ public class TripImageUpdateService implements TripImageUpdateUseCase {
      * @param tripId : 여행의 식별자
      * @param tripperId : 사용자(여행자)의 식별자
      * @param file : 이미지 파일
-     * @return 교체된 이미지의 전체 경로 URL
+     * @return 교체된 이미지의 전체 URL(경로)
      * @throws TripNotFoundException : 일치하는 식별자의 여행을 찾을 수 없을 경우 발생
      * @throws NoTripUpdateAuthorityException : 여행을 수정할 권한이 없을 때 발생
      * @throws TripImageUploadFailedException : 여행의 이미지를 이미지 저장소에 올리는데 실패했을 때 발생
@@ -47,7 +47,7 @@ public class TripImageUpdateService implements TripImageUpdateUseCase {
         tripImageOutputAdapter.uploadImage(file, uploadName); // 이미지 저장소에 업로드 후, 전체 이미지 경로(fullPath)를 구성
 
         trip.changeImage(TripImage.of(uploadName)); // 여행이미지 도메인의 실제 이미지 변경
-        return tripImageOutputAdapter.getTripImageFullPath(uploadName); // 이미지 전체 경로를 반환
+        return tripImageOutputAdapter.getFullTripImageURL(uploadName); // 이미지 전체 경로를 반환
     }
 
     /**

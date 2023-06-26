@@ -7,6 +7,7 @@ import com.cosain.trilo.trip.domain.vo.TripStatus;
 import com.cosain.trilo.trip.infra.dto.TripSummary;
 import com.cosain.trilo.trip.presentation.trip.query.TripperTripListQueryController;
 import com.cosain.trilo.trip.presentation.trip.query.dto.request.TripPageCondition;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -22,6 +23,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.List;
 
+import static org.hamcrest.Matchers.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -46,22 +48,32 @@ class TripperTripListQueryControllerTest extends RestControllerTest {
         // given
         mockingForLoginUserAnnotation();
 
-        TripSummary tripSummary1 = new TripSummary(1L, 1L, "제목 1", TripStatus.DECIDED, LocalDate.of(2023, 3,4), LocalDate.of(2023, 4, 1), "image.jpg");
-        TripSummary tripSummary2 = new TripSummary(2L, 1L, "제목 2", TripStatus.UNDECIDED, null, null, "image.jpg");
-        TripSummary tripSummary3 = new TripSummary(3L, 1L, "제목 3", TripStatus.DECIDED, LocalDate.of(2023, 4,4), LocalDate.of(2023, 4, 5), "image.jpg");
+        long tripperId = 1L;
+
+        TripSummary tripSummary1 = new TripSummary(1L, tripperId, "제목 1", TripStatus.DECIDED, LocalDate.of(2023, 3,4), LocalDate.of(2023, 4, 1), "image.jpg");
+        TripSummary tripSummary2 = new TripSummary(2L, tripperId, "제목 2", TripStatus.UNDECIDED, null, null, "image.jpg");
+        TripSummary tripSummary3 = new TripSummary(3L, tripperId, "제목 3", TripStatus.DECIDED, LocalDate.of(2023, 4,4), LocalDate.of(2023, 4, 5), "image.jpg");
         Pageable pageable = PageRequest.of(0, 3);
+
         SliceImpl<TripSummary> tripDetails = new SliceImpl<>(List.of(tripSummary3, tripSummary2, tripSummary1), pageable, true);
 
         given(tripListSearchUseCase.searchTripSummaries(any(TripPageCondition.class), any(Pageable.class))).willReturn(tripDetails);
 
         // when & then
-        mockMvc.perform(get("/api/trips?tripper-id=1")
+        mockMvc.perform(get("/api/trips?tripper-id={tripperId}", tripperId)
                         .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpectAll(status().isOk())
                 .andExpect(jsonPath("$.hasNext").value(true))
-                .andExpect(jsonPath("$.trips").isNotEmpty());
+                .andExpect(jsonPath("$.trips").isNotEmpty())
+                .andExpect(jsonPath("$.trips.[*].tripId").exists())
+                .andExpect(jsonPath("$.trips.[*].tripperId").exists())
+                .andExpect(jsonPath("$.trips.[*].title").exists())
+                .andExpect(jsonPath("$.trips.[*].status").exists())
+                .andExpect(jsonPath("$.trips.[*].startDate").exists())
+                .andExpect(jsonPath("$.trips.[*].endDate").exists())
+                .andExpect(jsonPath("$.trips.[*].imageURL").exists());
     }
 
     @Test

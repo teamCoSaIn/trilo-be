@@ -37,11 +37,11 @@ public class TripImageOutputAdapter {
     }
 
     /**
-     * 여행 이미지의 전체 경로(URL)을 얻어옵니다.
+     * 여행 이미지의 전체 URL(경로)을 얻어옵니다.
      * @param uploadedFileName
      * @return
      */
-    public String getTripImageFullPath(String uploadedFileName) {
+    public String getFullTripImageURL(String uploadedFileName) {
         return bucketPath.concat(uploadedFileName);
     }
 
