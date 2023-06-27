@@ -1,22 +1,26 @@
 package com.cosain.trilo.user.presentation;
 
 import com.cosain.trilo.common.LoginUser;
+import com.cosain.trilo.user.application.UserService;
 import com.cosain.trilo.user.domain.User;
 import com.cosain.trilo.user.presentation.dto.UserProfileResponse;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/users")
+@RequiredArgsConstructor
 public class UserRestController {
 
-    @GetMapping("/profile")
+    private final UserService userService;
+
+    @GetMapping("/{userId}/profile")
     @ResponseStatus(HttpStatus.OK)
-    public UserProfileResponse getUserProfile(@LoginUser User user){
-        return UserProfileResponse.from(user);
+    public UserProfileResponse getUserProfile(@PathVariable Long userId, @LoginUser User user){
+        UserProfileResponse userProfileResponse = userService.getUserProfile(userId, user.getId());
+        return userProfileResponse;
     }
 
 }
