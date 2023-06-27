@@ -13,16 +13,16 @@ public class UserProfileResponse {
     private Long id;
     private String name;
     private String email;
-    private String profileImageUrl;
+    private String profileImageURL;
     private AuthProvider authProvider;
     private Role role;
 
     @Builder(access = AccessLevel.PRIVATE)
-    private UserProfileResponse(Long id, String name, String email, String profileImageUrl, AuthProvider authProvider, Role role) {
+    private UserProfileResponse(Long id, String name, String email, String profileImageURL, AuthProvider authProvider, Role role) {
         this.id = id;
         this.name = name;
         this.email = email;
-        this.profileImageUrl = profileImageUrl;
+        this.profileImageURL = profileImageURL;
         this.authProvider = authProvider;
         this.role = role;
     }
@@ -32,7 +32,7 @@ public class UserProfileResponse {
                 .id(user.getId())
                 .name(user.getName())
                 .email(user.getEmail())
-                .profileImageUrl(user.getProfileImageUrl())
+                .profileImageURL(user.getProfileImageURL())
                 .authProvider(user.getAuthProvider())
                 .role(user.getRole())
                 .build();

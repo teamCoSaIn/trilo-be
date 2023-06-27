@@ -24,7 +24,7 @@ public class User {
     private String email;
 
     @Column(nullable = true)
-    private String profileImageUrl;
+    private String profileImageURL;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
@@ -39,7 +39,7 @@ public class User {
         this.id = id;
         this.name = name;
         this.email = email;
-        this.profileImageUrl = profileImageUrl;
+        this.profileImageURL = profileImageUrl;
         this.authProvider = authProvider;
         this.role = role;
     }
@@ -56,6 +56,6 @@ public class User {
 
     public void updateUserByOauthProfile(OAuthProfileDto oAuthProfileDto) {
         this.name = oAuthProfileDto.getName();
-        this.profileImageUrl = oAuthProfileDto.getProfileImageUrl();
+        this.profileImageURL = oAuthProfileDto.getProfileImageUrl();
     }
 }
