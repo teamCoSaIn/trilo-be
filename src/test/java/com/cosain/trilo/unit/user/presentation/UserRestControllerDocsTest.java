@@ -35,7 +35,7 @@ public class UserRestControllerDocsTest extends RestDocsTestSupport {
                                 fieldWithPath("id").type(JsonFieldType.NUMBER).description("회원 ID"),
                                 fieldWithPath("name").type(JsonFieldType.STRING).description("회원 이름"),
                                 fieldWithPath("email").type(JsonFieldType.STRING).description("이메일"),
-                                fieldWithPath("profileImageURL").type(JsonFieldType.STRING).description("프로필 이미지 URL"),
+                                fieldWithPath("profileImageURL").type(JsonFieldType.STRING).description("회원 프로필 이미지 URL(경로)"),
                                 fieldWithPath("authProvider").type(JsonFieldType.STRING).description("소셜 로그인 제공자"),
                                 fieldWithPath("role").type(JsonFieldType.STRING).description("회원 자격 (MEMBER, ADMIN)")
                         )
