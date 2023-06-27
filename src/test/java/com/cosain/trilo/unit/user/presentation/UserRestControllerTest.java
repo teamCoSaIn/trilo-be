@@ -14,7 +14,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import static com.cosain.trilo.fixture.UserFixture.KAKAO_MEMBER;
 import static org.mockito.BDDMockito.given;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 @WebMvcTest(UserRestController.class)
@@ -47,7 +46,6 @@ public class UserRestControllerTest extends RestControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isUnauthorized())
                 .andExpect(jsonPath("$.errorCode").value("auth-0001"))
                 .andExpect(jsonPath("$.errorMessage").exists())
-                .andExpect(jsonPath("$.errorDetail").exists())
-                .andDo(print());
+                .andExpect(jsonPath("$.errorDetail").exists());
     }
 }
