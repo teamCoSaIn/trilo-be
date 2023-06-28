@@ -42,8 +42,7 @@ public class TripperTripListQueryControllerDocsTest extends RestDocsTestSupport 
     private final String ACCESS_TOKEN = "Bearer accessToken";
 
     @Test
-    @DisplayName("여행자(사용자)의 여행 목록 조회 문서화 테스트")
-    void tripperTripListQueryDocsTest() throws Exception{
+    void 사용자_여행_목록_조회() throws Exception{
         mockingForLoginUserAnnotation();
 
         Long tripperId = 1L;
