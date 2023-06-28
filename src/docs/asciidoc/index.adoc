@@ -814,3 +814,25 @@ include::{snippets}/trip-day-list-query-controller-docs-test/day_목록_조회/r
 include::{snippets}/trip-day-list-query-controller-docs-test/day_목록_조회/http-request.adoc[]
 ===== 응답
 include::{snippets}/trip-day-list-query-controller-docs-test/day_목록_조회/http-response.adoc[]
+
+== User API
+
+=== 회원 프로필 조회
+
+==== 기본 정보
+
+- 메서드 : GET
+- URL : `/api/users/profile`
+- 인증 방식 : 엑세스 토큰
+
+==== 요청
+===== 헤더
+include::{snippets}/user-rest-controller-docs-test/사용자_프로필_조회/request-headers.adoc[]
+==== 응답
+===== 본문
+include::{snippets}/user-rest-controller-docs-test/사용자_프로필_조회/response-fields.adoc[]
+==== 예제
+===== 요청
+include::{snippets}/user-rest-controller-docs-test/사용자_프로필_조회/http-request.adoc[]
+===== 응답
+include::{snippets}/user-rest-controller-docs-test/사용자_프로필_조회/http-response.adoc[]
