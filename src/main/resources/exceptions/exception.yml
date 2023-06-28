@@ -72,6 +72,10 @@ user-0002:
   message: No UserProfile Search Authority
   detail: 해당 사용자 프로필을 조회할 권한이 없습니다.
 
+user-0003:
+  message: UserNotFound
+  detail: 해당 사용자가 존재하지 않습니다.
+
 
 # 여행 관련
 trip-0001:

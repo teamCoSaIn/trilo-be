@@ -1,7 +1,7 @@
 package com.cosain.trilo.user.application;
 
-import com.cosain.trilo.common.exception.UserNotFoundException;
 import com.cosain.trilo.user.application.exception.NoUserProfileSearchAuthorityException;
+import com.cosain.trilo.user.application.exception.UserNotFoundException;
 import com.cosain.trilo.user.domain.User;
 import com.cosain.trilo.user.domain.UserRepository;
 import com.cosain.trilo.user.presentation.dto.UserProfileResponse;
