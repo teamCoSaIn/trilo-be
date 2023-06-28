@@ -822,7 +822,7 @@ include::{snippets}/trip-day-list-query-controller-docs-test/day_목록_조회/h
 ==== 기본 정보
 
 - 메서드 : GET
-- URL : `/api/users/profile`
+- URL : `/api/users/{userId}/profile`
 - 인증 방식 : 엑세스 토큰
 
 ==== 요청
