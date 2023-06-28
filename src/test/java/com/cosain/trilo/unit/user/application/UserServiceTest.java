@@ -17,6 +17,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
@@ -61,7 +62,7 @@ public class UserServiceTest {
             Long targetUserId = 1L;
 
             // when & then
-            Assertions.assertThatThrownBy(() -> userService.getUserProfile(targetUserId, requestUserId)).isInstanceOf(UserNotFoundException.class);
+            assertThatThrownBy(() -> userService.getUserProfile(targetUserId, requestUserId)).isInstanceOf(UserNotFoundException.class);
         }
 
         @Test
@@ -80,7 +81,7 @@ public class UserServiceTest {
             given(userRepository.findById(eq(targetUserId))).willReturn(Optional.ofNullable(user));
 
             // when & then
-            Assertions.assertThatThrownBy(() -> userService.getUserProfile(targetUserId, requestUserId)).isInstanceOf(NoUserProfileSearchAuthorityException.class);
+            assertThatThrownBy(() -> userService.getUserProfile(targetUserId, requestUserId)).isInstanceOf(NoUserProfileSearchAuthorityException.class);
         }
 
 
