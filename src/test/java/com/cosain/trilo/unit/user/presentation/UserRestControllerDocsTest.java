@@ -32,7 +32,7 @@ public class UserRestControllerDocsTest extends RestDocsTestSupport {
     @Test
     public void 사용자_프로필_조회() throws Exception{
         // given
-        Long userId = 2L;
+        Long userId = 1L;
         mockingForLoginUserAnnotation();
         given(userService.getUserProfile(userId, 1L)).willReturn(UserProfileResponse.from(KAKAO_MEMBER.create()));
 
