@@ -18,8 +18,8 @@ public class UserRestController {
 
     @GetMapping("/{userId}/profile")
     @ResponseStatus(HttpStatus.OK)
-    public UserProfileResponse getUserProfile(@PathVariable Long userId, @LoginUser User user){
-        UserProfileResponse userProfileResponse = userService.getUserProfile(userId, user.getId());
+    public UserProfileResponse getUserProfile(@PathVariable("userId") Long targetUserId, @LoginUser User user){
+        UserProfileResponse userProfileResponse = userService.getUserProfile(targetUserId, user.getId());
         return userProfileResponse;
     }
 
