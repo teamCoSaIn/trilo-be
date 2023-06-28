@@ -16,23 +16,23 @@ public enum UserFixture {
     private final String email;
     private final AuthProvider authProvider;
     private final Role role;
-    private final String profileImageUrl;
+    private final String profileImageURL;
 
 
-    UserFixture(Long id,String name, String email, AuthProvider authProvider, Role role, String profileImageUrl){
+    UserFixture(Long id,String name, String email, AuthProvider authProvider, Role role, String profileImageURL){
         this.id = id;
         this.name = name;
         this.email = email;
         this.authProvider = authProvider;
         this.role = role;
-        this.profileImageUrl = profileImageUrl;
+        this.profileImageURL = profileImageURL;
     }
 
     public User create(){
         return User.builder()
                 .id(id)
                 .name(name)
-                .profileImageUrl(profileImageUrl)
+                .profileImageUrl(profileImageURL)
                 .email(email)
                 .authProvider(authProvider)
                 .role(role)
