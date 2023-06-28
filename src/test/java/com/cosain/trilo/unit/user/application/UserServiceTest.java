@@ -1,13 +1,12 @@
 package com.cosain.trilo.unit.user.application;
 
-import com.cosain.trilo.common.exception.UserNotFoundException;
 import com.cosain.trilo.user.application.UserService;
 import com.cosain.trilo.user.application.exception.NoUserProfileSearchAuthorityException;
+import com.cosain.trilo.user.application.exception.UserNotFoundException;
 import com.cosain.trilo.user.domain.AuthProvider;
 import com.cosain.trilo.user.domain.Role;
 import com.cosain.trilo.user.domain.User;
 import com.cosain.trilo.user.domain.UserRepository;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

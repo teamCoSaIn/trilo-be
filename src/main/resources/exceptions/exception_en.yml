@@ -69,6 +69,13 @@ user-0001:
   message: TripperNotFound
   detail: The traveler with the matching identifier could not be found.
 
+user-0002:
+  message: No UserProfile Search Authority
+  detail: You do not have any authority to search the user profile
+
+user-0003:
+  message: UserNotFound
+  detail: The User with the matching identifier could not be found.
 
 # 여행 관련
 trip-0001:
