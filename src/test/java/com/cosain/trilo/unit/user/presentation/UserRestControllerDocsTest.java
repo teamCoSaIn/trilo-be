@@ -2,6 +2,7 @@ package com.cosain.trilo.unit.user.presentation;
 
 import com.cosain.trilo.support.RestDocsTestSupport;
 import com.cosain.trilo.user.application.UserService;
+import com.cosain.trilo.user.domain.User;
 import com.cosain.trilo.user.presentation.UserRestController;
 import com.cosain.trilo.user.presentation.dto.UserProfileResponse;
 import org.apache.http.HttpHeaders;
@@ -32,11 +33,11 @@ public class UserRestControllerDocsTest extends RestDocsTestSupport {
     @Test
     public void 사용자_프로필_조회() throws Exception{
         // given
-        Long userId = 2L;
+        Long userId = 1L;
         mockingForLoginUserAnnotation();
-        given(userService.getUserProfile(userId, 1L)).willReturn(UserProfileResponse.from(KAKAO_MEMBER.create()));
+        User requestUser = KAKAO_MEMBER.create();
+        given(userService.getUserProfile(userId, requestUser.getId())).willReturn(UserProfileResponse.from(requestUser));
 
-        mockingForLoginUserAnnotation();
         // when & then
         mockMvc.perform(RestDocumentationRequestBuilders.get(BASE_URL + "/{userId}/profile", userId)
                         .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN))
