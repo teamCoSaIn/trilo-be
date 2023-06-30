@@ -7,17 +7,21 @@ import com.cosain.trilo.trip.domain.entity.Schedule;
 import com.cosain.trilo.trip.domain.entity.Trip;
 import com.cosain.trilo.trip.domain.repository.ScheduleRepository;
 import com.cosain.trilo.trip.domain.vo.*;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceException;
+import jakarta.persistence.Query;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.test.annotation.DirtiesContext;
 
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @RepositoryTest
 @DisplayName("[TripCommand] ScheduleRepository 테스트")
@@ -27,15 +31,14 @@ public class ScheduleRepositoryTest {
     private ScheduleRepository scheduleRepository;
 
     @Autowired
-    private TestEntityManager em;
+    private EntityManager em;
 
 
     @Test
-    @DirtiesContext
     @DisplayName("Schedule을 저장하고 같은 식별자로 찾으면 같은 Schedule이 찾아진다.")
     void saveTest() {
         // given
-        Trip trip = TripFixture.DECIDED_TRIP.createDecided(null, 1L, "여행 제목", LocalDate.of(2023,3,1), LocalDate.of(2023,3,1));
+        Trip trip = TripFixture.DECIDED_TRIP.createDecided(null, 1L, "여행 제목", LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 1));
         em.persist(trip);
 
         Day day = trip.getDays().get(0);
@@ -61,13 +64,41 @@ public class ScheduleRepositoryTest {
         assertThat(findSchedule.getPlace()).isEqualTo(schedule.getPlace());
     }
 
+    @Test
+    @DisplayName("65535 바이트보다 큰 본문을 삽입하려 시도하면 데이터베이스 예외가 발생함")
+    void contentChangeConstraintsTest() {
+        // given
+        Trip trip = TripFixture.DECIDED_TRIP.createDecided(null, 1L, "여행 제목", LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 1));
+        em.persist(trip);
+
+        Day day = trip.getDays().get(0);
+        em.persist(day);
+
+        Schedule schedule = trip.createSchedule(day, ScheduleTitle.of("일정1"), Place.of("place-id1", "광안리 해수욕장", Coordinate.of(35.1551, 129.1220)));
+        em.persist(schedule);
+
+        byte[] bytes = new byte[65536]; // 65535 바이트를 넘어가는 데이터
+        Arrays.fill(bytes, (byte) 'A'); // 1바이트 'A'로 채움
+        String rawContent = new String(bytes, StandardCharsets.UTF_8); // 65536 바이트의 텍스트
+
+        Query query = em.createQuery("""
+                        UPDATE Schedule s
+                        SET s.scheduleContent.value = :rawContent 
+                        where s.id = :scheduleId
+                        """)
+                .setParameter("rawContent", rawContent)
+                .setParameter("scheduleId", schedule.getId());
+
+        // when & then
+        assertThatThrownBy(query::executeUpdate).isInstanceOf(PersistenceException.class);
+    }
+
 
     @Test
-    @DirtiesContext
     @DisplayName("delete로 일정을 삭제하면, 해당 일정이 삭제된다.")
     void deleteTest() {
         // given
-        Trip trip = TripFixture.DECIDED_TRIP.createDecided(null, 1L, "여행 제목", LocalDate.of(2023,3,1), LocalDate.of(2023,3,1));
+        Trip trip = TripFixture.DECIDED_TRIP.createDecided(null, 1L, "여행 제목", LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 1));
         em.persist(trip);
 
         Day day = trip.getDays().get(0);
@@ -88,11 +119,10 @@ public class ScheduleRepositoryTest {
 
 
     @Test
-    @DirtiesContext
     @DisplayName("deleteAllByTripId로 일정을 삭제하면, 해당 여행의 모든 일정들이 삭제된다.")
     void deleteAllByTripIdTest() {
         // given
-        Trip trip = TripFixture.DECIDED_TRIP.createDecided(null, 1L, "여행 제목", LocalDate.of(2023,3,1), LocalDate.of(2023,3,3));
+        Trip trip = TripFixture.DECIDED_TRIP.createDecided(null, 1L, "여행 제목", LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 3));
         em.persist(trip);
 
         Day day1 = trip.getDays().get(0);
@@ -121,11 +151,10 @@ public class ScheduleRepositoryTest {
 
 
     @Test
-    @DirtiesContext
     @DisplayName("findByIdWithTrip으로 일정을 조회하면 해당 일정만 조회된다.(여행도 같이 묶여서 조회됨)")
     void findByIdWithTripTest() {
         // given
-        Trip trip = TripFixture.DECIDED_TRIP.createDecided(null, 1L, "여행 제목", LocalDate.of(2023,3,1), LocalDate.of(2023,3,1));
+        Trip trip = TripFixture.DECIDED_TRIP.createDecided(null, 1L, "여행 제목", LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 1));
         em.persist(trip);
 
         Day day = trip.getDays().get(0);
@@ -160,7 +189,7 @@ public class ScheduleRepositoryTest {
         @Test
         void relocateTemporaryStorage() {
             // given
-            Trip trip = TripFixture.DECIDED_TRIP.createDecided(null, 1L, "여행 제목", LocalDate.of(2023,3,1), LocalDate.of(2023,3,2));
+            Trip trip = TripFixture.DECIDED_TRIP.createDecided(null, 1L, "여행 제목", LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 2));
             em.persist(trip);
 
             Day day1 = trip.getDays().get(0);
@@ -212,7 +241,7 @@ public class ScheduleRepositoryTest {
         @Test
         void relocateDaySchedules() {
             // given
-            Trip trip = TripFixture.DECIDED_TRIP.createDecided(null, 1L, "여행 제목", LocalDate.of(2023,3,1), LocalDate.of(2023,3,2));
+            Trip trip = TripFixture.DECIDED_TRIP.createDecided(null, 1L, "여행 제목", LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 2));
             em.persist(trip);
 
             Day day1 = trip.getDays().get(0);
@@ -269,7 +298,7 @@ public class ScheduleRepositoryTest {
         @DisplayName("임시보관함에 다른 일정이 있으면, 맨 뒤 순서값 뒤에 day들의 일정들이 date, 순서값 순으로 오름차순으로 옮겨짐")
         public void test_When_TemporaryStorage_not_empty() {
             // given
-            Trip trip = TripFixture.DECIDED_TRIP.createDecided(null, 1L, "여행 제목", LocalDate.of(2023,3,1), LocalDate.of(2023,3,3));
+            Trip trip = TripFixture.DECIDED_TRIP.createDecided(null, 1L, "여행 제목", LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 3));
             em.persist(trip);
 
             Day day1 = trip.getDays().get(0);
@@ -333,7 +362,7 @@ public class ScheduleRepositoryTest {
         @DisplayName("임시보관함이 비어있으면, day들의 일정들이 date, 순서값 순으로 오름차순으로 0번 순서부터 지정되어 옮겨짐")
         public void test_When_TemporaryStorage_empty() {
             // given
-            Trip trip = TripFixture.DECIDED_TRIP.createDecided(null, 1L, "여행 제목", LocalDate.of(2023,3,1), LocalDate.of(2023,3,3));
+            Trip trip = TripFixture.DECIDED_TRIP.createDecided(null, 1L, "여행 제목", LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 3));
             em.persist(trip);
 
             Day day1 = trip.getDays().get(0);
@@ -416,7 +445,7 @@ public class ScheduleRepositoryTest {
         @DisplayName("Trip의 어떤 Day에 일정 3개 -> 3 반환")
         @Test
         public void dayScheduleScheduleTest() {
-            Trip trip = TripFixture.DECIDED_TRIP.createDecided(null, 1L, "여행 제목", LocalDate.of(2023,3,1), LocalDate.of(2023,3,1));
+            Trip trip = TripFixture.DECIDED_TRIP.createDecided(null, 1L, "여행 제목", LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 1));
             em.persist(trip);
 
             Day day = trip.getDays().get(0);
@@ -436,7 +465,7 @@ public class ScheduleRepositoryTest {
         @DisplayName("Trip의 임시보관함, 여러 Day에 일정 -> 여행 소속 일정 갯수 반환")
         @Test
         public void manyDayScheduleTest() {
-            Trip trip = TripFixture.DECIDED_TRIP.createDecided(null, 1L, "여행 제목", LocalDate.of(2023,3,1), LocalDate.of(2023,3,3));
+            Trip trip = TripFixture.DECIDED_TRIP.createDecided(null, 1L, "여행 제목", LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 3));
             em.persist(trip);
 
             Day day1 = trip.getDays().get(0);
@@ -479,7 +508,7 @@ public class ScheduleRepositoryTest {
         @DisplayName("Day에 아무 일정도 없음 -> 0 반환")
         @Test
         void noDayScheduleTest() {
-            Trip trip = TripFixture.DECIDED_TRIP.createDecided(null, 1L, "여행 제목", LocalDate.of(2023,3,1), LocalDate.of(2023,3,1));
+            Trip trip = TripFixture.DECIDED_TRIP.createDecided(null, 1L, "여행 제목", LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 1));
             em.persist(trip);
 
             Day day = trip.getDays().get(0);
@@ -492,7 +521,7 @@ public class ScheduleRepositoryTest {
         @DisplayName("Day에 일정 3개 -> 3 반환")
         @Test
         void threeDayScheduleTest() {
-            Trip trip = TripFixture.DECIDED_TRIP.createDecided(null, 1L, "여행 제목", LocalDate.of(2023,3,1), LocalDate.of(2023,3,2));
+            Trip trip = TripFixture.DECIDED_TRIP.createDecided(null, 1L, "여행 제목", LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 2));
             em.persist(trip);
 
             Day day1 = trip.getDays().get(0);
