@@ -178,8 +178,8 @@ public class Trip {
     }
 
     private Schedule makeTemporaryStorageSchedule(ScheduleTitle scheduleTitle, Place place) {
-        Schedule schedule = Schedule.create(null, this, scheduleTitle, place, generateNextTemporaryStorageScheduleIndex());
-        temporaryStorage.add(schedule);
+        Schedule schedule = Schedule.create(null, this, scheduleTitle, place, generateFirstTemporaryStorageScheduleIndex());
+        temporaryStorage.add(0, schedule);
         return schedule;
     }
 
@@ -187,6 +187,12 @@ public class Trip {
         return (temporaryStorage.isEmpty())
                 ? ScheduleIndex.ZERO_INDEX
                 : temporaryStorage.get(temporaryStorage.size() - 1).getScheduleIndex().generateNextIndex();
+    }
+
+    private ScheduleIndex generateFirstTemporaryStorageScheduleIndex() {
+        return (temporaryStorage.isEmpty())
+                ? ScheduleIndex.ZERO_INDEX
+                : temporaryStorage.get(0).getScheduleIndex().generateBeforeIndex();
     }
 
     /**

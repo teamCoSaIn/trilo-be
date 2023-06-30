@@ -262,8 +262,8 @@ public class ScheduleCreateServiceTest {
         }
 
         @Test
-        @DisplayName("임시보관함에서 일정의 순서가 범위를 벗어날 경우 재배치 기능이 호출되는 지 여부 테스트")
-        public void when_temporaryStorage_Schedule_is_over_limit_then_relocate_called() {
+        @DisplayName("임시보관함에서 일정의 순서가 하한선을 벗어날 경우 재배치 기능이 호출되는 지 여부 테스트")
+        public void when_temporaryStorage_Schedule_is_under_limit_then_relocate_called() {
             // given
             Long tripperId = 1L;
             Long tripId = 1L;
@@ -275,7 +275,7 @@ public class ScheduleCreateServiceTest {
                     .trip(trip)
                     .scheduleTitle(ScheduleTitle.of("제목"))
                     .place(Place.of("장소식별자", "장소명", Coordinate.of(23.21, 23.24)))
-                    .scheduleIndex(ScheduleIndex.of(ScheduleIndex.MAX_INDEX_VALUE))
+                    .scheduleIndex(ScheduleIndex.of(ScheduleIndex.MIN_INDEX_VALUE))
                     .build();
             trip.getTemporaryStorage().add(beforeSchedule);
 
@@ -303,7 +303,7 @@ public class ScheduleCreateServiceTest {
                     .trip(trip)
                     .scheduleTitle(ScheduleTitle.of("일정제목2"))
                     .place(Place.of("장소식별자2", "장소이름2", Coordinate.of(19.18, 27.15)))
-                    .scheduleIndex(ScheduleIndex.of(ScheduleIndex.DEFAULT_SEQUENCE_GAP))
+                    .scheduleIndex(ScheduleIndex.of(-ScheduleIndex.DEFAULT_SEQUENCE_GAP))
                     .build();
 
             when(tripRepository.findById(eq(tripId)))
