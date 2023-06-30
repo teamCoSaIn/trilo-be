@@ -178,7 +178,7 @@ schedule-0011:
 
 schedule-0012:
   message: Invalid Schedule Content
-  detail: 일정의 본문은 null일 수 없습니다.
+  detail: 일정의 본문은 null일 수 없으며, 크기는 65535 byte를 초과할 수 없습니다.
 
 # 장소 관련
 place-0001:
