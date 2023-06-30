@@ -14,7 +14,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import java.nio.charset.StandardCharsets;
 import java.time.LocalTime;
+import java.util.Arrays;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowableOfType;
@@ -82,6 +84,30 @@ public class ScheduleUpdateCommandFactoryTest {
         assertThat(cve.getExceptions().get(0)).isInstanceOf(InvalidScheduleContentException.class);
     }
 
+    @DisplayName("일정본문 65535 바이트 초과 -> 검증 예외 발생")
+    @ValueSource(ints = {65536, 65537, 12345678})
+    @ParameterizedTest
+    void largeContentTest(int size) {
+        // given
+        String rawScheduleTitle = "일정 제목";
+
+        byte[] bytes = new byte[size];
+        Arrays.fill(bytes, (byte) 'A');
+        String rawScheduleContent = new String(bytes, StandardCharsets.UTF_8);
+
+        LocalTime startTime = LocalTime.of(13,0);
+        LocalTime endTime = LocalTime.of(13,5);
+
+        // when
+        CustomValidationException cve = catchThrowableOfType(
+                () -> scheduleUpdateCommandFactory.createCommand(rawScheduleTitle, rawScheduleContent, startTime, endTime),
+                CustomValidationException.class);
+
+        // then
+        assertThat(cve).isNotNull();
+        assertThat(cve.getExceptions()).hasSize(1);
+        assertThat(cve.getExceptions().get(0)).isInstanceOf(InvalidScheduleContentException.class);
+    }
 
     @DisplayName("일정의 시작 시점이 null -> 검증 예외 발생")
     @Test
