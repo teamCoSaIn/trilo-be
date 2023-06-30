@@ -95,7 +95,7 @@ public class ScheduleUpdateControllerDocsTest extends RestDocsTestSupport {
                                 fieldWithPath("content")
                                         .type(STRING)
                                         .description("일정의 본문")
-                                        .attributes(key("constraints").value("null을 허용하지 않습니다. (공백, 빈문자열 허용)")),
+                                        .attributes(key("constraints").value("null을 허용하지 않으며 최대 65535 바이트까지 허용합니다. (공백, 빈문자열 허용)")),
                                 fieldWithPath("startTime")
                                         .type(STRING)
                                         .description("일정의 시작시간. 필수."),
