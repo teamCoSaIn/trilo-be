@@ -5,12 +5,10 @@ import com.cosain.trilo.support.RepositoryTest;
 import com.cosain.trilo.trip.domain.entity.Day;
 import com.cosain.trilo.trip.domain.entity.Trip;
 import com.cosain.trilo.trip.domain.repository.DayRepository;
-import com.cosain.trilo.trip.domain.vo.TripPeriod;
-import com.cosain.trilo.trip.domain.vo.TripStatus;
-import com.cosain.trilo.trip.domain.vo.TripTitle;
 import jakarta.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
@@ -106,4 +104,38 @@ public class DayRepositoryTest {
         List<Day> findDays = dayRepository.findAllById(List.of(day1.getId(), day2.getId(), day3.getId()));
         assertThat(findDays).isEmpty();
     }
+
+    @Nested
+    class deleteAllByTripIdsTest{
+
+        @Test
+        void 전달받은_여행_ID_목록에_해당하는_모든_Day가_제거된다(){
+            // given
+            Trip trip1 = TripFixture.DECIDED_TRIP.createDecided(null, 1L, "여행 제목", LocalDate.of(2023,3,1), LocalDate.of(2023,3,3));
+            Trip trip2 = TripFixture.DECIDED_TRIP.createDecided(null, 1L, "여행 제목", LocalDate.of(2023,3,1), LocalDate.of(2023,3,3));
+            Trip trip3 = TripFixture.DECIDED_TRIP.createDecided(null, 1L, "여행 제목", LocalDate.of(2023,3,1), LocalDate.of(2023,3,3));
+
+            em.persist(trip1);
+            em.persist(trip2);
+            em.persist(trip3);
+
+            Day day1 = trip1.getDays().get(0);
+            Day day2 = trip2.getDays().get(0);
+            Day day3 = trip3.getDays().get(0);
+
+            em.persist(day1);
+            em.persist(day2);
+            em.persist(day3);
+
+            // when
+            dayRepository.deleteAllByTripIds(List.of(trip1.getId(), trip2.getId(), trip3.getId()));
+
+            // then
+            List<Day> days = dayRepository.findAllById(List.of(day1.getId(), day2.getId(), day3.getId()));
+            assertThat(days).isEmpty();
+
+        }
+    }
+
+
 }

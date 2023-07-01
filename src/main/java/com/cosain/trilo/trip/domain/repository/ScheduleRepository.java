@@ -80,4 +80,8 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
             WHERE s.day.id = :dayId
             """)
     int findDayScheduleCount(@Param("dayId") Long dayId);
+
+    @Modifying
+    @Query("DELETE FROM Schedule s WHERE s.trip.id in :tripIdsForDelete")
+    void deleteAllByTripIds(@Param("tripIdsForDelete") List<Long> tripIdsForDelete);
 }
