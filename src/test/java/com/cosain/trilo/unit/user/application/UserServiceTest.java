@@ -1,6 +1,8 @@
 package com.cosain.trilo.unit.user.application;
 
 import com.cosain.trilo.user.application.UserService;
+import com.cosain.trilo.user.application.event.UserDeleteEvent;
+import com.cosain.trilo.user.application.exception.NoUserDeleteAuthorityException;
 import com.cosain.trilo.user.application.exception.NoUserProfileSearchAuthorityException;
 import com.cosain.trilo.user.application.exception.UserNotFoundException;
 import com.cosain.trilo.user.domain.AuthProvider;
@@ -13,10 +15,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 
 import java.util.Optional;
 
+import static com.cosain.trilo.fixture.UserFixture.KAKAO_MEMBER;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
@@ -28,6 +33,9 @@ public class UserServiceTest {
     private UserService userService;
     @Mock
     private UserRepository userRepository;
+
+    @Mock
+    private ApplicationEventPublisher eventPublisher;
 
 
     @Nested
@@ -83,12 +91,46 @@ public class UserServiceTest {
             assertThatThrownBy(() -> userService.getUserProfile(targetUserId, requestUserId)).isInstanceOf(NoUserProfileSearchAuthorityException.class);
         }
 
-
     }
 
+    @Nested
+    class 회원_삭제{
+        @Test
+        void 메서드_호출_테스트(){
+            // given
+            Long targetUserId = 1L;
+            Long requestUserId = 1L;
 
+            User user = KAKAO_MEMBER.create();
+            given(userRepository.findById(eq(targetUserId))).willReturn(Optional.ofNullable(user));
 
+            // when
+            userService.delete(targetUserId, requestUserId);
+            // then
+            verify(userRepository).findById(eq(targetUserId));
+            verify(eventPublisher).publishEvent(any(UserDeleteEvent.class));
+            verify(userRepository).deleteById(eq(targetUserId));
+        }
 
+        @Test
+        void 요청한_사용자의_ID와_삭제할_대상_사용자의_ID가_다를_경우_예외를_발생시킨다(){
+            // given
+            Long targetUserId = 1L;
+            Long requestUserId = 2L;
 
+            // when & then
+            assertThatThrownBy(() -> userService.delete(targetUserId, requestUserId)).isInstanceOf(NoUserDeleteAuthorityException.class);
+        }
+
+        @Test
+        void 삭제할_대상이_이미_존재하지_않으면_예외를_발생시킨다(){
+            // given
+            Long targetUserId = 1L;
+            Long requestUserId = 1L;
+
+            // when & then
+            assertThatThrownBy(() -> userService.delete(targetUserId, requestUserId)).isInstanceOf(UserNotFoundException.class);
+        }
+    }
 
 }
