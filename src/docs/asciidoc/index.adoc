@@ -833,6 +833,8 @@ include::{snippets}/trip-day-list-query-controller-docs-test/day_목록_조회/h
 ==== 요청
 ===== 헤더
 include::{snippets}/user-rest-controller-docs-test/사용자_프로필_조회/request-headers.adoc[]
+===== 경로 변수
+include::{snippets}/user-rest-controller-docs-test/사용자_프로필_조회/path-parameters.adoc[]
 ==== 응답
 ===== 본문
 include::{snippets}/user-rest-controller-docs-test/사용자_프로필_조회/response-fields.adoc[]
@@ -841,3 +843,24 @@ include::{snippets}/user-rest-controller-docs-test/사용자_프로필_조회/re
 include::{snippets}/user-rest-controller-docs-test/사용자_프로필_조회/http-request.adoc[]
 ===== 응답
 include::{snippets}/user-rest-controller-docs-test/사용자_프로필_조회/http-response.adoc[]
+
+=== 회원 탈퇴
+
+==== 기본 정보
+
+- 메서드 : DELETE
+- URL : `/api/users/{userId}`
+- 인증 방식 : 엑세스 토큰
+
+회원 탈퇴 시 회원의 개인정보를 비롯하여 해당 회원이 작성했던 모든 회원 관련 여행 정보들이 함께 삭제됩니다.
+
+==== 요청
+===== 헤더
+include::{snippets}/user-rest-controller-docs-test/회원_탈퇴/request-headers.adoc[]
+===== 경로 변수
+include::{snippets}/user-rest-controller-docs-test/회원_탈퇴/path-parameters.adoc[]
+==== 예제
+===== 요청
+include::{snippets}/user-rest-controller-docs-test/회원_탈퇴/http-request.adoc[]
+===== 응답
+include::{snippets}/user-rest-controller-docs-test/회원_탈퇴/http-response.adoc[]

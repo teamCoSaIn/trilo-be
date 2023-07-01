@@ -59,4 +59,24 @@ public class UserRestControllerDocsTest extends RestDocsTestSupport {
                         )
                 ));
     }
+
+    @Test
+    public void 회원_탈퇴() throws Exception{
+        // given
+        Long userId = 1L;
+        mockingForLoginUserAnnotation();
+
+        // when & then
+        mockMvc.perform(RestDocumentationRequestBuilders.delete(BASE_URL + "/{userId}", userId)
+                .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN))
+                .andExpect(MockMvcResultMatchers.status().isNoContent())
+                .andDo(restDocs.document(
+                        requestHeaders(
+                                headerWithName(HttpHeaders.AUTHORIZATION).description("Bearer 타입 AccessToken")
+                        ),
+                        pathParameters(
+                                parameterWithName("userId").description("탈퇴할 회원 ID")
+                        )
+                ));
+    }
 }
