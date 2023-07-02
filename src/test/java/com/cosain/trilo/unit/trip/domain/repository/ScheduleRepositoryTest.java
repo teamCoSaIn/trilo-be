@@ -545,4 +545,38 @@ public class ScheduleRepositoryTest {
         }
     }
 
+    @Nested
+    class deleteAllByTripIdsTest{
+        @Test
+        void 전달받은_여행_ID_목록에_해당하는_모든_일정이_삭제된다(){
+
+            // given
+            Trip trip = TripFixture.DECIDED_TRIP.createDecided(null, 1L, "여행 제목", LocalDate.of(2023,3,1), LocalDate.of(2023,3,2));
+            em.persist(trip);
+
+            Day day1 = trip.getDays().get(0);
+            Day day2 = trip.getDays().get(1);
+            em.persist(day1);
+            em.persist(day2);
+
+            Schedule schedule1 = trip.createSchedule(day1, ScheduleTitle.of("일정제목1"), Place.of("장소식별자1", "장소명1", Coordinate.of(34.127, 124.7771)));
+            Schedule schedule2 = trip.createSchedule(day1, ScheduleTitle.of("일정제목2"), Place.of("장소식별자2", "장소명2", Coordinate.of(34.127, 124.7771)));
+            Schedule schedule3 = trip.createSchedule(null, ScheduleTitle.of("일정제목3"), Place.of("장소식별자3", "장소명3", Coordinate.of(34.127, 124.7771)));
+            Schedule schedule4 = trip.createSchedule(null, ScheduleTitle.of("일정제목4"), Place.of("장소식별자4", "장소명4", Coordinate.of(34.127, 124.7771)));
+            Schedule schedule5 = trip.createSchedule(day2, ScheduleTitle.of("일정제목5"), Place.of("장소식별자5", "장소명5", Coordinate.of(34.127, 124.7771)));
+            em.persist(schedule1);
+            em.persist(schedule2);
+            em.persist(schedule3);
+            em.persist(schedule4);
+            em.persist(schedule5);
+
+            // when
+            scheduleRepository.deleteAllByTripIds(List.of(trip.getId()));
+
+            // then
+            List<Schedule> findSchedules = scheduleRepository.findAllById(List.of(schedule1.getId(), schedule2.getId(), schedule3.getId(), schedule4.getId(), schedule5.getId()));
+            assertThat(findSchedules).isEmpty();
+        }
+    }
+
 }

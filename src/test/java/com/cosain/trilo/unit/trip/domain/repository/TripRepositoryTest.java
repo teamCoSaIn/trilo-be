@@ -169,4 +169,33 @@ public class TripRepositoryTest {
         Trip findTrip = tripRepository.findById(trip.getId()).orElse(null);
         assertThat(findTrip).isNull();
     }
+
+    @Nested
+    class deleteAllByTripperIdTest{
+        @Test
+        void tripperId_에_해당하는_모든_trip이_제거된다(){
+            // given
+            Long tripperId = 1L;
+            Trip trip1 = Trip.create(TripTitle.of("여행 제목1"), tripperId);
+            Trip trip2 = Trip.create(TripTitle.of("여행 제목2"), tripperId);
+            Trip trip3 = Trip.create(TripTitle.of("여행 제목3"), tripperId);
+            Trip trip4 = Trip.create(TripTitle.of("여행 제목4"), tripperId);
+            em.persist(trip1);
+            em.persist(trip2);
+            em.persist(trip3);
+            em.persist(trip4);
+
+            em.flush();
+            em.clear();
+
+            // when
+            tripRepository.deleteAllByTripperId(tripperId);
+
+            // then
+            assertThat(tripRepository.existsById(trip1.getId())).isFalse();
+            assertThat(tripRepository.existsById(trip2.getId())).isFalse();
+            assertThat(tripRepository.existsById(trip3.getId())).isFalse();
+            assertThat(tripRepository.existsById(trip4.getId())).isFalse();
+        }
+    }
 }
