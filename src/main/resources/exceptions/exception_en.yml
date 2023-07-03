@@ -77,7 +77,7 @@ user-0003:
   message: UserNotFound
   detail: The User with the matching identifier could not be found.
 
-user-004:
+user-0004:
   message: No User Delete Authority
   detail: You do not have any authority to delete the user
 

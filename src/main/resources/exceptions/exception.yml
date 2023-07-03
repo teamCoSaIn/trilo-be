@@ -76,7 +76,7 @@ user-0003:
   message: UserNotFound
   detail: 해당 사용자가 존재하지 않습니다.
 
-user-004:
+user-0004:
   message: No User Delete Authority
   detail: 해당 사용자를 삭제할 권한이 없습니다.
 
