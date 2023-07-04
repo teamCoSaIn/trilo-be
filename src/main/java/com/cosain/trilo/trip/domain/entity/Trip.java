@@ -8,10 +8,7 @@ import com.cosain.trilo.trip.domain.exception.InvalidTripDayException;
 import com.cosain.trilo.trip.domain.exception.MidScheduleIndexConflictException;
 import com.cosain.trilo.trip.domain.vo.*;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.annotations.Where;
 
@@ -21,10 +18,11 @@ import java.util.List;
 import java.util.Random;
 
 @Getter
-@Entity
 @Slf4j
-@Table(name = "trip")
+@ToString(of = {"id", "tripperId", "tripTitle", "status", "tripPeriod", "tripImage"})
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(name = "trip")
+@Entity
 public class Trip {
 
     public static final int MAX_TRIP_SCHEDULE_COUNT = 110;

@@ -5,14 +5,20 @@ import com.cosain.trilo.user.domain.AuthProvider;
 import com.cosain.trilo.user.domain.Role;
 import com.cosain.trilo.user.domain.User;
 import com.cosain.trilo.user.domain.UserRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
+
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 
@@ -33,8 +39,11 @@ public class IntegrationTest {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private ObjectMapper objectMapper;
+
     @BeforeEach
-    void setUp(){
+    void setUp() {
         mockMvc = MockMvcBuilders
                 .webAppContextSetup(context)
                 .apply(springSecurity())
@@ -53,9 +62,9 @@ public class IntegrationTest {
         return createMockUser("google-user@google.com", AuthProvider.GOOGLE);
     }
 
-    protected String createAccessToken(User user){
-        Long userId = user.getId();
-        return tokenProvider.createAccessTokenById(userId);
+    protected String authorizationHeader(User user) {
+        String accessToken = tokenProvider.createAccessTokenById(user.getId());
+        return String.format("Bearer %s",  accessToken);
     }
 
     private User createMockUser(String email, AuthProvider authProvider) {
@@ -70,4 +79,14 @@ public class IntegrationTest {
         userRepository.save(mockUser);
         return mockUser;
     }
+
+    protected String createRequestJson(Object dto) throws JsonProcessingException {
+        return objectMapper.writeValueAsString(dto);
+    }
+
+    protected <T> T createResponseObject(ResultActions resultActions, Class<T> clazz) throws UnsupportedEncodingException, JsonProcessingException {
+        String jsonResponse = resultActions.andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
+        return objectMapper.readValue(jsonResponse, clazz);
+    }
+
 }
