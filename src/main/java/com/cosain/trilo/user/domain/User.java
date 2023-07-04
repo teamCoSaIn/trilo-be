@@ -2,14 +2,12 @@ package com.cosain.trilo.user.domain;
 
 import com.cosain.trilo.auth.infra.OAuthProfileDto;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Getter
 @Entity
 @Table(name = "users")
+@ToString(of = {"id", "name", "email", "profileImageURL", "authProvider", "role"})
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User {
 
