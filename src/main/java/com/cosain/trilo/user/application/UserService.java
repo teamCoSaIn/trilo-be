@@ -1,5 +1,6 @@
 package com.cosain.trilo.user.application;
 
+import com.cosain.trilo.auth.infra.OAuthProfileDto;
 import com.cosain.trilo.user.application.event.UserDeleteEvent;
 import com.cosain.trilo.user.application.exception.NoUserDeleteAuthorityException;
 import com.cosain.trilo.user.application.exception.NoUserProfileSearchAuthorityException;
@@ -12,6 +13,8 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -19,6 +22,18 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final ApplicationEventPublisher eventPublisher;
+
+    public Long createOrUpdate(OAuthProfileDto oAuthProfileDto){
+        Optional<User> userOptional = userRepository.findByEmail(oAuthProfileDto.getEmail());
+
+        User user = userOptional.map(existingUser -> {
+            existingUser.updateUserByOauthProfile(oAuthProfileDto);
+            return existingUser;
+        }).orElse(User.from(oAuthProfileDto));
+
+        User savedUser = userRepository.save(user);
+        return savedUser.getId();
+    }
 
     @Transactional(readOnly = true)
     public UserProfileResponse getUserProfile(Long targetUserId, Long requestUserId){

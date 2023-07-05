@@ -12,14 +12,11 @@ import com.cosain.trilo.auth.infra.TokenProvider;
 import com.cosain.trilo.auth.presentation.dto.RefreshTokenStatusResponse;
 import com.cosain.trilo.common.exception.NotExistRefreshTokenException;
 import com.cosain.trilo.common.exception.NotValidTokenException;
-import com.cosain.trilo.user.domain.User;
-import com.cosain.trilo.user.domain.UserRepository;
+import com.cosain.trilo.user.application.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -30,7 +27,7 @@ public class AuthService {
     private final TokenProvider tokenProvider;
     private final TokenAnalyzer tokenAnalyzer;
     private final OAuthProfileRequestService OAuthProfileRequestService;
-    private final UserRepository userRepository;
+    private final UserService userService;
 
     @Transactional
     public ReIssueAccessTokenResult reissueAccessToken(String refreshToken){
@@ -89,31 +86,19 @@ public class AuthService {
     public LoginResult login(OAuthLoginParams oAuthLoginParams){
 
         OAuthProfileDto oAuthProfileDto = getUserProfileResponse(oAuthLoginParams);
-        User user = addOrUpdateUser(oAuthProfileDto);
+        Long userId = userService.createOrUpdate(oAuthProfileDto);
 
-        String accessToken = tokenProvider.createAccessTokenById(user.getId());
-        String refreshToken = tokenProvider.createRefreshTokenById(user.getId());
+        String accessToken = tokenProvider.createAccessTokenById(userId);
+        String refreshToken = tokenProvider.createRefreshTokenById(userId);
 
         Long tokenExpiry = tokenAnalyzer.getTokenRemainExpiryFrom(refreshToken);
         tokenRepository.saveRefreshToken(RefreshToken.of(refreshToken, tokenExpiry));
 
-        return LoginResult.of(accessToken, refreshToken, user.getId());
+        return LoginResult.of(accessToken, refreshToken);
     }
 
     private OAuthProfileDto getUserProfileResponse(OAuthLoginParams oAuthLoginParams) {
         return OAuthProfileRequestService.request(oAuthLoginParams);
-    }
-
-    private User addOrUpdateUser(OAuthProfileDto oAuthProfileDto){
-        Optional<User> userOptional = userRepository.findByEmail(oAuthProfileDto.getEmail());
-        User user;
-        if(userOptional.isPresent()){
-            user = userOptional.get();
-            user.updateUserByOauthProfile(oAuthProfileDto);
-        }else{
-            user = userRepository.save(User.from(oAuthProfileDto));
-        }
-        return user;
     }
 
 }
