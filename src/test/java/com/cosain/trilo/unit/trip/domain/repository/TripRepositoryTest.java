@@ -123,7 +123,10 @@ public class TripRepositoryTest {
         @DisplayName("Day를 가지고 있는 Trip을 조회하면 Trip이 Day들을 가진 채 조회된다.")
         void if_trip_has_days_then_trip_and_its_trip_found(){
             // given
-            Trip trip = TripFixture.DECIDED_TRIP.createDecided(null, 1L, "여행 제목", LocalDate.of(2023,5,1), LocalDate.of(2023,5,3));
+            Long tripperId = 1L;
+            LocalDate startDate = LocalDate.of(2023,5,1);
+            LocalDate endDate = LocalDate.of(2023,5,3);
+            Trip trip = TripFixture.decided_nullId(tripperId, startDate, endDate);
             em.persist(trip);
 
             Day day1 = trip.getDays().get(0);

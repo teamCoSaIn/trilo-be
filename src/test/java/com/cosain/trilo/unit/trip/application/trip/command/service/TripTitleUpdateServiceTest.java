@@ -45,7 +45,7 @@ public class TripTitleUpdateServiceTest {
         String requestTitle = "수정 여행 제목";
 
         TripTitleUpdateCommand updateCommand = createCommand(requestTitle);
-        Trip trip = mockTrip(tripId, tripperId, beforeTitle);
+        Trip trip = TripFixture.undecided_Id_Title(tripId, tripperId, beforeTitle);
 
         given(tripRepository.findById(eq(tripId))).willReturn(Optional.of(trip));
 
@@ -89,7 +89,7 @@ public class TripTitleUpdateServiceTest {
         String requestTitle = "수정 여행 제목";
 
         TripTitleUpdateCommand updateCommand = createCommand(requestTitle);
-        Trip trip = mockTrip(tripId, realTripOwnerId, beforeTitle);
+        Trip trip = TripFixture.undecided_Id_Title(tripId, realTripOwnerId, beforeTitle);
 
         given(tripRepository.findById(eq(tripId))).willReturn(Optional.of(trip));
 
@@ -102,10 +102,6 @@ public class TripTitleUpdateServiceTest {
 
     private TripTitleUpdateCommand createCommand(String rawTitle) {
         return new TripTitleUpdateCommand(TripTitle.of(rawTitle));
-    }
-
-    private Trip mockTrip(Long id, Long tripperId, String rawTitle) {
-        return TripFixture.UNDECIDED_TRIP.createUndecided(id, tripperId, rawTitle);
     }
 
 }

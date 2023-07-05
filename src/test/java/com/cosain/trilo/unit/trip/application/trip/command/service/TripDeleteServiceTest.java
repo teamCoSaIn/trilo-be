@@ -1,5 +1,6 @@
 package com.cosain.trilo.unit.trip.application.trip.command.service;
 
+import com.cosain.trilo.fixture.TripFixture;
 import com.cosain.trilo.trip.application.exception.NoTripDeleteAuthorityException;
 import com.cosain.trilo.trip.application.exception.TripNotFoundException;
 import com.cosain.trilo.trip.application.trip.command.service.TripDeleteService;
@@ -17,7 +18,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
-import static com.cosain.trilo.fixture.TripFixture.UNDECIDED_TRIP;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -67,7 +67,7 @@ public class TripDeleteServiceTest {
             Long tripOwnerId = 1L;
             Long invalidTripperId = 2L;
 
-            Trip trip = UNDECIDED_TRIP.createUndecided(tripId, tripOwnerId, "여행 제목");
+            Trip trip = TripFixture.undecided_Id(tripId, tripOwnerId);
             given(tripRepository.findById(eq(tripId))).willReturn(Optional.of(trip));
 
             // when & then
@@ -86,7 +86,7 @@ public class TripDeleteServiceTest {
         Long tripOwnerId = 2L;
         Long deleteTripperId = 2L;
 
-        Trip trip = UNDECIDED_TRIP.createUndecided(tripId, tripOwnerId, "여행 제목");
+        Trip trip = TripFixture.undecided_Id(tripId, tripOwnerId);
 
         given(tripRepository.findById(eq(tripId))).willReturn(Optional.of(trip));
         willDoNothing().given(scheduleRepository).deleteAllByTripId(eq(tripId));

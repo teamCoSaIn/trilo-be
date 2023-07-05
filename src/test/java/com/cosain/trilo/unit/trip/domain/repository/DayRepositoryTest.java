@@ -32,7 +32,10 @@ public class DayRepositoryTest {
     @DisplayName("findBYWithTripTest - 같이 가져온 Trip이 실제 Trip 클래스인지 함께 검증")
     public void findByIdWithTripTest() {
         // given
-        Trip trip = TripFixture.DECIDED_TRIP.createDecided(null, 1L, "여행 제목", LocalDate.of(2023,3,1), LocalDate.of(2023,3,1));
+        Long tripperId = 1L;
+        LocalDate startDate = LocalDate.of(2023, 3, 1);
+        LocalDate endDate = LocalDate.of(2023, 3, 1);
+        Trip trip = TripFixture.decided_nullId(tripperId, startDate, endDate);
         em.persist(trip);
 
         Day day = trip.getDays().get(0);
@@ -57,7 +60,10 @@ public class DayRepositoryTest {
     @DisplayName("deleteAllByIds- 전달받은 Id 목록의 Day들을 삭제")
     void deleteAllByIdsTest() {
         // given
-        Trip trip = TripFixture.DECIDED_TRIP.createDecided(null, 1L, "여행 제목", LocalDate.of(2023,5,1), LocalDate.of(2023,5,4));
+        Long tripperId = 1L;
+        LocalDate startDate = LocalDate.of(2023, 5, 1);
+        LocalDate endDate = LocalDate.of(2023, 5, 4);
+        Trip trip = TripFixture.decided_nullId(tripperId, startDate, endDate);
         em.persist(trip);
 
         Day day1 = trip.getDays().get(0);
@@ -84,7 +90,11 @@ public class DayRepositoryTest {
     @DisplayName("deleteAllByTripId로 Day를 삭제하면, 해당 여행의 모든 Day들이 삭제된다.")
     void deleteAllByTripIdTest() {
         // given
-        Trip trip = TripFixture.DECIDED_TRIP.createDecided(null, 1L, "여행 제목", LocalDate.of(2023,3,1), LocalDate.of(2023,3,3));
+        Long tripperId = 1L;
+        LocalDate startDate = LocalDate.of(2023, 3, 1);
+        LocalDate endDate = LocalDate.of(2023, 3, 3);
+        Trip trip = TripFixture.decided_nullId(tripperId, startDate, endDate);
+        em.persist(trip);
 
         em.persist(trip);
 
@@ -106,15 +116,18 @@ public class DayRepositoryTest {
     }
 
     @Nested
-    class deleteAllByTripIdsTest{
+    class deleteAllByTripIdsTest {
 
         @Test
-        void 전달받은_여행_ID_목록에_해당하는_모든_Day가_제거된다(){
+        void 전달받은_여행_ID_목록에_해당하는_모든_Day가_제거된다() {
             // given
-            Trip trip1 = TripFixture.DECIDED_TRIP.createDecided(null, 1L, "여행 제목", LocalDate.of(2023,3,1), LocalDate.of(2023,3,3));
-            Trip trip2 = TripFixture.DECIDED_TRIP.createDecided(null, 1L, "여행 제목", LocalDate.of(2023,3,1), LocalDate.of(2023,3,3));
-            Trip trip3 = TripFixture.DECIDED_TRIP.createDecided(null, 1L, "여행 제목", LocalDate.of(2023,3,1), LocalDate.of(2023,3,3));
+            Long tripperId = 1L;
+            LocalDate commonStartDate = LocalDate.of(2023,3,1);
+            LocalDate commonEndDate = LocalDate.of(2023,3,3);
 
+            Trip trip1 = TripFixture.decided_nullId(tripperId, commonStartDate, commonEndDate);
+            Trip trip2 = TripFixture.decided_nullId(tripperId, commonStartDate, commonEndDate);
+            Trip trip3 = TripFixture.decided_nullId(tripperId, commonStartDate, commonEndDate);
             em.persist(trip1);
             em.persist(trip2);
             em.persist(trip3);

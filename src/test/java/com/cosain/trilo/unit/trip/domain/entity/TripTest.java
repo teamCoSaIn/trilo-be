@@ -1,5 +1,6 @@
 package com.cosain.trilo.unit.trip.domain.entity;
 
+import com.cosain.trilo.fixture.TripFixture;
 import com.cosain.trilo.trip.domain.dto.ScheduleMoveDto;
 import com.cosain.trilo.trip.domain.entity.Day;
 import com.cosain.trilo.trip.domain.entity.Schedule;
@@ -15,7 +16,6 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
-import static com.cosain.trilo.fixture.TripFixture.UNDECIDED_TRIP;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -82,7 +82,9 @@ public class TripTest {
         class Case_Change_UNDECIDED_Trip {
 
             // common given
-            private Trip undecidedTrip = UNDECIDED_TRIP.createUndecided(1L, 1L, "여행 제목");
+            private Long tripId = 1L;
+            private Long tripperId = 2L;
+            private Trip undecidedTrip = TripFixture.undecided_Id(tripId, tripperId);
 
             @Nested
             @DisplayName("비어있는 기간으로 변경하면")
