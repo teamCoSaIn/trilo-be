@@ -6,13 +6,11 @@ import lombok.Getter;
 public class ReIssueAccessTokenResult {
 
     private String accessToken;
-    private Long userId;
 
-    private ReIssueAccessTokenResult(String accessToken, Long userId) {
+    private ReIssueAccessTokenResult(String accessToken) {
         this.accessToken = accessToken;
-        this.userId = userId;
     }
-    public static ReIssueAccessTokenResult of(String accessToken, Long userId) {
-        return new ReIssueAccessTokenResult(accessToken, userId);
+    public static ReIssueAccessTokenResult of(String accessToken) {
+        return new ReIssueAccessTokenResult(accessToken);
     }
 }
