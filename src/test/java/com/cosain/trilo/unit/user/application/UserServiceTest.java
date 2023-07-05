@@ -1,5 +1,6 @@
 package com.cosain.trilo.unit.user.application;
 
+import com.cosain.trilo.auth.infra.OAuthProfileDto;
 import com.cosain.trilo.user.application.UserService;
 import com.cosain.trilo.user.application.event.UserDeleteEvent;
 import com.cosain.trilo.user.application.exception.NoUserDeleteAuthorityException;
@@ -9,6 +10,7 @@ import com.cosain.trilo.user.domain.AuthProvider;
 import com.cosain.trilo.user.domain.Role;
 import com.cosain.trilo.user.domain.User;
 import com.cosain.trilo.user.domain.UserRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,11 +22,12 @@ import org.springframework.context.ApplicationEventPublisher;
 import java.util.Optional;
 
 import static com.cosain.trilo.fixture.UserFixture.KAKAO_MEMBER;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class UserServiceTest {
@@ -33,9 +36,55 @@ public class UserServiceTest {
     private UserService userService;
     @Mock
     private UserRepository userRepository;
-
     @Mock
     private ApplicationEventPublisher eventPublisher;
+
+    @Nested
+    class 회원_생성_또는_업데이트_기능{
+        private String email;
+        private OAuthProfileDto oAuthProfileDto;
+        @BeforeEach
+        void setUp(){
+            email = "aaaa@nate.com";
+            oAuthProfileDto = OAuthProfileDto.builder()
+                    .name("김규성")
+                    .profileImageUrl("profile-image-url")
+                    .provider(AuthProvider.KAKAO)
+                    .email(email)
+                    .build();
+        }
+
+        @Test
+        void 신규_회원일_경우_저장(){
+            // given
+            User user = mock(User.class);
+            given(userRepository.findByEmail(eq(email))).willReturn(Optional.empty());
+            given(userRepository.save(any(User.class))).willReturn(user);
+
+            // when
+            Long userId = userService.createOrUpdate(oAuthProfileDto);
+
+            // then
+            assertThat(userId).isEqualTo(user.getId());
+            verify(userRepository, times(1)).save(any(User.class));
+        }
+
+        @Test
+        void 기존_회원일_경우_업데이트_후_저장(){
+            // given
+            User user = mock(User.class);
+            given(userRepository.findByEmail(eq(email))).willReturn(Optional.ofNullable(user));
+            given(userRepository.save(any(User.class))).willReturn(user);
+
+            // when
+            Long userId = userService.createOrUpdate(oAuthProfileDto);
+
+            // then
+            assertThat(userId).isEqualTo(user.getId());
+            verify(user, times(1)).updateUserByOauthProfile(any());
+            verify(userRepository, times(1)).save(eq(user));
+        }
+    }
 
 
     @Nested
