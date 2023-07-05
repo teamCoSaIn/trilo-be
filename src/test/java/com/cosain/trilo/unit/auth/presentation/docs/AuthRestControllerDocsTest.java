@@ -39,7 +39,7 @@ class AuthRestControllerDocsTest extends RestDocsTestSupport {
     @Test
     void 접근토큰_재발급_요청() throws Exception{
 
-        ReIssueAccessTokenResult result = ReIssueAccessTokenResult.of("accessToken", 1L);
+        ReIssueAccessTokenResult result = ReIssueAccessTokenResult.of("accessToken");
         given(authService.reissueAccessToken(any())).willReturn(result);
 
         mockMvc.perform(RestDocumentationRequestBuilders.post(BASE_URL +"/reissue")
@@ -50,7 +50,6 @@ class AuthRestControllerDocsTest extends RestDocsTestSupport {
                                 cookieWithName("refreshToken").description("접근 토큰 발급에 사용될 재발급 토큰")
                         ),
                         responseFields(
-                                fieldWithPath("userId").type(NUMBER).description("사용자 ID"),
                                 fieldWithPath("authType").type(STRING).description("인증 타입 (Bearer)"),
                                 fieldWithPath("accessToken").type(STRING).description("재발급한 접근 토큰")
                         )
@@ -96,9 +95,8 @@ class AuthRestControllerDocsTest extends RestDocsTestSupport {
     @Test
     void 카카오_로그인_요청() throws Exception{
 
-        Long userId = 1L;
         KakaoOAuthLoginRequest kakaoOAuthLoginRequest = new KakaoOAuthLoginRequest("code", "redirect_uri");
-        given(authService.login(any(OAuthLoginParams.class))).willReturn(LoginResult.of("accessToken", "refreshToken", userId));
+        given(authService.login(any(OAuthLoginParams.class))).willReturn(LoginResult.of("accessToken", "refreshToken"));
 
         mockMvc.perform(RestDocumentationRequestBuilders.post(BASE_URL + "/login/kakao")
                         .content(createJson(kakaoOAuthLoginRequest))
@@ -110,7 +108,6 @@ class AuthRestControllerDocsTest extends RestDocsTestSupport {
                             fieldWithPath("redirect_uri").type(STRING).description("인증 코드 발급에 사용했던 Redirect Uri")
                     ),
                     responseFields(
-                            fieldWithPath("userId").type(NUMBER).description("사용자 ID"),
                             fieldWithPath("authType").type(STRING).description("인증 타입 (Bearer)"),
                             fieldWithPath("accessToken").description("AccessToken")
                     ),
@@ -124,9 +121,8 @@ class AuthRestControllerDocsTest extends RestDocsTestSupport {
     @Test
     void 네이버_로그인_요청() throws Exception {
 
-        Long userId = 1L;
         NaverOAuthLoginRequest naverOAuthLoginRequest = new NaverOAuthLoginRequest("code", "state");
-        given(authService.login(any(OAuthLoginParams.class))).willReturn(LoginResult.of("accessToken", "refreshToken", userId));
+        given(authService.login(any(OAuthLoginParams.class))).willReturn(LoginResult.of("accessToken", "refreshToken"));
 
         mockMvc.perform(RestDocumentationRequestBuilders.post(BASE_URL + "/login/naver")
                         .content(createJson(naverOAuthLoginRequest))
@@ -138,7 +134,6 @@ class AuthRestControllerDocsTest extends RestDocsTestSupport {
                            fieldWithPath("state").type(STRING).description("Authorization Code 발급시 전달했던 redirect_uri")
                    ),
                    responseFields(
-                           fieldWithPath("userId").type(NUMBER).description("사용자 ID"),
                            fieldWithPath("authType").type(STRING).description("인증 타입 (Bearer)"),
                            fieldWithPath("accessToken").description("AccessToken")
                    ),
@@ -151,9 +146,8 @@ class AuthRestControllerDocsTest extends RestDocsTestSupport {
     @Test
     void 구글_로그인_요청() throws Exception {
 
-        Long userId = 1L;
         GoogleOAuthLoginRequest googleOAuthLoginRequest = new GoogleOAuthLoginRequest("code", "redirectUrl");
-        given(authService.login(any(OAuthLoginParams.class))).willReturn(LoginResult.of("accessToken", "refreshToken", userId));
+        given(authService.login(any(OAuthLoginParams.class))).willReturn(LoginResult.of("accessToken", "refreshToken"));
 
         mockMvc.perform(RestDocumentationRequestBuilders.post(BASE_URL + "/login/google")
                         .content(createJson(googleOAuthLoginRequest))
@@ -165,7 +159,6 @@ class AuthRestControllerDocsTest extends RestDocsTestSupport {
                                 fieldWithPath("redirect_uri").type(STRING).description("Authorization Code 발급시 전달했던 redirect_uri")
                         ),
                         responseFields(
-                                fieldWithPath("userId").type(NUMBER).description("사용자 ID"),
                                 fieldWithPath("authType").type(STRING).description("인증 타입 (Bearer)"),
                                 fieldWithPath("accessToken").description("AccessToken")
                         ),
