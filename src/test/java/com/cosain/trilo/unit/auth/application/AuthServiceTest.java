@@ -13,17 +13,14 @@ import com.cosain.trilo.auth.infra.TokenProvider;
 import com.cosain.trilo.auth.presentation.dto.RefreshTokenStatusResponse;
 import com.cosain.trilo.common.exception.NotExistRefreshTokenException;
 import com.cosain.trilo.common.exception.NotValidTokenException;
+import com.cosain.trilo.user.application.UserService;
 import com.cosain.trilo.user.domain.AuthProvider;
-import com.cosain.trilo.user.domain.User;
-import com.cosain.trilo.user.domain.UserRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.*;
@@ -41,7 +38,7 @@ class AuthServiceTest {
     @Mock
     private TokenProvider tokenProvider;
     @Mock
-    private UserRepository userRepository;
+    private UserService userService;
     @Mock
     private OAuthProfileRequestService OAuthProfileRequestService;
     private final String ACCESS_TOKEN = "slkdfjasjeoifjse.siejfoajseifjasolef.sliejfaisjelfsjefsdcv";
@@ -125,7 +122,8 @@ class AuthServiceTest {
                 .provider(AuthProvider.KAKAO)
                 .profileImageUrl("image_url")
                 .build();
-        given(userRepository.findByEmail(any())).willReturn(Optional.ofNullable(User.from(oAuthProfileDto)));
+
+        given(userService.createOrUpdate(any(OAuthProfileDto.class))).willReturn(1L);
         given(OAuthProfileRequestService.request(any(OAuthLoginParams.class))).willReturn(oAuthProfileDto);
         given(tokenProvider.createAccessTokenById(any())).willReturn(ACCESS_TOKEN);
         given(tokenProvider.createRefreshTokenById(any())).willReturn(REFRESH_TOKEN);
