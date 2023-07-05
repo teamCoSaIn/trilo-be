@@ -74,7 +74,7 @@ public class UserServiceTest {
             // given
             User user = mock(User.class);
             given(userRepository.findByEmail(eq(email))).willReturn(Optional.ofNullable(user));
-            given(userRepository.save(eq(user))).willReturn(user);
+            given(userRepository.save(any(User.class))).willReturn(user);
 
             // when
             Long userId = userService.createOrUpdate(oAuthProfileDto);
