@@ -35,7 +35,7 @@ public class AuthService {
         checkTokenExistenceOrThrow(refreshToken);
         Long userId = tokenAnalyzer.getUserIdFromToken(refreshToken);
         String accessToken = tokenProvider.createAccessTokenById(userId);
-        return ReIssueAccessTokenResult.of(accessToken, userId);
+        return ReIssueAccessTokenResult.of(accessToken);
     }
     private void checkIfValidTokenOrThrow(String refreshToken){
         if(!tokenAnalyzer.validateToken(refreshToken)){
@@ -94,7 +94,7 @@ public class AuthService {
         Long tokenExpiry = tokenAnalyzer.getTokenRemainExpiryFrom(refreshToken);
         tokenRepository.saveRefreshToken(RefreshToken.of(refreshToken, tokenExpiry));
 
-        return LoginResult.of(accessToken, refreshToken, userId);
+        return LoginResult.of(accessToken, refreshToken);
     }
 
     private OAuthProfileDto getUserProfileResponse(OAuthLoginParams oAuthLoginParams) {

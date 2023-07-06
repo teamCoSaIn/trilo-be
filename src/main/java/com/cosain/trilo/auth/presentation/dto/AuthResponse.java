@@ -9,19 +9,17 @@ public class AuthResponse {
 
     private String authType;
     private String accessToken;
-    private Long userId;
 
     public static AuthResponse from(LoginResult result) {
-        return new AuthResponse(result.getAccessToken(), result.getId());
+        return new AuthResponse(result.getAccessToken());
     }
 
     public static AuthResponse from(ReIssueAccessTokenResult result){
-        return new AuthResponse(result.getAccessToken(), result.getUserId());
+        return new AuthResponse(result.getAccessToken());
     }
 
-    private AuthResponse(String accessToken, Long userId){
+    private AuthResponse(String accessToken){
         this.authType = "Bearer";
         this.accessToken = accessToken;
-        this.userId = userId;
     }
 }
