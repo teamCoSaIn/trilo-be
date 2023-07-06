@@ -104,7 +104,8 @@ public class TripRepositoryTest {
         @DisplayName("UnDecided 상태의 Trip을 조회하면 여행만 조회된다.")
         public void findUndecidedTripTest() {
             // given
-            Trip trip = Trip.create(TripTitle.of("제목"), 1L);
+            Long tripperId = 1L;
+            Trip trip = TripFixture.undecided_nullId(tripperId);
             em.persist(trip);
 
             em.clear();

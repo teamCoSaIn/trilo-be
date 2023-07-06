@@ -1,5 +1,6 @@
 package com.cosain.trilo.unit.trip.application.day.command.service;
 
+import com.cosain.trilo.fixture.TripFixture;
 import com.cosain.trilo.trip.application.day.command.dto.DayColorUpdateCommand;
 import com.cosain.trilo.trip.application.day.command.service.DayColorUpdateService;
 import com.cosain.trilo.trip.application.exception.DayNotFoundException;
@@ -8,9 +9,6 @@ import com.cosain.trilo.trip.domain.entity.Day;
 import com.cosain.trilo.trip.domain.entity.Trip;
 import com.cosain.trilo.trip.domain.repository.DayRepository;
 import com.cosain.trilo.trip.domain.vo.DayColor;
-import com.cosain.trilo.trip.domain.vo.TripPeriod;
-import com.cosain.trilo.trip.domain.vo.TripStatus;
-import com.cosain.trilo.trip.domain.vo.TripTitle;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -69,8 +67,7 @@ public class DayColorUpdateServiceTest {
 
         DayColor beforeDayColor = DayColor.BLACK;
         DayColor requestDayColor = DayColor.RED;
-
-        Day day = mockDay(tripId, tripOwnerId, beforeDayColor);
+        Day day = fixtureDay(tripId, tripOwnerId, beforeDayColor);
         DayColorUpdateCommand updateCommand = new DayColorUpdateCommand(requestDayColor);
 
         given(dayRepository.findByIdWithTrip(eq(dayId))).willReturn(Optional.of(day));
@@ -92,7 +89,7 @@ public class DayColorUpdateServiceTest {
         DayColor beforeDayColor = DayColor.BLACK;
         DayColor requestDayColor = DayColor.RED;
 
-        Day day = mockDay(tripId, tripOwnerId, beforeDayColor);
+        Day day = fixtureDay(tripId, tripOwnerId, beforeDayColor);
         DayColorUpdateCommand updateCommand = new DayColorUpdateCommand(requestDayColor);
 
         given(dayRepository.findByIdWithTrip(eq(dayId))).willReturn(Optional.of(day));
@@ -105,22 +102,11 @@ public class DayColorUpdateServiceTest {
         assertThat(day.getDayColor()).isSameAs(requestDayColor);
     }
 
-
-    private Day mockDay(Long tripId, Long tripperId, DayColor dayColor) {
-        Trip trip = Trip.builder()
-                .id(tripId)
-                .tripperId(tripperId)
-                .tripTitle(TripTitle.of("여행 제목"))
-                .tripPeriod(TripPeriod.of(LocalDate.of(2023,3,1), LocalDate.of(2023,3,1)))
-                .status(TripStatus.DECIDED)
-                .build();
-        Day day = Day.builder()
-                .trip(trip)
-                .dayColor(dayColor)
-                .tripDate(LocalDate.of(2023,3,1))
-                .build();
-        trip.getDays().add(day);
-        return day;
+    private Day fixtureDay(Long tripId, Long tripperId, DayColor dayColor) {
+        LocalDate startDate = LocalDate.of(2023,3,1);
+        LocalDate endDate = LocalDate.of(2023,3,1);
+        Trip trip = TripFixture.decided_Id_Color(tripId, tripperId, startDate, endDate, 1L, dayColor);
+        return trip.getDays().get(0);
     }
 
 }

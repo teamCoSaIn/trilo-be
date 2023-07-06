@@ -1,5 +1,6 @@
 package com.cosain.trilo.integration.trip;
 
+import com.cosain.trilo.fixture.TripFixture;
 import com.cosain.trilo.support.IntegrationTest;
 import com.cosain.trilo.trip.domain.entity.Trip;
 import com.cosain.trilo.trip.domain.repository.TripRepository;
@@ -68,7 +69,7 @@ public class TripTitleUpdateIntegrationTest extends IntegrationTest {
     }
 
     private Trip setupMockTrip(String rawTitle, Long tripperId) {
-        Trip trip = Trip.create(TripTitle.of(rawTitle), tripperId);
+        Trip trip = TripFixture.undecided_nullId_Title(tripperId, rawTitle);
         tripRepository.save(trip);
         return trip;
     }

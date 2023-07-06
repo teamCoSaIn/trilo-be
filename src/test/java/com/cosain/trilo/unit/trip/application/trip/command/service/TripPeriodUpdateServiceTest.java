@@ -1,18 +1,15 @@
 package com.cosain.trilo.unit.trip.application.trip.command.service;
 
+import com.cosain.trilo.fixture.TripFixture;
 import com.cosain.trilo.trip.application.exception.NoTripUpdateAuthorityException;
 import com.cosain.trilo.trip.application.exception.TripNotFoundException;
 import com.cosain.trilo.trip.application.trip.command.service.TripPeriodUpdateService;
 import com.cosain.trilo.trip.application.trip.command.usecase.dto.TripPeriodUpdateCommand;
-import com.cosain.trilo.trip.domain.entity.Day;
 import com.cosain.trilo.trip.domain.entity.Trip;
 import com.cosain.trilo.trip.domain.repository.DayRepository;
 import com.cosain.trilo.trip.domain.repository.ScheduleRepository;
 import com.cosain.trilo.trip.domain.repository.TripRepository;
-import com.cosain.trilo.trip.domain.vo.DayColor;
 import com.cosain.trilo.trip.domain.vo.TripPeriod;
-import com.cosain.trilo.trip.domain.vo.TripStatus;
-import com.cosain.trilo.trip.domain.vo.TripTitle;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -22,9 +19,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.*;
@@ -78,7 +73,7 @@ public class TripPeriodUpdateServiceTest {
 
         TripPeriodUpdateCommand updateCommand = createCommand(startDate, endDate);
 
-        Trip trip = mockUnDecidedTrip(tripId, tripperId);
+        Trip trip = TripFixture.undecided_Id(tripId, tripperId);
         given(tripRepository.findByIdWithDays(eq(tripId))).willReturn(Optional.of(trip));
 
         // when
@@ -99,7 +94,7 @@ public class TripPeriodUpdateServiceTest {
         Long tripperId = 2L;
 
         TripPeriodUpdateCommand updateCommand = createCommand(LocalDate.of(2023, 3, 2), LocalDate.of(2023,3,5));
-        Trip trip = mockDecidedTrip(tripId, tripperId, LocalDate.of(2023,3,1), LocalDate.of(2023,3,4), 1L);
+        Trip trip = TripFixture.decided_Id(tripId, tripperId, LocalDate.of(2023,3,1), LocalDate.of(2023,3,4), 1L);
 
         given(tripRepository.findByIdWithDays(eq(tripId))).willReturn(Optional.of(trip)); // trip 조회 일어남.
 
@@ -132,7 +127,7 @@ public class TripPeriodUpdateServiceTest {
 
             TripPeriodUpdateCommand updateCommand = createCommand(LocalDate.of(2023,3,1), LocalDate.of(2023,3,3));
 
-            Trip trip = mockUnDecidedTrip(tripId, tripperId);
+            Trip trip = TripFixture.undecided_Id(tripId, tripperId);
             given(tripRepository.findByIdWithDays(eq(tripId))).willReturn(Optional.of(trip));
 
             // when & then
@@ -146,47 +141,6 @@ public class TripPeriodUpdateServiceTest {
 
     private TripPeriodUpdateCommand createCommand(LocalDate startDate, LocalDate endDate) {
         return new TripPeriodUpdateCommand(TripPeriod.of(startDate, endDate));
-    }
-
-    private Trip mockUnDecidedTrip(Long id, Long tripperId) {
-        return Trip.builder()
-                .id(id)
-                .tripperId(tripperId)
-                .tripTitle(TripTitle.of("여행 제목"))
-                .tripPeriod(TripPeriod.empty())
-                .status(TripStatus.UNDECIDED)
-                .build();
-    }
-
-    private Trip mockDecidedTrip(Long id, Long tripperId, LocalDate startDate, LocalDate endDate, Long startDayId) {
-        TripPeriod period = TripPeriod.of(startDate, endDate);
-        Trip trip = Trip.builder()
-                .id(id)
-                .tripperId(tripperId)
-                .tripTitle(TripTitle.of("여행 제목"))
-                .tripPeriod(TripPeriod.empty())
-                .status(TripStatus.UNDECIDED)
-                .build();
-
-        List<Day> days = mockDays(period, trip, startDayId);
-        trip.getDays().addAll(days);
-        return trip;
-    }
-
-    private List<Day> mockDays(TripPeriod period, Trip trip, Long startDayId) {
-        List<LocalDate> dates = period.dateStream().toList();
-        return IntStream.range(0, dates.size())
-                .mapToObj(idx -> createDay(trip, startDayId, dates, idx))
-                .toList();
-    }
-
-    private Day createDay(Trip trip, Long startDayId, List<LocalDate> dates, int idx) {
-        return Day.builder()
-                .id(startDayId + idx)
-                .tripDate(dates.get(idx))
-                .trip(trip)
-                .dayColor(DayColor.BLACK)
-                .build();
     }
 
 }
