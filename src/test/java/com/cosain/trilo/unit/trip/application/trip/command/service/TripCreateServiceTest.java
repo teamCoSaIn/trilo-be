@@ -1,7 +1,8 @@
 package com.cosain.trilo.unit.trip.application.trip.command.service;
 
-import com.cosain.trilo.trip.application.trip.command.usecase.dto.TripCreateCommand;
+import com.cosain.trilo.fixture.TripFixture;
 import com.cosain.trilo.trip.application.trip.command.service.TripCreateService;
+import com.cosain.trilo.trip.application.trip.command.usecase.dto.TripCreateCommand;
 import com.cosain.trilo.trip.domain.entity.Trip;
 import com.cosain.trilo.trip.domain.repository.TripRepository;
 import com.cosain.trilo.trip.domain.vo.TripTitle;
@@ -12,10 +13,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.util.ReflectionUtils;
 
-import java.lang.reflect.Field;
-
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
@@ -33,28 +32,23 @@ public class TripCreateServiceTest {
 
     @Test
     @DisplayName("create 하면, 내부적으로 repository가 호출된다.")
-    public void create_and_repository_called() throws Exception {
+    public void create_and_repository_called() {
         // given
+        Long tripId = 1L;
+        Long tripperId = 2L;
+
         TripCreateCommand createCommand = new TripCreateCommand(TripTitle.of("제목"));
-        Long tripperId = 1L;
 
         // mocking
-        Trip trip = Trip.create(TripTitle.of("제목"), tripperId);
-        injectFakeTripId(trip, 1L);
-
+        Trip trip = TripFixture.undecided_Id(tripId, tripperId);
         given(tripRepository.save(any(Trip.class))).willReturn(trip);
 
         // when
-        tripCreateService.createTrip(tripperId, createCommand);
+        Long returnTripId = tripCreateService.createTrip(tripperId, createCommand);
 
         // then
         verify(tripRepository).save(any(Trip.class));
-    }
-
-    private void injectFakeTripId(Trip trip, Long fakeTripId) {
-        Field field = ReflectionUtils.findField(Trip.class, "id");
-        ReflectionUtils.makeAccessible(field);
-        ReflectionUtils.setField(field, trip, fakeTripId);
+        assertThat(returnTripId).isEqualTo(tripId);
     }
 
 }

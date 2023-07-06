@@ -1,5 +1,6 @@
 package com.cosain.trilo.unit.trip.application.schedule.command.service;
 
+import com.cosain.trilo.fixture.TripFixture;
 import com.cosain.trilo.trip.application.exception.NoScheduleDeleteAuthorityException;
 import com.cosain.trilo.trip.application.exception.ScheduleNotFoundException;
 import com.cosain.trilo.trip.application.schedule.command.service.ScheduleDeleteService;
@@ -22,7 +23,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.LocalDate;
 import java.util.Optional;
 
-import static com.cosain.trilo.fixture.TripFixture.DECIDED_TRIP;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -68,7 +68,9 @@ public class ScheduleDeleteServiceTest {
             Long invalidTripperId = 3L;
             Long scheduleId = 4L;
 
-            Trip trip = DECIDED_TRIP.createDecided(tripId, tripOwnerId, "여행 제목", LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 1));
+            LocalDate startDate = LocalDate.of(2023,3,1);
+            LocalDate endDate = LocalDate.of(2023,3,1);
+            Trip trip = TripFixture.decided_Id(tripId, tripOwnerId, startDate, endDate, 1L);
             Day day = trip.getDays().get(0);
 
             Schedule schedule = Schedule.builder()
@@ -97,8 +99,10 @@ public class ScheduleDeleteServiceTest {
         Long tripOwnerId = 2L;
         Long deleteTripperId = 2L;
         Long scheduleId = 3L;
+        LocalDate startDate = LocalDate.of(2023,3,1);
+        LocalDate endDate = LocalDate.of(2023,3,1);
 
-        Trip trip = DECIDED_TRIP.createDecided(tripId, tripOwnerId, "여행 제목", LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 1));
+        Trip trip = TripFixture.decided_Id(tripId, tripOwnerId, startDate, endDate, 1L);
         Day day = trip.getDays().get(0);
 
         Schedule schedule = Schedule.builder()

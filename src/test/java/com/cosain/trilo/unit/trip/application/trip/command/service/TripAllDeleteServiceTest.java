@@ -10,7 +10,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
@@ -35,9 +35,9 @@ public class TripAllDeleteServiceTest {
         tripAllDeleteService.deleteAllByTripperId(tripperId);
 
         // then
-        verify(tripRepository).findAllByTripperId(any());
-        verify(tripRepository).deleteAllByTripperId(any());
-        verify(dayRepository).deleteAllByTripIds(any());
-        verify(scheduleRepository).deleteAllByTripIds(any());
+        verify(tripRepository).findAllByTripperId(eq(tripperId));
+        verify(tripRepository).deleteAllByTripperId(eq(tripperId));
+        verify(dayRepository).deleteAllByTripIds(anyList());
+        verify(scheduleRepository).deleteAllByTripIds(anyList());
     }
 }

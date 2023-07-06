@@ -1,18 +1,21 @@
 package com.cosain.trilo.unit.trip.application.schedule.command.service;
 
 import com.cosain.trilo.fixture.TripFixture;
+import com.cosain.trilo.trip.application.exception.NoScheduleCreateAuthorityException;
 import com.cosain.trilo.trip.application.exception.TooManyDayScheduleException;
 import com.cosain.trilo.trip.application.exception.TooManyTripScheduleException;
-import com.cosain.trilo.trip.application.schedule.command.usecase.dto.ScheduleCreateCommand;
-import com.cosain.trilo.trip.application.exception.NoScheduleCreateAuthorityException;
 import com.cosain.trilo.trip.application.schedule.command.service.ScheduleCreateService;
+import com.cosain.trilo.trip.application.schedule.command.usecase.dto.ScheduleCreateCommand;
 import com.cosain.trilo.trip.domain.entity.Day;
 import com.cosain.trilo.trip.domain.entity.Schedule;
 import com.cosain.trilo.trip.domain.entity.Trip;
 import com.cosain.trilo.trip.domain.repository.DayRepository;
 import com.cosain.trilo.trip.domain.repository.ScheduleRepository;
 import com.cosain.trilo.trip.domain.repository.TripRepository;
-import com.cosain.trilo.trip.domain.vo.*;
+import com.cosain.trilo.trip.domain.vo.Coordinate;
+import com.cosain.trilo.trip.domain.vo.Place;
+import com.cosain.trilo.trip.domain.vo.ScheduleIndex;
+import com.cosain.trilo.trip.domain.vo.ScheduleTitle;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -55,22 +58,11 @@ public class ScheduleCreateServiceTest {
             Long tripperId = 1L;
             Long tripId = 2L;
             Long dayId = 3L;
+            LocalDate startDate = LocalDate.of(2023,3,1);
+            LocalDate endDate = LocalDate.of(2023,3,1);
 
-            Trip trip = Trip.builder()
-                    .id(tripId)
-                    .tripperId(tripperId)
-                    .tripTitle(TripTitle.of("여행 제목"))
-                    .status(TripStatus.DECIDED)
-                    .tripPeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 1)))
-                    .build();
-
-            Day day = Day.builder()
-                    .id(dayId)
-                    .tripDate(LocalDate.of(2023, 3, 1))
-                    .trip(trip)
-                    .build();
-
-            trip.getDays().add(day);
+            Trip trip = TripFixture.decided_Id(tripId, tripperId, startDate, endDate, dayId);
+            Day day = trip.getDays().get(0);
 
             ScheduleCreateCommand scheduleCreateCommand = ScheduleCreateCommand.builder()
                     .dayId(dayId)
@@ -113,21 +105,11 @@ public class ScheduleCreateServiceTest {
             Long tripperId = 1L;
             Long tripId = 2L;
             Long dayId = 3L;
+            LocalDate startDate = LocalDate.of(2023,3,1);
+            LocalDate endDate = LocalDate.of(2023,3,1);
 
-            Trip beforeTrip = Trip.builder()
-                    .id(tripId)
-                    .tripperId(tripperId)
-                    .tripTitle(TripTitle.of("여행 제목"))
-                    .status(TripStatus.DECIDED)
-                    .tripPeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 1)))
-                    .build();
-
-            Day beforeDay = Day.builder()
-                    .id(dayId)
-                    .tripDate(LocalDate.of(2023, 3, 1))
-                    .trip(beforeTrip)
-                    .build();
-
+            Trip beforeTrip = TripFixture.decided_Id(tripId, tripperId, startDate, endDate, dayId);
+            Day beforeDay = beforeTrip.getDays().get(0);
 
             Schedule beforeSchedule = Schedule.builder()
                     .id(1L)
@@ -147,20 +129,8 @@ public class ScheduleCreateServiceTest {
                     .place(Place.of("장소 식별자", "장소명", Coordinate.of(23.21, 23.24)))
                     .build();
 
-
-            Trip rediscoveredTrip = Trip.builder()
-                    .id(tripId)
-                    .tripperId(tripperId)
-                    .tripTitle(TripTitle.of("여행 제목"))
-                    .status(TripStatus.DECIDED)
-                    .tripPeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 1)))
-                    .build();
-
-            Day rediscoveredDay = Day.builder()
-                    .id(dayId)
-                    .tripDate(LocalDate.of(2023, 3, 1))
-                    .trip(rediscoveredTrip)
-                    .build();
+            Trip rediscoveredTrip = TripFixture.decided_Id(tripId, tripperId, startDate, endDate, dayId);
+            Day rediscoveredDay = rediscoveredTrip.getDays().get(0);
 
             Schedule rediscoveredBeforeSchedule = Schedule.builder()
                     .id(1L)
@@ -221,13 +191,7 @@ public class ScheduleCreateServiceTest {
             Long tripId = 2L;
             Long dayId = null;
 
-            Trip trip = Trip.builder()
-                    .id(tripId)
-                    .tripperId(tripperId)
-                    .tripTitle(TripTitle.of("여행 제목"))
-                    .status(TripStatus.DECIDED)
-                    .tripPeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 1)))
-                    .build();
+            Trip trip = TripFixture.undecided_Id(tripId, tripperId);
 
             ScheduleCreateCommand scheduleCreateCommand = ScheduleCreateCommand.builder()
                     .dayId(dayId)
@@ -265,9 +229,9 @@ public class ScheduleCreateServiceTest {
         @DisplayName("임시보관함에서 일정의 순서가 하한선을 벗어날 경우 재배치 기능이 호출되는 지 여부 테스트")
         public void when_temporaryStorage_Schedule_is_under_limit_then_relocate_called() {
             // given
-            Long tripperId = 1L;
             Long tripId = 1L;
-            Trip trip = TripFixture.UNDECIDED_TRIP.createUndecided(tripId, tripperId, "제목");
+            Long tripperId = 2L;
+            Trip trip = TripFixture.undecided_Id(tripId, tripperId);
 
             Schedule beforeSchedule = Schedule.builder()
                     .id(1L)
@@ -279,7 +243,7 @@ public class ScheduleCreateServiceTest {
                     .build();
             trip.getTemporaryStorage().add(beforeSchedule);
 
-            Trip rediscoveredTrip = TripFixture.UNDECIDED_TRIP.createUndecided(tripId, tripperId, "제목");
+            Trip rediscoveredTrip = TripFixture.undecided_Id(tripId, tripperId);
             Schedule relocatedSchedule = Schedule.builder()
                     .id(1L)
                     .day(null)
@@ -328,20 +292,18 @@ public class ScheduleCreateServiceTest {
     }
 
     @Test
-    @DisplayName("권한 없는 사람이 Schedule을 생성하면, NoScheduleCreateAuthortyException이 발생한다.")
+    @DisplayName("권한 없는 사람이 Schedule을 생성하면, NoScheduleCreateAuthorityException이 발생한다.")
     public void when_no_authority_tripper_create_schedule_it_throws_NoScheduleCreateAuthorityException() {
         // given
         Long tripOwnerId = 1L;
         Long noAuthorityTripperId = 2L;
         Long tripId = 3L;
         Long dayId = 4L;
+        LocalDate startDate = LocalDate.of(2023,4,1);
+        LocalDate endDate = LocalDate.of(2023,4,1);
 
-        Trip trip = TripFixture.DECIDED_TRIP.createDecided(tripId, tripOwnerId, "제목", LocalDate.of(2023,4,1), LocalDate.of(2023,4,1));
-        Day day = Day.builder()
-                .id(dayId)
-                .tripDate(LocalDate.of(2023,4,1))
-                .dayColor(DayColor.BLACK)
-                .build();
+        Trip trip = TripFixture.decided_Id(tripId, tripOwnerId, startDate, endDate, 1L);
+        Day day = trip.getDays().get(0);
 
         ScheduleCreateCommand scheduleCreateCommand = ScheduleCreateCommand.builder()
                 .dayId(dayId)
@@ -367,13 +329,7 @@ public class ScheduleCreateServiceTest {
         Long tripperId = 1L;
         Long tripId = 2L;
 
-        Trip trip = Trip.builder()
-                .id(tripId)
-                .tripperId(tripperId)
-                .tripTitle(TripTitle.of("여행 제목"))
-                .status(TripStatus.DECIDED)
-                .tripPeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 1)))
-                .build();
+        Trip trip = TripFixture.undecided_Id(tripId, tripperId);
 
         ScheduleCreateCommand scheduleCreateCommand = ScheduleCreateCommand.builder()
                 .dayId(null)
@@ -405,21 +361,11 @@ public class ScheduleCreateServiceTest {
         Long tripperId = 1L;
         Long tripId = 2L;
         Long dayId = 3L;
+        LocalDate startDate = LocalDate.of(2023,3,1);
+        LocalDate endDate = LocalDate.of(2023,3,1);
 
-        Trip trip = Trip.builder()
-                .id(tripId)
-                .tripperId(tripperId)
-                .tripTitle(TripTitle.of("여행 제목"))
-                .status(TripStatus.DECIDED)
-                .tripPeriod(TripPeriod.of(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 1)))
-                .build();
-
-        Day day = Day.builder()
-                .id(dayId)
-                .tripDate(LocalDate.of(2023,3,1))
-                .trip(trip)
-                .build();
-
+        Trip trip = TripFixture.decided_Id(tripId, tripperId, startDate, endDate, dayId);
+        Day day = trip.getDays().get(0);
 
         ScheduleCreateCommand scheduleCreateCommand = ScheduleCreateCommand.builder()
                 .dayId(dayId)
