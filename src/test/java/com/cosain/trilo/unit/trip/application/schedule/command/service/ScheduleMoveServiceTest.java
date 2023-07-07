@@ -1,5 +1,6 @@
 package com.cosain.trilo.unit.trip.application.schedule.command.service;
 
+import com.cosain.trilo.fixture.ScheduleFixture;
 import com.cosain.trilo.fixture.TripFixture;
 import com.cosain.trilo.trip.application.exception.DayNotFoundException;
 import com.cosain.trilo.trip.application.exception.NoScheduleMoveAuthorityException;
@@ -13,10 +14,6 @@ import com.cosain.trilo.trip.domain.entity.Schedule;
 import com.cosain.trilo.trip.domain.entity.Trip;
 import com.cosain.trilo.trip.domain.repository.DayRepository;
 import com.cosain.trilo.trip.domain.repository.ScheduleRepository;
-import com.cosain.trilo.trip.domain.vo.Coordinate;
-import com.cosain.trilo.trip.domain.vo.Place;
-import com.cosain.trilo.trip.domain.vo.ScheduleIndex;
-import com.cosain.trilo.trip.domain.vo.ScheduleTitle;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -28,6 +25,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.LocalDate;
 import java.util.Optional;
 
+import static com.cosain.trilo.trip.domain.vo.ScheduleIndex.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.eq;
@@ -56,15 +54,14 @@ public class ScheduleMoveServiceTest {
         Long tripperId = 1L;
         Long targetDayId = 2L;
         int targetOrder = 3;
-
         ScheduleMoveCommand moveCommand = new ScheduleMoveCommand(targetDayId, targetOrder);
+
+        // mock: scheduleId 조회 -> 해당 일정 존재 안 함
         given(scheduleRepository.findByIdWithTrip(eq(notExistScheduleId))).willReturn(Optional.empty());
 
-
-        // when & then
+        // when & then : 발생 예외 및 리포지토리 호출 횟수 검증
         assertThatThrownBy(() -> scheduleMoveService.moveSchedule(notExistScheduleId, tripperId, moveCommand))
                 .isInstanceOf(ScheduleNotFoundException.class);
-
         verify(scheduleRepository).findByIdWithTrip(eq(notExistScheduleId));
     }
 
@@ -72,33 +69,24 @@ public class ScheduleMoveServiceTest {
     @Test
     public void testNotExistTargetDayMove() {
         // given
-        Long scheduleId = 1L;
-        Long tripperId = 1L;
-        Long targetDayId = 2L;
-        int targetOrder = 3;
         Long tripId = 1L;
-
-        Trip trip = TripFixture.undecided_Id(tripId, tripperId);
-
-        Schedule schedule = Schedule.builder()
-                .id(scheduleId)
-                .day(null)
-                .trip(trip)
-                .scheduleTitle(ScheduleTitle.of("일정 제목"))
-                .place(Place.of("장소 식별자", "장소명", Coordinate.of(23.21, 23.24)))
-                .scheduleIndex(ScheduleIndex.ZERO_INDEX)
-                .build();
-        trip.getTemporaryStorage().add(schedule);
-
+        Long tripperId = 2L;
+        Long targetDayId = 3L;
+        Long scheduleId = 4L;
+        int targetOrder = 3;
         ScheduleMoveCommand moveCommand = new ScheduleMoveCommand(targetDayId, targetOrder);
+
+        // mock: 이동하고자 하는 Schedule 설정
+        Trip trip = TripFixture.undecided_Id(tripId, tripperId);
+        Schedule schedule = ScheduleFixture.temporaryStorage_Id(scheduleId, trip, 0);
         given(scheduleRepository.findByIdWithTrip(eq(scheduleId))).willReturn(Optional.of(schedule));
-        given(dayRepository.findByIdWithTrip(eq(targetDayId))).willReturn(Optional.empty()); // targetDayId에 해당하는 Day가 없음
 
+        // mock: targetDayId에 해당하는 Day가 없음
+        given(dayRepository.findByIdWithTrip(eq(targetDayId))).willReturn(Optional.empty());
 
-        // when & then
+        // when & then : 발생 예외 및 리포지토리 호출횟수 검증
         assertThatThrownBy(() -> scheduleMoveService.moveSchedule(scheduleId, tripperId, moveCommand))
                 .isInstanceOf(DayNotFoundException.class);
-
         verify(scheduleRepository).findByIdWithTrip(eq(scheduleId));
         verify(dayRepository).findByIdWithTrip(eq(targetDayId));
         verify(scheduleRepository, times(0)).findDayScheduleCount(eq(targetDayId));
@@ -111,36 +99,25 @@ public class ScheduleMoveServiceTest {
         Long tripId = 1L;
         Long scheduleId = 2L;
         Long targetDayId = 3L;
-
         Long tripperId = 4L;
         Long noAuthorityTripperId = 5L;
         int targetOrder = 0;
+        ScheduleMoveCommand moveCommand = new ScheduleMoveCommand(targetDayId, targetOrder);
 
+        // mock : 삭제하고자 하는 Schedule 설정
         LocalDate startDate = LocalDate.of(2023,3,1);
         LocalDate endDate = LocalDate.of(2023,3,1);
         Trip trip = TripFixture.decided_Id(tripId, tripperId, startDate, endDate, targetDayId);
         Day day = trip.getDays().get(0);
-
-        Schedule schedule = Schedule.builder()
-                .id(scheduleId)
-                .day(null)
-                .trip(trip)
-                .scheduleTitle(ScheduleTitle.of("일정 제목"))
-                .place(Place.of("장소 식별자", "장소명", Coordinate.of(23.21, 23.24)))
-                .scheduleIndex(ScheduleIndex.ZERO_INDEX)
-                .build();
-        trip.getTemporaryStorage().add(schedule);
-
-        ScheduleMoveCommand moveCommand = new ScheduleMoveCommand(targetDayId, targetOrder);
-
+        Schedule schedule = ScheduleFixture.day_Id(scheduleId, trip, day, 0);
         given(scheduleRepository.findByIdWithTrip(eq(scheduleId))).willReturn(Optional.of(schedule));
+
+        // mock : targetDayId로 조회시 찾아와지는 Day
         given(dayRepository.findByIdWithTrip(eq(targetDayId))).willReturn(Optional.of(day));
 
-
-        // when & then
+        // when & then : 권한 없는 사용자의 요청 -> 발생 예외 및 리포지토리 호출 횟수 검증
         assertThatThrownBy(() -> scheduleMoveService.moveSchedule(scheduleId, noAuthorityTripperId, moveCommand))
                 .isInstanceOf(NoScheduleMoveAuthorityException.class);
-
         verify(scheduleRepository).findByIdWithTrip(eq(scheduleId));
         verify(dayRepository).findByIdWithTrip(eq(targetDayId));
         verify(scheduleRepository, times(0)).findDayScheduleCount(eq(targetDayId));
@@ -153,44 +130,35 @@ public class ScheduleMoveServiceTest {
         Long tripId = 1L;
         Long scheduleId = 2L;
         Long tripperId = 3L;
-
         Long targetDayId = 4L;
         int targetOrder = 0;
-
         LocalDate startDate = LocalDate.of(2023,3,1);
         LocalDate endDate = LocalDate.of(2023,3,1);
-
-        Trip trip = TripFixture.decided_Id(tripId, tripperId, startDate, endDate, targetDayId);
-        Day day = trip.getDays().get(0);
-
-        Schedule schedule = Schedule.builder()
-                .id(scheduleId)
-                .day(null)
-                .trip(trip)
-                .scheduleTitle(ScheduleTitle.of("일정 제목"))
-                .place(Place.of("장소 식별자", "장소명", Coordinate.of(23.21, 23.24)))
-                .scheduleIndex(ScheduleIndex.ZERO_INDEX)
-                .build();
-        trip.getTemporaryStorage().add(schedule);
-
         ScheduleMoveCommand moveCommand = new ScheduleMoveCommand(targetDayId, targetOrder);
 
+        // mock: 리포지토리에서 찾아올 Schedule 설정
+        Trip trip = TripFixture.decided_Id(tripId, tripperId, startDate, endDate, targetDayId);
+        Day day = trip.getDays().get(0);
+        Schedule schedule = ScheduleFixture.temporaryStorage_Id(scheduleId, trip, 0);
         given(scheduleRepository.findByIdWithTrip(eq(scheduleId))).willReturn(Optional.of(schedule));
+
+        // mock : 리포지토리에서 찾아올 targetDay
         given(dayRepository.findByIdWithTrip(eq(targetDayId))).willReturn(Optional.of(day));
+
+        // mock : targetDay에 속한 Schedule 갯수
         given(scheduleRepository.findDayScheduleCount(eq(targetDayId))).willReturn(0);
 
-        // when
-        ScheduleMoveResult scheduleMoveResult = scheduleMoveService.moveSchedule(scheduleId, tripperId, moveCommand);
+        // when : 서비스에 Schedule을 이동키라고 요청할 때
+        var scheduleMoveResult = scheduleMoveService.moveSchedule(scheduleId, tripperId, moveCommand);
 
-
-        // then
-        assertThat(scheduleMoveResult.getBeforeDayId()).isEqualTo(null);
-        assertThat(scheduleMoveResult.getAfterDayId()).isEqualTo(targetDayId);
-        assertThat(scheduleMoveResult.isPositionChanged()).isEqualTo(true);
+        // then : 리포지토리 호출 횟수 및 반환 Dto 필드 검증
         verify(scheduleRepository, times(1)).findByIdWithTrip(eq(scheduleId));
         verify(dayRepository, times(1)).findByIdWithTrip(eq(targetDayId));
         verify(scheduleRepository, times(1)).findDayScheduleCount(eq(targetDayId));
         verify(scheduleRepository, times(0)).relocateDaySchedules(eq(tripId), eq(targetDayId));
+        assertThat(scheduleMoveResult.getBeforeDayId()).isEqualTo(null);
+        assertThat(scheduleMoveResult.getAfterDayId()).isEqualTo(targetDayId);
+        assertThat(scheduleMoveResult.isPositionChanged()).isEqualTo(true);
     }
 
     @DisplayName("임시보관함 -> 임시보관함 성공 테스트")
@@ -198,55 +166,24 @@ public class ScheduleMoveServiceTest {
     public void test_temporaryStorage_to_temporaryStorage_success() {
         // given
         Long tripId = 1L;
-        Long scheduleId = 2L;
-        Long tripperId = 3L;
-
-        Long beforeDayId = null;
+        Long tripperId = 1L;
         Long targetDayId = null;
+        Long scheduleId = 2L;
         int targetOrder = 2;
-
-        Trip trip = TripFixture.undecided_Id(tripId, tripperId);
-
-        Schedule schedule1 = Schedule.builder()
-                .id(scheduleId)
-                .day(null)
-                .trip(trip)
-                .scheduleTitle(ScheduleTitle.of("일정 제목1"))
-                .place(Place.of("장소 식별자", "장소명", Coordinate.of(23.21, 23.24)))
-                .scheduleIndex(ScheduleIndex.ZERO_INDEX)
-                .build();
-
-        Schedule schedule2 = Schedule.builder()
-                .id(scheduleId)
-                .day(null)
-                .trip(trip)
-                .scheduleTitle(ScheduleTitle.of("일정 제목2"))
-                .place(Place.of("장소 식별자2", "장소명2", Coordinate.of(23.21, 23.24)))
-                .scheduleIndex(ScheduleIndex.of(ScheduleIndex.DEFAULT_SEQUENCE_GAP))
-                .build();
-
-        Schedule schedule3 = Schedule.builder()
-                .id(scheduleId)
-                .day(null)
-                .trip(trip)
-                .scheduleTitle(ScheduleTitle.of("일정 제목3"))
-                .place(Place.of("장소 식별자3", "장소명3", Coordinate.of(23.21, 23.24)))
-                .scheduleIndex(ScheduleIndex.of(ScheduleIndex.DEFAULT_SEQUENCE_GAP * 2))
-                .build();
-
-        trip.getTemporaryStorage().add(schedule1);
-        trip.getTemporaryStorage().add(schedule2);
-        trip.getTemporaryStorage().add(schedule3);
-
-
         ScheduleMoveCommand moveCommand = new ScheduleMoveCommand(targetDayId, targetOrder);
 
+        // mock: 리포지토리에서 가져올 Schedule 설정
+        Trip trip = TripFixture.undecided_Id(tripId, tripperId);
+        Schedule schedule1 = ScheduleFixture.temporaryStorage_Id(scheduleId, trip, 0L);
+        Schedule schedule2 = ScheduleFixture.temporaryStorage_Id(2L, trip, 100L);
+        Schedule schedule3 = ScheduleFixture.temporaryStorage_Id(3L, trip, 200L);
         given(scheduleRepository.findByIdWithTrip(eq(scheduleId))).willReturn(Optional.of(schedule1));
 
-        // when
+        // when : schedule1 을 2번 위치 Schedule 앞에 이동시켜라
         ScheduleMoveResult scheduleMoveResult = scheduleMoveService.moveSchedule(scheduleId, tripperId, moveCommand);
 
-        // then
+        // then : 이동 후의 Schedule 순서값, 응답 Dto, 리포지토리 호출 횟수 검증
+        assertThat(schedule1.getScheduleIndex()).isEqualTo(schedule2.getScheduleIndex().mid(schedule3.getScheduleIndex()));
         assertThat(scheduleMoveResult.getBeforeDayId()).isNull();
         assertThat(scheduleMoveResult.getAfterDayId()).isNull();
         assertThat(scheduleMoveResult.isPositionChanged()).isEqualTo(true);
@@ -261,58 +198,30 @@ public class ScheduleMoveServiceTest {
     public void test_day_to_temporaryStorage_success() {
         // given
         Long tripId = 1L;
-        Long scheduleId = 2L;
+        Long scheduleId = 1L;
         Long tripperId = 3L;
-
         Long fromDayId = 4L;
         Long targetDayId = null;
         int targetOrder = 2;
+        ScheduleMoveCommand moveCommand = new ScheduleMoveCommand(targetDayId, targetOrder);
 
+        // mock : Schedule 설정
         LocalDate startDate = LocalDate.of(2023,3,1);
         LocalDate endDate = LocalDate.of(2023,3,1);
 
         Trip trip = TripFixture.decided_Id(tripId, tripperId, startDate, endDate, fromDayId);
         Day fromDay = trip.getDays().get(0);
-
-        Schedule schedule1 = Schedule.builder()
-                .id(scheduleId)
-                .day(fromDay)
-                .trip(trip)
-                .scheduleTitle(ScheduleTitle.of("일정 제목1"))
-                .place(Place.of("장소 식별자", "장소명", Coordinate.of(23.21, 23.24)))
-                .scheduleIndex(ScheduleIndex.ZERO_INDEX)
-                .build();
-
-        Schedule schedule2 = Schedule.builder()
-                .id(scheduleId)
-                .day(null)
-                .trip(trip)
-                .scheduleTitle(ScheduleTitle.of("일정 제목2"))
-                .place(Place.of("장소 식별자2", "장소명2", Coordinate.of(23.21, 23.24)))
-                .scheduleIndex(ScheduleIndex.ZERO_INDEX)
-                .build();
-
-        Schedule schedule3 = Schedule.builder()
-                .id(scheduleId)
-                .day(null)
-                .trip(trip)
-                .scheduleTitle(ScheduleTitle.of("일정 제목3"))
-                .place(Place.of("장소 식별자3", "장소명3", Coordinate.of(23.21, 23.24)))
-                .scheduleIndex(ScheduleIndex.of(ScheduleIndex.DEFAULT_SEQUENCE_GAP))
-                .build();
-
-        fromDay.getSchedules().add(schedule1);
-        trip.getTemporaryStorage().add(schedule2);
-        trip.getTemporaryStorage().add(schedule3);
-
-        ScheduleMoveCommand moveCommand = new ScheduleMoveCommand(targetDayId, targetOrder);
-
+        Schedule schedule1 = ScheduleFixture.day_Id(scheduleId, trip, fromDay, 0L);
+        Schedule schedule2 = ScheduleFixture.temporaryStorage_Id(2L, trip, 100L);
+        Schedule schedule3 = ScheduleFixture.temporaryStorage_Id(3L, trip, 200L);
         given(scheduleRepository.findByIdWithTrip(eq(scheduleId))).willReturn(Optional.of(schedule1));
 
-        // when
-        ScheduleMoveResult scheduleMoveResult = scheduleMoveService.moveSchedule(scheduleId, tripperId, moveCommand);
+        // when : 일정을 이동하라(임시보관함의 2번 순서로)
+        var scheduleMoveResult = scheduleMoveService.moveSchedule(scheduleId, tripperId, moveCommand);
 
-        // then
+        // then : 이동 후 Schedule의 소속 Day, 순서값, 응답 Dto, 리포지토리 호출 횟수 검증
+        assertThat(schedule1.getDay()).isNull();
+        assertThat(schedule1.getScheduleIndex()).isEqualTo(schedule3.getScheduleIndex().generateNextIndex());
         assertThat(scheduleMoveResult.getBeforeDayId()).isEqualTo(fromDayId);
         assertThat(scheduleMoveResult.getAfterDayId()).isNull();
         assertThat(scheduleMoveResult.isPositionChanged()).isEqualTo(true);
@@ -328,59 +237,30 @@ public class ScheduleMoveServiceTest {
     public void test_sameDay_success() {
         // given
         Long tripId = 1L;
-        Long scheduleId = 2L;
+        Long scheduleId = 1L;
         Long tripperId = 3L;
-
         Long targetDayId = 4L;
         int targetOrder = 2;
-
         LocalDate startDate = LocalDate.of(2023,3,1);
         LocalDate endDate = LocalDate.of(2023,3,1);
-
-        Trip trip = TripFixture.decided_Id(tripId, tripperId, startDate, endDate, targetDayId);
-        Day day = trip.getDays().get(0);
-
-        Schedule schedule1 = Schedule.builder()
-                .id(scheduleId)
-                .day(day)
-                .trip(trip)
-                .scheduleTitle(ScheduleTitle.of("일정 제목1"))
-                .place(Place.of("장소 식별자", "장소명", Coordinate.of(23.21, 23.24)))
-                .scheduleIndex(ScheduleIndex.ZERO_INDEX)
-                .build();
-
-        Schedule schedule2 = Schedule.builder()
-                .id(scheduleId)
-                .day(day)
-                .trip(trip)
-                .scheduleTitle(ScheduleTitle.of("일정 제목2"))
-                .place(Place.of("장소 식별자2", "장소명2", Coordinate.of(23.21, 23.24)))
-                .scheduleIndex(ScheduleIndex.of(ScheduleIndex.DEFAULT_SEQUENCE_GAP))
-                .build();
-
-        Schedule schedule3 = Schedule.builder()
-                .id(scheduleId)
-                .day(day)
-                .trip(trip)
-                .scheduleTitle(ScheduleTitle.of("일정 제목3"))
-                .place(Place.of("장소 식별자3", "장소명3", Coordinate.of(23.21, 23.24)))
-                .scheduleIndex(ScheduleIndex.of(ScheduleIndex.DEFAULT_SEQUENCE_GAP * 2))
-                .build();
-
-        day.getSchedules().add(schedule1);
-        day.getSchedules().add(schedule2);
-        day.getSchedules().add(schedule3);
-
-
         ScheduleMoveCommand moveCommand = new ScheduleMoveCommand(targetDayId, targetOrder);
 
+        // mock : 찾아올 Schedule 및 소속 Trip, Day 설정
+        Trip trip = TripFixture.decided_Id(tripId, tripperId, startDate, endDate, targetDayId);
+        Day day = trip.getDays().get(0);
+        Schedule schedule1 = ScheduleFixture.day_Id(scheduleId, trip, day, 0);
+        Schedule schedule2 = ScheduleFixture.day_Id(2L, trip, day, 100L);
+        Schedule schedule3 = ScheduleFixture.day_Id(3L, trip, day, 200L);
         given(scheduleRepository.findByIdWithTrip(eq(scheduleId))).willReturn(Optional.of(schedule1));
+
+        // mock : targetDayId로 찾아올 day(같은 Day)
         given(dayRepository.findByIdWithTrip(eq(targetDayId))).willReturn(Optional.of(day));
 
-        // when
+        // when : 일정 1번을 같은 Day의 2번 위치 앞에 둬라
         ScheduleMoveResult scheduleMoveResult = scheduleMoveService.moveSchedule(scheduleId, tripperId, moveCommand);
 
-        // then
+        // then : 이동 후 Schedule의 소속 Day, 순서값, 응답 Dto, 리포지토리 호출 횟수 검증
+        assertThat(schedule1.getScheduleIndex()).isEqualTo(schedule2.getScheduleIndex().mid(schedule3.getScheduleIndex()));
         assertThat(scheduleMoveResult.getBeforeDayId()).isEqualTo(targetDayId);
         assertThat(scheduleMoveResult.getAfterDayId()).isEqualTo(targetDayId);
         assertThat(scheduleMoveResult.isPositionChanged()).isEqualTo(true);
@@ -395,13 +275,14 @@ public class ScheduleMoveServiceTest {
     public void test_day_to_other_day_success() {
         // given
         Long tripId = 1L;
-        Long scheduleId = 2L;
-        Long tripperId = 3L;
-
+        Long scheduleId = 1L;
+        Long tripperId = 2L;
         Long fromDayId = 4L;
         Long targetDayId = 5L;
-        int targetOrder = 2;
+        int targetOrder = 0;
+        ScheduleMoveCommand moveCommand = new ScheduleMoveCommand(targetDayId, targetOrder);
 
+        // mock : 리포지토리에서 가져올 Schedule 및 소속 Trip, Day 설정
         LocalDate startDate = LocalDate.of(2023,3,1);
         LocalDate endDate = LocalDate.of(2023,3,2);
 
@@ -409,48 +290,23 @@ public class ScheduleMoveServiceTest {
         Day fromDay = trip.getDays().get(0);
         Day targetDay = trip.getDays().get(1);
 
-        Schedule schedule1 = Schedule.builder()
-                .id(scheduleId)
-                .day(fromDay)
-                .trip(trip)
-                .scheduleTitle(ScheduleTitle.of("일정 제목"))
-                .place(Place.of("장소 식별자", "장소명", Coordinate.of(23.21, 23.24)))
-                .scheduleIndex(ScheduleIndex.ZERO_INDEX)
-                .build();
-
-        Schedule schedule2 = Schedule.builder()
-                .id(scheduleId)
-                .day(targetDay)
-                .trip(trip)
-                .scheduleTitle(ScheduleTitle.of("일정 제목2"))
-                .place(Place.of("장소 식별자2", "장소명2", Coordinate.of(23.21, 23.24)))
-                .scheduleIndex(ScheduleIndex.of(ScheduleIndex.DEFAULT_SEQUENCE_GAP))
-                .build();
-
-        Schedule schedule3 = Schedule.builder()
-                .id(scheduleId)
-                .day(targetDay)
-                .trip(trip)
-                .scheduleTitle(ScheduleTitle.of("일정 제목3"))
-                .place(Place.of("장소 식별자3", "장소명3", Coordinate.of(23.21, 23.24)))
-                .scheduleIndex(ScheduleIndex.of(ScheduleIndex.DEFAULT_SEQUENCE_GAP * 2))
-                .build();
-
-        fromDay.getSchedules().add(schedule1);
-        targetDay.getSchedules().add(schedule2);
-        targetDay.getSchedules().add(schedule3);
-
-        ScheduleMoveCommand moveCommand = new ScheduleMoveCommand(targetDayId, targetOrder);
-
+        Schedule schedule1 = ScheduleFixture.day_Id(scheduleId, trip, fromDay, 0L);
+        Schedule schedule2 = ScheduleFixture.day_Id(scheduleId, trip, targetDay, 0L);
+        Schedule schedule3 = ScheduleFixture.day_Id(scheduleId, trip, targetDay, 100L);
         given(scheduleRepository.findByIdWithTrip(eq(scheduleId))).willReturn(Optional.of(schedule1));
+
+        // mock : targetDayId에 대응하는 Day 조회
         given(dayRepository.findByIdWithTrip(eq(targetDayId))).willReturn(Optional.of(targetDay));
+
+        // mock : targetDay에 소속된 Schedule 갯수
         given(scheduleRepository.findDayScheduleCount(eq(targetDayId))).willReturn(2);
 
-        // when
+        // when : schedule1을 targetDay의 0번 순서 앞에 이동시켜라
         ScheduleMoveResult scheduleMoveResult = scheduleMoveService.moveSchedule(scheduleId, tripperId, moveCommand);
 
-
-        // then
+        // then : 이동 후 Schedule의 소속 Day, 순서값, 응답 Dto, 리포지토리 호출 횟수 검증
+        assertThat(schedule1.getDay().getId()).isEqualTo(targetDayId);
+        assertThat(schedule1.getScheduleIndex()).isEqualTo(schedule2.getScheduleIndex().generateBeforeIndex());
         assertThat(scheduleMoveResult.getBeforeDayId()).isEqualTo(fromDayId);
         assertThat(scheduleMoveResult.getAfterDayId()).isEqualTo(targetDayId);
         assertThat(scheduleMoveResult.isPositionChanged()).isEqualTo(true);
@@ -465,61 +321,26 @@ public class ScheduleMoveServiceTest {
     public void testRelocate_whenMoveToTail() {
         // given
         Long tripId = 1L;
-        Long scheduleId = 2L;
+        Long scheduleId = 1L;
         Long tripperId = 3L;
-
         Long targetDayId = 4L;
         int targetOrder = 1;
+        ScheduleMoveCommand moveCommand = new ScheduleMoveCommand(targetDayId, targetOrder);
 
+        // mock : 재배치 이전의 Schedule 설정(Trip, Day 포함)
         LocalDate startDate = LocalDate.of(2023,3,1);
         LocalDate endDate = LocalDate.of(2023,3,1);
 
         Trip beforeTrip = TripFixture.decided_Id(tripId, tripperId, startDate, endDate, targetDayId);
+        Schedule beforeMoveSchedule = ScheduleFixture.temporaryStorage_Id(scheduleId, beforeTrip, 0L);
         Day beforeTargetDay = beforeTrip.getDays().get(0);
+        Schedule beforeTargetDaySchedule = ScheduleFixture.day_Id(2L, beforeTrip, beforeTargetDay, MAX_INDEX_VALUE);
 
-        Schedule beforeTargetDaySchedule = Schedule.builder()
-                .id(scheduleId)
-                .day(beforeTargetDay)
-                .trip(beforeTrip)
-                .scheduleTitle(ScheduleTitle.of("일정 제목1"))
-                .place(Place.of("장소 식별자1", "장소명2", Coordinate.of(23.21, 23.24)))
-                .scheduleIndex(ScheduleIndex.of(ScheduleIndex.MAX_INDEX_VALUE))
-                .build();
-        Schedule beforeMoveSchedule = Schedule.builder()
-                .id(scheduleId)
-                .day(null)
-                .trip(beforeTrip)
-                .scheduleTitle(ScheduleTitle.of("일정 제목2"))
-                .place(Place.of("장소 식별자2", "장소명2", Coordinate.of(23.21, 23.24)))
-                .scheduleIndex(ScheduleIndex.ZERO_INDEX)
-                .build();
-        beforeTargetDay.getSchedules().add(beforeTargetDaySchedule);
-        beforeTrip.getTemporaryStorage().add(beforeMoveSchedule);
-
+        // mock : 재배치 이후 다시 가져올 Schedule 설정(Trip, Day 포함)
         Trip rediscoveredTrip = TripFixture.decided_Id(tripId, tripperId, startDate, endDate, targetDayId);
         Day rediscoveredTargetDay = rediscoveredTrip.getDays().get(0);
-
-        Schedule rediscoveredTargetDaySchedule = Schedule.builder()
-                .id(scheduleId)
-                .day(rediscoveredTargetDay)
-                .trip(rediscoveredTrip)
-                .scheduleTitle(ScheduleTitle.of("일정 제목1"))
-                .place(Place.of("장소 식별자1", "장소명2", Coordinate.of(23.21, 23.24)))
-                .scheduleIndex(ScheduleIndex.ZERO_INDEX)
-                .build();
-        Schedule rediscoveredMoveSchedule = Schedule.builder()
-                .id(scheduleId)
-                .day(null)
-                .trip(rediscoveredTrip)
-                .scheduleTitle(ScheduleTitle.of("일정 제목"))
-                .place(Place.of("장소 식별자", "장소명", Coordinate.of(23.21, 23.24)))
-                .scheduleIndex(ScheduleIndex.ZERO_INDEX)
-                .build();
-        rediscoveredTargetDay.getSchedules().add(rediscoveredTargetDaySchedule);
-        rediscoveredTrip.getTemporaryStorage().add(rediscoveredMoveSchedule);
-
-        ScheduleMoveCommand moveCommand = new ScheduleMoveCommand(targetDayId, targetOrder);
-
+        Schedule rediscoveredMoveSchedule = ScheduleFixture.temporaryStorage_Id(scheduleId, rediscoveredTrip, 0L);
+        Schedule rediscoveredTargetDaySchedule = ScheduleFixture.day_Id(2L, rediscoveredTrip, rediscoveredTargetDay, 0L);
 
         when(scheduleRepository.findByIdWithTrip(eq(scheduleId)))
                 .thenReturn(Optional.of(beforeMoveSchedule))
@@ -532,11 +353,12 @@ public class ScheduleMoveServiceTest {
         given(scheduleRepository.relocateDaySchedules(eq(tripId), eq(targetDayId))).willReturn(1);
         given(scheduleRepository.findDayScheduleCount(eq(targetDayId))).willReturn(1);
 
-
-        // when
+        // when : schedule1을 targetDay의 1번 순서로 이동하라
         ScheduleMoveResult scheduleMoveResult = scheduleMoveService.moveSchedule(scheduleId, tripperId, moveCommand);
 
-        // then
+        // then : 이동 후 Schedule의 소속 Day, 순서값, 응답 Dto, 리포지토리 호출 횟수 검증
+        assertThat(rediscoveredMoveSchedule.getDay().getId()).isEqualTo(targetDayId);
+        assertThat(rediscoveredMoveSchedule.getScheduleIndex()).isEqualTo(rediscoveredTargetDaySchedule.getScheduleIndex().generateNextIndex());
         assertThat(scheduleMoveResult.getBeforeDayId()).isEqualTo(null);
         assertThat(scheduleMoveResult.getAfterDayId()).isEqualTo(targetDayId);
         assertThat(scheduleMoveResult.isPositionChanged()).isEqualTo(true);
@@ -551,58 +373,26 @@ public class ScheduleMoveServiceTest {
     public void testRelocate_whenMoveToHead() {
         // given
         Long tripId = 1L;
-        Long scheduleId = 2L;
+        Long scheduleId = 1L;
         Long tripperId = 3L;
-
         Long targetDayId = 4L;
         int targetOrder = 0;
+        ScheduleMoveCommand moveCommand = new ScheduleMoveCommand(targetDayId, targetOrder);
 
+        // mock : 재배치 이전의 Schedule(+ Trip, Day) 설정
         LocalDate startDate = LocalDate.of(2023,3,1);
         LocalDate endDate = LocalDate.of(2023,3,1);
 
         Trip beforeTrip = TripFixture.decided_Id(tripId, tripperId, startDate, endDate, targetDayId);
         Day beforeTargetDay = beforeTrip.getDays().get(0);
-        Schedule beforeTargetDaySchedule = Schedule.builder()
-                .id(scheduleId)
-                .day(beforeTargetDay)
-                .trip(beforeTrip)
-                .scheduleTitle(ScheduleTitle.of("일정 제목1"))
-                .place(Place.of("장소 식별자1", "장소명2", Coordinate.of(23.21, 23.24)))
-                .scheduleIndex(ScheduleIndex.of(ScheduleIndex.MIN_INDEX_VALUE))
-                .build();
-        Schedule beforeMoveSchedule = Schedule.builder()
-                .id(scheduleId)
-                .day(null)
-                .trip(beforeTrip)
-                .scheduleTitle(ScheduleTitle.of("일정 제목2"))
-                .place(Place.of("장소 식별자2", "장소명2", Coordinate.of(23.21, 23.24)))
-                .scheduleIndex(ScheduleIndex.ZERO_INDEX)
-                .build();
-        beforeTargetDay.getSchedules().add(beforeTargetDaySchedule);
-        beforeTrip.getTemporaryStorage().add(beforeMoveSchedule);
+        Schedule beforeMoveSchedule = ScheduleFixture.temporaryStorage_Id(scheduleId, beforeTrip, 0L);
+        Schedule beforeTargetDaySchedule = ScheduleFixture.day_Id(2L, beforeTrip, beforeTargetDay, MIN_INDEX_VALUE);
 
+        // mock : 재배치 이후 다시 가져올 Schedule(+ Trip, Day) 설정
         Trip rediscoveredTrip = TripFixture.decided_Id(tripId, tripperId, startDate, endDate, targetDayId);
         Day rediscoveredTargetDay = rediscoveredTrip.getDays().get(0);
-        Schedule rediscoveredTargetDaySchedule = Schedule.builder()
-                .id(scheduleId)
-                .day(rediscoveredTargetDay)
-                .trip(rediscoveredTrip)
-                .scheduleTitle(ScheduleTitle.of("일정 제목1"))
-                .place(Place.of("장소 식별자1", "장소명2", Coordinate.of(23.21, 23.24)))
-                .scheduleIndex(ScheduleIndex.ZERO_INDEX)
-                .build();
-        Schedule rediscoveredMoveSchedule = Schedule.builder()
-                .id(scheduleId)
-                .day(null)
-                .trip(rediscoveredTrip)
-                .scheduleTitle(ScheduleTitle.of("일정 제목"))
-                .place(Place.of("장소 식별자", "장소명", Coordinate.of(23.21, 23.24)))
-                .scheduleIndex(ScheduleIndex.ZERO_INDEX)
-                .build();
-        rediscoveredTargetDay.getSchedules().add(rediscoveredTargetDaySchedule);
-        rediscoveredTrip.getTemporaryStorage().add(rediscoveredMoveSchedule);
-
-        ScheduleMoveCommand moveCommand = new ScheduleMoveCommand(targetDayId, targetOrder);
+        Schedule rediscoveredMoveSchedule = ScheduleFixture.temporaryStorage_Id(scheduleId, rediscoveredTrip, 0L);
+        Schedule rediscoveredTargetDaySchedule = ScheduleFixture.day_Id(2L, rediscoveredTrip, rediscoveredTargetDay, 0L);
 
         when(scheduleRepository.findByIdWithTrip(eq(scheduleId)))
                 .thenReturn(Optional.of(beforeMoveSchedule))
@@ -615,10 +405,12 @@ public class ScheduleMoveServiceTest {
         given(scheduleRepository.findDayScheduleCount(eq(targetDayId))).willReturn(1);
         given(scheduleRepository.relocateDaySchedules(eq(tripId), eq(targetDayId))).willReturn(1);
 
-        // when
+        // when : schedule을 targetDay의 0번 순서 앞에 이동시켜
         ScheduleMoveResult scheduleMoveResult = scheduleMoveService.moveSchedule(scheduleId, tripperId, moveCommand);
 
-        // then
+        // then : 이동 후 Schedule의 소속 Day, 순서값, 응답 Dto, 리포지토리 호출 횟수 검증
+        assertThat(rediscoveredMoveSchedule.getDay().getId()).isEqualTo(targetDayId);
+        assertThat(rediscoveredMoveSchedule.getScheduleIndex()).isEqualTo(rediscoveredTargetDaySchedule.getScheduleIndex().generateBeforeIndex());
         assertThat(scheduleMoveResult.getBeforeDayId()).isEqualTo(null);
         assertThat(scheduleMoveResult.getAfterDayId()).isEqualTo(targetDayId);
         assertThat(scheduleMoveResult.isPositionChanged()).isEqualTo(true);
@@ -635,75 +427,26 @@ public class ScheduleMoveServiceTest {
         Long tripId = 1L;
         Long scheduleId = 2L;
         Long tripperId = 3L;
-
         Long targetDayId = 4L;
         int targetOrder = 1;
+        ScheduleMoveCommand moveCommand = new ScheduleMoveCommand(targetDayId, targetOrder);
 
+        // mock: Schedule 및 소속 Trip, Day 설정
         LocalDate startDate = LocalDate.of(2023,3,1);
         LocalDate endDate = LocalDate.of(2023,3,1);
 
         Trip beforeTrip = TripFixture.decided_Id(tripId, tripperId, startDate, endDate, targetDayId);
         Day beforeTargetDay = beforeTrip.getDays().get(0);
+        Schedule beforeMoveSchedule = ScheduleFixture.temporaryStorage_Id(scheduleId, beforeTrip, 0L);
+        Schedule beforeTargetDaySchedule1 = ScheduleFixture.day_Id(scheduleId, beforeTrip, beforeTargetDay, 10L);
+        Schedule beforeTargetDaySchedule2 = ScheduleFixture.day_Id(scheduleId, beforeTrip, beforeTargetDay, 11L);
 
-        Schedule beforeTargetDaySchedule1 = Schedule.builder()
-                .id(scheduleId)
-                .day(beforeTargetDay)
-                .trip(beforeTrip)
-                .scheduleTitle(ScheduleTitle.of("일정 제목1"))
-                .place(Place.of("장소 식별자1", "장소명1", Coordinate.of(23.21, 23.24)))
-                .scheduleIndex(ScheduleIndex.of(10))
-                .build();
-        Schedule beforeTargetDaySchedule2 = Schedule.builder()
-                .id(scheduleId)
-                .day(beforeTargetDay)
-                .trip(beforeTrip)
-                .scheduleTitle(ScheduleTitle.of("일정 제목2"))
-                .place(Place.of("장소 식별자2", "장소명2", Coordinate.of(23.21, 23.24)))
-                .scheduleIndex(ScheduleIndex.of(11))
-                .build();
-        Schedule beforeMoveSchedule = Schedule.builder()
-                .id(scheduleId)
-                .day(null)
-                .trip(beforeTrip)
-                .scheduleTitle(ScheduleTitle.of("일정 제목3"))
-                .place(Place.of("장소 식별자3", "장소명3", Coordinate.of(23.21, 23.24)))
-                .scheduleIndex(ScheduleIndex.ZERO_INDEX)
-                .build();
-        beforeTargetDay.getSchedules().add(beforeTargetDaySchedule1);
-        beforeTargetDay.getSchedules().add(beforeTargetDaySchedule2);
-        beforeTrip.getTemporaryStorage().add(beforeMoveSchedule);
-
+        // mock : 재배치 이후 다시 가져올 Schedule 및 소속 Trip, Day 설정
         Trip rediscoveredTrip = TripFixture.decided_Id(tripId, tripperId, startDate, endDate, targetDayId);
         Day rediscoveredTargetDay = rediscoveredTrip.getDays().get(0);
-        Schedule rediscoveredTargetDaySchedule1 = Schedule.builder()
-                .id(scheduleId)
-                .day(rediscoveredTargetDay)
-                .trip(rediscoveredTrip)
-                .scheduleTitle(ScheduleTitle.of("일정 제목1"))
-                .place(Place.of("장소 식별자1", "장소명1", Coordinate.of(23.21, 23.24)))
-                .scheduleIndex(ScheduleIndex.ZERO_INDEX)
-                .build();
-        Schedule rediscoveredTargetDaySchedule2 = Schedule.builder()
-                .id(scheduleId)
-                .day(rediscoveredTargetDay)
-                .trip(rediscoveredTrip)
-                .scheduleTitle(ScheduleTitle.of("일정 제목2"))
-                .place(Place.of("장소 식별자2", "장소명2", Coordinate.of(23.21, 23.24)))
-                .scheduleIndex(ScheduleIndex.of(ScheduleIndex.DEFAULT_SEQUENCE_GAP))
-                .build();
-        Schedule rediscoveredMoveSchedule = Schedule.builder()
-                .id(scheduleId)
-                .day(null)
-                .trip(rediscoveredTrip)
-                .scheduleTitle(ScheduleTitle.of("일정 제목"))
-                .place(Place.of("장소 식별자", "장소명", Coordinate.of(23.21, 23.24)))
-                .scheduleIndex(ScheduleIndex.ZERO_INDEX)
-                .build();
-        rediscoveredTargetDay.getSchedules().add(rediscoveredTargetDaySchedule1);
-        rediscoveredTargetDay.getSchedules().add(rediscoveredTargetDaySchedule2);
-        rediscoveredTrip.getTemporaryStorage().add(rediscoveredMoveSchedule);
-
-        ScheduleMoveCommand moveCommand = new ScheduleMoveCommand(targetDayId, targetOrder);
+        Schedule rediscoveredMoveSchedule = ScheduleFixture.temporaryStorage_Id(scheduleId, rediscoveredTrip, 0L);
+        Schedule rediscoveredTargetDaySchedule1 = ScheduleFixture.day_Id(scheduleId, rediscoveredTrip, rediscoveredTargetDay, 0L);
+        Schedule rediscoveredTargetDaySchedule2 = ScheduleFixture.day_Id(scheduleId, rediscoveredTrip, rediscoveredTargetDay, DEFAULT_SEQUENCE_GAP);
 
         when(scheduleRepository.findByIdWithTrip(eq(scheduleId)))
                 .thenReturn(Optional.of(beforeMoveSchedule))
@@ -736,39 +479,28 @@ public class ScheduleMoveServiceTest {
         Long tripId = 1L;
         Long scheduleId = 2L;
         Long tripperId = 3L;
-
         Long targetDayId = 4L;
         int targetOrder = 0;
+        ScheduleMoveCommand moveCommand = new ScheduleMoveCommand(targetDayId, targetOrder);
 
+        // mock: Schedule 및 소속 Trip, Day 설정
         LocalDate startDate = LocalDate.of(2023,3,1);
         LocalDate endDate = LocalDate.of(2023,3,1);
 
         Trip trip = TripFixture.decided_Id(tripId, tripperId, startDate, endDate, targetDayId);
         Day targetDay = trip.getDays().get(0);
+        Schedule moveSchedule = ScheduleFixture.temporaryStorage_Id(scheduleId, trip, 0L);
+        given(scheduleRepository.findByIdWithTrip(eq(scheduleId))).willReturn(Optional.of(moveSchedule));
 
-        Schedule schedule = Schedule.builder()
-                .id(scheduleId)
-                .day(null)
-                .trip(trip)
-                .scheduleTitle(ScheduleTitle.of("일정 제목"))
-                .place(Place.of("장소 식별자", "장소명", Coordinate.of(23.21, 23.24)))
-                .scheduleIndex(ScheduleIndex.ZERO_INDEX)
-                .build();
-        trip.getTemporaryStorage().add(schedule);
-
-        ScheduleMoveCommand moveCommand = new ScheduleMoveCommand(targetDayId, targetOrder);
-
-        given(scheduleRepository.findByIdWithTrip(eq(scheduleId))).willReturn(Optional.of(schedule));
+        // mock: targetDay
         given(dayRepository.findByIdWithTrip(eq(targetDayId))).willReturn(Optional.of(targetDay));
 
         // targetDay에 일정이 가득찬 상황을 가정
         given(scheduleRepository.findDayScheduleCount(eq(targetDayId))).willReturn(Day.MAX_DAY_SCHEDULE_COUNT);
 
-        // when
+        // when && then : 발생 오류 및 리포지토리 호출 횟수 검증
         assertThatThrownBy(() -> scheduleMoveService.moveSchedule(scheduleId, tripperId, moveCommand))
                 .isInstanceOf(TooManyDayScheduleException.class);
-
-        // then
         verify(scheduleRepository, times(1)).findByIdWithTrip(eq(scheduleId));
         verify(dayRepository, times(1)).findByIdWithTrip(eq(targetDayId));
         verify(scheduleRepository, times(1)).findDayScheduleCount(eq(targetDayId));

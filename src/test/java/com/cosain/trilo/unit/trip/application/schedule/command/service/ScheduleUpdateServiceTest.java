@@ -1,5 +1,6 @@
 package com.cosain.trilo.unit.trip.application.schedule.command.service;
 
+import com.cosain.trilo.fixture.ScheduleFixture;
 import com.cosain.trilo.fixture.TripFixture;
 import com.cosain.trilo.trip.application.exception.NoScheduleUpdateAuthorityException;
 import com.cosain.trilo.trip.application.exception.ScheduleNotFoundException;
@@ -9,7 +10,6 @@ import com.cosain.trilo.trip.domain.entity.Schedule;
 import com.cosain.trilo.trip.domain.entity.Trip;
 import com.cosain.trilo.trip.domain.repository.ScheduleRepository;
 import com.cosain.trilo.trip.domain.vo.ScheduleContent;
-import com.cosain.trilo.trip.domain.vo.ScheduleIndex;
 import com.cosain.trilo.trip.domain.vo.ScheduleTime;
 import com.cosain.trilo.trip.domain.vo.ScheduleTitle;
 import org.junit.jupiter.api.DisplayName;
@@ -39,27 +39,20 @@ public class ScheduleUpdateServiceTest {
     private ScheduleRepository scheduleRepository;
 
     @Test
-    @DisplayName("호출이 제대로 이루어 지는지 테스트")
+    @DisplayName("일정 수정(제목, 본문, 시간) 요청 -> 수정 성공")
     public void update_schedule_test(){
         // given
         Long tripId = 1L;
         Long tripperId = 2L;
         Long scheduleId = 3L;
 
-        ScheduleTitle newTitle = ScheduleTitle.of("변경할 제목");
-        ScheduleContent newContent = ScheduleContent.of("변경할 내용");
+        ScheduleTitle newTitle = ScheduleTitle.of("수정 제목");
+        ScheduleContent newContent = ScheduleContent.of("수정 본문");
         ScheduleTime newScheduleTime = ScheduleTime.of(LocalTime.of(13,0), LocalTime.of(13,5));
         ScheduleUpdateCommand command = new ScheduleUpdateCommand(newTitle, newContent, newScheduleTime);
 
         Trip trip = TripFixture.undecided_Id(tripId, tripperId);
-        Schedule schedule = Schedule.builder()
-                .id(scheduleId)
-                .trip(trip)
-                .day(null)
-                .scheduleTitle(ScheduleTitle.of("기존 제목"))
-                .scheduleContent(ScheduleContent.of("기존 본문"))
-                .scheduleIndex(ScheduleIndex.ZERO_INDEX)
-                .build();
+        Schedule schedule = ScheduleFixture.temporaryStorage_Id(scheduleId, trip, 0L);
 
         given(scheduleRepository.findByIdWithTrip(anyLong())).willReturn(Optional.of(schedule));
         // when
@@ -79,8 +72,8 @@ public class ScheduleUpdateServiceTest {
         Long scheduleId = 1L;
         Long tripperId = 2L;
 
-        ScheduleTitle newTitle = ScheduleTitle.of("변경할 제목");
-        ScheduleContent newContent = ScheduleContent.of("변경할 내용");
+        ScheduleTitle newTitle = ScheduleTitle.of("수정 제목");
+        ScheduleContent newContent = ScheduleContent.of("수정 내용");
         ScheduleTime newScheduleTime = ScheduleTime.of(LocalTime.of(13,0), LocalTime.of(13,5));
         ScheduleUpdateCommand command = new ScheduleUpdateCommand(newTitle, newContent, newScheduleTime);
 
@@ -100,21 +93,15 @@ public class ScheduleUpdateServiceTest {
         Long scheduleId = 3L;
         Long noAuthorityTripperId = 4L;
 
-        ScheduleTitle newTitle = ScheduleTitle.of("변경할 제목");
-        ScheduleContent newContent = ScheduleContent.of("변경할 내용");
+        ScheduleTitle newTitle = ScheduleTitle.of("수정 제목");
+        ScheduleContent newContent = ScheduleContent.of("수정 내용");
         ScheduleTime newScheduleTime = ScheduleTime.of(LocalTime.of(13,0), LocalTime.of(13,5));
         ScheduleUpdateCommand command = new ScheduleUpdateCommand(newTitle, newContent, newScheduleTime);
 
         Trip trip = TripFixture.undecided_Id(tripId, tripperId);
-        Schedule schedule = Schedule.builder()
-                .id(scheduleId)
-                .day(null)
-                .trip(trip)
-                .scheduleTitle(ScheduleTitle.of("원래 제목"))
-                .scheduleContent(ScheduleContent.of("원래 내용"))
-                .build();
-
+        Schedule schedule = ScheduleFixture.temporaryStorage_Id(scheduleId, trip, 0L);
         given(scheduleRepository.findByIdWithTrip(eq(scheduleId))).willReturn(Optional.of(schedule));
+
         // when & then
         assertThatThrownBy(() -> scheduleUpdateService.updateSchedule(scheduleId, noAuthorityTripperId, command))
                 .isInstanceOf(NoScheduleUpdateAuthorityException.class);
