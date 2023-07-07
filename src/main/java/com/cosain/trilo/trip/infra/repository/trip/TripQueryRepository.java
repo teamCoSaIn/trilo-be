@@ -1,11 +1,10 @@
 package com.cosain.trilo.trip.infra.repository.trip;
 
-import com.cosain.trilo.trip.infra.dto.QTripDetail;
-import com.cosain.trilo.trip.infra.dto.QTripSummary;
-import com.cosain.trilo.trip.infra.dto.TripDetail;
-import com.cosain.trilo.trip.infra.dto.TripSummary;
+import com.cosain.trilo.trip.infra.dto.*;
 import com.cosain.trilo.trip.presentation.trip.query.dto.request.TripPageCondition;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.JPAExpressions;
+import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +13,7 @@ import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -90,4 +90,19 @@ public class TripQueryRepository{
 
         return fetchOne != null;
     }
+
+    public TripStatistics findTripStaticsByTripperId(Long tripperId, LocalDate today){
+
+        JPQLQuery<Long> subQuery = JPAExpressions.select(trip.count())
+                .from(trip)
+                .where(trip.tripPeriod.endDate.before(today));
+
+        TripStatistics tripStatistics = query.select(new QTripStatistics(trip.count(), subQuery))
+                .from(trip)
+                .where(trip.tripperId.eq(tripperId))
+                .fetchOne();
+
+        return tripStatistics;
+    }
+
 }
