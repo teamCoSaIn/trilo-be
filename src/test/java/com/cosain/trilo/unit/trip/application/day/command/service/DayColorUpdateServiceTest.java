@@ -67,7 +67,7 @@ public class DayColorUpdateServiceTest {
 
         DayColor beforeDayColor = DayColor.BLACK;
         DayColor requestDayColor = DayColor.RED;
-        Day day = fixtureDay(tripId, tripOwnerId, beforeDayColor);
+        Day day = fixtureDayForColorTest(tripId, tripOwnerId, beforeDayColor);
         DayColorUpdateCommand updateCommand = new DayColorUpdateCommand(requestDayColor);
 
         given(dayRepository.findByIdWithTrip(eq(dayId))).willReturn(Optional.of(day));
@@ -89,7 +89,7 @@ public class DayColorUpdateServiceTest {
         DayColor beforeDayColor = DayColor.BLACK;
         DayColor requestDayColor = DayColor.RED;
 
-        Day day = fixtureDay(tripId, tripOwnerId, beforeDayColor);
+        Day day = fixtureDayForColorTest(tripId, tripOwnerId, beforeDayColor);
         DayColorUpdateCommand updateCommand = new DayColorUpdateCommand(requestDayColor);
 
         given(dayRepository.findByIdWithTrip(eq(dayId))).willReturn(Optional.of(day));
@@ -102,7 +102,7 @@ public class DayColorUpdateServiceTest {
         assertThat(day.getDayColor()).isSameAs(requestDayColor);
     }
 
-    private Day fixtureDay(Long tripId, Long tripperId, DayColor dayColor) {
+    private Day fixtureDayForColorTest(Long tripId, Long tripperId, DayColor dayColor) {
         LocalDate startDate = LocalDate.of(2023,3,1);
         LocalDate endDate = LocalDate.of(2023,3,1);
         Trip trip = TripFixture.decided_Id_Color(tripId, tripperId, startDate, endDate, 1L, dayColor);

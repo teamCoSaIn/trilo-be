@@ -1,5 +1,6 @@
 package com.cosain.trilo.unit.trip.domain.repository;
 
+import com.cosain.trilo.fixture.ScheduleFixture;
 import com.cosain.trilo.fixture.TripFixture;
 import com.cosain.trilo.support.RepositoryTest;
 import com.cosain.trilo.trip.domain.entity.Day;
@@ -51,33 +52,13 @@ public class TripRepositoryTest {
         @DisplayName("임시보관함을 지연로딩(기본 양방향 매핑)하여 얻어오면, 순서대로 요소들이 가져와진다.")
         void lazy_loading_TemporaryStorage() {
             // given
-            Trip trip = Trip.create(TripTitle.of("제목"), 1L);
+            Long tripperId = 1L;
+            Trip trip = TripFixture.undecided_nullId(tripperId);
             tripRepository.save(trip);
 
-            Schedule schedule1 = Schedule.builder()
-                    .day(null)
-                    .trip(trip)
-                    .scheduleTitle(ScheduleTitle.of("일정1"))
-                    .place(Place.of("place-id1", "광안리 해수욕장111", Coordinate.of(35.1551, 129.1220)))
-                    .scheduleIndex(ScheduleIndex.of(30_000_000L))
-                    .build();
-
-            Schedule schedule2 = Schedule.builder()
-                    .day(null)
-                    .trip(trip)
-                    .scheduleTitle(ScheduleTitle.of("일정2"))
-                    .place(Place.of("place-id2", "광안리 해수욕장222", Coordinate.of(35.1551, 129.1220)))
-                    .scheduleIndex(ScheduleIndex.of(50_000_000L))
-                    .build();
-
-
-            Schedule schedule3 = Schedule.builder()
-                    .day(null)
-                    .trip(trip)
-                    .scheduleTitle(ScheduleTitle.of("일정3"))
-                    .place(Place.of("place-id3", "광안리 해수욕장333", Coordinate.of(35.1551, 129.1220)))
-                    .scheduleIndex(ScheduleIndex.of(-10_000_000L))
-                    .build();
+            Schedule schedule1 = ScheduleFixture.temporaryStorage_NullId(trip, 30_000_000L);
+            Schedule schedule2 = ScheduleFixture.temporaryStorage_NullId(trip, 50_000_000L);
+            Schedule schedule3 = ScheduleFixture.temporaryStorage_NullId(trip, -10_000_000L);
 
             em.persist(schedule1);
             em.persist(schedule2);
@@ -101,7 +82,7 @@ public class TripRepositoryTest {
 
         @Test
         @DirtiesContext
-        @DisplayName("UnDecided 상태의 Trip을 조회하면 여행만 조회된다.")
+        @DisplayName("UnDecided 상태의 Trip을 조회하면 Trip만 조회된다.")
         public void findUndecidedTripTest() {
             // given
             Long tripperId = 1L;
@@ -121,22 +102,18 @@ public class TripRepositoryTest {
 
         @Test
         @DirtiesContext
-        @DisplayName("Day를 가지고 있는 Trip을 조회하면 Trip이 Day들을 가진 채 조회된다.")
-        void if_trip_has_days_then_trip_and_its_trip_found(){
+        @DisplayName("findByIdWithDays -> Trip이 Day들을 가진 채 조회된다.")
+        void testFindByIdWithDays(){
             // given
             Long tripperId = 1L;
-            LocalDate startDate = LocalDate.of(2023,5,1);
+            LocalDate startDate = LocalDate.of(2023,5,2);
             LocalDate endDate = LocalDate.of(2023,5,3);
-            Trip trip = TripFixture.decided_nullId(tripperId, startDate, endDate);
-            em.persist(trip);
 
+            Trip trip = setupDecidedTripAndPersist(tripperId, startDate, endDate);
             Day day1 = trip.getDays().get(0);
             Day day2 = trip.getDays().get(1);
-            Day day3 = trip.getDays().get(2);
-            em.persist(day1);
-            em.persist(day2);
-            em.persist(day3);
 
+            em.flush();
             em.clear();
 
             // when
@@ -145,8 +122,8 @@ public class TripRepositoryTest {
             // then
             assertThat(findTrip.getTripTitle()).isEqualTo(trip.getTripTitle());
             assertThat(findTrip.getId()).isEqualTo(trip.getId());
-            assertThat(findTrip.getDays()).map(Day::getTripDate).containsExactly(
-                    LocalDate.of(2023,5,1), LocalDate.of(2023,5,2), LocalDate.of(2023,5,3));
+            assertThat(findTrip.getDays().size()).isEqualTo(2);
+            assertThat(findTrip.getDays()).map(Day::getTripDate).containsExactly(day1.getTripDate(), day2.getTripDate());
         }
     }
 
@@ -155,14 +132,8 @@ public class TripRepositoryTest {
     @DisplayName("delete 테스트")
     public void deleteTest() {
         // given
-        Trip trip = Trip.builder()
-                .tripperId(1L)
-                .tripTitle(TripTitle.of("여행 제목"))
-                .status(TripStatus.DECIDED)
-                .tripPeriod(TripPeriod.of(LocalDate.of(2023,3,1), LocalDate.of(2023,3,3)))
-                .build();
-
-        em.persist(trip);
+        Long tripperId = 1L;
+        Trip trip = setupUndecidedTripAndPersist(tripperId);
 
         // when
         tripRepository.delete(trip);
@@ -180,14 +151,10 @@ public class TripRepositoryTest {
         void tripperId_에_해당하는_모든_trip이_제거된다(){
             // given
             Long tripperId = 1L;
-            Trip trip1 = Trip.create(TripTitle.of("여행 제목1"), tripperId);
-            Trip trip2 = Trip.create(TripTitle.of("여행 제목2"), tripperId);
-            Trip trip3 = Trip.create(TripTitle.of("여행 제목3"), tripperId);
-            Trip trip4 = Trip.create(TripTitle.of("여행 제목4"), tripperId);
-            em.persist(trip1);
-            em.persist(trip2);
-            em.persist(trip3);
-            em.persist(trip4);
+            Trip trip1 = setupUndecidedTripAndPersist(tripperId);
+            Trip trip2 = setupUndecidedTripAndPersist(tripperId);
+            Trip trip3 = setupUndecidedTripAndPersist(tripperId);
+            Trip trip4 = setupUndecidedTripAndPersist(tripperId);
 
             em.flush();
             em.clear();
@@ -201,5 +168,18 @@ public class TripRepositoryTest {
             assertThat(tripRepository.existsById(trip3.getId())).isFalse();
             assertThat(tripRepository.existsById(trip4.getId())).isFalse();
         }
+    }
+
+    private Trip setupUndecidedTripAndPersist(Long tripperId) {
+        Trip trip = TripFixture.undecided_nullId(tripperId);
+        em.persist(trip);
+        return trip;
+    }
+
+    private Trip setupDecidedTripAndPersist(Long tripperId, LocalDate startDate, LocalDate endDate) {
+        Trip trip = TripFixture.decided_nullId(tripperId, startDate, endDate);
+        em.persist(trip);
+        trip.getDays().forEach(em::persist);
+        return trip;
     }
 }

@@ -1,10 +1,11 @@
 
 package com.cosain.trilo.unit.trip.infra.repository;
 
+import com.cosain.trilo.fixture.ScheduleFixture;
+import com.cosain.trilo.fixture.TripFixture;
 import com.cosain.trilo.support.RepositoryTest;
 import com.cosain.trilo.trip.domain.entity.Schedule;
 import com.cosain.trilo.trip.domain.entity.Trip;
-import com.cosain.trilo.trip.domain.vo.*;
 import com.cosain.trilo.trip.infra.dto.ScheduleDetail;
 import com.cosain.trilo.trip.infra.dto.ScheduleSummary;
 import com.cosain.trilo.trip.infra.repository.schedule.ScheduleQueryRepository;
@@ -18,9 +19,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 import org.springframework.test.annotation.DirtiesContext;
 
-import java.time.LocalDate;
-
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 @RepositoryTest
@@ -36,17 +37,12 @@ public class ScheduleQueryRepositoryTest {
     @Test
     void findScheduleTest(){
         // given
-        Trip trip = Trip.create(TripTitle.of("제목"), 1L);
-        em.persist(trip);
-        Schedule schedule = Schedule.builder()
-                .trip(trip)
-                .scheduleTitle(ScheduleTitle.of("Test Schedule"))
-                .place(Place.of("장소 1", "광산구", Coordinate.of(62.62, 62.62)))
-                .scheduleIndex(ScheduleIndex.ZERO_INDEX)
-                .scheduleContent(ScheduleContent.of("일정 본문"))
-                .build();
-        em.persist(schedule);
+        Long tripperId = 1L;
+        Trip trip = setupUndecidedTripAndPersist(tripperId);
+
+        Schedule schedule = setupTemporaryScheduleAndPersist(trip, 0L);
         em.flush();
+        em.clear();
 
         // when
         ScheduleDetail dto = scheduleQueryRepository.findScheduleDetailById(schedule.getId()).get();
@@ -57,7 +53,7 @@ public class ScheduleQueryRepositoryTest {
         assertThat(dto.getTitle()).isEqualTo(schedule.getScheduleTitle().getValue());
         assertThat(dto.getPlaceName()).isEqualTo(schedule.getPlace().getPlaceName());
         assertThat(dto.getCoordinate().getLatitude()).isEqualTo(schedule.getPlace().getCoordinate().getLatitude());
-        assertThat(dto.getCoordinate().getLatitude()).isEqualTo(schedule.getPlace().getCoordinate().getLongitude());
+        assertThat(dto.getCoordinate().getLongitude()).isEqualTo(schedule.getPlace().getCoordinate().getLongitude());
         assertThat(dto.getOrder()).isEqualTo(schedule.getScheduleIndex().getValue());
         assertThat(dto.getContent()).isEqualTo(schedule.getScheduleContent().getValue());
     }
@@ -68,25 +64,24 @@ public class ScheduleQueryRepositoryTest {
 
         @Test
         @DirtiesContext
-        @DisplayName("tripId 가 일치하고 dayId 가 null 인 커서 보다 큰 일정들이 size 만큼 조회된다.")
+        @DisplayName("커서가 가리키는 일정 이후의 일정들이 size 만큼 조회된다.")
         void findTest(){
             // given
-            Trip trip = Trip.create(TripTitle.of("제목"), 1L);
-            em.persist(trip);
-            Schedule schedule1 = createSchedule(trip, 10000L);
-            Schedule schedule2 = createSchedule(trip, 20000L);
-            Schedule schedule3 = createSchedule(trip, 30000L);
-            Schedule schedule4 = createSchedule(trip, 40000L);
-            em.persist(schedule1);
-            em.persist(schedule2);
-            em.persist(schedule3);
-            em.persist(schedule4);
-            em.flush();
+            Trip trip = setupUndecidedTripAndPersist(1L);
 
-            TempSchedulePageCondition tempSchedulePageCondition = new TempSchedulePageCondition(schedule1.getId());
+            Schedule schedule1 = setupTemporaryScheduleAndPersist(trip, 10000L);
+            Schedule schedule2 = setupTemporaryScheduleAndPersist(trip, 20000L);
+            Schedule schedule3 = setupTemporaryScheduleAndPersist(trip, 30000L);
+            Schedule schedule4 = setupTemporaryScheduleAndPersist(trip, 40000L);
+            em.flush();
+            em.clear();
+
+            Long tripId = trip.getId();
+            Long cursorScheduleId = schedule1.getId();
+            TempSchedulePageCondition tempSchedulePageCondition = new TempSchedulePageCondition(cursorScheduleId);
 
             // when
-            Slice<ScheduleSummary> scheduleSummaries = scheduleQueryRepository.findTemporaryScheduleListByTripId(1L,tempSchedulePageCondition,PageRequest.ofSize(3));
+            Slice<ScheduleSummary> scheduleSummaries = scheduleQueryRepository.findTemporaryScheduleListByTripId(tripId,tempSchedulePageCondition,PageRequest.ofSize(3));
 
             // then
             assertThat(scheduleSummaries.getSize()).isEqualTo(3);
@@ -96,52 +91,56 @@ public class ScheduleQueryRepositoryTest {
         @DisplayName("scheduleIndex 기준 오름차순으로 조회된다.")
         void sortTest(){
             // given
-            Trip trip = Trip.create(TripTitle.of("제목"), 1L);
-            em.persist(trip);
-            Schedule schedule1 = createSchedule(trip, 10000L);
-            Schedule schedule2 = createSchedule(trip, 20000L);
-            Schedule schedule3 = createSchedule(trip, 30000L);
-            em.persist(schedule1);
-            em.persist(schedule2);
-            em.persist(schedule3);
-            em.flush();
+            Trip trip = setupUndecidedTripAndPersist(1L);
 
-            TempSchedulePageCondition tempSchedulePageCondition = new TempSchedulePageCondition(schedule1.getId());
+            Schedule schedule1 = setupTemporaryScheduleAndPersist(trip, 10000L);
+            Schedule schedule2 = setupTemporaryScheduleAndPersist(trip, 20000L);
+            Schedule schedule3 = setupTemporaryScheduleAndPersist(trip, 30000L);
+            em.flush();
+            em.clear();
+
+            Long tripId = trip.getId();
+            Long cursorScheduleId = schedule1.getId();
+            TempSchedulePageCondition tempSchedulePageCondition = new TempSchedulePageCondition(cursorScheduleId);
 
             // when
-            Slice<ScheduleSummary> scheduleSummaries = scheduleQueryRepository.findTemporaryScheduleListByTripId(1L, tempSchedulePageCondition, PageRequest.ofSize(2));
+            Slice<ScheduleSummary> scheduleSummaries = scheduleQueryRepository.findTemporaryScheduleListByTripId(tripId, tempSchedulePageCondition, PageRequest.ofSize(2));
 
             // then
             assertThat(scheduleSummaries.getSize()).isEqualTo(2);
-            assertThat(scheduleSummaries.getContent().get(0).getScheduleId()).isEqualTo(schedule2.getId());
-            assertThat(scheduleSummaries.getContent().get(1).getScheduleId()).isEqualTo(schedule3.getId());
+            assertThat(scheduleSummaries)
+                    .map(ScheduleSummary::getScheduleId)
+                    .containsExactly(schedule2.getId(), schedule3.getId());
         }
-
     }
 
     @Test
     @DirtiesContext
     void existByIdTest(){
         // given
-        Trip trip = Trip.create(TripTitle.of("제목"), 1L);
-        em.persist(trip);
-        Schedule schedule = createSchedule(trip, 10000L);
-        em.persist(schedule);
+        Trip trip = setupUndecidedTripAndPersist(1L);
+        Schedule schedule = setupTemporaryScheduleAndPersist(trip, 0L);
         em.flush();
+        em.clear();
 
-        // when & then
-        long notExistScheduleId = 2L;
-        assertThat(scheduleQueryRepository.existById(schedule.getId())).isTrue();
-        assertThat(scheduleQueryRepository.existById(notExistScheduleId)).isFalse();
+        long scheduleId = schedule.getId();
+        long notExistScheduleId = scheduleId + 1; // 존재하지 않는 일정 식별자
+
+        // when && then
+        assertTrue(scheduleQueryRepository.existById(scheduleId));
+        assertFalse(scheduleQueryRepository.existById(notExistScheduleId));
     }
 
-    private Schedule createSchedule(Trip trip, long scheduleIndexValue){
-        return Schedule.builder()
-                .trip(trip)
-                .scheduleTitle(ScheduleTitle.of("Test Schedule"))
-                .place(Place.of("장소 1", "광산구", Coordinate.of(62.62, 62.62)))
-                .scheduleIndex(ScheduleIndex.of(scheduleIndexValue))
-                .scheduleContent(ScheduleContent.of("일정 본문"))
-                .build();
+    private Trip setupUndecidedTripAndPersist(Long tripperId) {
+        Trip trip = TripFixture.undecided_nullId(tripperId);
+        em.persist(trip);
+        return trip;
     }
+
+    private Schedule setupTemporaryScheduleAndPersist(Trip trip, long scheduleIndexValue) {
+        Schedule schedule = ScheduleFixture.temporaryStorage_NullId(trip, scheduleIndexValue);
+        em.persist(schedule);
+        return schedule;
+    }
+
 }
