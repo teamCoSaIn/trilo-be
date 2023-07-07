@@ -13,11 +13,12 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import java.time.Clock;
+import java.time.LocalDate;
+import java.time.ZoneId;
+
 import static com.cosain.trilo.fixture.UserFixture.KAKAO_MEMBER;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 @WebMvcTest(UserRestController.class)
@@ -25,6 +26,9 @@ public class UserRestControllerTest extends RestControllerTest {
 
     @MockBean
     private UserService userService;
+
+    @MockBean
+    private Clock clock;
 
     private final String BASE_URL = "/api/users";
     private final String ACCESS_TOKEN = "Bearer accessToken";
@@ -86,6 +90,38 @@ public class UserRestControllerTest extends RestControllerTest {
                     .andExpect(jsonPath("$.errorCode").value("auth-0001"))
                     .andExpect(jsonPath("$.errorMessage").exists())
                     .andExpect(jsonPath("$.errorDetail").exists());
+        }
+    }
+
+    @Nested
+    class 회원_마이페이지_조회{
+
+        private Long userId = 1L;
+        @Test
+        void 인증된_사용자_요청_200() throws Exception{
+            // given
+            mockingForLoginUserAnnotation();
+
+            Clock fixedClock = Clock.fixed(
+                    LocalDate.of(2023, 4, 28).atStartOfDay(ZoneId.systemDefault()).toInstant(),
+                    ZoneId.systemDefault()
+            );
+            given(clock.instant()).willReturn(fixedClock.instant());
+            given(clock.getZone()).willReturn(fixedClock.getZone());
+
+            // when & then
+            mockMvc.perform(RestDocumentationRequestBuilders.get(BASE_URL + "/{userId}/my-page", userId)
+                        .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN))
+                    .andExpect(MockMvcResultMatchers.status().isOk());
+
+        }
+
+        @Test
+        void 미인증된_사용자_요청_204() throws Exception{
+            // when & then
+            mockMvc.perform(RestDocumentationRequestBuilders.get(BASE_URL + "/{userId}/my-page", userId)
+                            .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN))
+                    .andExpect(MockMvcResultMatchers.status().isUnauthorized());
         }
     }
 
