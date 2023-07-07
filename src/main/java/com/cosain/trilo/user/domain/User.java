@@ -34,27 +34,26 @@ public class User {
 
     @Column(nullable = false)
     @Embedded
-    private Image myPageImage;
+    private MyPageImage myPageImage;
 
     @Builder(access = AccessLevel.PUBLIC)
-    private User(Long id,String name, String email, String profileImageUrl, AuthProvider authProvider, Role role, String myPageImageBaseURL) {
+    private User(Long id,String name, String email, String profileImageUrl, AuthProvider authProvider, Role role) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.profileImageURL = profileImageUrl;
         this.authProvider = authProvider;
         this.role = role;
-        this.myPageImage = Image.initializeMyPageImage(myPageImageBaseURL);
+        this.myPageImage = MyPageImage.initializeMyPageImage();
     }
 
-    public static User from(OAuthProfileDto oAuthProfileDto, String myPageImageBaseURL) {
+    public static User from(OAuthProfileDto oAuthProfileDto) {
         return User.builder()
                 .name(oAuthProfileDto.getName())
                 .email(oAuthProfileDto.getEmail())
                 .profileImageUrl(oAuthProfileDto.getProfileImageUrl())
                 .role(Role.MEMBER)
                 .authProvider(oAuthProfileDto.getProvider())
-                .myPageImageBaseURL(myPageImageBaseURL)
                 .build();
     }
 

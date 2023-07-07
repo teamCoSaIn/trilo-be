@@ -1,10 +1,6 @@
 package com.cosain.trilo.integration.user;
 
-import com.cosain.trilo.config.ClockConfig;
 import com.cosain.trilo.support.IntegrationTest;
-import com.cosain.trilo.trip.infra.dto.TripDetail;
-import com.cosain.trilo.trip.infra.dto.TripStatistics;
-import com.cosain.trilo.trip.infra.repository.trip.TripQueryRepository;
 import com.cosain.trilo.user.domain.User;
 import com.cosain.trilo.user.domain.UserRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -13,13 +9,12 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Import;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.time.Clock;
 import java.time.LocalDate;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -35,6 +30,9 @@ public class UserIntegrationTest extends IntegrationTest {
 
     @Autowired
     private Clock clock;
+
+    @Value("${cloud.aws.s3.bucket-path}")
+    private String myPageBaseUrl;
 
     @Nested
     class 회원_프로필_조회{
@@ -129,7 +127,7 @@ public class UserIntegrationTest extends IntegrationTest {
                             .header(HttpHeaders.AUTHORIZATION, authorizationHeader(user)))
                     .andExpect(MockMvcResultMatchers.status().isOk())
                     .andExpect(jsonPath("$.name").value(user.getName()))
-                    .andExpect(jsonPath("$.imageURL").value(user.getMyPageImage().getBaseURL().concat(user.getMyPageImage().getFilaName())))
+                    .andExpect(jsonPath("$.imageURL").value(myPageBaseUrl.concat(user.getMyPageImage().getFileName())))
                     .andExpect(jsonPath("$.tripStatistics.totalTripCnt").value(totalTripCnt))
                     .andExpect(jsonPath("$.tripStatistics.terminatedTripCnt").value(terminatedTripCnt));
         }

@@ -9,6 +9,7 @@ import com.cosain.trilo.user.presentation.dto.UserMyPageResponse;
 import com.cosain.trilo.user.presentation.dto.UserProfileResponse;
 import org.apache.http.HttpHeaders;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
@@ -40,6 +41,8 @@ public class UserRestControllerDocsTest extends RestDocsTestSupport {
 
     private final String BASE_URL = "/api/users";
     private final String ACCESS_TOKEN = "Bearer accessToken";
+    @Value("${cloud.aws.s3.bucket-path}")
+    private String myPageBaseUrl;
     @Test
     public void 사용자_프로필_조회() throws Exception{
         // given
@@ -105,7 +108,7 @@ public class UserRestControllerDocsTest extends RestDocsTestSupport {
         mockingForLoginUserAnnotation();
         User user = KAKAO_MEMBER.create();
         TripStatistics tripStatistics = new TripStatistics(5L, 3L);
-        given(userService.getMyPage(eq(userId), any(LocalDate.class))).willReturn(UserMyPageResponse.of(user, tripStatistics));
+        given(userService.getMyPage(eq(userId), any(LocalDate.class))).willReturn(UserMyPageResponse.of(user, myPageBaseUrl, tripStatistics));
 
         // when & then
         mockMvc.perform(RestDocumentationRequestBuilders.get(BASE_URL + "/{userId}/my-page", userId)

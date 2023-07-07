@@ -10,13 +10,13 @@ public class UserMyPageResponse {
     private String imageURL;
     private TripStatistics tripStatistics;
 
-    private UserMyPageResponse(User user, TripStatistics tripStatistics) {
+    private UserMyPageResponse(User user, String imageBaseURL, TripStatistics tripStatistics) {
         this.name = user.getName();
-        this.imageURL = user.getMyPageImage().getBaseURL().concat(user.getMyPageImage().getFilaName());
+        this.imageURL = imageBaseURL.concat(user.getMyPageImage().getFileName());
         this.tripStatistics = tripStatistics;
     }
 
-    public static UserMyPageResponse of(User user, TripStatistics tripStatistics){
-        return new UserMyPageResponse(user, tripStatistics);
+    public static UserMyPageResponse of(User user, String imageBaseURL, TripStatistics tripStatistics){
+        return new UserMyPageResponse(user, imageBaseURL, tripStatistics);
     }
 }

@@ -46,7 +46,7 @@ public class UserService {
         User user = userOptional.map(existingUser -> {
             existingUser.updateUserByOauthProfile(oAuthProfileDto);
             return existingUser;
-        }).orElse(User.from(oAuthProfileDto, s3ImageBaseURL));
+        }).orElse(User.from(oAuthProfileDto));
 
         User savedUser = userRepository.save(user);
         return savedUser.getId();
@@ -90,7 +90,7 @@ public class UserService {
     public UserMyPageResponse getMyPage(Long userId, LocalDate today){
         TripStatistics tripStatistics = tripQueryRepository.findTripStaticsByTripperId(userId, today);
         User user = findUserOrThrows(userId);
-        return UserMyPageResponse.of(user, tripStatistics);
+        return UserMyPageResponse.of(user, s3ImageBaseURL, tripStatistics);
     }
 
 }

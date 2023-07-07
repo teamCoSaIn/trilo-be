@@ -101,7 +101,6 @@ public class IntegrationTest {
                 .profileImageUrl("https://k.kakaocdn.net/dn/dpk9l1/btqmGhA2lKL/Oz0wDuJn1YV2DIn92f6DVK/img_640x640.jpg")
                 .authProvider(authProvider)
                 .role(Role.MEMBER)
-                .myPageImageBaseURL("mypage-image-url")
                 .build();
 
         userRepository.save(mockUser);
