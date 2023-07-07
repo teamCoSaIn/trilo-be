@@ -1,5 +1,6 @@
 package com.cosain.trilo.unit.trip.domain.repository;
 
+import com.cosain.trilo.fixture.ScheduleFixture;
 import com.cosain.trilo.fixture.TripFixture;
 import com.cosain.trilo.support.RepositoryTest;
 import com.cosain.trilo.trip.domain.entity.Day;
@@ -20,6 +21,7 @@ import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.cosain.trilo.trip.domain.vo.ScheduleIndex.DEFAULT_SEQUENCE_GAP;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -39,24 +41,16 @@ public class ScheduleRepositoryTest {
     void saveTest() {
         // given
         Long tripperId = 1L;
-        LocalDate startDate = LocalDate.of(2023,3,1);
-        LocalDate endDate = LocalDate.of(2023,3,1);
-        Trip trip = TripFixture.decided_nullId(tripperId, startDate, endDate);
-        em.persist(trip);
-
+        LocalDate startDate = LocalDate.of(2023, 3, 1);
+        LocalDate endDate = LocalDate.of(2023, 3, 1);
+        Trip trip = setupDecidedTripAndPersist(tripperId, startDate, endDate);
         Day day = trip.getDays().get(0);
-        em.persist(day);
 
-        Schedule schedule = Schedule.builder()
-                .day(day)
-                .trip(trip)
-                .scheduleTitle(ScheduleTitle.of("제목"))
-                .scheduleContent(ScheduleContent.of("본문"))
-                .place(Place.of("place-id", "광안리 해수욕장", Coordinate.of(43.1275, 132.127)))
-                .build();
+        Schedule schedule = ScheduleFixture.day_NullId(trip, day, 0L);
 
         // when
         scheduleRepository.save(schedule);
+        em.flush();
         em.clear();
 
         // then
@@ -64,24 +58,22 @@ public class ScheduleRepositoryTest {
         assertThat(findSchedule.getId()).isEqualTo(schedule.getId());
         assertThat(findSchedule.getScheduleTitle()).isEqualTo(schedule.getScheduleTitle());
         assertThat(findSchedule.getScheduleContent()).isEqualTo(schedule.getScheduleContent());
+        assertThat(findSchedule.getScheduleIndex()).isEqualTo(schedule.getScheduleIndex());
         assertThat(findSchedule.getPlace()).isEqualTo(schedule.getPlace());
+        assertThat(findSchedule.getScheduleTime()).isEqualTo(schedule.getScheduleTime());
     }
 
     @Test
-    @DisplayName("65535 바이트보다 큰 본문을 삽입하려 시도하면 데이터베이스 예외가 발생함")
+    @DisplayName("일정 본문을 65535 바이트보다 큰 일정 본문으로 수정 시도하면 데이터베이스 예외가 발생함")
     void contentChangeConstraintsTest() {
         // given
         Long tripperId = 1L;
-        LocalDate startDate = LocalDate.of(2023,3,1);
-        LocalDate endDate = LocalDate.of(2023,3,1);
-        Trip trip = TripFixture.decided_nullId(tripperId, startDate, endDate);
-        em.persist(trip);
+        LocalDate startDate = LocalDate.of(2023, 3, 1);
+        LocalDate endDate = LocalDate.of(2023, 3, 1);
 
+        Trip trip = setupDecidedTripAndPersist(tripperId, startDate, endDate);
         Day day = trip.getDays().get(0);
-        em.persist(day);
-
-        Schedule schedule = trip.createSchedule(day, ScheduleTitle.of("일정1"), Place.of("place-id1", "광안리 해수욕장", Coordinate.of(35.1551, 129.1220)));
-        em.persist(schedule);
+        Schedule schedule = setupDayScheduleAndPersist(trip, day, 0L);
 
         byte[] bytes = new byte[65536]; // 65535 바이트를 넘어가는 데이터
         Arrays.fill(bytes, (byte) 'A'); // 1바이트 'A'로 채움
@@ -105,16 +97,13 @@ public class ScheduleRepositoryTest {
     void deleteTest() {
         // given
         Long tripperId = 1L;
-        LocalDate startDate = LocalDate.of(2023,3,1);
-        LocalDate endDate = LocalDate.of(2023,3,1);
-        Trip trip = TripFixture.decided_nullId(tripperId, startDate, endDate);
-        em.persist(trip);
+        LocalDate startDate = LocalDate.of(2023, 3, 1);
+        LocalDate endDate = LocalDate.of(2023, 3, 1);
 
+        Trip trip = setupDecidedTripAndPersist(tripperId, startDate, endDate);
         Day day = trip.getDays().get(0);
-        em.persist(day);
 
-        Schedule schedule = trip.createSchedule(day, ScheduleTitle.of("일정1"), Place.of("place-id1", "광안리 해수욕장", Coordinate.of(35.1551, 129.1220)));
-        em.persist(schedule);
+        Schedule schedule = setupDayScheduleAndPersist(trip, day, 0L);
 
         // when
         scheduleRepository.delete(schedule);
@@ -132,32 +121,25 @@ public class ScheduleRepositoryTest {
     void deleteAllByTripIdTest() {
         // given
         Long tripperId = 1L;
-        LocalDate startDate = LocalDate.of(2023,3,1);
-        LocalDate endDate = LocalDate.of(2023,3,3);
-        Trip trip = TripFixture.decided_nullId(tripperId, startDate, endDate);
-        em.persist(trip);
+        LocalDate startDate = LocalDate.of(2023, 3, 1);
+        LocalDate endDate = LocalDate.of(2023, 3, 3);
 
+        Trip trip = setupDecidedTripAndPersist(tripperId, startDate, endDate);
         Day day1 = trip.getDays().get(0);
         Day day2 = trip.getDays().get(1);
         Day day3 = trip.getDays().get(2);
-        em.persist(day1);
-        em.persist(day2);
-        em.persist(day3);
 
-        Schedule schedule1 = trip.createSchedule(day1, ScheduleTitle.of("일정1"), Place.of("place-id1", "광안리 해수욕장", Coordinate.of(35.1551, 129.1220)));
-        Schedule schedule2 = trip.createSchedule(day2, ScheduleTitle.of("일정2"), Place.of("place-id2", "광화문 광장", Coordinate.of(37.5748, 126.9767)));
-        Schedule schedule3 = trip.createSchedule(day3, ScheduleTitle.of("일정3"), Place.of("place-id3", "도쿄 타워", Coordinate.of(35.3931, 139.4443)));
-
-        em.persist(schedule1);
-        em.persist(schedule2);
-        em.persist(schedule3);
+        Schedule schedule1 = setupDayScheduleAndPersist(trip, day1, 0L);
+        Schedule schedule2 = setupDayScheduleAndPersist(trip, day2, 0L);
+        Schedule schedule3 = setupDayScheduleAndPersist(trip, day3, 0L);
+        Schedule schedule4 = setupTemporaryScheduleAndPersist(trip, 0L);
 
         // when
         scheduleRepository.deleteAllByTripId(trip.getId());
         em.clear();
 
         // then
-        List<Schedule> findSchedules = scheduleRepository.findAllById(List.of(schedule1.getId(), schedule2.getId(), schedule3.getId()));
+        List<Schedule> findSchedules = scheduleRepository.findAllById(List.of(schedule1.getId(), schedule2.getId(), schedule3.getId(), schedule4.getId()));
         assertThat(findSchedules).isEmpty();
     }
 
@@ -167,21 +149,16 @@ public class ScheduleRepositoryTest {
     void findByIdWithTripTest() {
         // given
         Long tripperId = 1L;
-        LocalDate startDate = LocalDate.of(2023,3,1);
-        LocalDate endDate = LocalDate.of(2023,3,1);
-        Trip trip = TripFixture.decided_nullId(tripperId, startDate, endDate);
-        em.persist(trip);
+        LocalDate startDate = LocalDate.of(2023, 3, 1);
+        LocalDate endDate = LocalDate.of(2023, 3, 1);
 
+        Trip trip = setupDecidedTripAndPersist(tripperId, startDate, endDate);
         Day day = trip.getDays().get(0);
-        em.persist(day);
 
-        Schedule schedule1 = trip.createSchedule(day, ScheduleTitle.of("일정1"), Place.of("place-id1", "광안리 해수욕장1", Coordinate.of(35.1551, 129.1220)));
-        Schedule schedule2 = trip.createSchedule(day, ScheduleTitle.of("일정2"), Place.of("place-id2", "광안리 해수욕장2", Coordinate.of(35.1551, 129.1220)));
-        Schedule schedule3 = trip.createSchedule(day, ScheduleTitle.of("일정3"), Place.of("place-id3", "광안리 해수욕장3", Coordinate.of(35.1551, 129.1220)));
+        Schedule schedule1 = setupDayScheduleAndPersist(trip, day, 0L);
+        Schedule schedule2 = setupDayScheduleAndPersist(trip, day, 100L);
+        Schedule schedule3 = setupDayScheduleAndPersist(trip, day, 200L);
 
-        em.persist(schedule1);
-        em.persist(schedule2);
-        em.persist(schedule3);
         em.flush();
         em.clear();
 
@@ -190,9 +167,8 @@ public class ScheduleRepositoryTest {
 
         // then
         assertThat(findSchedule.getId()).isEqualTo(schedule2.getId());
+        assertThat(findSchedule.getTrip().getClass()).isEqualTo(Trip.class);
         assertThat(findSchedule.getTrip().getId()).isEqualTo(trip.getId());
-        assertThat(findSchedule.getScheduleTitle()).isEqualTo(schedule2.getScheduleTitle());
-        assertThat(findSchedule.getPlace()).isEqualTo(schedule2.getPlace());
     }
 
 
@@ -205,40 +181,25 @@ public class ScheduleRepositoryTest {
         void relocateTemporaryStorage() {
             // given
             Long tripperId = 1L;
-            LocalDate startDate = LocalDate.of(2023,3,1);
-            LocalDate endDate = LocalDate.of(2023,3,2);
-            Trip trip = TripFixture.decided_nullId(tripperId, startDate, endDate);
-            em.persist(trip);
+            LocalDate startDate = LocalDate.of(2023, 3, 1);
+            LocalDate endDate = LocalDate.of(2023, 3, 2);
 
+            Trip trip = setupDecidedTripAndPersist(tripperId, startDate, endDate);
             Day day1 = trip.getDays().get(0);
             Day day2 = trip.getDays().get(1);
 
-            em.persist(day1);
-            em.persist(day2);
-
-            Schedule schedule1 = buildDummySchedule(trip, null, ScheduleIndex.of(7));
-            Schedule schedule2 = buildDummySchedule(trip, null, ScheduleIndex.of(-1));
-            Schedule schedule3 = buildDummySchedule(trip, null, ScheduleIndex.of(5));
-            Schedule schedule4 = buildDummySchedule(trip, day1, ScheduleIndex.of(7));
-            Schedule schedule5 = buildDummySchedule(trip, day1, ScheduleIndex.of(-1));
-            Schedule schedule6 = buildDummySchedule(trip, day1, ScheduleIndex.of(5));
-            Schedule schedule7 = buildDummySchedule(trip, day2, ScheduleIndex.of(7));
-            Schedule schedule8 = buildDummySchedule(trip, day2, ScheduleIndex.of(-1));
-            Schedule schedule9 = buildDummySchedule(trip, day2, ScheduleIndex.of(5));
-
-            em.persist(schedule1);
-            em.persist(schedule2);
-            em.persist(schedule3);
-            em.persist(schedule4);
-            em.persist(schedule5);
-            em.persist(schedule6);
-            em.persist(schedule7);
-            em.persist(schedule8);
-            em.persist(schedule9);
-
+            Schedule schedule1 = setupTemporaryScheduleAndPersist(trip, 7L);
+            Schedule schedule2 = setupTemporaryScheduleAndPersist(trip, -1L);
+            Schedule schedule3 = setupTemporaryScheduleAndPersist(trip, 5L);
+            Schedule schedule4 = setupDayScheduleAndPersist(trip, day1, 7L);
+            Schedule schedule5 = setupDayScheduleAndPersist(trip, day1, -1L);
+            Schedule schedule6 = setupDayScheduleAndPersist(trip, day1, 5L);
+            Schedule schedule7 = setupDayScheduleAndPersist(trip, day2, 7L);
+            Schedule schedule8 = setupDayScheduleAndPersist(trip, day2, -1L);
+            Schedule schedule9 = setupDayScheduleAndPersist(trip, day2, 5L);
 
             // when
-            int affectedRowCount = scheduleRepository.relocateDaySchedules(trip.getId(), null);
+            int affectedRowCount = scheduleRepository.relocateDaySchedules(trip.getId(), null); // 임시보관함 재배치
 
             // then
             List<Schedule> schedules = scheduleRepository.findAllById(
@@ -247,12 +208,11 @@ public class ScheduleRepositoryTest {
                             schedule7.getId(), schedule8.getId(), schedule9.getId()));
 
             assertThat(affectedRowCount).isEqualTo(3);
-            assertThat(schedules).map(Schedule::getScheduleIndex)
+            assertThat(schedules).map(schedule -> schedule.getScheduleIndex().getValue())
                     .containsExactly(
-                            ScheduleIndex.of(ScheduleIndex.DEFAULT_SEQUENCE_GAP * 2), ScheduleIndex.ZERO_INDEX, ScheduleIndex.of(ScheduleIndex.DEFAULT_SEQUENCE_GAP),
-                            ScheduleIndex.of(7), ScheduleIndex.of(-1), ScheduleIndex.of(5),
-                            ScheduleIndex.of(7), ScheduleIndex.of(-1), ScheduleIndex.of(5)
-                    );
+                            DEFAULT_SEQUENCE_GAP * 2, 0L, DEFAULT_SEQUENCE_GAP,
+                            7L, -1L, 5L,
+                            7L, -1L, 5L);
         }
 
         @DisplayName("day의 일정 재갱신 -> 해당 day만 재갱신됨")
@@ -260,35 +220,22 @@ public class ScheduleRepositoryTest {
         void relocateDaySchedules() {
             // given
             Long tripperId = 1L;
-            LocalDate startDate = LocalDate.of(2023,3,1);
-            LocalDate endDate = LocalDate.of(2023,3,2);
-            Trip trip = TripFixture.decided_nullId(tripperId, startDate, endDate);
-            em.persist(trip);
+            LocalDate startDate = LocalDate.of(2023, 3, 1);
+            LocalDate endDate = LocalDate.of(2023, 3, 2);
 
+            Trip trip = setupDecidedTripAndPersist(tripperId, startDate, endDate);
             Day day1 = trip.getDays().get(0);
             Day day2 = trip.getDays().get(1);
-            em.persist(day1);
-            em.persist(day2);
 
-            Schedule schedule1 = buildDummySchedule(trip, null, ScheduleIndex.of(7));
-            Schedule schedule2 = buildDummySchedule(trip, null, ScheduleIndex.of(-1));
-            Schedule schedule3 = buildDummySchedule(trip, null, ScheduleIndex.of(5));
-            Schedule schedule4 = buildDummySchedule(trip, day1, ScheduleIndex.of(7));
-            Schedule schedule5 = buildDummySchedule(trip, day1, ScheduleIndex.of(-1));
-            Schedule schedule6 = buildDummySchedule(trip, day1, ScheduleIndex.of(5));
-            Schedule schedule7 = buildDummySchedule(trip, day2, ScheduleIndex.of(7));
-            Schedule schedule8 = buildDummySchedule(trip, day2, ScheduleIndex.of(-1));
-            Schedule schedule9 = buildDummySchedule(trip, day2, ScheduleIndex.of(5));
-
-            em.persist(schedule1);
-            em.persist(schedule2);
-            em.persist(schedule3);
-            em.persist(schedule4);
-            em.persist(schedule5);
-            em.persist(schedule6);
-            em.persist(schedule7);
-            em.persist(schedule8);
-            em.persist(schedule9);
+            Schedule schedule1 = setupTemporaryScheduleAndPersist(trip, 7L);
+            Schedule schedule2 = setupTemporaryScheduleAndPersist(trip, -1L);
+            Schedule schedule3 = setupTemporaryScheduleAndPersist(trip, 5L);
+            Schedule schedule4 = setupDayScheduleAndPersist(trip, day1, 7L);
+            Schedule schedule5 = setupDayScheduleAndPersist(trip, day1, -1L);
+            Schedule schedule6 = setupDayScheduleAndPersist(trip, day1, 5L);
+            Schedule schedule7 = setupDayScheduleAndPersist(trip, day2, 7L);
+            Schedule schedule8 = setupDayScheduleAndPersist(trip, day2, -1L);
+            Schedule schedule9 = setupDayScheduleAndPersist(trip, day2, 5L);
 
             // when
             int affectedRowCount = scheduleRepository.relocateDaySchedules(trip.getId(), day1.getId());
@@ -300,12 +247,11 @@ public class ScheduleRepositoryTest {
                             schedule7.getId(), schedule8.getId(), schedule9.getId()));
 
             assertThat(affectedRowCount).isEqualTo(3);
-            assertThat(schedules).map(Schedule::getScheduleIndex)
+            assertThat(schedules).map(schedule -> schedule.getScheduleIndex().getValue())
                     .containsExactly(
-                            ScheduleIndex.of(7), ScheduleIndex.of(-1), ScheduleIndex.of(5),
-                            ScheduleIndex.of(ScheduleIndex.DEFAULT_SEQUENCE_GAP * 2), ScheduleIndex.ZERO_INDEX, ScheduleIndex.of(ScheduleIndex.DEFAULT_SEQUENCE_GAP),
-                            ScheduleIndex.of(7), ScheduleIndex.of(-1), ScheduleIndex.of(5)
-                    );
+                            7L, -1L, 5L,
+                            DEFAULT_SEQUENCE_GAP * 2, 0L, DEFAULT_SEQUENCE_GAP,
+                            7L, -1L, 5L);
         }
 
     }
@@ -320,35 +266,22 @@ public class ScheduleRepositoryTest {
         public void test_When_TemporaryStorage_not_empty() {
             // given
             Long tripperId = 1L;
-            LocalDate startDate = LocalDate.of(2023,3,1);
-            LocalDate endDate = LocalDate.of(2023,3,3);
-            Trip trip = TripFixture.decided_nullId(tripperId, startDate, endDate);
-            em.persist(trip);
+            LocalDate startDate = LocalDate.of(2023, 3, 1);
+            LocalDate endDate = LocalDate.of(2023, 3, 3);
 
+            Trip trip = setupDecidedTripAndPersist(tripperId, startDate, endDate);
             Day day1 = trip.getDays().get(0);
             Day day2 = trip.getDays().get(1);
             Day day3 = trip.getDays().get(2);
-            em.persist(day1);
-            em.persist(day2);
-            em.persist(day3);
 
-            Schedule schedule1 = buildDummySchedule(trip, null, ScheduleIndex.of(0));
-            Schedule schedule2 = buildDummySchedule(trip, null, ScheduleIndex.of(ScheduleIndex.DEFAULT_SEQUENCE_GAP));
-            Schedule schedule3 = buildDummySchedule(trip, day2, ScheduleIndex.of(2));
-            Schedule schedule4 = buildDummySchedule(trip, day2, ScheduleIndex.of(1));
-            Schedule schedule5 = buildDummySchedule(trip, day1, ScheduleIndex.of(2));
-            Schedule schedule6 = buildDummySchedule(trip, day1, ScheduleIndex.of(1));
-            Schedule schedule7 = buildDummySchedule(trip, day3, ScheduleIndex.of(2));
-            Schedule schedule8 = buildDummySchedule(trip, day3, ScheduleIndex.of(1));
-
-            em.persist(schedule1);
-            em.persist(schedule2);
-            em.persist(schedule3);
-            em.persist(schedule4);
-            em.persist(schedule5);
-            em.persist(schedule6);
-            em.persist(schedule7);
-            em.persist(schedule8);
+            Schedule schedule1 = setupTemporaryScheduleAndPersist(trip, 0);
+            Schedule schedule2 = setupTemporaryScheduleAndPersist(trip, DEFAULT_SEQUENCE_GAP);
+            Schedule schedule3 = setupDayScheduleAndPersist(trip, day2, 2);
+            Schedule schedule4 = setupDayScheduleAndPersist(trip, day2, 1);
+            Schedule schedule5 = setupDayScheduleAndPersist(trip, day1, 2);
+            Schedule schedule6 = setupDayScheduleAndPersist(trip, day1, 1);
+            Schedule schedule7 = setupDayScheduleAndPersist(trip, day3, 2);
+            Schedule schedule8 = setupDayScheduleAndPersist(trip, day3, 1);
 
             // when
             int affectedRowCount = scheduleRepository.moveSchedulesToTemporaryStorage(trip.getId(), List.of(day1.getId(), day2.getId()));
@@ -371,11 +304,11 @@ public class ScheduleRepositoryTest {
             assertThat(findSchedule5.getDay()).isEqualTo(null);
             assertThat(findSchedule6.getDay()).isEqualTo(null);
             assertThat(findSchedule1.getScheduleIndex()).isEqualTo(ScheduleIndex.of(0));
-            assertThat(findSchedule2.getScheduleIndex()).isEqualTo(ScheduleIndex.of(ScheduleIndex.DEFAULT_SEQUENCE_GAP));
-            assertThat(findSchedule3.getScheduleIndex()).isEqualTo(ScheduleIndex.of(ScheduleIndex.DEFAULT_SEQUENCE_GAP * 5));
-            assertThat(findSchedule4.getScheduleIndex()).isEqualTo(ScheduleIndex.of(ScheduleIndex.DEFAULT_SEQUENCE_GAP * 4));
-            assertThat(findSchedule5.getScheduleIndex()).isEqualTo(ScheduleIndex.of(ScheduleIndex.DEFAULT_SEQUENCE_GAP * 3));
-            assertThat(findSchedule6.getScheduleIndex()).isEqualTo(ScheduleIndex.of(ScheduleIndex.DEFAULT_SEQUENCE_GAP * 2));
+            assertThat(findSchedule2.getScheduleIndex()).isEqualTo(ScheduleIndex.of(DEFAULT_SEQUENCE_GAP));
+            assertThat(findSchedule3.getScheduleIndex()).isEqualTo(ScheduleIndex.of(DEFAULT_SEQUENCE_GAP * 5));
+            assertThat(findSchedule4.getScheduleIndex()).isEqualTo(ScheduleIndex.of(DEFAULT_SEQUENCE_GAP * 4));
+            assertThat(findSchedule5.getScheduleIndex()).isEqualTo(ScheduleIndex.of(DEFAULT_SEQUENCE_GAP * 3));
+            assertThat(findSchedule6.getScheduleIndex()).isEqualTo(ScheduleIndex.of(DEFAULT_SEQUENCE_GAP * 2));
             assertThat(findSchedule7.getDay().getId()).isEqualTo(day3.getId());
             assertThat(findSchedule8.getDay().getId()).isEqualTo(day3.getId());
             assertThat(findSchedule7.getScheduleIndex()).isEqualTo(ScheduleIndex.of(2));
@@ -387,31 +320,20 @@ public class ScheduleRepositoryTest {
         public void test_When_TemporaryStorage_empty() {
             // given
             Long tripperId = 1L;
-            LocalDate startDate = LocalDate.of(2023,3,1);
-            LocalDate endDate = LocalDate.of(2023,3,3);
-            Trip trip = TripFixture.decided_nullId(tripperId, startDate, endDate);
-            em.persist(trip);
+            LocalDate startDate = LocalDate.of(2023, 3, 1);
+            LocalDate endDate = LocalDate.of(2023, 3, 3);
 
+            Trip trip = setupDecidedTripAndPersist(tripperId, startDate, endDate);
             Day day1 = trip.getDays().get(0);
             Day day2 = trip.getDays().get(1);
             Day day3 = trip.getDays().get(2);
-            em.persist(day1);
-            em.persist(day2);
-            em.persist(day3);
 
-            Schedule schedule1 = buildDummySchedule(trip, day2, ScheduleIndex.of(2));
-            Schedule schedule2 = buildDummySchedule(trip, day2, ScheduleIndex.of(1));
-            Schedule schedule3 = buildDummySchedule(trip, day1, ScheduleIndex.of(2));
-            Schedule schedule4 = buildDummySchedule(trip, day1, ScheduleIndex.of(1));
-            Schedule schedule5 = buildDummySchedule(trip, day3, ScheduleIndex.of(2));
-            Schedule schedule6 = buildDummySchedule(trip, day3, ScheduleIndex.of(1));
-
-            em.persist(schedule1);
-            em.persist(schedule2);
-            em.persist(schedule3);
-            em.persist(schedule4);
-            em.persist(schedule5);
-            em.persist(schedule6);
+            Schedule schedule1 = setupDayScheduleAndPersist(trip, day2, 2);
+            Schedule schedule2 = setupDayScheduleAndPersist(trip, day2, 1);
+            Schedule schedule3 = setupDayScheduleAndPersist(trip, day1, 2);
+            Schedule schedule4 = setupDayScheduleAndPersist(trip, day1, 1);
+            Schedule schedule5 = setupDayScheduleAndPersist(trip, day3, 2);
+            Schedule schedule6 = setupDayScheduleAndPersist(trip, day3, 1);
 
             // when
             int affectedRowCount = scheduleRepository.moveSchedulesToTemporaryStorage(trip.getId(), List.of(day1.getId(), day2.getId()));
@@ -429,9 +351,9 @@ public class ScheduleRepositoryTest {
             assertThat(findSchedule2.getDay()).isEqualTo(null);
             assertThat(findSchedule3.getDay()).isEqualTo(null);
             assertThat(findSchedule4.getDay()).isEqualTo(null);
-            assertThat(findSchedule1.getScheduleIndex()).isEqualTo(ScheduleIndex.of(ScheduleIndex.DEFAULT_SEQUENCE_GAP * 3));
-            assertThat(findSchedule2.getScheduleIndex()).isEqualTo(ScheduleIndex.of(ScheduleIndex.DEFAULT_SEQUENCE_GAP * 2));
-            assertThat(findSchedule3.getScheduleIndex()).isEqualTo(ScheduleIndex.of(ScheduleIndex.DEFAULT_SEQUENCE_GAP));
+            assertThat(findSchedule1.getScheduleIndex()).isEqualTo(ScheduleIndex.of(DEFAULT_SEQUENCE_GAP * 3));
+            assertThat(findSchedule2.getScheduleIndex()).isEqualTo(ScheduleIndex.of(DEFAULT_SEQUENCE_GAP * 2));
+            assertThat(findSchedule3.getScheduleIndex()).isEqualTo(ScheduleIndex.of(DEFAULT_SEQUENCE_GAP));
             assertThat(findSchedule4.getScheduleIndex()).isEqualTo(ScheduleIndex.of(0));
             assertThat(findSchedule5.getDay().getId()).isEqualTo(day3.getId());
             assertThat(findSchedule6.getDay().getId()).isEqualTo(day3.getId());
@@ -447,8 +369,7 @@ public class ScheduleRepositoryTest {
         @DisplayName("아무 일정도 없을 때 0 반환")
         @Test
         public void emptyScheduleTest() {
-            Trip trip = Trip.create(TripTitle.of("여행 제목"), 1L);
-            em.persist(trip);
+            Trip trip = setupUndecidedTripAndPersist(1L);
 
             int scheduleTripCount = scheduleRepository.findTripScheduleCount(trip.getId());
             assertThat(scheduleTripCount).isEqualTo(0);
@@ -457,13 +378,12 @@ public class ScheduleRepositoryTest {
         @DisplayName("임시보관함 일정 2개 -> 2 반환")
         @Test
         public void temporaryStorageScheduleTest() {
-            Trip trip = Trip.create(TripTitle.of("여행 제목"), 1L);
-            em.persist(trip);
+            Trip trip = setupUndecidedTripAndPersist(1L);
 
-            Schedule schedule1 = trip.createSchedule(null, ScheduleTitle.of("일정제목1"), Place.of("장소식별자1", "장소명1", Coordinate.of(34.127, 124.7771)));
-            Schedule schedule2 = trip.createSchedule(null, ScheduleTitle.of("일정제목2"), Place.of("장소식별자2", "장소명2", Coordinate.of(34.127, 124.7771)));
-            em.persist(schedule1);
-            em.persist(schedule2);
+            Schedule schedule1 = setupTemporaryScheduleAndPersist(trip, 0L);
+            Schedule schedule2 = setupTemporaryScheduleAndPersist(trip, 100L);
+            em.flush();
+            em.clear();
 
             int scheduleTripCount = scheduleRepository.findTripScheduleCount(trip.getId());
             assertThat(scheduleTripCount).isEqualTo(2);
@@ -473,20 +393,18 @@ public class ScheduleRepositoryTest {
         @Test
         public void dayScheduleScheduleTest() {
             Long tripperId = 1L;
-            LocalDate startDate = LocalDate.of(2023,3,1);
-            LocalDate endDate = LocalDate.of(2023,3,1);
-            Trip trip = TripFixture.decided_nullId(tripperId, startDate, endDate);
-            em.persist(trip);
+            LocalDate startDate = LocalDate.of(2023, 3, 1);
+            LocalDate endDate = LocalDate.of(2023, 3, 1);
 
+            Trip trip = setupDecidedTripAndPersist(tripperId, startDate, endDate);
             Day day = trip.getDays().get(0);
-            em.persist(day);
 
-            Schedule schedule1 = trip.createSchedule(day, ScheduleTitle.of("일정제목1"), Place.of("장소식별자1", "장소명1", Coordinate.of(34.127, 124.7771)));
-            Schedule schedule2 = trip.createSchedule(day, ScheduleTitle.of("일정제목2"), Place.of("장소식별자2", "장소명2", Coordinate.of(34.127, 124.7771)));
-            Schedule schedule3 = trip.createSchedule(day, ScheduleTitle.of("일정제목3"), Place.of("장소식별자3", "장소명2", Coordinate.of(34.127, 124.7771)));
-            em.persist(schedule1);
-            em.persist(schedule2);
-            em.persist(schedule3);
+            Schedule schedule1 = setupDayScheduleAndPersist(trip, day, 0L);
+            Schedule schedule2 = setupDayScheduleAndPersist(trip, day, 100L);
+            Schedule schedule3 = setupDayScheduleAndPersist(trip, day, 200L);
+
+            em.flush();
+            em.clear();
 
             int scheduleTripCount = scheduleRepository.findTripScheduleCount(trip.getId());
             assertThat(scheduleTripCount).isEqualTo(3);
@@ -496,42 +414,25 @@ public class ScheduleRepositoryTest {
         @Test
         public void manyDayScheduleTest() {
             Long tripperId = 1L;
-            LocalDate startDate = LocalDate.of(2023,3,1);
-            LocalDate endDate = LocalDate.of(2023,3,3);
-            Trip trip = TripFixture.decided_nullId(tripperId, startDate, endDate);
-            em.persist(trip);
+            LocalDate startDate = LocalDate.of(2023, 3, 1);
+            LocalDate endDate = LocalDate.of(2023, 3, 3);
 
+            Trip trip = setupDecidedTripAndPersist(tripperId, startDate, endDate);
             Day day1 = trip.getDays().get(0);
             Day day2 = trip.getDays().get(1);
             Day day3 = trip.getDays().get(2);
-            em.persist(day1);
-            em.persist(day2);
-            em.persist(day3);
 
-            Schedule schedule1 = trip.createSchedule(day1, ScheduleTitle.of("일정제목1"), Place.of("장소식별자1", "장소명1", Coordinate.of(34.127, 124.7771)));
-            Schedule schedule2 = trip.createSchedule(day2, ScheduleTitle.of("일정제목2"), Place.of("장소식별자2", "장소명2", Coordinate.of(34.127, 124.7771)));
-            Schedule schedule3 = trip.createSchedule(day3, ScheduleTitle.of("일정제목3"), Place.of("장소식별자3", "장소명2", Coordinate.of(34.127, 124.7771)));
-            Schedule schedule4 = trip.createSchedule(null, ScheduleTitle.of("일정제목4"), Place.of("장소식별자3", "장소명2", Coordinate.of(34.127, 124.7771)));
-            em.persist(schedule1);
-            em.persist(schedule2);
-            em.persist(schedule3);
-            em.persist(schedule4);
+            Schedule schedule1 = setupDayScheduleAndPersist(trip, day1, 0L);
+            Schedule schedule2 = setupDayScheduleAndPersist(trip, day2, 100L);
+            Schedule schedule3 = setupDayScheduleAndPersist(trip, day3, 200L);
+            Schedule schedule4 = setupTemporaryScheduleAndPersist(trip, 0L);
+            em.flush();
+            em.clear();
 
             int scheduleTripCount = scheduleRepository.findTripScheduleCount(trip.getId());
             assertThat(scheduleTripCount).isEqualTo(4);
         }
 
-    }
-
-
-    private Schedule buildDummySchedule(Trip trip, Day day, ScheduleIndex scheduleIndex) {
-        return Schedule.builder()
-                .day(day)
-                .trip(trip)
-                .scheduleTitle(ScheduleTitle.of("일정 제목"))
-                .place(Place.of("place-id", "더미 제목", Coordinate.of(35.1551, 129.1220)))
-                .scheduleIndex(scheduleIndex)
-                .build();
     }
 
     @Nested
@@ -542,13 +443,13 @@ public class ScheduleRepositoryTest {
         @Test
         void noDayScheduleTest() {
             Long tripperId = 1L;
-            LocalDate startDate = LocalDate.of(2023,3,1);
-            LocalDate endDate = LocalDate.of(2023,3,1);
-            Trip trip = TripFixture.decided_nullId(tripperId, startDate, endDate);
-            em.persist(trip);
+            LocalDate startDate = LocalDate.of(2023, 3, 1);
+            LocalDate endDate = LocalDate.of(2023, 3, 1);
 
+            Trip trip = setupDecidedTripAndPersist(tripperId, startDate, endDate);
             Day day = trip.getDays().get(0);
-            em.persist(day);
+            em.flush();
+            em.clear();
 
             int scheduleTripCount = scheduleRepository.findDayScheduleCount(day.getId());
             assertThat(scheduleTripCount).isEqualTo(0);
@@ -558,58 +459,44 @@ public class ScheduleRepositoryTest {
         @Test
         void threeDayScheduleTest() {
             Long tripperId = 1L;
-            LocalDate startDate = LocalDate.of(2023,3,1);
-            LocalDate endDate = LocalDate.of(2023,3,2);
-            Trip trip = TripFixture.decided_nullId(tripperId, startDate, endDate);
-            em.persist(trip);
+            LocalDate startDate = LocalDate.of(2023, 3, 1);
+            LocalDate endDate = LocalDate.of(2023, 3, 2);
 
+            Trip trip = setupDecidedTripAndPersist(tripperId, startDate, endDate);
             Day day1 = trip.getDays().get(0);
             Day day2 = trip.getDays().get(1);
-            em.persist(day1);
-            em.persist(day2);
 
-            Schedule schedule1 = trip.createSchedule(day1, ScheduleTitle.of("일정제목1"), Place.of("장소식별자1", "장소명1", Coordinate.of(34.127, 124.7771)));
-            Schedule schedule2 = trip.createSchedule(day1, ScheduleTitle.of("일정제목2"), Place.of("장소식별자2", "장소명2", Coordinate.of(34.127, 124.7771)));
-            Schedule schedule3 = trip.createSchedule(day1, ScheduleTitle.of("일정제목3"), Place.of("장소식별자3", "장소명3", Coordinate.of(34.127, 124.7771)));
-            Schedule schedule4 = trip.createSchedule(day2, ScheduleTitle.of("일정제목4"), Place.of("장소식별자4", "장소명4", Coordinate.of(34.127, 124.7771)));
-            Schedule schedule5 = trip.createSchedule(day2, ScheduleTitle.of("일정제목5"), Place.of("장소식별자5", "장소명5", Coordinate.of(34.127, 124.7771)));
-            em.persist(schedule1);
-            em.persist(schedule2);
-            em.persist(schedule3);
-            em.persist(schedule4);
-            em.persist(schedule5);
+            Schedule schedule1 = setupDayScheduleAndPersist(trip, day1, 0L);
+            Schedule schedule2 = setupDayScheduleAndPersist(trip, day1, 100L);
+            Schedule schedule3 = setupDayScheduleAndPersist(trip, day1, 200L);
+            Schedule schedule4 = setupDayScheduleAndPersist(trip, day2, 0L);
+            Schedule schedule5 = setupDayScheduleAndPersist(trip, day2, 100L);
+            em.flush();
+            em.clear();
 
-            int scheduleTripCount = scheduleRepository.findDayScheduleCount(day1.getId());
-            assertThat(scheduleTripCount).isEqualTo(3);
+            int dayScheduleCount = scheduleRepository.findDayScheduleCount(day1.getId());
+            assertThat(dayScheduleCount).isEqualTo(3);
         }
     }
 
     @Nested
-    class deleteAllByTripIdsTest{
+    class deleteAllByTripIdsTest {
         @Test
-        void 전달받은_여행_ID_목록에_해당하는_모든_일정이_삭제된다(){
+        void 전달받은_여행_ID_목록에_해당하는_모든_일정이_삭제된다() {
             // given
             Long tripperId = 1L;
-            LocalDate startDate = LocalDate.of(2023,3,1);
-            LocalDate endDate = LocalDate.of(2023,3,2);
-            Trip trip = TripFixture.decided_nullId(tripperId, startDate, endDate);
-            em.persist(trip);
+            LocalDate startDate = LocalDate.of(2023, 3, 1);
+            LocalDate endDate = LocalDate.of(2023, 3, 2);
 
+            Trip trip = setupDecidedTripAndPersist(tripperId, startDate, endDate);
             Day day1 = trip.getDays().get(0);
             Day day2 = trip.getDays().get(1);
-            em.persist(day1);
-            em.persist(day2);
 
-            Schedule schedule1 = trip.createSchedule(day1, ScheduleTitle.of("일정제목1"), Place.of("장소식별자1", "장소명1", Coordinate.of(34.127, 124.7771)));
-            Schedule schedule2 = trip.createSchedule(day1, ScheduleTitle.of("일정제목2"), Place.of("장소식별자2", "장소명2", Coordinate.of(34.127, 124.7771)));
-            Schedule schedule3 = trip.createSchedule(null, ScheduleTitle.of("일정제목3"), Place.of("장소식별자3", "장소명3", Coordinate.of(34.127, 124.7771)));
-            Schedule schedule4 = trip.createSchedule(null, ScheduleTitle.of("일정제목4"), Place.of("장소식별자4", "장소명4", Coordinate.of(34.127, 124.7771)));
-            Schedule schedule5 = trip.createSchedule(day2, ScheduleTitle.of("일정제목5"), Place.of("장소식별자5", "장소명5", Coordinate.of(34.127, 124.7771)));
-            em.persist(schedule1);
-            em.persist(schedule2);
-            em.persist(schedule3);
-            em.persist(schedule4);
-            em.persist(schedule5);
+            Schedule schedule1 = setupDayScheduleAndPersist(trip, day1, 0L);
+            Schedule schedule2 = setupDayScheduleAndPersist(trip, day1, 100L);
+            Schedule schedule3 = setupTemporaryScheduleAndPersist(trip, 0L);
+            Schedule schedule4 = setupTemporaryScheduleAndPersist(trip, 100L);
+            Schedule schedule5 = setupDayScheduleAndPersist(trip, day2, 100L);
 
             // when
             scheduleRepository.deleteAllByTripIds(List.of(trip.getId()));
@@ -618,6 +505,31 @@ public class ScheduleRepositoryTest {
             List<Schedule> findSchedules = scheduleRepository.findAllById(List.of(schedule1.getId(), schedule2.getId(), schedule3.getId(), schedule4.getId(), schedule5.getId()));
             assertThat(findSchedules).isEmpty();
         }
+    }
+
+    private Trip setupUndecidedTripAndPersist(Long tripperId) {
+        Trip trip = TripFixture.undecided_nullId(tripperId);
+        em.persist(trip);
+        return trip;
+    }
+
+    private Trip setupDecidedTripAndPersist(Long tripperId, LocalDate startDate, LocalDate endDate) {
+        Trip trip = TripFixture.decided_nullId(tripperId, startDate, endDate);
+        em.persist(trip);
+        trip.getDays().forEach(em::persist);
+        return trip;
+    }
+
+    private Schedule setupTemporaryScheduleAndPersist(Trip trip, long scheduleIndexValue) {
+        Schedule schedule = ScheduleFixture.temporaryStorage_NullId(trip, scheduleIndexValue);
+        em.persist(schedule);
+        return schedule;
+    }
+
+    private Schedule setupDayScheduleAndPersist(Trip trip, Day day, long scheduleIndexValue) {
+        Schedule schedule = ScheduleFixture.day_NullId(trip, day, scheduleIndexValue);
+        em.persist(schedule);
+        return schedule;
     }
 
 }

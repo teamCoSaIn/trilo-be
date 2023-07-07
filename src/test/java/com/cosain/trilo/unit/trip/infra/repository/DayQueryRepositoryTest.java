@@ -1,11 +1,11 @@
 package com.cosain.trilo.unit.trip.infra.repository;
 
+import com.cosain.trilo.fixture.ScheduleFixture;
 import com.cosain.trilo.fixture.TripFixture;
 import com.cosain.trilo.support.RepositoryTest;
 import com.cosain.trilo.trip.domain.entity.Day;
 import com.cosain.trilo.trip.domain.entity.Schedule;
 import com.cosain.trilo.trip.domain.entity.Trip;
-import com.cosain.trilo.trip.domain.vo.*;
 import com.cosain.trilo.trip.infra.dto.DayScheduleDetail;
 import com.cosain.trilo.trip.infra.dto.ScheduleSummary;
 import com.cosain.trilo.trip.infra.repository.day.DayQueryRepository;
@@ -32,29 +32,24 @@ public class DayQueryRepositoryTest {
     private EntityManager em;
 
     @Test
-    void Day_조회를_하면_해당_Day정보와_해당_Day에_속한_Schedule들의_요약정보와_함께_조회된다(){
+    @DisplayName("findDayWithSchedulesByDayId -> Day 및 소속 Schedule 요약정보 목록(순서 오름차순) 함께 조회됨")
+    void testFindDayWithSchedulesByDayId() {
         // given
         Long tripperId = 1L;
-        LocalDate startDate = LocalDate.of(2023,5,1);
-        LocalDate endDate = LocalDate.of(2023,5,2);
-        Trip trip = TripFixture.decided_nullId(tripperId, startDate, endDate);
-        em.persist(trip);
+        LocalDate startDate = LocalDate.of(2023, 5, 1);
+        LocalDate endDate = LocalDate.of(2023, 5, 2);
 
+        Trip trip = setupDecidedTripAndPersist(tripperId, startDate, endDate);
         Day day1 = trip.getDays().get(0);
         Day day2 = trip.getDays().get(1);
-        em.persist(day1);
-        em.persist(day2);
 
-        Schedule schedule1 = createSchedule(trip, day1,10000L);
-        Schedule schedule2 = createSchedule(trip, day1,20000L);
-        Schedule schedule3 = createSchedule(trip, day1,30000L);
-        Schedule schedule4 = createSchedule(trip, day2,10000L);
+        Schedule schedule1 = setupDayScheduleAndPersist(trip, day1, 10000L);
+        Schedule schedule2 = setupDayScheduleAndPersist(trip, day1, 20000L);
+        Schedule schedule3 = setupDayScheduleAndPersist(trip, day1, 30000L);
+        Schedule schedule4 = setupDayScheduleAndPersist(trip, day2, 10000L);
 
-        em.persist(schedule1);
-        em.persist(schedule2);
-        em.persist(schedule3);
-        em.persist(schedule4);
         em.flush();
+        em.clear();
 
         // when
         long findDayId = day1.getId();
@@ -70,55 +65,38 @@ public class DayQueryRepositoryTest {
         assertThat(dayScheduleDetail.getSchedules().get(2).getScheduleId()).isEqualTo(schedule3.getId());
     }
 
-    private Schedule createSchedule(Trip trip, Day day, Long scheduleIndexValue){
-        return Schedule.builder()
-                .trip(trip)
-                .day(day)
-                .scheduleTitle(ScheduleTitle.of("Test Schedule"))
-                .place(Place.of("장소 1", "광산구", Coordinate.of(62.62, 62.62)))
-                .scheduleIndex(ScheduleIndex.of(scheduleIndexValue))
-                .scheduleContent(ScheduleContent.of("일정 본문"))
-                .build();
-    }
-
     @Nested
-    @DisplayName("Day_목록_조회_시")
-    class FindDayScheduleListByTripIdTest{
+    @DisplayName("Trip에 속한 Day 목록 조회 시")
+    class FindDayScheduleListByTripIdTest {
         @Test
         @DirtiesContext
         @DisplayName("tripId를 통해 Trip 에 매핑된 Day 들과 해당 Day 와 매핑된 Schedule 들이 조회되며 DTO 로 반환된다.")
         void findTest() {
             // given
             Long tripperId = 1L;
-            LocalDate startDate = LocalDate.of(2023,5,10);
-            LocalDate endDate = LocalDate.of(2023,5,11);
-            Trip trip = TripFixture.decided_nullId(tripperId, startDate, endDate);
-            em.persist(trip);
+            LocalDate startDate = LocalDate.of(2023, 5, 10);
+            LocalDate endDate = LocalDate.of(2023, 5, 11);
 
+            Trip trip = setupDecidedTripAndPersist(tripperId, startDate, endDate);
             Day day1 = trip.getDays().get(0);
             Day day2 = trip.getDays().get(1);
-            em.persist(day1);
-            em.persist(day2);
 
-            Schedule schedule1 = createSchedule(trip, day1,10000L);
-            Schedule schedule2 = createSchedule(trip, day1,20000L);
-            Schedule schedule3 = createSchedule(trip, day1,30000L);
-            Schedule schedule4 = createSchedule(trip, day2,10000L);
-
-            em.persist(schedule1);
-            em.persist(schedule2);
-            em.persist(schedule3);
-            em.persist(schedule4);
+            Schedule schedule1 = setupDayScheduleAndPersist(trip, day1, 10000L);
+            Schedule schedule2 = setupDayScheduleAndPersist(trip, day1, 20000L);
+            Schedule schedule3 = setupDayScheduleAndPersist(trip, day1, 30000L);
+            Schedule schedule4 = setupDayScheduleAndPersist(trip, day2, 10000L);
             em.flush();
+            em.clear();
 
             // when
             List<DayScheduleDetail> dayScheduleDetails = dayQueryRepository.findDayScheduleListByTripId(trip.getId());
+
+            // then
             DayScheduleDetail dayScheduleDetail1 = dayScheduleDetails.get(0);
             DayScheduleDetail dayScheduleDetail2 = dayScheduleDetails.get(1);
             List<ScheduleSummary> schedules1 = dayScheduleDetail1.getSchedules();
             List<ScheduleSummary> schedules2 = dayScheduleDetail2.getSchedules();
 
-            // then
             assertThat(dayScheduleDetails.size()).isEqualTo(2);
             assertThat(dayScheduleDetail1.getDayId()).isEqualTo(day1.getId());
             assertThat(dayScheduleDetail2.getDayId()).isEqualTo(day2.getId());
@@ -127,53 +105,50 @@ public class DayQueryRepositoryTest {
         }
 
         @Test
-        void Day에_해당하는_Schedule이_하나도_존재하지_않는_경우_ScheduleSummary_리스트의_크기는_0_이된다() {
+        void Day에_속하는_Schedule이_하나도_존재하지_않는_경우_ScheduleSummary_리스트의_크기는_0_이된다() {
             // given
             Long tripperId = 1L;
-            LocalDate startDate = LocalDate.of(2023,5,10);
-            LocalDate endDate = LocalDate.of(2023,5,11);
+            LocalDate startDate = LocalDate.of(2023, 5, 10);
+            LocalDate endDate = LocalDate.of(2023, 5, 11);
+
+            Trip trip = setupDecidedTripAndPersist(tripperId, startDate, endDate);
+
+            em.flush();
+            em.clear();
+
+            // when
+            List<DayScheduleDetail> dayScheduleDetails = dayQueryRepository.findDayScheduleListByTripId(trip.getId());
+            List<ScheduleSummary> findSchedules = dayScheduleDetails.get(0).getSchedules();
+            assertThat(findSchedules).isEmpty();
+        }
+
+
+        @Test
+        @DisplayName("여행 날짜 기준 오름차순, 일정 순서값 기준 오름 차순으로 조회된다.")
+        void sortTest() {
+            // given
+            Long tripperId = 1L;
+            LocalDate startDate = LocalDate.of(2023, 5, 10);
+            LocalDate endDate = LocalDate.of(2023, 5, 11);
+
+
             Trip trip = TripFixture.decided_nullId(tripperId, startDate, endDate);
             em.persist(trip);
 
             Day day1 = trip.getDays().get(0);
             Day day2 = trip.getDays().get(1);
-            em.persist(trip);
-            em.persist(day1);
-            em.persist(day2);
-
-            // when
-            List<DayScheduleDetail> dayScheduleDetails = dayQueryRepository.findDayScheduleListByTripId(trip.getId());
-            List<ScheduleSummary> findSchedules = dayScheduleDetails.get(0).getSchedules();
-
-            assertThat(findSchedules).isEmpty();
-            assertThat(findSchedules.size()).isEqualTo(0);
-        }
-
-
-
-        @Test
-        @DisplayName("여행 날짜 기준 오름차순, 일정 순서값 기준 오름 차순으로 조회된다.")
-        void sortTest(){
-            // given
-            Long tripperId = 1L;
-            LocalDate startDate = LocalDate.of(2023,5,10);
-            LocalDate endDate = LocalDate.of(2023,5,11);
-            Trip trip = TripFixture.decided_nullId(tripperId, startDate, endDate);
-            em.persist(trip);
-
-            Day day1 = trip.getDays().get(0); // 테스트의 편의를 위해 순서를 바꿔서 저장함.
-            Day day2 = trip.getDays().get(1);
-            em.persist(day2);
+            em.persist(day2);  // 테스트의 편의를 위해 순서를 바꿔서 저장함.
             em.persist(day1);
 
-            Schedule schedule1 = createSchedule(trip, day1,10000L);
-            Schedule schedule2 = createSchedule(trip, day1,20000L);
-            Schedule schedule3 = createSchedule(trip, day1,30000L);
+            Schedule schedule1 = ScheduleFixture.day_NullId(trip, day1, 10000L);
+            Schedule schedule2 = ScheduleFixture.day_NullId(trip, day1, 20000L);
+            Schedule schedule3 = ScheduleFixture.day_NullId(trip, day1, 30000L);
 
             em.persist(schedule3); // 테스트의 편의를 위해 순서를 바꿔서 저장함. (3,1,2 순)
             em.persist(schedule1);
             em.persist(schedule2);
             em.flush();
+            em.clear();
 
             // when
             List<DayScheduleDetail> dayScheduleDetails = dayQueryRepository.findDayScheduleListByTripId(trip.getId());
@@ -189,6 +164,17 @@ public class DayQueryRepositoryTest {
         }
     }
 
+    private Trip setupDecidedTripAndPersist(Long tripperId, LocalDate startDate, LocalDate endDate) {
+        Trip trip = TripFixture.decided_nullId(tripperId, startDate, endDate);
+        em.persist(trip);
+        trip.getDays().forEach(em::persist);
+        return trip;
+    }
 
+    private Schedule setupDayScheduleAndPersist(Trip trip, Day day, long scheduleIndexValue) {
+        Schedule schedule = ScheduleFixture.day_NullId(trip, day, scheduleIndexValue);
+        em.persist(schedule);
+        return schedule;
+    }
 
 }
