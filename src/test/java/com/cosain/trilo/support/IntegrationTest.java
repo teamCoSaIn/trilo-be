@@ -47,9 +47,6 @@ public class IntegrationTest {
     private UserRepository userRepository;
 
     @Autowired
-    private TripRepository tripRepository;
-
-    @Autowired
     private ObjectMapper objectMapper;
 
     @BeforeEach
@@ -75,23 +72,6 @@ public class IntegrationTest {
     protected String authorizationHeader(User user) {
         String accessToken = tokenProvider.createAccessTokenById(user.getId());
         return String.format("Bearer %s",  accessToken);
-    }
-
-    protected Trip setUpDecidedTrip(Long tripperId, LocalDate startDate, LocalDate endDate){
-        return createMockTrip(tripperId,TripStatus.DECIDED, startDate, endDate);
-    }
-
-    private Trip createMockTrip(Long tripperId, TripStatus tripStatus, LocalDate startDate, LocalDate endDate){
-        Trip mockTrip = Trip.builder()
-                .tripTitle(TripTitle.of("여행 제목"))
-                .tripImage(TripImage.of("이미지 파일 이름"))
-                .tripPeriod(TripPeriod.of(startDate, endDate))
-                .tripperId(tripperId)
-                .status(tripStatus)
-                .build();
-
-        tripRepository.save(mockTrip);
-        return mockTrip;
     }
 
     private User createMockUser(String email, AuthProvider authProvider) {

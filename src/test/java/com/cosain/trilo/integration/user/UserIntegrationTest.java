@@ -1,6 +1,9 @@
 package com.cosain.trilo.integration.user;
 
+import com.cosain.trilo.fixture.TripFixture;
 import com.cosain.trilo.support.IntegrationTest;
+import com.cosain.trilo.trip.domain.entity.Trip;
+import com.cosain.trilo.trip.domain.repository.TripRepository;
 import com.cosain.trilo.user.domain.User;
 import com.cosain.trilo.user.domain.UserRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +30,9 @@ public class UserIntegrationTest extends IntegrationTest {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private TripRepository tripRepository;
 
     @Autowired
     private Clock clock;
@@ -134,7 +140,8 @@ public class UserIntegrationTest extends IntegrationTest {
 
         private void createTrip(User user, LocalDate startDate, LocalDate endDate, int cnt){
             for(int i = 0; i<cnt; i++){
-                setUpDecidedTrip(user.getId(), startDate, endDate);
+                Trip trip = TripFixture.decided_nullId(user.getId(), startDate, endDate);
+                tripRepository.save(trip);
             }
         }
     }
