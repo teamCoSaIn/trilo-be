@@ -864,3 +864,23 @@ include::{snippets}/user-rest-controller-docs-test/회원_탈퇴/path-parameters
 include::{snippets}/user-rest-controller-docs-test/회원_탈퇴/http-request.adoc[]
 ===== 응답
 include::{snippets}/user-rest-controller-docs-test/회원_탈퇴/http-response.adoc[]
+
+=== 마이페이지 조회
+
+==== 기본 정보
+
+==== 요청
+===== 헤더
+include::{snippets}/user-rest-controller-docs-test/마이페이지_조회/request-headers.adoc[]
+===== 경로 변수
+include::{snippets}/user-rest-controller-docs-test/마이페이지_조회/path-parameters.adoc[]
+==== 응답
+===== 본문
+include::{snippets}/user-rest-controller-docs-test/마이페이지_조회/response-fields.adoc[]
+===== TripStatistics
+include::{snippets}/user-rest-controller-docs-test/마이페이지_조회/response-fields-tripStatistics.adoc[]
+==== 예시
+===== 요청
+include::{snippets}/user-rest-controller-docs-test/마이페이지_조회/http-request.adoc[]
+===== 응답
+include::{snippets}/user-rest-controller-docs-test/마이페이지_조회/http-response.adoc[]
