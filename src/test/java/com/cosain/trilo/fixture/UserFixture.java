@@ -7,9 +7,9 @@ import com.cosain.trilo.user.domain.User;
 
 public enum UserFixture {
 
-    KAKAO_MEMBER(1L,"김개똥", "asjoeifjlaksd@nate.com", AuthProvider.KAKAO, Role.MEMBER, "http://k.kakaocdn.net/dn/dpk9l1/btqmGhA2lKL/Oz0wDuJn1YV2DIn92f6DVK/img_640x640.jpg", ""),
-    GOOGLE_MEMBER(2L,"김기상", "slkdjvlakjsdvl@gmail.com", AuthProvider.GOOGLE, Role.MEMBER, "http://k.kakaocdn.net/dn/dpk9l1/btqmGhA2lKL/Oz0wDuJn1YV2DIn92f6DVK/img_640x640.jpg", ""),
-    NAVER_MEMBER(3L,"김미나", "sfsiejfoiseffl@naver.com", AuthProvider.NAVER, Role.MEMBER, "http://k.kakaocdn.net/dn/dpk9l1/btqmGhA2lKL/Oz0wDuJn1YV2DIn92f6DVK/img_640x640.jpg", ""),
+    KAKAO_MEMBER(1L,"김개똥", "asjoeifjlaksd@nate.com", AuthProvider.KAKAO, Role.MEMBER, "http://k.kakaocdn.net/dn/dpk9l1/btqmGhA2lKL/Oz0wDuJn1YV2DIn92f6DVK/img_640x640.jpg", "https://trilo-images.s3.ap-northeast-2.amazonaws.com/users/defaultBadge.png"),
+    GOOGLE_MEMBER(2L,"김기상", "slkdjvlakjsdvl@gmail.com", AuthProvider.GOOGLE, Role.MEMBER, "http://k.kakaocdn.net/dn/dpk9l1/btqmGhA2lKL/Oz0wDuJn1YV2DIn92f6DVK/img_640x640.jpg", "https://trilo-images.s3.ap-northeast-2.amazonaws.com/users/defaultBadge.png"),
+    NAVER_MEMBER(3L,"김미나", "sfsiejfoiseffl@naver.com", AuthProvider.NAVER, Role.MEMBER, "http://k.kakaocdn.net/dn/dpk9l1/btqmGhA2lKL/Oz0wDuJn1YV2DIn92f6DVK/img_640x640.jpg", "https://trilo-images.s3.ap-northeast-2.amazonaws.com/users/defaultBadge.png"),
     ;
 
     private final Long id;
