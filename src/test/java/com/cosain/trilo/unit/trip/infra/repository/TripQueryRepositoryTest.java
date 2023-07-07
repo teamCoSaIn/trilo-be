@@ -5,6 +5,7 @@ import com.cosain.trilo.fixture.TripFixture;
 import com.cosain.trilo.support.RepositoryTest;
 import com.cosain.trilo.trip.domain.entity.Trip;
 import com.cosain.trilo.trip.infra.dto.TripDetail;
+import com.cosain.trilo.trip.infra.dto.TripStatistics;
 import com.cosain.trilo.trip.infra.dto.TripSummary;
 import com.cosain.trilo.trip.infra.repository.trip.TripQueryRepository;
 import com.cosain.trilo.trip.presentation.trip.query.dto.request.TripPageCondition;
@@ -131,6 +132,35 @@ public class TripQueryRepositoryTest {
             assertThat(tripQueryRepository.existById(notExistTripId)).isFalse();
         }
 
+    }
+
+    @Nested
+    class 사용자_여행_통계_조회{
+        @Test
+        void 총_여행_개수와_종료된_여행_개수를_반환한다(){
+            // given
+            Long tripperId = 1L;
+            LocalDate today = LocalDate.of(2023, 4, 28);
+            Trip terminatedTrip1 = TripFixture.decided_nullId(tripperId, today.minusDays(3), today.minusDays(1));
+            Trip terminatedTrip2 = TripFixture.decided_nullId(tripperId, today.minusDays(3), today.minusDays(1));
+            Trip terminatedTrip3 = TripFixture.decided_nullId(tripperId, today.minusDays(3), today.minusDays(1));
+            Trip unTerminatedTrip1 = TripFixture.decided_nullId(tripperId, today.plusDays(1), today.plusDays(3));
+            Trip unTerminatedTrip2 = TripFixture.decided_nullId(tripperId, today.plusDays(1), today.plusDays(3));
+
+            em.persist(terminatedTrip1);
+            em.persist(terminatedTrip2);
+            em.persist(terminatedTrip3);
+            em.persist(unTerminatedTrip1);
+            em.persist(unTerminatedTrip2);
+
+
+            // when
+            TripStatistics tripStatistics = tripQueryRepository.findTripStaticsByTripperId(tripperId, today);
+
+            // then
+            assertThat(tripStatistics.getTerminatedTripCnt()).isEqualTo(3);
+            assertThat(tripStatistics.getTotalTripCnt()).isEqualTo(5);
+        }
     }
 
 }

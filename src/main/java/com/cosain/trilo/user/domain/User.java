@@ -7,7 +7,7 @@ import lombok.*;
 @Getter
 @Entity
 @Table(name = "users")
-@ToString(of = {"id", "name", "email", "profileImageURL", "authProvider", "role"})
+@ToString(of = {"id", "name", "email", "profileImageURL", "authProvider", "role", "myPageImage"})
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User {
 
@@ -32,6 +32,10 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    @Column(nullable = false)
+    @Embedded
+    private MyPageImage myPageImage;
+
     @Builder(access = AccessLevel.PUBLIC)
     private User(Long id,String name, String email, String profileImageUrl, AuthProvider authProvider, Role role) {
         this.id = id;
@@ -40,6 +44,7 @@ public class User {
         this.profileImageURL = profileImageUrl;
         this.authProvider = authProvider;
         this.role = role;
+        this.myPageImage = MyPageImage.initializeMyPageImage();
     }
 
     public static User from(OAuthProfileDto oAuthProfileDto) {

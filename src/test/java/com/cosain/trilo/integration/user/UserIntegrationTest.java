@@ -1,6 +1,9 @@
 package com.cosain.trilo.integration.user;
 
+import com.cosain.trilo.fixture.TripFixture;
 import com.cosain.trilo.support.IntegrationTest;
+import com.cosain.trilo.trip.domain.entity.Trip;
+import com.cosain.trilo.trip.domain.repository.TripRepository;
 import com.cosain.trilo.user.domain.User;
 import com.cosain.trilo.user.domain.UserRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -9,7 +12,12 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+
+import java.time.Clock;
+import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -21,7 +29,16 @@ public class UserIntegrationTest extends IntegrationTest {
     private final String BASE_URL = "/api/users";
 
     @Autowired
-    UserRepository userRepository;
+    private UserRepository userRepository;
+
+    @Autowired
+    private TripRepository tripRepository;
+
+    @Autowired
+    private Clock clock;
+
+    @Value("${cloud.aws.s3.bucket-path}")
+    private String myPageBaseUrl;
 
     @Nested
     class 회원_프로필_조회{
@@ -32,6 +49,7 @@ public class UserIntegrationTest extends IntegrationTest {
 
             log.info("user = {}", user);
 
+            flushAndClear();
             // when & then
             mockMvc.perform(RestDocumentationRequestBuilders.get(BASE_URL + "/{userId}/profile", user.getId())
                             .header(HttpHeaders.AUTHORIZATION, authorizationHeader(user)))
@@ -52,6 +70,7 @@ public class UserIntegrationTest extends IntegrationTest {
             log.info("requestUser = {}", requestUser);
             log.info("targetUser = {}", targetUser);
 
+            flushAndClear();
             // when & then
             mockMvc.perform(RestDocumentationRequestBuilders.get(BASE_URL + "/{userId}/profile", targetUser.getId())
                             .header(HttpHeaders.AUTHORIZATION, authorizationHeader(requestUser)))
@@ -70,6 +89,7 @@ public class UserIntegrationTest extends IntegrationTest {
             User user = setupMockKakaoUser();
             log.info("User = {}", user);
 
+            flushAndClear();
             // when & then
             mockMvc.perform(RestDocumentationRequestBuilders.delete(BASE_URL + "/{userId}", user.getId())
                     .header(HttpHeaders.AUTHORIZATION, authorizationHeader(user)))
@@ -87,6 +107,7 @@ public class UserIntegrationTest extends IntegrationTest {
             log.info("requestUser = {}", requestUser);
             log.info("targetUser = {}", targetUser);
 
+            flushAndClear();
             // when & then
             mockMvc.perform(RestDocumentationRequestBuilders.delete(BASE_URL + "/{userId}", targetUser.getId())
                             .header(HttpHeaders.AUTHORIZATION, authorizationHeader(requestUser)))
@@ -97,4 +118,36 @@ public class UserIntegrationTest extends IntegrationTest {
         }
     }
 
+    @Nested
+    class 마이페이지_조회{
+        @Test
+        void 성공() throws Exception{
+            // given
+            User user = setupMockKakaoUser();
+            LocalDate today = LocalDate.now(clock);
+            int terminatedTripCnt = 3;
+            int unTerminatedTripCnt = 5;
+            int totalTripCnt = terminatedTripCnt + unTerminatedTripCnt;
+
+            createTrip(user, today.minusDays(5), today.minusDays(3), terminatedTripCnt);
+            createTrip(user, today.plusDays(3), today.plusDays(5), unTerminatedTripCnt);
+
+            flushAndClear();
+            // when & then
+            mockMvc.perform(RestDocumentationRequestBuilders.get(BASE_URL + "/{userId}/my-page", user.getId())
+                            .header(HttpHeaders.AUTHORIZATION, authorizationHeader(user)))
+                    .andExpect(MockMvcResultMatchers.status().isOk())
+                    .andExpect(jsonPath("$.name").value(user.getName()))
+                    .andExpect(jsonPath("$.imageURL").value(myPageBaseUrl.concat(user.getMyPageImage().getFileName())))
+                    .andExpect(jsonPath("$.tripStatistics.totalTripCnt").value(totalTripCnt))
+                    .andExpect(jsonPath("$.tripStatistics.terminatedTripCnt").value(terminatedTripCnt));
+        }
+
+        private void createTrip(User user, LocalDate startDate, LocalDate endDate, int cnt){
+            for(int i = 0; i<cnt; i++){
+                Trip trip = TripFixture.decided_nullId(user.getId(), startDate, endDate);
+                tripRepository.save(trip);
+            }
+        }
+    }
 }

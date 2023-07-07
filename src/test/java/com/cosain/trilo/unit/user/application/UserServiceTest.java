@@ -1,6 +1,8 @@
 package com.cosain.trilo.unit.user.application;
 
 import com.cosain.trilo.auth.infra.OAuthProfileDto;
+import com.cosain.trilo.trip.infra.dto.TripStatistics;
+import com.cosain.trilo.trip.infra.repository.trip.TripQueryRepository;
 import com.cosain.trilo.user.application.UserService;
 import com.cosain.trilo.user.application.event.UserDeleteEvent;
 import com.cosain.trilo.user.application.exception.NoUserDeleteAuthorityException;
@@ -10,6 +12,7 @@ import com.cosain.trilo.user.domain.AuthProvider;
 import com.cosain.trilo.user.domain.Role;
 import com.cosain.trilo.user.domain.User;
 import com.cosain.trilo.user.domain.UserRepository;
+import com.cosain.trilo.user.presentation.dto.UserMyPageResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -19,6 +22,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationEventPublisher;
 
+import java.time.LocalDate;
 import java.util.Optional;
 
 import static com.cosain.trilo.fixture.UserFixture.KAKAO_MEMBER;
@@ -29,15 +33,23 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 
+
 @ExtendWith(MockitoExtension.class)
 public class UserServiceTest {
 
-    @InjectMocks
     private UserService userService;
     @Mock
     private UserRepository userRepository;
     @Mock
+    private TripQueryRepository tripQueryRepository;
+    @Mock
     private ApplicationEventPublisher eventPublisher;
+
+    @BeforeEach
+    void setUp(){
+        String bucketPath = "/path/to/bucket/";
+        userService = new UserService(userRepository, tripQueryRepository, eventPublisher, bucketPath);
+    }
 
     @Nested
     class 회원_생성_또는_업데이트_기능{
@@ -179,6 +191,39 @@ public class UserServiceTest {
 
             // when & then
             assertThatThrownBy(() -> userService.delete(targetUserId, requestUserId)).isInstanceOf(UserNotFoundException.class);
+        }
+    }
+
+    @Nested
+    class 마이페이지_조회{
+
+        @Test
+        void 사용자_이름과_여행_통계_정보를_반환한다(){
+            // given
+            Long userId = 1L;
+            LocalDate today = LocalDate.of(2023, 4, 28);
+            User user = KAKAO_MEMBER.create();
+            TripStatistics tripStatistics = new TripStatistics(10L, 3L);
+            given(userRepository.findById(eq(userId))).willReturn(Optional.ofNullable(user));
+            given(tripQueryRepository.findTripStaticsByTripperId(eq(userId),eq(today))).willReturn(tripStatistics);
+            // when
+            UserMyPageResponse myPageResponse = userService.getMyPage(userId, today);
+
+            // then
+            assertThat(myPageResponse.getName()).isEqualTo(user.getName());
+            assertThat(myPageResponse.getTripStatistics().getTotalTripCnt()).isEqualTo(tripStatistics.getTotalTripCnt());
+            assertThat(myPageResponse.getTripStatistics().getTerminatedTripCnt()).isEqualTo(tripStatistics.getTerminatedTripCnt());
+        }
+
+        @Test
+        void 조회할_회원이_존재하지_않는_경우_예외를_발생시킨다(){
+            // given
+            Long userId = 1L;
+            LocalDate today = LocalDate.of(2023, 4, 28);
+            TripStatistics tripStatistics = new TripStatistics(10L, 3L);
+            given(tripQueryRepository.findTripStaticsByTripperId(eq(userId), eq(today))).willReturn(tripStatistics);
+            // when & then
+            assertThatThrownBy(() -> userService.getMyPage(userId, today)).isInstanceOf(UserNotFoundException.class);
         }
     }
 
