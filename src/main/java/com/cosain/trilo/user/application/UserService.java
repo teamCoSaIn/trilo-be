@@ -1,27 +1,45 @@
 package com.cosain.trilo.user.application;
 
 import com.cosain.trilo.auth.infra.OAuthProfileDto;
+import com.cosain.trilo.trip.infra.dto.TripStatistics;
+import com.cosain.trilo.trip.infra.repository.trip.TripQueryRepository;
 import com.cosain.trilo.user.application.event.UserDeleteEvent;
 import com.cosain.trilo.user.application.exception.NoUserDeleteAuthorityException;
 import com.cosain.trilo.user.application.exception.NoUserProfileSearchAuthorityException;
 import com.cosain.trilo.user.application.exception.UserNotFoundException;
 import com.cosain.trilo.user.domain.User;
 import com.cosain.trilo.user.domain.UserRepository;
+import com.cosain.trilo.user.presentation.dto.UserMyPageResponse;
 import com.cosain.trilo.user.presentation.dto.UserProfileResponse;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor
 @Transactional
 public class UserService {
 
     private final UserRepository userRepository;
+    private final TripQueryRepository tripQueryRepository;
     private final ApplicationEventPublisher eventPublisher;
+    private final String s3ImageBaseURL;
+
+    public UserService(
+            UserRepository userRepository,
+            TripQueryRepository tripQueryRepository,
+            ApplicationEventPublisher eventPublisher,
+            @Value("${cloud.aws.s3.bucket-name}") String bucketName,
+            @Value("${cloud.aws.s3.bucket-path}") String bucketPath
+    ) {
+        this.userRepository = userRepository;
+        this.tripQueryRepository = tripQueryRepository;
+        this.eventPublisher = eventPublisher;
+        this.s3ImageBaseURL = bucketPath.concat(bucketName);
+    }
 
     public Long createOrUpdate(OAuthProfileDto oAuthProfileDto){
         Optional<User> userOptional = userRepository.findByEmail(oAuthProfileDto.getEmail());
@@ -29,7 +47,7 @@ public class UserService {
         User user = userOptional.map(existingUser -> {
             existingUser.updateUserByOauthProfile(oAuthProfileDto);
             return existingUser;
-        }).orElse(User.from(oAuthProfileDto));
+        }).orElse(User.from(oAuthProfileDto, s3ImageBaseURL));
 
         User savedUser = userRepository.save(user);
         return savedUser.getId();
@@ -68,4 +86,12 @@ public class UserService {
             throw new NoUserDeleteAuthorityException();
         }
     }
+
+    @Transactional(readOnly = true)
+    public UserMyPageResponse getMyPage(Long userId, LocalDate today){
+        TripStatistics tripStatistics = tripQueryRepository.findTripStaticsByTripperId(userId, today);
+        User user = findUserOrThrows(userId);
+        return UserMyPageResponse.of(user, tripStatistics);
+    }
+
 }
