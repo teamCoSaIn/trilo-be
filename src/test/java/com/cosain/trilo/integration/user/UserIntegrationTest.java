@@ -49,6 +49,7 @@ public class UserIntegrationTest extends IntegrationTest {
 
             log.info("user = {}", user);
 
+            flushAndClear();
             // when & then
             mockMvc.perform(RestDocumentationRequestBuilders.get(BASE_URL + "/{userId}/profile", user.getId())
                             .header(HttpHeaders.AUTHORIZATION, authorizationHeader(user)))
@@ -69,6 +70,7 @@ public class UserIntegrationTest extends IntegrationTest {
             log.info("requestUser = {}", requestUser);
             log.info("targetUser = {}", targetUser);
 
+            flushAndClear();
             // when & then
             mockMvc.perform(RestDocumentationRequestBuilders.get(BASE_URL + "/{userId}/profile", targetUser.getId())
                             .header(HttpHeaders.AUTHORIZATION, authorizationHeader(requestUser)))
@@ -87,6 +89,7 @@ public class UserIntegrationTest extends IntegrationTest {
             User user = setupMockKakaoUser();
             log.info("User = {}", user);
 
+            flushAndClear();
             // when & then
             mockMvc.perform(RestDocumentationRequestBuilders.delete(BASE_URL + "/{userId}", user.getId())
                     .header(HttpHeaders.AUTHORIZATION, authorizationHeader(user)))
@@ -104,6 +107,7 @@ public class UserIntegrationTest extends IntegrationTest {
             log.info("requestUser = {}", requestUser);
             log.info("targetUser = {}", targetUser);
 
+            flushAndClear();
             // when & then
             mockMvc.perform(RestDocumentationRequestBuilders.delete(BASE_URL + "/{userId}", targetUser.getId())
                             .header(HttpHeaders.AUTHORIZATION, authorizationHeader(requestUser)))
@@ -128,6 +132,7 @@ public class UserIntegrationTest extends IntegrationTest {
             createTrip(user, today.minusDays(5), today.minusDays(3), terminatedTripCnt);
             createTrip(user, today.plusDays(3), today.plusDays(5), unTerminatedTripCnt);
 
+            flushAndClear();
             // when & then
             mockMvc.perform(RestDocumentationRequestBuilders.get(BASE_URL + "/{userId}/my-page", user.getId())
                             .header(HttpHeaders.AUTHORIZATION, authorizationHeader(user)))

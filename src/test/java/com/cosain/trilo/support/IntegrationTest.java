@@ -13,6 +13,7 @@ import com.cosain.trilo.user.domain.User;
 import com.cosain.trilo.user.domain.UserRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -49,12 +50,20 @@ public class IntegrationTest {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @Autowired
+    protected EntityManager em;
+
     @BeforeEach
     void setUp() {
         mockMvc = MockMvcBuilders
                 .webAppContextSetup(context)
                 .apply(springSecurity())
                 .build();
+    }
+
+    protected void flushAndClear(){
+        em.flush();
+        em.clear();
     }
 
     protected User setupMockNaverUser() {
