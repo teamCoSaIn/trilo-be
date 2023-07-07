@@ -47,9 +47,8 @@ public class UserServiceTest {
 
     @BeforeEach
     void setUp(){
-        String bucketName = "my-bucket";
         String bucketPath = "/path/to/bucket/";
-        userService = new UserService(userRepository, tripQueryRepository, eventPublisher, bucketName, bucketPath);
+        userService = new UserService(userRepository, tripQueryRepository, eventPublisher, bucketPath);
     }
 
     @Nested

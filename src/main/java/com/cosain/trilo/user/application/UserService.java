@@ -32,13 +32,12 @@ public class UserService {
             UserRepository userRepository,
             TripQueryRepository tripQueryRepository,
             ApplicationEventPublisher eventPublisher,
-            @Value("${cloud.aws.s3.bucket-name}") String bucketName,
             @Value("${cloud.aws.s3.bucket-path}") String bucketPath
     ) {
         this.userRepository = userRepository;
         this.tripQueryRepository = tripQueryRepository;
         this.eventPublisher = eventPublisher;
-        this.s3ImageBaseURL = bucketPath.concat(bucketName);
+        this.s3ImageBaseURL = bucketPath;
     }
 
     public Long createOrUpdate(OAuthProfileDto oAuthProfileDto){

@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Embeddable
 public class Image {
 
-    private final static String defaultMyPageImageName = "defaultBadge";
+    private final static String DEFAULT_IMAGE_NAME = "users/defaultBadge.png";
 
     @Column
     private final String baseURL;
@@ -30,6 +30,6 @@ public class Image {
     }
 
     public static Image initializeMyPageImage(final String baseURL){
-        return new Image(baseURL, defaultMyPageImageName);
+        return new Image(baseURL, DEFAULT_IMAGE_NAME);
     }
 }
