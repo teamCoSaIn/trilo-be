@@ -1,15 +1,13 @@
 package com.cosain.trilo.unit.trip.application.trip.command.service;
 
 import com.cosain.trilo.common.file.ImageFile;
+import com.cosain.trilo.fixture.TripFixture;
 import com.cosain.trilo.trip.application.exception.NoTripUpdateAuthorityException;
 import com.cosain.trilo.trip.application.exception.TripNotFoundException;
 import com.cosain.trilo.trip.application.trip.command.service.TripImageUpdateService;
 import com.cosain.trilo.trip.domain.entity.Trip;
 import com.cosain.trilo.trip.domain.repository.TripRepository;
 import com.cosain.trilo.trip.domain.vo.TripImage;
-import com.cosain.trilo.trip.domain.vo.TripPeriod;
-import com.cosain.trilo.trip.domain.vo.TripStatus;
-import com.cosain.trilo.trip.domain.vo.TripTitle;
 import com.cosain.trilo.trip.infra.adapter.TripImageOutputAdapter;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -55,7 +53,7 @@ public class TripImageUpdateServiceTest {
 
         ImageFile imageFile = imageFileFixture("test-jpeg-image.jpeg");
 
-        Trip trip = unDecidedTripFixture(tripId, tripperId);
+        Trip trip = TripFixture.undecided_Id(tripId, tripperId);
         given(tripRepository.findById(eq(tripId))).willReturn(Optional.of(trip));
 
         willDoNothing().given(tripImageOutputAdapter).uploadImage(any(ImageFile.class), anyString());
@@ -103,7 +101,7 @@ public class TripImageUpdateServiceTest {
 
         ImageFile imageFile = imageFileFixture("test-jpeg-image.jpeg");
 
-        Trip trip = unDecidedTripFixture(tripId, tripperId);
+        Trip trip = TripFixture.undecided_Id(tripId, tripperId);
         given(tripRepository.findById(eq(tripId))).willReturn(Optional.of(trip));
 
         // when & then
@@ -122,16 +120,5 @@ public class TripImageUpdateServiceTest {
 
         MockMultipartFile multipartFile = new MockMultipartFile(name, testImageResourceFileName, contentType, fileInputStream);
         return ImageFile.from(multipartFile);
-    }
-
-    private Trip unDecidedTripFixture(Long tripId, Long tripperId) {
-        return Trip.builder()
-                .id(tripId)
-                .tripperId(tripperId)
-                .tripTitle(TripTitle.of("여행 제목"))
-                .status(TripStatus.UNDECIDED)
-                .tripPeriod(TripPeriod.empty())
-                .tripImage(TripImage.defaultImage())
-                .build();
     }
 }
