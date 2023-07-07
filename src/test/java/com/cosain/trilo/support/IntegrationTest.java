@@ -1,6 +1,12 @@
 package com.cosain.trilo.support;
 
 import com.cosain.trilo.auth.infra.TokenProvider;
+import com.cosain.trilo.trip.domain.entity.Trip;
+import com.cosain.trilo.trip.domain.repository.TripRepository;
+import com.cosain.trilo.trip.domain.vo.TripImage;
+import com.cosain.trilo.trip.domain.vo.TripPeriod;
+import com.cosain.trilo.trip.domain.vo.TripStatus;
+import com.cosain.trilo.trip.domain.vo.TripTitle;
 import com.cosain.trilo.user.domain.AuthProvider;
 import com.cosain.trilo.user.domain.Role;
 import com.cosain.trilo.user.domain.User;
@@ -19,6 +25,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
 
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 
@@ -38,6 +45,9 @@ public class IntegrationTest {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private TripRepository tripRepository;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -67,6 +77,23 @@ public class IntegrationTest {
         return String.format("Bearer %s",  accessToken);
     }
 
+    protected Trip setUpDecidedTrip(Long tripperId, LocalDate startDate, LocalDate endDate){
+        return createMockTrip(tripperId,TripStatus.DECIDED, startDate, endDate);
+    }
+
+    private Trip createMockTrip(Long tripperId, TripStatus tripStatus, LocalDate startDate, LocalDate endDate){
+        Trip mockTrip = Trip.builder()
+                .tripTitle(TripTitle.of("여행 제목"))
+                .tripImage(TripImage.of("이미지 파일 이름"))
+                .tripPeriod(TripPeriod.of(startDate, endDate))
+                .tripperId(tripperId)
+                .status(tripStatus)
+                .build();
+
+        tripRepository.save(mockTrip);
+        return mockTrip;
+    }
+
     private User createMockUser(String email, AuthProvider authProvider) {
         User mockUser = User.builder()
                 .name("사용자")
@@ -74,6 +101,7 @@ public class IntegrationTest {
                 .profileImageUrl("https://k.kakaocdn.net/dn/dpk9l1/btqmGhA2lKL/Oz0wDuJn1YV2DIn92f6DVK/img_640x640.jpg")
                 .authProvider(authProvider)
                 .role(Role.MEMBER)
+                .myPageImageBaseURL("mypage-image-url")
                 .build();
 
         userRepository.save(mockUser);
