@@ -15,7 +15,7 @@ public class MyPageImage {
 
     private final static String DEFAULT_IMAGE_NAME = "users/defaultBadge.png";
 
-    @Column(name = "image-file-name")
+    @Column(name = "my-page-image-file-name")
     private final String fileName;
 
     private MyPageImage(final String fileName) {
