@@ -1,6 +1,6 @@
 package com.cosain.trilo.trip.application.event;
 
-import com.cosain.trilo.trip.application.trip.command.service.TripAllDeleteService;
+import com.cosain.trilo.trip.application.trip.service.TripAllDeleteService;
 import com.cosain.trilo.user.application.event.UserDeleteEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;

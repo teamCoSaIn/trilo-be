@@ -8,7 +8,7 @@ import com.cosain.trilo.trip.infra.dto.TripDetail;
 import com.cosain.trilo.trip.infra.dto.TripStatistics;
 import com.cosain.trilo.trip.infra.dto.TripSummary;
 import com.cosain.trilo.trip.infra.repository.trip.TripQueryRepository;
-import com.cosain.trilo.trip.presentation.trip.query.dto.request.TripPageCondition;
+import com.cosain.trilo.trip.presentation.trip.dto.request.TripPageCondition;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;

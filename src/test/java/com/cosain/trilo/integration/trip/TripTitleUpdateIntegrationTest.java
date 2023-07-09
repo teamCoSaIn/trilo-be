@@ -5,7 +5,7 @@ import com.cosain.trilo.support.IntegrationTest;
 import com.cosain.trilo.trip.domain.entity.Trip;
 import com.cosain.trilo.trip.domain.repository.TripRepository;
 import com.cosain.trilo.trip.domain.vo.TripTitle;
-import com.cosain.trilo.trip.presentation.trip.command.dto.request.TripTitleUpdateRequest;
+import com.cosain.trilo.trip.presentation.trip.dto.request.TripTitleUpdateRequest;
 import com.cosain.trilo.user.domain.User;
 import jakarta.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
