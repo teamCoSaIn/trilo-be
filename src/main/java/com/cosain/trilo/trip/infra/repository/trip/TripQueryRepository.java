@@ -1,7 +1,7 @@
 package com.cosain.trilo.trip.infra.repository.trip;
 
 import com.cosain.trilo.trip.infra.dto.*;
-import com.cosain.trilo.trip.presentation.trip.query.dto.request.TripPageCondition;
+import com.cosain.trilo.trip.presentation.trip.dto.request.TripPageCondition;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.JPQLQuery;

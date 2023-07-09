@@ -5,7 +5,7 @@ import com.cosain.trilo.trip.infra.dto.QScheduleDetail;
 import com.cosain.trilo.trip.infra.dto.QScheduleSummary;
 import com.cosain.trilo.trip.infra.dto.ScheduleDetail;
 import com.cosain.trilo.trip.infra.dto.ScheduleSummary;
-import com.cosain.trilo.trip.presentation.trip.query.dto.request.TempSchedulePageCondition;
+import com.cosain.trilo.trip.presentation.trip.dto.request.TempSchedulePageCondition;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
