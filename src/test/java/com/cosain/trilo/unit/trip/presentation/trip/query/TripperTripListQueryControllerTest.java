@@ -2,12 +2,11 @@ package com.cosain.trilo.unit.trip.presentation.trip.query;
 
 
 import com.cosain.trilo.support.RestControllerTest;
-import com.cosain.trilo.trip.application.trip.query.usecase.TripListSearchUseCase;
+import com.cosain.trilo.trip.application.trip.query.service.TripListSearchService;
 import com.cosain.trilo.trip.domain.vo.TripStatus;
 import com.cosain.trilo.trip.infra.dto.TripSummary;
 import com.cosain.trilo.trip.presentation.trip.query.TripperTripListQueryController;
 import com.cosain.trilo.trip.presentation.trip.query.dto.request.TripPageCondition;
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -23,9 +22,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.List;
 
-import static org.hamcrest.Matchers.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -37,7 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class TripperTripListQueryControllerTest extends RestControllerTest {
 
     @MockBean
-    private TripListSearchUseCase tripListSearchUseCase;
+    private TripListSearchService tripListSearchService;
     private final String ACCESS_TOKEN = "Bearer accessToken";
 
 
@@ -57,7 +54,7 @@ class TripperTripListQueryControllerTest extends RestControllerTest {
 
         SliceImpl<TripSummary> tripDetails = new SliceImpl<>(List.of(tripSummary3, tripSummary2, tripSummary1), pageable, true);
 
-        given(tripListSearchUseCase.searchTripSummaries(any(TripPageCondition.class), any(Pageable.class))).willReturn(tripDetails);
+        given(tripListSearchService.searchTripSummaries(any(TripPageCondition.class), any(Pageable.class))).willReturn(tripDetails);
 
         // when & then
         mockMvc.perform(get("/api/trips?tripper-id={tripperId}", tripperId)

@@ -1,9 +1,9 @@
 package com.cosain.trilo.unit.trip.presentation.trip.command;
 
 import com.cosain.trilo.support.RestControllerTest;
-import com.cosain.trilo.trip.application.trip.command.usecase.TripTitleUpdateUseCase;
-import com.cosain.trilo.trip.application.trip.command.usecase.dto.TripTitleUpdateCommand;
-import com.cosain.trilo.trip.application.trip.command.usecase.dto.factory.TripTitleUpdateCommandFactory;
+import com.cosain.trilo.trip.application.trip.command.service.TripTitleUpdateService;
+import com.cosain.trilo.trip.application.trip.dto.TripTitleUpdateCommand;
+import com.cosain.trilo.trip.application.trip.dto.factory.TripTitleUpdateCommandFactory;
 import com.cosain.trilo.trip.domain.vo.TripTitle;
 import com.cosain.trilo.trip.presentation.trip.command.TripTitleUpdateController;
 import com.cosain.trilo.trip.presentation.trip.command.dto.request.TripTitleUpdateRequest;
@@ -33,7 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class TripTitleUpdateControllerTest extends RestControllerTest {
 
     @MockBean
-    private TripTitleUpdateUseCase tripTitleUpdateUseCase;
+    private TripTitleUpdateService tripTitleUpdateService;
 
     @MockBean
     private TripTitleUpdateCommandFactory tripTitleUpdateCommandFactory;
@@ -53,7 +53,7 @@ public class TripTitleUpdateControllerTest extends RestControllerTest {
 
         given(tripTitleUpdateCommandFactory.createCommand(eq(rawTitle)))
                 .willReturn(new TripTitleUpdateCommand(TripTitle.of(rawTitle)));
-        willDoNothing().given(tripTitleUpdateUseCase).updateTripTitle(eq(tripId), any(), any(TripTitleUpdateCommand.class));
+        willDoNothing().given(tripTitleUpdateService).updateTripTitle(eq(tripId), any(), any(TripTitleUpdateCommand.class));
 
 
         mockMvc.perform(put("/api/trips/{tripId}/title", tripId)
@@ -66,7 +66,7 @@ public class TripTitleUpdateControllerTest extends RestControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.tripId").value(tripId));
 
-        verify(tripTitleUpdateUseCase, times(1)).updateTripTitle(eq(tripId), any(), any(TripTitleUpdateCommand.class));
+        verify(tripTitleUpdateService, times(1)).updateTripTitle(eq(tripId), any(), any(TripTitleUpdateCommand.class));
         verify(tripTitleUpdateCommandFactory, times(1)).createCommand(eq(rawTitle));
     }
 
@@ -93,7 +93,7 @@ public class TripTitleUpdateControllerTest extends RestControllerTest {
                 .andExpect(jsonPath("$.errorMessage").exists())
                 .andExpect(jsonPath("$.errorDetail").exists());
 
-        verify(tripTitleUpdateUseCase, times(0)).updateTripTitle(eq(tripId), any(), any(TripTitleUpdateCommand.class));
+        verify(tripTitleUpdateService, times(0)).updateTripTitle(eq(tripId), any(), any(TripTitleUpdateCommand.class));
         verify(tripTitleUpdateCommandFactory, times(0)).createCommand(eq(rawTitle));
     }
 
@@ -141,7 +141,7 @@ public class TripTitleUpdateControllerTest extends RestControllerTest {
                 .andExpect(jsonPath("$.errorMessage").exists())
                 .andExpect(jsonPath("$.errorDetail").exists());
 
-        verify(tripTitleUpdateUseCase, times(0)).updateTripTitle(eq(tripId), any(), any(TripTitleUpdateCommand.class));
+        verify(tripTitleUpdateService, times(0)).updateTripTitle(eq(tripId), any(), any(TripTitleUpdateCommand.class));
         verify(tripTitleUpdateCommandFactory, times(0)).createCommand(any());
     }
 
@@ -170,7 +170,7 @@ public class TripTitleUpdateControllerTest extends RestControllerTest {
                 .andExpect(jsonPath("$.errorDetail").exists());
 
 
-        verify(tripTitleUpdateUseCase, times(0)).updateTripTitle(eq(tripId), any(), any(TripTitleUpdateCommand.class));
+        verify(tripTitleUpdateService, times(0)).updateTripTitle(eq(tripId), any(), any(TripTitleUpdateCommand.class));
         verify(tripTitleUpdateCommandFactory, times(0)).createCommand(any());
     }
 

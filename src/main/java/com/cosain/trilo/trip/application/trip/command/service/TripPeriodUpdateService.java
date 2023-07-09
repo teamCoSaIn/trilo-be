@@ -2,8 +2,7 @@ package com.cosain.trilo.trip.application.trip.command.service;
 
 import com.cosain.trilo.trip.application.exception.NoTripUpdateAuthorityException;
 import com.cosain.trilo.trip.application.exception.TripNotFoundException;
-import com.cosain.trilo.trip.application.trip.command.usecase.TripPeriodUpdateUseCase;
-import com.cosain.trilo.trip.application.trip.command.usecase.dto.TripPeriodUpdateCommand;
+import com.cosain.trilo.trip.application.trip.dto.TripPeriodUpdateCommand;
 import com.cosain.trilo.trip.domain.entity.Day;
 import com.cosain.trilo.trip.domain.entity.Trip;
 import com.cosain.trilo.trip.domain.repository.DayRepository;
@@ -18,13 +17,12 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class TripPeriodUpdateService implements TripPeriodUpdateUseCase {
+public class TripPeriodUpdateService {
 
     private final TripRepository tripRepository;
     private final DayRepository dayRepository;
     private final ScheduleRepository scheduleRepository;
 
-    @Override
     @Transactional
     public void updateTripPeriod(Long tripId, Long tripperId, TripPeriodUpdateCommand updateCommand) {
         Trip trip = findTrip(tripId);

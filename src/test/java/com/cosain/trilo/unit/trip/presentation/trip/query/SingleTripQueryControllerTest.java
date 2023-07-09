@@ -1,7 +1,7 @@
 package com.cosain.trilo.unit.trip.presentation.trip.query;
 
 import com.cosain.trilo.support.RestControllerTest;
-import com.cosain.trilo.trip.application.trip.query.usecase.TripDetailSearchUseCase;
+import com.cosain.trilo.trip.application.trip.query.service.TripDetailSearchService;
 import com.cosain.trilo.trip.domain.vo.TripStatus;
 import com.cosain.trilo.trip.infra.dto.TripDetail;
 import com.cosain.trilo.trip.presentation.trip.query.SingleTripQueryController;
@@ -30,7 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class SingleTripQueryControllerTest extends RestControllerTest {
 
     @MockBean
-    private TripDetailSearchUseCase tripDetailSearchUseCase;
+    private TripDetailSearchService tripDetailSearchService;
     private final String ACCESS_TOKEN = "Bearer accessToken";
 
     @Test
@@ -39,7 +39,7 @@ class SingleTripQueryControllerTest extends RestControllerTest {
         // given
         mockingForLoginUserAnnotation();
         TripDetail tripDetail = new TripDetail(1L, 2L, "여행 제목", TripStatus.DECIDED, LocalDate.of(2023, 4, 4), LocalDate.of(2023, 4, 5));
-        given(tripDetailSearchUseCase.searchTripDetail(anyLong(), any())).willReturn(tripDetail);
+        given(tripDetailSearchService.searchTripDetail(anyLong(), any())).willReturn(tripDetail);
 
         // when & then
         mockMvc.perform(get("/api/trips/1")
@@ -54,7 +54,7 @@ class SingleTripQueryControllerTest extends RestControllerTest {
                 .andExpect(jsonPath("$.endDate").value(tripDetail.getEndDate().toString()));
 
 
-        verify(tripDetailSearchUseCase).searchTripDetail(anyLong(), any());
+        verify(tripDetailSearchService).searchTripDetail(anyLong(), any());
     }
 
     @Test

@@ -1,7 +1,7 @@
 package com.cosain.trilo.trip.presentation.trip.command;
 
 import com.cosain.trilo.common.LoginUser;
-import com.cosain.trilo.trip.application.trip.command.usecase.TripDeleteUseCase;
+import com.cosain.trilo.trip.application.trip.command.service.TripDeleteService;
 import com.cosain.trilo.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,12 +16,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class TripDeleteController {
 
-    private final TripDeleteUseCase tripDeleteUseCase;
+    private final TripDeleteService tripDeleteService;
 
     @DeleteMapping("/api/trips/{tripId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteTrip(@LoginUser User user, @PathVariable Long tripId) {
         Long tripperId = user.getId();
-        tripDeleteUseCase.deleteTrip(tripId, tripperId);
+        tripDeleteService.deleteTrip(tripId, tripperId);
     }
 }

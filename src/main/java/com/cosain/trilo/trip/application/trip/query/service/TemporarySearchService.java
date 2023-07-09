@@ -2,7 +2,6 @@ package com.cosain.trilo.trip.application.trip.query.service;
 
 import com.cosain.trilo.trip.application.exception.ScheduleNotFoundException;
 import com.cosain.trilo.trip.application.exception.TripNotFoundException;
-import com.cosain.trilo.trip.application.trip.query.usecase.TemporarySearchUseCase;
 import com.cosain.trilo.trip.infra.dto.ScheduleSummary;
 import com.cosain.trilo.trip.infra.repository.schedule.ScheduleQueryRepository;
 import com.cosain.trilo.trip.infra.repository.trip.TripQueryRepository;
@@ -14,12 +13,11 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class TemporarySearchService implements TemporarySearchUseCase {
+public class TemporarySearchService {
 
     private final TripQueryRepository tripQueryRepository;
     private final ScheduleQueryRepository scheduleQueryRepository;
 
-    @Override
     public Slice<ScheduleSummary> searchTemporary(Long tripId, TempSchedulePageCondition tempSchedulePageCondition, Pageable pageable) {
 
         verifyTripExists(tripId);

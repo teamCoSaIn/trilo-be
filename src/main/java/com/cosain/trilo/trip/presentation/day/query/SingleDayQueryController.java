@@ -1,6 +1,6 @@
 package com.cosain.trilo.trip.presentation.day.query;
 
-import com.cosain.trilo.trip.application.day.query.usecase.DaySearchUseCase;
+import com.cosain.trilo.trip.application.day.query.service.DaySearchService;
 import com.cosain.trilo.trip.infra.dto.DayScheduleDetail;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,11 +15,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class SingleDayQueryController {
 
-    private final DaySearchUseCase daySearchUseCase;
+    private final DaySearchService daySearchService;
 
     @GetMapping("/api/days/{dayId}")
     @ResponseStatus(HttpStatus.OK)
     public DayScheduleDetail findSingleDay(@PathVariable Long dayId) {
-        return daySearchUseCase.searchDeySchedule(dayId);
+        return daySearchService.searchDeySchedule(dayId);
     }
 }

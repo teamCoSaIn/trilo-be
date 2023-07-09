@@ -4,7 +4,7 @@ import com.cosain.trilo.fixture.TripFixture;
 import com.cosain.trilo.trip.application.exception.NoTripUpdateAuthorityException;
 import com.cosain.trilo.trip.application.exception.TripNotFoundException;
 import com.cosain.trilo.trip.application.trip.command.service.TripPeriodUpdateService;
-import com.cosain.trilo.trip.application.trip.command.usecase.dto.TripPeriodUpdateCommand;
+import com.cosain.trilo.trip.application.trip.dto.TripPeriodUpdateCommand;
 import com.cosain.trilo.trip.domain.entity.Trip;
 import com.cosain.trilo.trip.domain.repository.DayRepository;
 import com.cosain.trilo.trip.domain.repository.ScheduleRepository;

@@ -1,7 +1,7 @@
 package com.cosain.trilo.unit.trip.presentation.schedule.query;
 
 import com.cosain.trilo.support.RestControllerTest;
-import com.cosain.trilo.trip.application.schedule.query.usecase.ScheduleDetailSearchUseCase;
+import com.cosain.trilo.trip.application.schedule.query.service.ScheduleDetailSearchService;
 import com.cosain.trilo.trip.infra.dto.ScheduleDetail;
 import com.cosain.trilo.trip.presentation.schedule.query.SingleScheduleQueryController;
 import org.junit.jupiter.api.DisplayName;
@@ -28,7 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class SingleScheduleQueryControllerTest extends RestControllerTest {
 
     @MockBean
-    private ScheduleDetailSearchUseCase scheduleDetailSearchUseCase;
+    private ScheduleDetailSearchService scheduleDetailSearchService;
 
     private final String ACCESS_TOKEN = "Bearer accessToken";
 
@@ -39,7 +39,7 @@ class SingleScheduleQueryControllerTest extends RestControllerTest {
         Long scheduleId = 1L;
         mockingForLoginUserAnnotation();
         ScheduleDetail scheduleDetail = new ScheduleDetail(scheduleId, 1L, "제목", "장소 이름", 23.23, 23.23, 1L, "내용", LocalTime.of(15, 0), LocalTime.of(15, 30));
-        given(scheduleDetailSearchUseCase.searchScheduleDetail(anyLong())).willReturn(scheduleDetail);
+        given(scheduleDetailSearchService.searchScheduleDetail(anyLong())).willReturn(scheduleDetail);
 
         mockMvc.perform(get("/api/schedules/{scheduleId}", scheduleId)
                         .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)

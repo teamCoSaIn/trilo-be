@@ -1,9 +1,9 @@
 package com.cosain.trilo.unit.trip.presentation.schedule.command.docs;
 
 import com.cosain.trilo.support.RestDocsTestSupport;
-import com.cosain.trilo.trip.application.schedule.command.usecase.ScheduleCreateUseCase;
-import com.cosain.trilo.trip.application.schedule.command.usecase.dto.ScheduleCreateCommand;
-import com.cosain.trilo.trip.application.schedule.command.usecase.dto.factory.ScheduleCreateCommandFactory;
+import com.cosain.trilo.trip.application.schedule.command.service.ScheduleCreateService;
+import com.cosain.trilo.trip.application.schedule.dto.ScheduleCreateCommand;
+import com.cosain.trilo.trip.application.schedule.dto.factory.ScheduleCreateCommandFactory;
 import com.cosain.trilo.trip.domain.vo.Coordinate;
 import com.cosain.trilo.trip.domain.vo.Place;
 import com.cosain.trilo.trip.domain.vo.ScheduleTitle;
@@ -36,7 +36,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class ScheduleCreateControllerDocsTest extends RestDocsTestSupport {
 
     @MockBean
-    private ScheduleCreateUseCase scheduleCreateUseCase;
+    private ScheduleCreateService scheduleCreateService;
 
     @MockBean
     private ScheduleCreateCommandFactory scheduleCreateCommandFactory;
@@ -83,7 +83,7 @@ public class ScheduleCreateControllerDocsTest extends RestDocsTestSupport {
                 eq(dayId), eq(tripId), eq(rawScheduleTitle),
                 eq(placeId), eq(placeName),
                 eq(latitude), eq(longitude), anyList())).willReturn(command);
-        given(scheduleCreateUseCase.createSchedule(any(), any(ScheduleCreateCommand.class))).willReturn(createdScheduleId);
+        given(scheduleCreateService.createSchedule(any(), any(ScheduleCreateCommand.class))).willReturn(createdScheduleId);
 
 
         mockMvc.perform(post("/api/schedules")
@@ -147,7 +147,7 @@ public class ScheduleCreateControllerDocsTest extends RestDocsTestSupport {
                         )
                 ));
 
-        verify(scheduleCreateUseCase).createSchedule(any(), any(ScheduleCreateCommand.class));
+        verify(scheduleCreateService).createSchedule(any(), any(ScheduleCreateCommand.class));
         verify(scheduleCreateCommandFactory).createCommand(
                 eq(dayId), eq(tripId), eq(rawScheduleTitle),
                 eq(placeId), eq(placeName),

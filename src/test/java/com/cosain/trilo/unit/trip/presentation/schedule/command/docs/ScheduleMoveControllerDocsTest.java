@@ -1,10 +1,10 @@
 package com.cosain.trilo.unit.trip.presentation.schedule.command.docs;
 
 import com.cosain.trilo.support.RestDocsTestSupport;
-import com.cosain.trilo.trip.application.schedule.command.usecase.ScheduleMoveUseCase;
-import com.cosain.trilo.trip.application.schedule.command.usecase.dto.ScheduleMoveCommand;
-import com.cosain.trilo.trip.application.schedule.command.usecase.dto.ScheduleMoveResult;
-import com.cosain.trilo.trip.application.schedule.command.usecase.dto.factory.ScheduleMoveCommandFactory;
+import com.cosain.trilo.trip.application.schedule.command.service.ScheduleMoveService;
+import com.cosain.trilo.trip.application.schedule.dto.ScheduleMoveCommand;
+import com.cosain.trilo.trip.application.schedule.dto.ScheduleMoveResult;
+import com.cosain.trilo.trip.application.schedule.dto.factory.ScheduleMoveCommandFactory;
 import com.cosain.trilo.trip.presentation.schedule.command.ScheduleMoveController;
 import com.cosain.trilo.trip.presentation.schedule.command.dto.request.ScheduleMoveRequest;
 import org.junit.jupiter.api.DisplayName;
@@ -38,7 +38,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class ScheduleMoveControllerDocsTest extends RestDocsTestSupport {
 
     @MockBean
-    private ScheduleMoveUseCase scheduleMoveUseCase;
+    private ScheduleMoveService scheduleMoveSerivce;
 
     @MockBean
     private ScheduleMoveCommandFactory scheduleMoveCommandFactory;
@@ -67,7 +67,7 @@ public class ScheduleMoveControllerDocsTest extends RestDocsTestSupport {
 
         given(scheduleMoveCommandFactory.createCommand(eq(targetDayId), eq(targetOrder)))
                 .willReturn(command);
-        given(scheduleMoveUseCase.moveSchedule(eq(scheduleId), any(), any(ScheduleMoveCommand.class)))
+        given(scheduleMoveSerivce.moveSchedule(eq(scheduleId), any(), any(ScheduleMoveCommand.class)))
                 .willReturn(moveResult);
 
         // when & then
@@ -119,6 +119,6 @@ public class ScheduleMoveControllerDocsTest extends RestDocsTestSupport {
                 ));
 
         verify(scheduleMoveCommandFactory).createCommand(eq(targetDayId), eq(targetOrder));
-        verify(scheduleMoveUseCase).moveSchedule(eq(scheduleId), any(), any(ScheduleMoveCommand.class));
+        verify(scheduleMoveSerivce).moveSchedule(eq(scheduleId), any(), any(ScheduleMoveCommand.class));
     }
 }

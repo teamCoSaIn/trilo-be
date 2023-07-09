@@ -1,7 +1,7 @@
 package com.cosain.trilo.unit.trip.presentation.schedule.command;
 
 import com.cosain.trilo.support.RestControllerTest;
-import com.cosain.trilo.trip.application.schedule.command.usecase.ScheduleDeleteUseCase;
+import com.cosain.trilo.trip.application.schedule.command.service.ScheduleDeleteService;
 import com.cosain.trilo.trip.presentation.schedule.command.ScheduleDeleteController;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -28,7 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class ScheduleDeleteControllerTest extends RestControllerTest {
 
     @MockBean
-    private ScheduleDeleteUseCase scheduleDeleteUseCase;
+    private ScheduleDeleteService scheduleDeleteService;
 
     private final static String ACCESS_TOKEN = "Bearer accessToken";
 
@@ -37,7 +37,7 @@ class ScheduleDeleteControllerTest extends RestControllerTest {
     @WithMockUser
     public void deleteSchedule_with_authorizedUser() throws Exception {
         mockingForLoginUserAnnotation();
-        willDoNothing().given(scheduleDeleteUseCase).deleteSchedule(eq(1L), any());
+        willDoNothing().given(scheduleDeleteService).deleteSchedule(eq(1L), any());
 
         mockMvc.perform(delete("/api/schedules/1")
                         .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)
@@ -47,7 +47,7 @@ class ScheduleDeleteControllerTest extends RestControllerTest {
                 .andDo(print())
                 .andExpect(status().isNoContent())
                 .andExpect(jsonPath("$").doesNotExist());
-        verify(scheduleDeleteUseCase).deleteSchedule(eq(1L), any());
+        verify(scheduleDeleteService).deleteSchedule(eq(1L), any());
     }
 
     @Test

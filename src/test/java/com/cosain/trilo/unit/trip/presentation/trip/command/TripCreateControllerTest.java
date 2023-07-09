@@ -1,9 +1,9 @@
 package com.cosain.trilo.unit.trip.presentation.trip.command;
 
 import com.cosain.trilo.support.RestControllerTest;
-import com.cosain.trilo.trip.application.trip.command.usecase.TripCreateUseCase;
-import com.cosain.trilo.trip.application.trip.command.usecase.dto.TripCreateCommand;
-import com.cosain.trilo.trip.application.trip.command.usecase.dto.factory.TripCreateCommandFactory;
+import com.cosain.trilo.trip.application.trip.command.service.TripCreateService;
+import com.cosain.trilo.trip.application.trip.dto.TripCreateCommand;
+import com.cosain.trilo.trip.application.trip.dto.factory.TripCreateCommandFactory;
 import com.cosain.trilo.trip.domain.vo.TripTitle;
 import com.cosain.trilo.trip.presentation.trip.command.TripCreateController;
 import com.cosain.trilo.trip.presentation.trip.command.dto.request.TripCreateRequest;
@@ -31,7 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class TripCreateControllerTest extends RestControllerTest {
 
     @MockBean
-    private TripCreateUseCase tripCreateUseCase;
+    private TripCreateService tripCreateService;
 
     @MockBean
     private TripCreateCommandFactory tripCreateCommandFactory;
@@ -45,7 +45,7 @@ class TripCreateControllerTest extends RestControllerTest {
         String rawTitle = "제목";
         TripCreateRequest request = new TripCreateRequest(rawTitle);
         given(tripCreateCommandFactory.createCommand(eq(rawTitle))).willReturn(new TripCreateCommand(TripTitle.of(rawTitle)));
-        given(tripCreateUseCase.createTrip(any(), any(TripCreateCommand.class))).willReturn(1L);
+        given(tripCreateService.createTrip(any(), any(TripCreateCommand.class))).willReturn(1L);
 
         mockMvc.perform(post("/api/trips")
                         .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)
@@ -56,7 +56,7 @@ class TripCreateControllerTest extends RestControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.tripId").value(1L));
 
-        verify(tripCreateUseCase).createTrip(any(), any());
+        verify(tripCreateService).createTrip(any(), any());
     }
 
     @Test

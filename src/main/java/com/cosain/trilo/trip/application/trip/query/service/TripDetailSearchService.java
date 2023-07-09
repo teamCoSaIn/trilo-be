@@ -2,7 +2,6 @@ package com.cosain.trilo.trip.application.trip.query.service;
 
 import com.cosain.trilo.trip.application.exception.NoTripDetailSearchAuthorityException;
 import com.cosain.trilo.trip.application.exception.TripNotFoundException;
-import com.cosain.trilo.trip.application.trip.query.usecase.TripDetailSearchUseCase;
 import com.cosain.trilo.trip.infra.dto.TripDetail;
 import com.cosain.trilo.trip.infra.repository.trip.TripQueryRepository;
 import lombok.RequiredArgsConstructor;
@@ -14,11 +13,10 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class TripDetailSearchService implements TripDetailSearchUseCase {
+public class TripDetailSearchService {
 
     private final TripQueryRepository tripQueryRepository;
 
-    @Override
     public TripDetail searchTripDetail(Long tripId, Long tripperId) {
 
         TripDetail tripDetail = findTripDetail(tripId);

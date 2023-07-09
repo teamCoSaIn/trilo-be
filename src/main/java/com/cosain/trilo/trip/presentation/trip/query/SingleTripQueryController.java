@@ -1,7 +1,7 @@
 package com.cosain.trilo.trip.presentation.trip.query;
 
 import com.cosain.trilo.common.LoginUser;
-import com.cosain.trilo.trip.application.trip.query.usecase.TripDetailSearchUseCase;
+import com.cosain.trilo.trip.application.trip.query.service.TripDetailSearchService;
 import com.cosain.trilo.trip.infra.dto.TripDetail;
 import com.cosain.trilo.user.domain.User;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class SingleTripQueryController {
 
-    private final TripDetailSearchUseCase tripDetailSearchUseCase;
+    private final TripDetailSearchService tripDetailSearchService;
 
     @GetMapping("/api/trips/{tripId}")
     @ResponseStatus(HttpStatus.OK)
@@ -24,6 +24,6 @@ public class SingleTripQueryController {
 
         Long tripperId = user.getId();
 
-        return tripDetailSearchUseCase.searchTripDetail(tripId, tripperId);
+        return tripDetailSearchService.searchTripDetail(tripId, tripperId);
     }
 }

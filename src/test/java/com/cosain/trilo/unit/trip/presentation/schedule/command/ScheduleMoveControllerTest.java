@@ -2,10 +2,10 @@ package com.cosain.trilo.unit.trip.presentation.schedule.command;
 
 
 import com.cosain.trilo.support.RestControllerTest;
-import com.cosain.trilo.trip.application.schedule.command.usecase.dto.ScheduleMoveCommand;
-import com.cosain.trilo.trip.application.schedule.command.usecase.dto.ScheduleMoveResult;
-import com.cosain.trilo.trip.application.schedule.command.usecase.ScheduleMoveUseCase;
-import com.cosain.trilo.trip.application.schedule.command.usecase.dto.factory.ScheduleMoveCommandFactory;
+import com.cosain.trilo.trip.application.schedule.command.service.ScheduleMoveService;
+import com.cosain.trilo.trip.application.schedule.dto.ScheduleMoveCommand;
+import com.cosain.trilo.trip.application.schedule.dto.ScheduleMoveResult;
+import com.cosain.trilo.trip.application.schedule.dto.factory.ScheduleMoveCommandFactory;
 import com.cosain.trilo.trip.presentation.schedule.command.ScheduleMoveController;
 import com.cosain.trilo.trip.presentation.schedule.command.dto.request.ScheduleMoveRequest;
 import org.junit.jupiter.api.DisplayName;
@@ -23,7 +23,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -34,7 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class ScheduleMoveControllerTest extends RestControllerTest {
 
     @MockBean
-    private ScheduleMoveUseCase scheduleMoveUseCase;
+    private ScheduleMoveService scheduleMoveService;
 
     @MockBean
     private ScheduleMoveCommandFactory scheduleMoveCommandFactory;
@@ -64,7 +63,7 @@ public class ScheduleMoveControllerTest extends RestControllerTest {
 
         given(scheduleMoveCommandFactory.createCommand(eq(targetDayId), eq(targetOrder)))
                 .willReturn(command);
-        given(scheduleMoveUseCase.moveSchedule(eq(scheduleId), any(), any(ScheduleMoveCommand.class)))
+        given(scheduleMoveService.moveSchedule(eq(scheduleId), any(), any(ScheduleMoveCommand.class)))
                 .willReturn(moveResult);
 
         mockMvc.perform(put(ENDPOINT_URL_TEMPLATE, scheduleId)
@@ -81,7 +80,7 @@ public class ScheduleMoveControllerTest extends RestControllerTest {
                 .andExpect(jsonPath("$.positionChanged").value(moveResult.isPositionChanged()));
 
         verify(scheduleMoveCommandFactory).createCommand(eq(targetDayId), eq(targetOrder));
-        verify(scheduleMoveUseCase).moveSchedule(eq(scheduleId), any(), any(ScheduleMoveCommand.class));
+        verify(scheduleMoveService).moveSchedule(eq(scheduleId), any(), any(ScheduleMoveCommand.class));
     }
 
     @Test

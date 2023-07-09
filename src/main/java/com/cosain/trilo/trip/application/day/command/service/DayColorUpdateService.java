@@ -1,7 +1,6 @@
 package com.cosain.trilo.trip.application.day.command.service;
 
 import com.cosain.trilo.trip.application.day.command.dto.DayColorUpdateCommand;
-import com.cosain.trilo.trip.application.day.command.usecase.DayColorUpdateUseCase;
 import com.cosain.trilo.trip.application.exception.DayNotFoundException;
 import com.cosain.trilo.trip.application.exception.NoDayUpdateAuthorityException;
 import com.cosain.trilo.trip.domain.entity.Day;
@@ -12,12 +11,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-public class DayColorUpdateService implements DayColorUpdateUseCase {
+public class DayColorUpdateService {
 
     private final DayRepository dayRepository;
 
     @Transactional
-    @Override
     public void updateDayColor(Long dayId, Long tripperId, DayColorUpdateCommand command) {
         Day day = findDay(dayId);
 

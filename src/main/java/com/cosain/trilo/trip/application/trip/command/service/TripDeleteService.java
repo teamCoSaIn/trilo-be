@@ -2,7 +2,6 @@ package com.cosain.trilo.trip.application.trip.command.service;
 
 import com.cosain.trilo.trip.application.exception.NoTripDeleteAuthorityException;
 import com.cosain.trilo.trip.application.exception.TripNotFoundException;
-import com.cosain.trilo.trip.application.trip.command.usecase.TripDeleteUseCase;
 import com.cosain.trilo.trip.domain.entity.Trip;
 import com.cosain.trilo.trip.domain.repository.DayRepository;
 import com.cosain.trilo.trip.domain.repository.ScheduleRepository;
@@ -13,13 +12,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Service
-public class TripDeleteService implements TripDeleteUseCase {
+public class TripDeleteService {
 
     private final TripRepository tripRepository;
     private final DayRepository dayRepository;
     private final ScheduleRepository scheduleRepository;
 
-    @Override
     @Transactional
     public void deleteTrip(Long tripId, Long tripperId) {
         Trip trip = findTrip(tripId);

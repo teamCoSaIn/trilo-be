@@ -1,7 +1,7 @@
 package com.cosain.trilo.unit.trip.presentation.trip.command;
 
 import com.cosain.trilo.support.RestControllerTest;
-import com.cosain.trilo.trip.application.trip.command.usecase.TripDeleteUseCase;
+import com.cosain.trilo.trip.application.trip.command.service.TripDeleteService;
 import com.cosain.trilo.trip.presentation.trip.command.TripDeleteController;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -25,9 +25,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @DisplayName("여행 삭제 API 테스트")
 @WebMvcTest(TripDeleteController.class)
 class TripDeleteControllerTest extends RestControllerTest {
-
     @MockBean
-    private TripDeleteUseCase tripDeleteUseCase;
+    private TripDeleteService tripDeleteService;
 
     private final static String ACCESS_TOKEN = "Bearer accessToken";
 
@@ -36,7 +35,7 @@ class TripDeleteControllerTest extends RestControllerTest {
     public void deleteTrip_with_authorizedUser() throws Exception {
         Long tripId = 1L;
         mockingForLoginUserAnnotation();
-        willDoNothing().given(tripDeleteUseCase).deleteTrip(eq(tripId), any());
+        willDoNothing().given(tripDeleteService).deleteTrip(eq(tripId), any());
 
         mockMvc.perform(delete("/api/trips/" + tripId)
                         .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)
@@ -46,7 +45,7 @@ class TripDeleteControllerTest extends RestControllerTest {
                 .andDo(print())
                 .andExpect(status().isNoContent())
                 .andExpect(jsonPath("$").doesNotExist());
-        verify(tripDeleteUseCase).deleteTrip(eq(tripId), any());
+        verify(tripDeleteService).deleteTrip(eq(tripId), any());
     }
 
     @Test

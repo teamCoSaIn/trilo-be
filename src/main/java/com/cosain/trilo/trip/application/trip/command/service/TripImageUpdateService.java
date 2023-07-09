@@ -4,7 +4,6 @@ import com.cosain.trilo.common.file.ImageFile;
 import com.cosain.trilo.trip.application.exception.NoTripUpdateAuthorityException;
 import com.cosain.trilo.trip.application.exception.TripImageUploadFailedException;
 import com.cosain.trilo.trip.application.exception.TripNotFoundException;
-import com.cosain.trilo.trip.application.trip.command.usecase.TripImageUpdateUseCase;
 import com.cosain.trilo.trip.domain.entity.Trip;
 import com.cosain.trilo.trip.domain.repository.TripRepository;
 import com.cosain.trilo.trip.domain.vo.TripImage;
@@ -19,7 +18,7 @@ import java.util.UUID;
 @Slf4j
 @RequiredArgsConstructor
 @Service
-public class TripImageUpdateService implements TripImageUpdateUseCase {
+public class TripImageUpdateService {
 
     private final TripRepository tripRepository;
     private final TripImageOutputAdapter tripImageOutputAdapter;
@@ -34,7 +33,6 @@ public class TripImageUpdateService implements TripImageUpdateUseCase {
      * @throws NoTripUpdateAuthorityException : 여행을 수정할 권한이 없을 때 발생
      * @throws TripImageUploadFailedException : 여행의 이미지를 이미지 저장소에 올리는데 실패했을 때 발생
      */
-    @Override
     @Transactional
     public String updateTripImage(Long tripId, Long tripperId, ImageFile file)
             throws TripNotFoundException, NoTripUpdateAuthorityException, TripImageUploadFailedException {

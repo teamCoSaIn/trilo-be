@@ -1,9 +1,9 @@
 package com.cosain.trilo.unit.trip.presentation.trip.command;
 
 import com.cosain.trilo.support.RestControllerTest;
-import com.cosain.trilo.trip.application.trip.command.usecase.TripPeriodUpdateUseCase;
-import com.cosain.trilo.trip.application.trip.command.usecase.dto.TripPeriodUpdateCommand;
-import com.cosain.trilo.trip.application.trip.command.usecase.dto.factory.TripPeriodUpdateCommandFactory;
+import com.cosain.trilo.trip.application.trip.command.service.TripPeriodUpdateService;
+import com.cosain.trilo.trip.application.trip.dto.TripPeriodUpdateCommand;
+import com.cosain.trilo.trip.application.trip.dto.factory.TripPeriodUpdateCommandFactory;
 import com.cosain.trilo.trip.domain.vo.TripPeriod;
 import com.cosain.trilo.trip.presentation.trip.command.TripPeriodUpdateController;
 import com.cosain.trilo.trip.presentation.trip.command.dto.request.TripPeriodUpdateRequest;
@@ -33,7 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class TripPeriodUpdateControllerTest extends RestControllerTest {
 
     @MockBean
-    private TripPeriodUpdateUseCase tripPeriodUpdateUseCase;
+    private TripPeriodUpdateService tripPeriodUpdateService;
 
     @MockBean
     private TripPeriodUpdateCommandFactory tripPeriodUpdateCommandFactory;
@@ -55,7 +55,7 @@ class TripPeriodUpdateControllerTest extends RestControllerTest {
         TripPeriodUpdateCommand command = new TripPeriodUpdateCommand(TripPeriod.of(startDate, endDate));
 
         given(tripPeriodUpdateCommandFactory.createCommand(eq(startDate), eq(endDate))).willReturn(command);
-        willDoNothing().given(tripPeriodUpdateUseCase).updateTripPeriod(eq(tripId), any(), any(TripPeriodUpdateCommand.class));
+        willDoNothing().given(tripPeriodUpdateService).updateTripPeriod(eq(tripId), any(), any(TripPeriodUpdateCommand.class));
 
 
         mockMvc.perform(put("/api/trips/{tripId}/period", tripId)
@@ -68,7 +68,7 @@ class TripPeriodUpdateControllerTest extends RestControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.tripId").value(tripId));
 
-        verify(tripPeriodUpdateUseCase, times(1)).updateTripPeriod(eq(tripId), any(), any(TripPeriodUpdateCommand.class));
+        verify(tripPeriodUpdateService, times(1)).updateTripPeriod(eq(tripId), any(), any(TripPeriodUpdateCommand.class));
         verify(tripPeriodUpdateCommandFactory, times(1)).createCommand(eq(startDate), eq(endDate));
     }
 
@@ -96,7 +96,7 @@ class TripPeriodUpdateControllerTest extends RestControllerTest {
                 .andExpect(jsonPath("$.errorDetail").exists());
 
 
-        verify(tripPeriodUpdateUseCase, times(0)).updateTripPeriod(eq(tripId), any(), any(TripPeriodUpdateCommand.class));
+        verify(tripPeriodUpdateService, times(0)).updateTripPeriod(eq(tripId), any(), any(TripPeriodUpdateCommand.class));
         verify(tripPeriodUpdateCommandFactory, times(0)).createCommand(eq(startDate), eq(endDate));
     }
 
@@ -123,7 +123,7 @@ class TripPeriodUpdateControllerTest extends RestControllerTest {
                 .andExpect(jsonPath("$.errorMessage").exists())
                 .andExpect(jsonPath("$.errorDetail").exists());
 
-        verify(tripPeriodUpdateUseCase, times(0)).updateTripPeriod(anyLong(), any(), any(TripPeriodUpdateCommand.class));
+        verify(tripPeriodUpdateService, times(0)).updateTripPeriod(anyLong(), any(), any(TripPeriodUpdateCommand.class));
         verify(tripPeriodUpdateCommandFactory, times(0)).createCommand(eq(startDate), eq(endDate));
     }
 
@@ -147,7 +147,7 @@ class TripPeriodUpdateControllerTest extends RestControllerTest {
                 .andExpect(jsonPath("$.errorMessage").exists())
                 .andExpect(jsonPath("$.errorDetail").exists());
 
-        verify(tripPeriodUpdateUseCase, times(0)).updateTripPeriod(eq(tripId), any(), any(TripPeriodUpdateCommand.class));
+        verify(tripPeriodUpdateService, times(0)).updateTripPeriod(eq(tripId), any(), any(TripPeriodUpdateCommand.class));
         verify(tripPeriodUpdateCommandFactory, times(0)).createCommand(any(), any());
     }
 
@@ -176,7 +176,7 @@ class TripPeriodUpdateControllerTest extends RestControllerTest {
                 .andExpect(jsonPath("$.errorMessage").exists())
                 .andExpect(jsonPath("$.errorDetail").exists());
 
-        verify(tripPeriodUpdateUseCase, times(0)).updateTripPeriod(eq(tripId), any(), any(TripPeriodUpdateCommand.class));
+        verify(tripPeriodUpdateService, times(0)).updateTripPeriod(eq(tripId), any(), any(TripPeriodUpdateCommand.class));
         verify(tripPeriodUpdateCommandFactory, times(0)).createCommand(any(), any());
     }
 
@@ -206,7 +206,7 @@ class TripPeriodUpdateControllerTest extends RestControllerTest {
                 .andExpect(jsonPath("$.errorMessage").exists())
                 .andExpect(jsonPath("$.errorDetail").exists());
 
-        verify(tripPeriodUpdateUseCase, times(0)).updateTripPeriod(eq(tripId), any(), any(TripPeriodUpdateCommand.class));
+        verify(tripPeriodUpdateService, times(0)).updateTripPeriod(eq(tripId), any(), any(TripPeriodUpdateCommand.class));
         verify(tripPeriodUpdateCommandFactory, times(0)).createCommand(any(), any());
     }
 }

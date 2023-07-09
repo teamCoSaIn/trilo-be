@@ -2,7 +2,7 @@ package com.cosain.trilo.unit.trip.presentation.day.query.docs;
 
 
 import com.cosain.trilo.support.RestDocsTestSupport;
-import com.cosain.trilo.trip.application.day.query.usecase.DaySearchUseCase;
+import com.cosain.trilo.trip.application.day.query.service.DaySearchService;
 import com.cosain.trilo.trip.domain.vo.DayColor;
 import com.cosain.trilo.trip.infra.dto.DayScheduleDetail;
 import com.cosain.trilo.trip.infra.dto.ScheduleSummary;
@@ -32,7 +32,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class SingleDayQueryControllerDocsTest extends RestDocsTestSupport {
 
     @MockBean
-    private DaySearchUseCase daySearchUseCase;
+    private DaySearchService daySearchService;
     private final String ACCESS_TOKEN = "Bearer accessToken";
     @Test
     void Day_단건_조회() throws Exception{
@@ -43,7 +43,7 @@ public class SingleDayQueryControllerDocsTest extends RestDocsTestSupport {
 
         Long dayId = 1L;
         DayScheduleDetail dayScheduleDetail = new DayScheduleDetail(dayId, 1L, LocalDate.of(2023, 2, 3), DayColor.BLACK, List.of(scheduleSummary1, scheduleSummary2));
-        given(daySearchUseCase.searchDeySchedule(eq(dayId))).willReturn(dayScheduleDetail);
+        given(daySearchService.searchDeySchedule(eq(dayId))).willReturn(dayScheduleDetail);
 
         mockMvc.perform(RestDocumentationRequestBuilders.get("/api/days"+"/{dayId}",dayId)
                         .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)

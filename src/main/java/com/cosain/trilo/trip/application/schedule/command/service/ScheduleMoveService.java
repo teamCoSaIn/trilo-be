@@ -1,12 +1,11 @@
 package com.cosain.trilo.trip.application.schedule.command.service;
 
+import com.cosain.trilo.trip.application.exception.DayNotFoundException;
 import com.cosain.trilo.trip.application.exception.NoScheduleMoveAuthorityException;
 import com.cosain.trilo.trip.application.exception.ScheduleNotFoundException;
 import com.cosain.trilo.trip.application.exception.TooManyDayScheduleException;
-import com.cosain.trilo.trip.application.schedule.command.usecase.dto.ScheduleMoveCommand;
-import com.cosain.trilo.trip.application.exception.DayNotFoundException;
-import com.cosain.trilo.trip.application.schedule.command.usecase.dto.ScheduleMoveResult;
-import com.cosain.trilo.trip.application.schedule.command.usecase.ScheduleMoveUseCase;
+import com.cosain.trilo.trip.application.schedule.dto.ScheduleMoveCommand;
+import com.cosain.trilo.trip.application.schedule.dto.ScheduleMoveResult;
 import com.cosain.trilo.trip.domain.dto.ScheduleMoveDto;
 import com.cosain.trilo.trip.domain.entity.Day;
 import com.cosain.trilo.trip.domain.entity.Schedule;
@@ -16,7 +15,6 @@ import com.cosain.trilo.trip.domain.exception.ScheduleIndexRangeException;
 import com.cosain.trilo.trip.domain.repository.DayRepository;
 import com.cosain.trilo.trip.domain.repository.ScheduleRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,12 +22,11 @@ import java.util.Objects;
 
 @RequiredArgsConstructor
 @Service
-public class ScheduleMoveService implements ScheduleMoveUseCase {
+public class ScheduleMoveService {
 
     private final ScheduleRepository scheduleRepository;
     private final DayRepository dayRepository;
 
-    @Override
     @Transactional
     public ScheduleMoveResult moveSchedule(Long scheduleId, Long moveTripperId, ScheduleMoveCommand moveCommand) {
         Schedule schedule = findSchedule(scheduleId);

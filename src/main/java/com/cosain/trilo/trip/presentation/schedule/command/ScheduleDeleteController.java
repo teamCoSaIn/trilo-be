@@ -1,7 +1,7 @@
 package com.cosain.trilo.trip.presentation.schedule.command;
 
 import com.cosain.trilo.common.LoginUser;
-import com.cosain.trilo.trip.application.schedule.command.usecase.ScheduleDeleteUseCase;
+import com.cosain.trilo.trip.application.schedule.command.service.ScheduleDeleteService;
 import com.cosain.trilo.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,12 +16,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class ScheduleDeleteController {
 
-    private final ScheduleDeleteUseCase scheduleDeleteUseCase;
+    private final ScheduleDeleteService scheduleDeleteService;
 
     @DeleteMapping("/api/schedules/{scheduleId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteSchedule(@LoginUser User user, @PathVariable Long scheduleId) {
         Long deleteTripperId = user.getId();
-        scheduleDeleteUseCase.deleteSchedule(scheduleId, deleteTripperId);
+        scheduleDeleteService.deleteSchedule(scheduleId, deleteTripperId);
     }
 }

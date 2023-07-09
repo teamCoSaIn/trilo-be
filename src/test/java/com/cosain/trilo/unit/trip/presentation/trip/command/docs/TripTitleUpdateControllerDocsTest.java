@@ -1,9 +1,9 @@
 package com.cosain.trilo.unit.trip.presentation.trip.command.docs;
 
 import com.cosain.trilo.support.RestDocsTestSupport;
-import com.cosain.trilo.trip.application.trip.command.usecase.TripTitleUpdateUseCase;
-import com.cosain.trilo.trip.application.trip.command.usecase.dto.TripTitleUpdateCommand;
-import com.cosain.trilo.trip.application.trip.command.usecase.dto.factory.TripTitleUpdateCommandFactory;
+import com.cosain.trilo.trip.application.trip.command.service.TripTitleUpdateService;
+import com.cosain.trilo.trip.application.trip.dto.TripTitleUpdateCommand;
+import com.cosain.trilo.trip.application.trip.dto.factory.TripTitleUpdateCommandFactory;
 import com.cosain.trilo.trip.domain.vo.TripTitle;
 import com.cosain.trilo.trip.presentation.trip.command.TripTitleUpdateController;
 import com.cosain.trilo.trip.presentation.trip.command.dto.request.TripTitleUpdateRequest;
@@ -40,7 +40,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class TripTitleUpdateControllerDocsTest extends RestDocsTestSupport {
 
     @MockBean
-    private TripTitleUpdateUseCase tripTitleUpdateUseCase;
+    private TripTitleUpdateService tripTitleUpdateService;
 
     @MockBean
     private TripTitleUpdateCommandFactory tripTitleUpdateCommandFactory;
@@ -60,7 +60,7 @@ public class TripTitleUpdateControllerDocsTest extends RestDocsTestSupport {
 
         given(tripTitleUpdateCommandFactory.createCommand(eq(rawTitle)))
                 .willReturn(new TripTitleUpdateCommand(TripTitle.of(rawTitle)));
-        willDoNothing().given(tripTitleUpdateUseCase).updateTripTitle(eq(tripId), any(), any(TripTitleUpdateCommand.class));
+        willDoNothing().given(tripTitleUpdateService).updateTripTitle(eq(tripId), any(), any(TripTitleUpdateCommand.class));
 
         mockMvc.perform(put("/api/trips/{tripId}/title", tripId)
                         .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)
@@ -93,7 +93,7 @@ public class TripTitleUpdateControllerDocsTest extends RestDocsTestSupport {
                         )
                 ));
 
-        verify(tripTitleUpdateUseCase, times(1)).updateTripTitle(eq(tripId), any(), any(TripTitleUpdateCommand.class));
+        verify(tripTitleUpdateService, times(1)).updateTripTitle(eq(tripId), any(), any(TripTitleUpdateCommand.class));
         verify(tripTitleUpdateCommandFactory, times(1)).createCommand(eq(rawTitle));
     }
 }

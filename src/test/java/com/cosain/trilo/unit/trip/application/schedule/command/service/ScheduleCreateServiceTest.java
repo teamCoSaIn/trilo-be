@@ -6,7 +6,7 @@ import com.cosain.trilo.trip.application.exception.NoScheduleCreateAuthorityExce
 import com.cosain.trilo.trip.application.exception.TooManyDayScheduleException;
 import com.cosain.trilo.trip.application.exception.TooManyTripScheduleException;
 import com.cosain.trilo.trip.application.schedule.command.service.ScheduleCreateService;
-import com.cosain.trilo.trip.application.schedule.command.usecase.dto.ScheduleCreateCommand;
+import com.cosain.trilo.trip.application.schedule.dto.ScheduleCreateCommand;
 import com.cosain.trilo.trip.domain.entity.Day;
 import com.cosain.trilo.trip.domain.entity.Schedule;
 import com.cosain.trilo.trip.domain.entity.Trip;

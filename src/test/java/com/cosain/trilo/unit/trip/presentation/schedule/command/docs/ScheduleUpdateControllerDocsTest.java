@@ -1,9 +1,9 @@
 package com.cosain.trilo.unit.trip.presentation.schedule.command.docs;
 
 import com.cosain.trilo.support.RestDocsTestSupport;
-import com.cosain.trilo.trip.application.schedule.command.usecase.ScheduleUpdateUseCase;
-import com.cosain.trilo.trip.application.schedule.command.usecase.dto.ScheduleUpdateCommand;
-import com.cosain.trilo.trip.application.schedule.command.usecase.dto.factory.ScheduleUpdateCommandFactory;
+import com.cosain.trilo.trip.application.schedule.command.service.ScheduleUpdateService;
+import com.cosain.trilo.trip.application.schedule.dto.ScheduleUpdateCommand;
+import com.cosain.trilo.trip.application.schedule.dto.factory.ScheduleUpdateCommandFactory;
 import com.cosain.trilo.trip.domain.vo.ScheduleContent;
 import com.cosain.trilo.trip.domain.vo.ScheduleTime;
 import com.cosain.trilo.trip.domain.vo.ScheduleTitle;
@@ -41,7 +41,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class ScheduleUpdateControllerDocsTest extends RestDocsTestSupport {
 
     @MockBean
-    private ScheduleUpdateUseCase scheduleUpdateUseCase;
+    private ScheduleUpdateService scheduleUpdateService;
 
     @MockBean
     private ScheduleUpdateCommandFactory scheduleUpdateCommandFactory;
@@ -67,7 +67,7 @@ public class ScheduleUpdateControllerDocsTest extends RestDocsTestSupport {
         ScheduleUpdateCommand command = new ScheduleUpdateCommand(ScheduleTitle.of(rawContent), ScheduleContent.of(rawContent), ScheduleTime.of(startTime, endTime));
 
         given(scheduleUpdateCommandFactory.createCommand(eq(rawTitle), eq(rawContent), eq(startTime), eq(endTime))).willReturn(command);
-        given(scheduleUpdateUseCase.updateSchedule(eq(scheduleId), any(), any(ScheduleUpdateCommand.class))).willReturn(1L);
+        given(scheduleUpdateService.updateSchedule(eq(scheduleId), any(), any(ScheduleUpdateCommand.class))).willReturn(1L);
 
         // when & then
         mockMvc.perform(put("/api/schedules/{scheduleId}", scheduleId)
@@ -112,6 +112,6 @@ public class ScheduleUpdateControllerDocsTest extends RestDocsTestSupport {
                 ));
 
         verify(scheduleUpdateCommandFactory).createCommand(eq(rawTitle), eq(rawContent), eq(startTime), eq(endTime));
-        verify(scheduleUpdateUseCase).updateSchedule(eq(scheduleId), any(), any(ScheduleUpdateCommand.class));
+        verify(scheduleUpdateService).updateSchedule(eq(scheduleId), any(), any(ScheduleUpdateCommand.class));
     }
 }

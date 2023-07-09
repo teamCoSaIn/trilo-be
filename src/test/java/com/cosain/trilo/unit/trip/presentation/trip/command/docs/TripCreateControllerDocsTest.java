@@ -1,9 +1,9 @@
 package com.cosain.trilo.unit.trip.presentation.trip.command.docs;
 
 import com.cosain.trilo.support.RestDocsTestSupport;
-import com.cosain.trilo.trip.application.trip.command.usecase.TripCreateUseCase;
-import com.cosain.trilo.trip.application.trip.command.usecase.dto.TripCreateCommand;
-import com.cosain.trilo.trip.application.trip.command.usecase.dto.factory.TripCreateCommandFactory;
+import com.cosain.trilo.trip.application.trip.command.service.TripCreateService;
+import com.cosain.trilo.trip.application.trip.dto.TripCreateCommand;
+import com.cosain.trilo.trip.application.trip.dto.factory.TripCreateCommandFactory;
 import com.cosain.trilo.trip.domain.vo.TripTitle;
 import com.cosain.trilo.trip.presentation.trip.command.TripCreateController;
 import com.cosain.trilo.trip.presentation.trip.command.dto.request.TripCreateRequest;
@@ -34,7 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class TripCreateControllerDocsTest extends RestDocsTestSupport {
 
     @MockBean
-    private TripCreateUseCase tripCreateUseCase;
+    private TripCreateService tripCreateService;
 
     @MockBean
     private TripCreateCommandFactory tripCreateCommandFactory;
@@ -51,7 +51,7 @@ public class TripCreateControllerDocsTest extends RestDocsTestSupport {
         Long tripId = 1L;
         TripCreateRequest request = new TripCreateRequest(rawTitle);
         given(tripCreateCommandFactory.createCommand(eq(rawTitle))).willReturn(new TripCreateCommand(TripTitle.of(rawTitle)));
-        given(tripCreateUseCase.createTrip(any(), any(TripCreateCommand.class))).willReturn(tripId);
+        given(tripCreateService.createTrip(any(), any(TripCreateCommand.class))).willReturn(tripId);
 
         mockMvc.perform(post(BASE_URL)
                         .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)

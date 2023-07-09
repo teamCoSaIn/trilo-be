@@ -2,8 +2,7 @@ package com.cosain.trilo.trip.application.trip.command.service;
 
 import com.cosain.trilo.trip.application.exception.NoTripUpdateAuthorityException;
 import com.cosain.trilo.trip.application.exception.TripNotFoundException;
-import com.cosain.trilo.trip.application.trip.command.usecase.TripTitleUpdateUseCase;
-import com.cosain.trilo.trip.application.trip.command.usecase.dto.TripTitleUpdateCommand;
+import com.cosain.trilo.trip.application.trip.dto.TripTitleUpdateCommand;
 import com.cosain.trilo.trip.domain.entity.Trip;
 import com.cosain.trilo.trip.domain.repository.TripRepository;
 import jakarta.transaction.Transactional;
@@ -12,11 +11,10 @@ import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
 @Service
-public class TripTitleUpdateService implements TripTitleUpdateUseCase {
+public class TripTitleUpdateService {
 
     private final TripRepository tripRepository;
 
-    @Override
     @Transactional
     public void updateTripTitle(Long tripId, Long tripperId, TripTitleUpdateCommand updateCommand) {
         Trip trip = findTrip(tripId);

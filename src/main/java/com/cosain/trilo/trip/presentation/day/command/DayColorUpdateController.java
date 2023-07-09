@@ -3,7 +3,7 @@ package com.cosain.trilo.trip.presentation.day.command;
 import com.cosain.trilo.common.LoginUser;
 import com.cosain.trilo.trip.application.day.command.dto.DayColorUpdateCommand;
 import com.cosain.trilo.trip.application.day.command.dto.factory.DayColorUpdateCommandFactory;
-import com.cosain.trilo.trip.application.day.command.usecase.DayColorUpdateUseCase;
+import com.cosain.trilo.trip.application.day.command.service.DayColorUpdateService;
 import com.cosain.trilo.trip.presentation.day.command.dto.DayColorUpdateRequest;
 import com.cosain.trilo.trip.presentation.day.command.dto.DayColorUpdateResponse;
 import com.cosain.trilo.user.domain.User;
@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 public class DayColorUpdateController {
 
-    private final DayColorUpdateUseCase dayColorUpdateUseCase;
+    private final DayColorUpdateService dayColorUpdateService;
     private final DayColorUpdateCommandFactory dayColorUpdateCommandFactory;
 
     @PutMapping("/api/days/{dayId}/color")
@@ -31,7 +31,7 @@ public class DayColorUpdateController {
 
         DayColorUpdateCommand command = dayColorUpdateCommandFactory.createCommand(request.getColorName());
 
-        dayColorUpdateUseCase.updateDayColor(dayId, tripperId, command);
+        dayColorUpdateService.updateDayColor(dayId, tripperId, command);
         return new DayColorUpdateResponse(dayId);
     }
 }

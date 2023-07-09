@@ -2,7 +2,7 @@ package com.cosain.trilo.unit.trip.presentation.trip.command;
 
 import com.cosain.trilo.common.file.ImageFile;
 import com.cosain.trilo.support.RestControllerTest;
-import com.cosain.trilo.trip.application.trip.command.usecase.TripImageUpdateUseCase;
+import com.cosain.trilo.trip.application.trip.command.service.TripImageUpdateService;
 import com.cosain.trilo.trip.presentation.trip.command.TripImageUpdateController;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -33,7 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class TripImageUpdateControllerTest extends RestControllerTest {
 
     @MockBean
-    private TripImageUpdateUseCase tripImageUpdateUseCase;
+    private TripImageUpdateService tripImageUpdateService;
 
     private final static String ACCESS_TOKEN = "Bearer accessToken";
 
@@ -52,7 +52,7 @@ public class TripImageUpdateControllerTest extends RestControllerTest {
         MockMultipartFile multipartFile = new MockMultipartFile(name, fileName, contentType, fileInputStream);
 
         String imageURL = String.format("https://{이미지 파일 저장소 주소}/trips/%s/{이미지 파일명}.jpeg", tripId);
-        given(tripImageUpdateUseCase.updateTripImage(eq(tripId), any(), any(ImageFile.class)))
+        given(tripImageUpdateService.updateTripImage(eq(tripId), any(), any(ImageFile.class)))
                 .willReturn(imageURL);
 
         mockMvc.perform(multipart(POST, "/api/trips/{tripId}/image/update", tripId)
@@ -66,7 +66,7 @@ public class TripImageUpdateControllerTest extends RestControllerTest {
                 .andExpect(jsonPath("$.tripId").value(tripId))
                 .andExpect(jsonPath("$.imageURL").value(imageURL));
 
-        verify(tripImageUpdateUseCase, times(1)).updateTripImage(eq(tripId), any(), any(ImageFile.class));
+        verify(tripImageUpdateService, times(1)).updateTripImage(eq(tripId), any(), any(ImageFile.class));
     }
 
     @Test
@@ -85,7 +85,7 @@ public class TripImageUpdateControllerTest extends RestControllerTest {
         MockMultipartFile multipartFile = new MockMultipartFile(name, fileName, contentType, fileInputStream);
 
         String imageURL = String.format("https://{이미지 파일 저장소 주소}/trips/%s/{이미지 파일명}.gif", tripId);
-        given(tripImageUpdateUseCase.updateTripImage(eq(tripId), any(), any(ImageFile.class)))
+        given(tripImageUpdateService.updateTripImage(eq(tripId), any(), any(ImageFile.class)))
                 .willReturn(imageURL);
 
         mockMvc.perform(multipart(POST, "/api/trips/{tripId}/image/update", tripId)
@@ -99,7 +99,7 @@ public class TripImageUpdateControllerTest extends RestControllerTest {
                 .andExpect(jsonPath("$.tripId").value(tripId))
                 .andExpect(jsonPath("$.imageURL").value(imageURL));
 
-        verify(tripImageUpdateUseCase, times(1)).updateTripImage(eq(tripId), any(), any(ImageFile.class));
+        verify(tripImageUpdateService, times(1)).updateTripImage(eq(tripId), any(), any(ImageFile.class));
     }
 
     @Test
@@ -117,7 +117,7 @@ public class TripImageUpdateControllerTest extends RestControllerTest {
         MockMultipartFile multipartFile = new MockMultipartFile(name, fileName, contentType, fileInputStream);
 
         String imageURL = String.format("https://{이미지 파일 저장소 주소}/trips/%s/{이미지 파일명}.png", tripId);
-        given(tripImageUpdateUseCase.updateTripImage(eq(tripId), any(), any(ImageFile.class)))
+        given(tripImageUpdateService.updateTripImage(eq(tripId), any(), any(ImageFile.class)))
                 .willReturn(imageURL);
 
         mockMvc.perform(multipart(POST, "/api/trips/{tripId}/image/update", tripId)
@@ -131,7 +131,7 @@ public class TripImageUpdateControllerTest extends RestControllerTest {
                 .andExpect(jsonPath("$.tripId").value(tripId))
                 .andExpect(jsonPath("$.imageURL").value(imageURL));
 
-        verify(tripImageUpdateUseCase, times(1)).updateTripImage(eq(tripId), any(), any(ImageFile.class));
+        verify(tripImageUpdateService, times(1)).updateTripImage(eq(tripId), any(), any(ImageFile.class));
     }
 
     @Test
@@ -148,7 +148,7 @@ public class TripImageUpdateControllerTest extends RestControllerTest {
 
         MockMultipartFile multipartFile = new MockMultipartFile(name, fileName, contentType, fileInputStream);
         String imageURL = String.format("https://{이미지 파일 저장소 주소}/trips/%s/{이미지 파일명}.webp", tripId);
-        given(tripImageUpdateUseCase.updateTripImage(eq(tripId), any(), any(ImageFile.class)))
+        given(tripImageUpdateService.updateTripImage(eq(tripId), any(), any(ImageFile.class)))
                 .willReturn(imageURL);
 
         mockMvc.perform(multipart(POST, "/api/trips/{tripId}/image/update", tripId)
@@ -162,7 +162,7 @@ public class TripImageUpdateControllerTest extends RestControllerTest {
                 .andExpect(jsonPath("$.tripId").value(tripId))
                 .andExpect(jsonPath("$.imageURL").value(imageURL));
 
-        verify(tripImageUpdateUseCase, times(1)).updateTripImage(eq(tripId), any(), any(ImageFile.class));
+        verify(tripImageUpdateService, times(1)).updateTripImage(eq(tripId), any(), any(ImageFile.class));
     }
 
     @Test
@@ -188,7 +188,7 @@ public class TripImageUpdateControllerTest extends RestControllerTest {
                 .andExpect(jsonPath("$.errorMessage").exists())
                 .andExpect(jsonPath("$.errorDetail").exists());
 
-        verify(tripImageUpdateUseCase, times(0)).updateTripImage(eq(tripId), any(), any(ImageFile.class));
+        verify(tripImageUpdateService, times(0)).updateTripImage(eq(tripId), any(), any(ImageFile.class));
     }
 
     @Test
@@ -217,7 +217,7 @@ public class TripImageUpdateControllerTest extends RestControllerTest {
                 .andExpect(jsonPath("$.errorMessage").exists())
                 .andExpect(jsonPath("$.errorDetail").exists());
 
-        verify(tripImageUpdateUseCase, times(0)).updateTripImage(eq(tripId), any(), any(ImageFile.class));
+        verify(tripImageUpdateService, times(0)).updateTripImage(eq(tripId), any(), any(ImageFile.class));
     }
 
     @Test
@@ -246,7 +246,7 @@ public class TripImageUpdateControllerTest extends RestControllerTest {
                 .andExpect(jsonPath("$.errorMessage").exists())
                 .andExpect(jsonPath("$.errorDetail").exists());
 
-        verify(tripImageUpdateUseCase, times(0)).updateTripImage(anyLong(), any(), any(ImageFile.class));
+        verify(tripImageUpdateService, times(0)).updateTripImage(anyLong(), any(), any(ImageFile.class));
     }
 
     @Test
@@ -266,7 +266,7 @@ public class TripImageUpdateControllerTest extends RestControllerTest {
                 .andExpect(jsonPath("$.errorMessage").exists())
                 .andExpect(jsonPath("$.errorDetail").exists());
 
-        verify(tripImageUpdateUseCase, times(0)).updateTripImage(eq(tripId), any(), any(ImageFile.class));
+        verify(tripImageUpdateService, times(0)).updateTripImage(eq(tripId), any(), any(ImageFile.class));
     }
 
     @Test
@@ -295,7 +295,7 @@ public class TripImageUpdateControllerTest extends RestControllerTest {
                 .andExpect(jsonPath("$.errorMessage").exists())
                 .andExpect(jsonPath("$.errorDetail").exists());
 
-        verify(tripImageUpdateUseCase, times(0)).updateTripImage(eq(tripId), any(), any(ImageFile.class));
+        verify(tripImageUpdateService, times(0)).updateTripImage(eq(tripId), any(), any(ImageFile.class));
     }
 
     @Test
@@ -324,7 +324,7 @@ public class TripImageUpdateControllerTest extends RestControllerTest {
                 .andExpect(jsonPath("$.errorMessage").exists())
                 .andExpect(jsonPath("$.errorDetail").exists());
 
-        verify(tripImageUpdateUseCase, times(0)).updateTripImage(eq(tripId), any(), any(ImageFile.class));
+        verify(tripImageUpdateService, times(0)).updateTripImage(eq(tripId), any(), any(ImageFile.class));
     }
 
     @Test
@@ -353,7 +353,7 @@ public class TripImageUpdateControllerTest extends RestControllerTest {
                 .andExpect(jsonPath("$.errorMessage").exists())
                 .andExpect(jsonPath("$.errorDetail").exists());
 
-        verify(tripImageUpdateUseCase, times(0)).updateTripImage(eq(tripId), any(), any(ImageFile.class));
+        verify(tripImageUpdateService, times(0)).updateTripImage(eq(tripId), any(), any(ImageFile.class));
     }
 
     @Test
@@ -383,6 +383,6 @@ public class TripImageUpdateControllerTest extends RestControllerTest {
                 .andExpect(jsonPath("$.errorMessage").exists())
                 .andExpect(jsonPath("$.errorDetail").exists());
 
-        verify(tripImageUpdateUseCase, times(0)).updateTripImage(eq(tripId), any(), any(ImageFile.class));
+        verify(tripImageUpdateService, times(0)).updateTripImage(eq(tripId), any(), any(ImageFile.class));
     }
 }

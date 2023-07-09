@@ -2,7 +2,7 @@ package com.cosain.trilo.trip.presentation.trip.command;
 
 import com.cosain.trilo.common.LoginUser;
 import com.cosain.trilo.common.file.ImageFile;
-import com.cosain.trilo.trip.application.trip.command.usecase.TripImageUpdateUseCase;
+import com.cosain.trilo.trip.application.trip.command.service.TripImageUpdateService;
 import com.cosain.trilo.trip.presentation.trip.command.dto.response.TripImageUpdateResponse;
 import com.cosain.trilo.user.domain.User;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 public class TripImageUpdateController {
 
-    private final TripImageUpdateUseCase tripImageUpdateUseCase;
+    private final TripImageUpdateService tripImageUpdateService;
 
     /**
      * 여행의 이미지를 변경하고, 저장된 이미지 경로를 응답합니다.
@@ -35,7 +35,7 @@ public class TripImageUpdateController {
         Long tripperId = user.getId();
         ImageFile imageFile = ImageFile.from(multipartFile);
 
-        String imageURL = tripImageUpdateUseCase.updateTripImage(tripId, tripperId, imageFile);
+        String imageURL = tripImageUpdateService.updateTripImage(tripId, tripperId, imageFile);
         return new TripImageUpdateResponse(tripId, imageURL);
     }
 

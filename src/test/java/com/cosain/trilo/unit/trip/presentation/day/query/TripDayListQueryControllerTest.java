@@ -1,7 +1,7 @@
 package com.cosain.trilo.unit.trip.presentation.day.query;
 
 import com.cosain.trilo.support.RestControllerTest;
-import com.cosain.trilo.trip.application.day.query.usecase.DaySearchUseCase;
+import com.cosain.trilo.trip.application.day.query.service.DaySearchService;
 import com.cosain.trilo.trip.domain.vo.DayColor;
 import com.cosain.trilo.trip.infra.dto.DayScheduleDetail;
 import com.cosain.trilo.trip.infra.dto.ScheduleSummary;
@@ -31,7 +31,7 @@ class TripDayListQueryControllerTest extends RestControllerTest {
 
 
     @MockBean
-    private DaySearchUseCase daySearchUseCase;
+    private DaySearchService daySearchService;
     private final String ACCESS_TOKEN = "Bearer accessToken";
 
     @Test
@@ -45,7 +45,7 @@ class TripDayListQueryControllerTest extends RestControllerTest {
         DayScheduleDetail dayScheduleDetail = new DayScheduleDetail(1L, 1L, LocalDate.of(2023, 5, 13), DayColor.BLACK, List.of(scheduleSummary));
         List<DayScheduleDetail> dayScheduleDetails = List.of(dayScheduleDetail);
 
-        given(daySearchUseCase.searchDaySchedules(tripId)).willReturn(dayScheduleDetails);
+        given(daySearchService.searchDaySchedules(tripId)).willReturn(dayScheduleDetails);
 
         mockMvc.perform(get("/api/trips/{tripId}/days", tripId)
                 .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)

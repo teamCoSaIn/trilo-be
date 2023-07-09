@@ -1,7 +1,7 @@
 package com.cosain.trilo.unit.trip.presentation.schedule.command.docs;
 
 import com.cosain.trilo.support.RestDocsTestSupport;
-import com.cosain.trilo.trip.application.schedule.command.usecase.ScheduleDeleteUseCase;
+import com.cosain.trilo.trip.application.schedule.command.service.ScheduleDeleteService;
 import com.cosain.trilo.trip.presentation.schedule.command.ScheduleDeleteController;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -30,7 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class ScheduleDeleteControllerDocsTest extends RestDocsTestSupport {
 
     @MockBean
-    private ScheduleDeleteUseCase scheduleDeleteUseCase;
+    private ScheduleDeleteService scheduleDeleteService;
 
     private final String ACCESS_TOKEN = "Bearer accessToken";
 
@@ -41,7 +41,7 @@ public class ScheduleDeleteControllerDocsTest extends RestDocsTestSupport {
 
         // given
         Long scheduleId = 1L;
-        willDoNothing().given(scheduleDeleteUseCase).deleteSchedule(eq(scheduleId), any());
+        willDoNothing().given(scheduleDeleteService).deleteSchedule(eq(scheduleId), any());
 
 
         // when & then
@@ -63,6 +63,6 @@ public class ScheduleDeleteControllerDocsTest extends RestDocsTestSupport {
                         )
                 ));
 
-        verify(scheduleDeleteUseCase).deleteSchedule(eq(scheduleId), any());
+        verify(scheduleDeleteService).deleteSchedule(eq(scheduleId), any());
     }
 }

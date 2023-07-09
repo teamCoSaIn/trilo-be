@@ -1,7 +1,7 @@
 package com.cosain.trilo.unit.trip.presentation.day.query;
 
 import com.cosain.trilo.support.RestControllerTest;
-import com.cosain.trilo.trip.application.day.query.usecase.DaySearchUseCase;
+import com.cosain.trilo.trip.application.day.query.service.DaySearchService;
 import com.cosain.trilo.trip.domain.vo.DayColor;
 import com.cosain.trilo.trip.infra.dto.DayScheduleDetail;
 import com.cosain.trilo.trip.infra.dto.ScheduleSummary;
@@ -30,7 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class SingleDayQueryControllerTest extends RestControllerTest {
 
     @MockBean
-    private DaySearchUseCase daySearchUseCase;
+    private DaySearchService daySearchService;
     private final String ACCESS_TOKEN = "Bearer accessToken";
     @Test
     @DisplayName("인증된 사용자 요청 -> Day 단건 조회")
@@ -41,7 +41,7 @@ class SingleDayQueryControllerTest extends RestControllerTest {
         ScheduleSummary scheduleSummary2 = new ScheduleSummary(2L, "제목2", "장소 이름2","장소 식별자2", 33.33, 33.33);
 
         DayScheduleDetail dayScheduleDetail = new DayScheduleDetail(1L, 1L, LocalDate.of(2023, 2, 3), DayColor.RED, List.of(scheduleSummary1, scheduleSummary2));
-        given(daySearchUseCase.searchDeySchedule(eq(1L))).willReturn(dayScheduleDetail);
+        given(daySearchService.searchDeySchedule(eq(1L))).willReturn(dayScheduleDetail);
 
         mockMvc.perform(get("/api/days/1")
                         .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)

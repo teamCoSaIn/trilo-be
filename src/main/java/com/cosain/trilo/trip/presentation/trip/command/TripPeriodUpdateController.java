@@ -1,9 +1,9 @@
 package com.cosain.trilo.trip.presentation.trip.command;
 
 import com.cosain.trilo.common.LoginUser;
-import com.cosain.trilo.trip.application.trip.command.usecase.TripPeriodUpdateUseCase;
-import com.cosain.trilo.trip.application.trip.command.usecase.dto.TripPeriodUpdateCommand;
-import com.cosain.trilo.trip.application.trip.command.usecase.dto.factory.TripPeriodUpdateCommandFactory;
+import com.cosain.trilo.trip.application.trip.command.service.TripPeriodUpdateService;
+import com.cosain.trilo.trip.application.trip.dto.TripPeriodUpdateCommand;
+import com.cosain.trilo.trip.application.trip.dto.factory.TripPeriodUpdateCommandFactory;
 import com.cosain.trilo.trip.presentation.trip.command.dto.request.TripPeriodUpdateRequest;
 import com.cosain.trilo.trip.presentation.trip.command.dto.response.TripPeriodUpdateResponse;
 import com.cosain.trilo.user.domain.User;
@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 public class TripPeriodUpdateController {
 
-    private final TripPeriodUpdateUseCase tripPeriodUpdateUseCase;
+    private final TripPeriodUpdateService tripPeriodUpdateService;
     private final TripPeriodUpdateCommandFactory tripPeriodUpdateCommandFactory;
 
     @PutMapping("/api/trips/{tripId}/period")
@@ -26,7 +26,7 @@ public class TripPeriodUpdateController {
         Long tripperId = user.getId();
         TripPeriodUpdateCommand updateCommand = tripPeriodUpdateCommandFactory.createCommand(request.getStartDate(), request.getEndDate());
 
-        tripPeriodUpdateUseCase.updateTripPeriod(tripId, tripperId, updateCommand);
+        tripPeriodUpdateService.updateTripPeriod(tripId, tripperId, updateCommand);
         return new TripPeriodUpdateResponse(tripId);
     }
 }

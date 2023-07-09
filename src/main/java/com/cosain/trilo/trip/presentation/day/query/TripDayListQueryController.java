@@ -1,6 +1,6 @@
 package com.cosain.trilo.trip.presentation.day.query;
 
-import com.cosain.trilo.trip.application.day.query.usecase.DaySearchUseCase;
+import com.cosain.trilo.trip.application.day.query.service.DaySearchService;
 import com.cosain.trilo.trip.infra.dto.DayScheduleDetail;
 import com.cosain.trilo.trip.presentation.day.query.dto.DayListResponse;
 import lombok.RequiredArgsConstructor;
@@ -16,12 +16,12 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TripDayListQueryController {
 
-    private final DaySearchUseCase daySearchUseCase;
+    private final DaySearchService daySearchService;
 
     @GetMapping("/api/trips/{tripId}/days")
     @ResponseStatus(HttpStatus.OK)
     public DayListResponse findTripDayList(@PathVariable Long tripId) {
-        List<DayScheduleDetail> dayScheduleDetails = daySearchUseCase.searchDaySchedules(tripId);
+        List<DayScheduleDetail> dayScheduleDetails = daySearchService.searchDaySchedules(tripId);
         return DayListResponse.of(dayScheduleDetails);
     }
 }

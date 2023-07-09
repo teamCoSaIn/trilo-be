@@ -4,7 +4,7 @@ package com.cosain.trilo.unit.trip.presentation.day.command;
 import com.cosain.trilo.support.RestControllerTest;
 import com.cosain.trilo.trip.application.day.command.dto.DayColorUpdateCommand;
 import com.cosain.trilo.trip.application.day.command.dto.factory.DayColorUpdateCommandFactory;
-import com.cosain.trilo.trip.application.day.command.usecase.DayColorUpdateUseCase;
+import com.cosain.trilo.trip.application.day.command.service.DayColorUpdateService;
 import com.cosain.trilo.trip.domain.vo.DayColor;
 import com.cosain.trilo.trip.presentation.day.command.DayColorUpdateController;
 import com.cosain.trilo.trip.presentation.day.command.dto.DayColorUpdateRequest;
@@ -35,7 +35,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class DayColorUpdateControllerTest extends RestControllerTest {
 
     @MockBean
-    private DayColorUpdateUseCase dayColorUpdateUseCase;
+    private DayColorUpdateService dayColorUpdateService;
 
     @MockBean
     private DayColorUpdateCommandFactory dayColorUpdateCommandFactory;
@@ -60,7 +60,7 @@ public class DayColorUpdateControllerTest extends RestControllerTest {
                 .willReturn(command);
 
         willDoNothing()
-                .given(dayColorUpdateUseCase)
+                .given(dayColorUpdateService)
                 .updateDayColor(eq(dayId), any(), any(DayColorUpdateCommand.class));
 
 
@@ -76,7 +76,7 @@ public class DayColorUpdateControllerTest extends RestControllerTest {
                 .andExpect(jsonPath("$.dayId").value(dayId));
 
         verify(dayColorUpdateCommandFactory, times(1)).createCommand(eq(rawColorName));
-        verify(dayColorUpdateUseCase, times(1)).updateDayColor(eq(dayId), any(), any(DayColorUpdateCommand.class));
+        verify(dayColorUpdateService, times(1)).updateDayColor(eq(dayId), any(), any(DayColorUpdateCommand.class));
     }
 
     @Test
@@ -99,7 +99,7 @@ public class DayColorUpdateControllerTest extends RestControllerTest {
                 .andExpect(jsonPath("$.errorDetail").exists());
 
         verify(dayColorUpdateCommandFactory, times(0)).createCommand(eq(rawColorName));
-        verify(dayColorUpdateUseCase, times(0)).updateDayColor(eq(dayId), any(), any(DayColorUpdateCommand.class));
+        verify(dayColorUpdateService, times(0)).updateDayColor(eq(dayId), any(), any(DayColorUpdateCommand.class));
     }
 
     @Test

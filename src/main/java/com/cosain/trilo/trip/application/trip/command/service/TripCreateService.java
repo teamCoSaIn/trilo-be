@@ -1,7 +1,6 @@
 package com.cosain.trilo.trip.application.trip.command.service;
 
-import com.cosain.trilo.trip.application.trip.command.usecase.dto.TripCreateCommand;
-import com.cosain.trilo.trip.application.trip.command.usecase.TripCreateUseCase;
+import com.cosain.trilo.trip.application.trip.dto.TripCreateCommand;
 import com.cosain.trilo.trip.domain.entity.Trip;
 import com.cosain.trilo.trip.domain.repository.TripRepository;
 import jakarta.transaction.Transactional;
@@ -10,7 +9,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class TripCreateService implements TripCreateUseCase {
+public class TripCreateService {
 
     private final TripRepository tripRepository;
 
@@ -20,7 +19,6 @@ public class TripCreateService implements TripCreateUseCase {
      * @param createCommand : 여행 생성에 필요한 정보들
      * @return 생성된 여행의 식별자
      */
-    @Override
     @Transactional
     public Long createTrip(Long tripperId, TripCreateCommand createCommand) {
         Trip trip = Trip.create(createCommand.getTripTitle(), tripperId);

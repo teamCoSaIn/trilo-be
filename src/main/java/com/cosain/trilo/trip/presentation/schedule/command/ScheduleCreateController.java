@@ -2,9 +2,9 @@ package com.cosain.trilo.trip.presentation.schedule.command;
 
 import com.cosain.trilo.common.LoginUser;
 import com.cosain.trilo.common.exception.CustomException;
-import com.cosain.trilo.trip.application.schedule.command.usecase.ScheduleCreateUseCase;
-import com.cosain.trilo.trip.application.schedule.command.usecase.dto.ScheduleCreateCommand;
-import com.cosain.trilo.trip.application.schedule.command.usecase.dto.factory.ScheduleCreateCommandFactory;
+import com.cosain.trilo.trip.application.schedule.command.service.ScheduleCreateService;
+import com.cosain.trilo.trip.application.schedule.dto.ScheduleCreateCommand;
+import com.cosain.trilo.trip.application.schedule.dto.factory.ScheduleCreateCommandFactory;
 import com.cosain.trilo.trip.presentation.exception.NullRequestCoordinateException;
 import com.cosain.trilo.trip.presentation.schedule.command.dto.request.RequestCoordinate;
 import com.cosain.trilo.trip.presentation.schedule.command.dto.request.ScheduleCreateRequest;
@@ -26,7 +26,7 @@ import java.util.List;
 @RestController
 public class ScheduleCreateController {
 
-    private final ScheduleCreateUseCase scheduleCreateUseCase;
+    private final ScheduleCreateService scheduleCreateService;
     private final ScheduleCreateCommandFactory scheduleCreateCommandFactory;
 
     @PostMapping("/api/schedules")
@@ -35,7 +35,7 @@ public class ScheduleCreateController {
         Long tripperId = user.getId();
         ScheduleCreateCommand command = createCommand(request);
 
-        Long scheduleId = scheduleCreateUseCase.createSchedule(tripperId, command);
+        Long scheduleId = scheduleCreateService.createSchedule(tripperId, command);
         log.info("scheduleId = {}", scheduleId);
         return ScheduleCreateResponse.from(scheduleId);
     }

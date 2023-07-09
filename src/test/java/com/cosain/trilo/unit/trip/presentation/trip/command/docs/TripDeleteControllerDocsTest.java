@@ -1,7 +1,7 @@
 package com.cosain.trilo.unit.trip.presentation.trip.command.docs;
 
 import com.cosain.trilo.support.RestDocsTestSupport;
-import com.cosain.trilo.trip.application.trip.command.usecase.TripDeleteUseCase;
+import com.cosain.trilo.trip.application.trip.command.service.TripDeleteService;
 import com.cosain.trilo.trip.presentation.trip.command.TripDeleteController;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -30,7 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class TripDeleteControllerDocsTest extends RestDocsTestSupport {
 
     @MockBean
-    private TripDeleteUseCase tripDeleteUseCase;
+    private TripDeleteService tripDeleteService;
 
     private final String ACCESS_TOKEN = "Bearer accessToken";
 
@@ -39,7 +39,7 @@ public class TripDeleteControllerDocsTest extends RestDocsTestSupport {
     void tripDeleteDocTest() throws Exception {
         Long tripId = 1L;
         mockingForLoginUserAnnotation();
-        willDoNothing().given(tripDeleteUseCase).deleteTrip(eq(tripId), any());
+        willDoNothing().given(tripDeleteService).deleteTrip(eq(tripId), any());
 
         mockMvc.perform(delete("/api/trips/{tripId}", tripId)
                         .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)
@@ -61,6 +61,6 @@ public class TripDeleteControllerDocsTest extends RestDocsTestSupport {
                 ));
 
 
-        verify(tripDeleteUseCase).deleteTrip(eq(tripId), any());
+        verify(tripDeleteService).deleteTrip(eq(tripId), any());
     }
 }

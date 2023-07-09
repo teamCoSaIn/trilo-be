@@ -1,9 +1,9 @@
 package com.cosain.trilo.unit.trip.presentation.trip.command.docs;
 
 import com.cosain.trilo.support.RestDocsTestSupport;
-import com.cosain.trilo.trip.application.trip.command.usecase.TripPeriodUpdateUseCase;
-import com.cosain.trilo.trip.application.trip.command.usecase.dto.TripPeriodUpdateCommand;
-import com.cosain.trilo.trip.application.trip.command.usecase.dto.factory.TripPeriodUpdateCommandFactory;
+import com.cosain.trilo.trip.application.trip.command.service.TripPeriodUpdateService;
+import com.cosain.trilo.trip.application.trip.dto.TripPeriodUpdateCommand;
+import com.cosain.trilo.trip.application.trip.dto.factory.TripPeriodUpdateCommandFactory;
 import com.cosain.trilo.trip.domain.vo.TripPeriod;
 import com.cosain.trilo.trip.presentation.trip.command.TripPeriodUpdateController;
 import com.cosain.trilo.trip.presentation.trip.command.dto.request.TripPeriodUpdateRequest;
@@ -41,7 +41,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class TripPeriodUpdateControllerDocsTest extends RestDocsTestSupport {
 
     @MockBean
-    private TripPeriodUpdateUseCase tripPeriodUpdateUseCase;
+    private TripPeriodUpdateService tripPeriodUpdateService;
 
     @MockBean
     private TripPeriodUpdateCommandFactory tripPeriodUpdateCommandFactory;
@@ -62,7 +62,7 @@ public class TripPeriodUpdateControllerDocsTest extends RestDocsTestSupport {
         TripPeriodUpdateCommand command = new TripPeriodUpdateCommand(TripPeriod.of(startDate, endDate));
 
         given(tripPeriodUpdateCommandFactory.createCommand(eq(startDate), eq(endDate))).willReturn(command);
-        willDoNothing().given(tripPeriodUpdateUseCase).updateTripPeriod(eq(tripId), any(), any(TripPeriodUpdateCommand.class));
+        willDoNothing().given(tripPeriodUpdateService).updateTripPeriod(eq(tripId), any(), any(TripPeriodUpdateCommand.class));
 
         mockMvc.perform(put("/api/trips/{tripId}/period", tripId)
                         .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)
@@ -101,7 +101,7 @@ public class TripPeriodUpdateControllerDocsTest extends RestDocsTestSupport {
                         )
                 ));
 
-        verify(tripPeriodUpdateUseCase, times(1)).updateTripPeriod(eq(tripId), any(), any(TripPeriodUpdateCommand.class));
+        verify(tripPeriodUpdateService, times(1)).updateTripPeriod(eq(tripId), any(), any(TripPeriodUpdateCommand.class));
         verify(tripPeriodUpdateCommandFactory, times(1)).createCommand(eq(startDate), eq(endDate));
     }
 }

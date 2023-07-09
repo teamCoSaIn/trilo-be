@@ -3,13 +3,12 @@ package com.cosain.trilo.unit.trip.presentation.day.command.docs;
 import com.cosain.trilo.support.RestDocsTestSupport;
 import com.cosain.trilo.trip.application.day.command.dto.DayColorUpdateCommand;
 import com.cosain.trilo.trip.application.day.command.dto.factory.DayColorUpdateCommandFactory;
-import com.cosain.trilo.trip.application.day.command.usecase.DayColorUpdateUseCase;
+import com.cosain.trilo.trip.application.day.command.service.DayColorUpdateService;
 import com.cosain.trilo.trip.domain.vo.DayColor;
 import com.cosain.trilo.trip.presentation.day.command.DayColorUpdateController;
 import com.cosain.trilo.trip.presentation.day.command.dto.DayColorUpdateRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
@@ -41,7 +40,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class DayColorUpdateControllerDocsTest extends RestDocsTestSupport {
 
     @MockBean
-    private DayColorUpdateUseCase dayColorUpdateUseCase;
+    private DayColorUpdateService dayColorUpdateService;
 
     @MockBean
     private DayColorUpdateCommandFactory dayColorUpdateCommandFactory;
@@ -66,7 +65,7 @@ public class DayColorUpdateControllerDocsTest extends RestDocsTestSupport {
                 .willReturn(command);
 
         willDoNothing()
-                .given(dayColorUpdateUseCase)
+                .given(dayColorUpdateService)
                 .updateDayColor(eq(dayId), any(), any(DayColorUpdateCommand.class));
 
 
@@ -103,7 +102,7 @@ public class DayColorUpdateControllerDocsTest extends RestDocsTestSupport {
                 ));
 
         verify(dayColorUpdateCommandFactory, times(1)).createCommand(eq(rawColorName));
-        verify(dayColorUpdateUseCase, times(1)).updateDayColor(eq(dayId), any(), any(DayColorUpdateCommand.class));
+        verify(dayColorUpdateService, times(1)).updateDayColor(eq(dayId), any(), any(DayColorUpdateCommand.class));
     }
 
 }

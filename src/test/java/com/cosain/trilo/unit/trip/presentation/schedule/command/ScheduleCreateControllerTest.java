@@ -3,9 +3,9 @@ package com.cosain.trilo.unit.trip.presentation.schedule.command;
 import com.cosain.trilo.common.exception.CustomException;
 import com.cosain.trilo.common.exception.CustomValidationException;
 import com.cosain.trilo.support.RestControllerTest;
-import com.cosain.trilo.trip.application.schedule.command.usecase.ScheduleCreateUseCase;
-import com.cosain.trilo.trip.application.schedule.command.usecase.dto.ScheduleCreateCommand;
-import com.cosain.trilo.trip.application.schedule.command.usecase.dto.factory.ScheduleCreateCommandFactory;
+import com.cosain.trilo.trip.application.schedule.command.service.ScheduleCreateService;
+import com.cosain.trilo.trip.application.schedule.dto.ScheduleCreateCommand;
+import com.cosain.trilo.trip.application.schedule.dto.factory.ScheduleCreateCommandFactory;
 import com.cosain.trilo.trip.domain.exception.InvalidCoordinateException;
 import com.cosain.trilo.trip.domain.vo.Coordinate;
 import com.cosain.trilo.trip.domain.vo.Place;
@@ -41,7 +41,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class ScheduleCreateControllerTest extends RestControllerTest {
 
     @MockBean
-    private ScheduleCreateUseCase scheduleCreateUseCase;
+    private ScheduleCreateService scheduleCreateService;
 
     @MockBean
     private ScheduleCreateCommandFactory scheduleCreateCommandFactory;
@@ -90,7 +90,7 @@ class ScheduleCreateControllerTest extends RestControllerTest {
                 eq(dayId), eq(tripId), eq(rawScheduleTitle),
                 eq(placeId), eq(placeName),
                 eq(latitude), eq(longitude), anyList())).willReturn(command);
-        given(scheduleCreateUseCase.createSchedule(any(), any(ScheduleCreateCommand.class))).willReturn(createdScheduleId);
+        given(scheduleCreateService.createSchedule(any(), any(ScheduleCreateCommand.class))).willReturn(createdScheduleId);
 
         mockMvc.perform(post("/api/schedules")
                         .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)
@@ -102,7 +102,7 @@ class ScheduleCreateControllerTest extends RestControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.scheduleId").value(createdScheduleId));
 
-        verify(scheduleCreateUseCase).createSchedule(any(), any(ScheduleCreateCommand.class));
+        verify(scheduleCreateService).createSchedule(any(), any(ScheduleCreateCommand.class));
         verify(scheduleCreateCommandFactory).createCommand(
                 eq(dayId), eq(tripId), eq(rawScheduleTitle),
                 eq(placeId), eq(placeName),

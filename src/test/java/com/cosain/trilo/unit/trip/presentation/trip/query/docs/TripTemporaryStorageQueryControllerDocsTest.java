@@ -1,11 +1,10 @@
 package com.cosain.trilo.unit.trip.presentation.trip.query.docs;
 
 import com.cosain.trilo.support.RestDocsTestSupport;
-import com.cosain.trilo.trip.application.trip.query.usecase.TemporarySearchUseCase;
+import com.cosain.trilo.trip.application.trip.query.service.TemporarySearchService;
 import com.cosain.trilo.trip.infra.dto.ScheduleSummary;
 import com.cosain.trilo.trip.presentation.trip.query.TripTemporaryStorageQueryController;
 import com.cosain.trilo.trip.presentation.trip.query.dto.request.TempSchedulePageCondition;
-import com.cosain.trilo.trip.presentation.trip.query.dto.request.TripPageCondition;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -32,7 +31,7 @@ import static org.springframework.restdocs.request.RequestDocumentation.*;
 public class TripTemporaryStorageQueryControllerDocsTest extends RestDocsTestSupport {
 
     @MockBean
-    private TemporarySearchUseCase temporarySearchUseCase;
+    private TemporarySearchService TemporarySearchService;
     private final String ACCESS_TOKEN = "Bearer accessToken";
 
     @Test
@@ -47,7 +46,7 @@ public class TripTemporaryStorageQueryControllerDocsTest extends RestDocsTestSup
         ScheduleSummary scheduleSummary2 = new ScheduleSummary(3L, "제목", "장소 이름","장소 식별자",33.33, 33.33);
         SliceImpl<ScheduleSummary> scheduleSummaries = new SliceImpl<>(List.of(scheduleSummary1, scheduleSummary2));
         Pageable pageable = PageRequest.ofSize(size);
-        given(temporarySearchUseCase.searchTemporary(eq(tripId), any(TempSchedulePageCondition.class),eq(pageable))).willReturn(scheduleSummaries);
+        given(TemporarySearchService.searchTemporary(eq(tripId), any(TempSchedulePageCondition.class),eq(pageable))).willReturn(scheduleSummaries);
 
         mockMvc.perform(RestDocumentationRequestBuilders.get("/api/trips/{tripId}/temporary-storage", tripId)
                 .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)

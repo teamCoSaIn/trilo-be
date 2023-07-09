@@ -1,12 +1,11 @@
 package com.cosain.trilo.unit.trip.presentation.trip.query.docs;
 
 import com.cosain.trilo.support.RestDocsTestSupport;
-import com.cosain.trilo.trip.application.trip.query.usecase.TripListSearchUseCase;
+import com.cosain.trilo.trip.application.trip.query.service.TripListSearchService;
 import com.cosain.trilo.trip.domain.vo.TripStatus;
 import com.cosain.trilo.trip.infra.dto.TripSummary;
 import com.cosain.trilo.trip.presentation.trip.query.TripperTripListQueryController;
 import com.cosain.trilo.trip.presentation.trip.query.dto.request.TripPageCondition;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -37,7 +36,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class TripperTripListQueryControllerDocsTest extends RestDocsTestSupport {
 
     @MockBean
-    private TripListSearchUseCase tripListSearchUseCase;
+    private TripListSearchService TripListSearchService;
     private final String BASE_URL = "/api/trips";
     private final String ACCESS_TOKEN = "Bearer accessToken";
 
@@ -54,7 +53,7 @@ public class TripperTripListQueryControllerDocsTest extends RestDocsTestSupport 
         Pageable pageable = PageRequest.ofSize(size);
         SliceImpl<TripSummary> tripDetails = new SliceImpl<>(List.of(tripSummary1, tripSummary2, tripSummary3), pageable, true);
 
-        given(tripListSearchUseCase.searchTripSummaries(any(TripPageCondition.class), eq(pageable))).willReturn(tripDetails);
+        given(TripListSearchService.searchTripSummaries(any(TripPageCondition.class), eq(pageable))).willReturn(tripDetails);
 
         // when & then
         mockMvc.perform(RestDocumentationRequestBuilders.get(BASE_URL)

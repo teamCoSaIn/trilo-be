@@ -1,18 +1,16 @@
 package com.cosain.trilo.unit.trip.presentation.trip.query.docs;
 
 import com.cosain.trilo.support.RestDocsTestSupport;
-import com.cosain.trilo.trip.application.trip.query.usecase.TripDetailSearchUseCase;
+import com.cosain.trilo.trip.application.trip.query.service.TripDetailSearchService;
 import com.cosain.trilo.trip.domain.vo.TripStatus;
 import com.cosain.trilo.trip.infra.dto.TripDetail;
 import com.cosain.trilo.trip.presentation.trip.query.SingleTripQueryController;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.autoconfigure.restdocs.RestDocsMockMvcBuilderCustomizer;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
@@ -24,18 +22,17 @@ import static org.springframework.restdocs.headers.HeaderDocumentation.headerWit
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.payload.JsonFieldType.NUMBER;
 import static org.springframework.restdocs.payload.JsonFieldType.STRING;
-import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(SingleTripQueryController.class)
 public class SingleTripQueryControllerDocsTest extends RestDocsTestSupport {
 
     @MockBean
-    private TripDetailSearchUseCase tripDetailSearchUseCase;
+    private TripDetailSearchService tripDetailSearchService;
 
     private final String BASE_URL = "/api/trips";
     private final String ACCESS_TOKEN = "Bearer accessToken";
@@ -46,7 +43,7 @@ public class SingleTripQueryControllerDocsTest extends RestDocsTestSupport {
         Long tripId = 1L;
         mockingForLoginUserAnnotation();
         TripDetail tripDetail = new TripDetail(tripId, 2L, "여행 제목", TripStatus.DECIDED, LocalDate.of(2023, 4, 4), LocalDate.of(2023, 4, 5));
-        given(tripDetailSearchUseCase.searchTripDetail(anyLong(), any())).willReturn(tripDetail);
+        given(tripDetailSearchService.searchTripDetail(anyLong(), any())).willReturn(tripDetail);
 
         mockMvc.perform(RestDocumentationRequestBuilders.get(BASE_URL + "/{tripId}", tripId)
                         .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)

@@ -1,7 +1,7 @@
 package com.cosain.trilo.unit.trip.presentation.trip.query;
 
 import com.cosain.trilo.support.RestControllerTest;
-import com.cosain.trilo.trip.application.trip.query.usecase.TemporarySearchUseCase;
+import com.cosain.trilo.trip.application.trip.query.service.TemporarySearchService;
 import com.cosain.trilo.trip.infra.dto.ScheduleSummary;
 import com.cosain.trilo.trip.presentation.trip.query.TripTemporaryStorageQueryController;
 import com.cosain.trilo.trip.presentation.trip.query.dto.request.TempSchedulePageCondition;
@@ -32,7 +32,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class TripTemporaryStorageQueryControllerTest extends RestControllerTest {
 
     @MockBean
-    private TemporarySearchUseCase temporarySearchUseCase;
+    private TemporarySearchService temporarySearchService;
 
     private final String ACCESS_TOKEN = "Bearer accessToken";
 
@@ -49,7 +49,7 @@ class TripTemporaryStorageQueryControllerTest extends RestControllerTest {
         ScheduleSummary scheduleSummary2 = new ScheduleSummary(3L, null, "제목","장소 식별자",33.33, 33.33);
         SliceImpl<ScheduleSummary> scheduleSummaries = new SliceImpl<>(List.of(scheduleSummary1, scheduleSummary2));
         Pageable pageable = PageRequest.ofSize(size);
-        given(temporarySearchUseCase.searchTemporary(eq(tripId), any(TempSchedulePageCondition.class), eq(pageable))).willReturn(scheduleSummaries);
+        given(temporarySearchService.searchTemporary(eq(tripId), any(TempSchedulePageCondition.class), eq(pageable))).willReturn(scheduleSummaries);
 
         mockMvc.perform(get("/api/trips/1/temporary-storage")
                         .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)

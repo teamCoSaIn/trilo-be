@@ -1,9 +1,9 @@
 package com.cosain.trilo.unit.trip.presentation.schedule.command;
 
 import com.cosain.trilo.support.RestControllerTest;
-import com.cosain.trilo.trip.application.schedule.command.usecase.ScheduleUpdateUseCase;
-import com.cosain.trilo.trip.application.schedule.command.usecase.dto.ScheduleUpdateCommand;
-import com.cosain.trilo.trip.application.schedule.command.usecase.dto.factory.ScheduleUpdateCommandFactory;
+import com.cosain.trilo.trip.application.schedule.command.service.ScheduleUpdateService;
+import com.cosain.trilo.trip.application.schedule.dto.ScheduleUpdateCommand;
+import com.cosain.trilo.trip.application.schedule.dto.factory.ScheduleUpdateCommandFactory;
 import com.cosain.trilo.trip.domain.vo.ScheduleContent;
 import com.cosain.trilo.trip.domain.vo.ScheduleTime;
 import com.cosain.trilo.trip.domain.vo.ScheduleTitle;
@@ -20,7 +20,8 @@ import org.springframework.security.test.context.support.WithAnonymousUser;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalTime;
 
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -33,7 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class ScheduleUpdateControllerTest extends RestControllerTest {
 
     @MockBean
-    private ScheduleUpdateUseCase scheduleUpdateUseCase;
+    private ScheduleUpdateService scheduleUpdateService;
 
     @MockBean
     private ScheduleUpdateCommandFactory scheduleUpdateCommandFactory;
@@ -57,7 +58,7 @@ class ScheduleUpdateControllerTest extends RestControllerTest {
         ScheduleUpdateCommand command = new ScheduleUpdateCommand(ScheduleTitle.of(rawContent), ScheduleContent.of(rawContent), ScheduleTime.of(startTime, endTime));
 
         given(scheduleUpdateCommandFactory.createCommand(eq(rawTitle),eq(rawContent), eq(startTime), eq(endTime))).willReturn(command);
-        given(scheduleUpdateUseCase.updateSchedule(eq(scheduleId),any(),any(ScheduleUpdateCommand.class))).willReturn(1L);
+        given(scheduleUpdateService.updateSchedule(eq(scheduleId),any(),any(ScheduleUpdateCommand.class))).willReturn(1L);
 
         // when & then
         mockMvc.perform(put("/api/schedules/" + scheduleId)
@@ -70,7 +71,7 @@ class ScheduleUpdateControllerTest extends RestControllerTest {
                 .andDo(print());
 
         verify(scheduleUpdateCommandFactory).createCommand(eq(rawTitle), eq(rawContent), eq(startTime), eq(endTime));
-        verify(scheduleUpdateUseCase).updateSchedule(eq(scheduleId),any(),any(ScheduleUpdateCommand.class));
+        verify(scheduleUpdateService).updateSchedule(eq(scheduleId),any(),any(ScheduleUpdateCommand.class));
     }
 
     @Test

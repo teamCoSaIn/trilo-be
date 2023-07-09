@@ -7,8 +7,8 @@ import com.cosain.trilo.trip.application.exception.NoScheduleMoveAuthorityExcept
 import com.cosain.trilo.trip.application.exception.ScheduleNotFoundException;
 import com.cosain.trilo.trip.application.exception.TooManyDayScheduleException;
 import com.cosain.trilo.trip.application.schedule.command.service.ScheduleMoveService;
-import com.cosain.trilo.trip.application.schedule.command.usecase.dto.ScheduleMoveCommand;
-import com.cosain.trilo.trip.application.schedule.command.usecase.dto.ScheduleMoveResult;
+import com.cosain.trilo.trip.application.schedule.dto.ScheduleMoveCommand;
+import com.cosain.trilo.trip.application.schedule.dto.ScheduleMoveResult;
 import com.cosain.trilo.trip.domain.entity.Day;
 import com.cosain.trilo.trip.domain.entity.Schedule;
 import com.cosain.trilo.trip.domain.entity.Trip;

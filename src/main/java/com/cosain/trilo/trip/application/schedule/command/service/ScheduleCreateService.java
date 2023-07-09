@@ -1,8 +1,7 @@
 package com.cosain.trilo.trip.application.schedule.command.service;
 
 import com.cosain.trilo.trip.application.exception.*;
-import com.cosain.trilo.trip.application.schedule.command.usecase.dto.ScheduleCreateCommand;
-import com.cosain.trilo.trip.application.schedule.command.usecase.ScheduleCreateUseCase;
+import com.cosain.trilo.trip.application.schedule.dto.ScheduleCreateCommand;
 import com.cosain.trilo.trip.domain.entity.Day;
 import com.cosain.trilo.trip.domain.entity.Schedule;
 import com.cosain.trilo.trip.domain.entity.Trip;
@@ -16,13 +15,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Service
-public class ScheduleCreateService implements ScheduleCreateUseCase {
+public class ScheduleCreateService {
 
     private final ScheduleRepository scheduleRepository;
     private final DayRepository dayRepository;
     private final TripRepository tripRepository;
 
-    @Override
     @Transactional
     public Long createSchedule(Long tripperId, ScheduleCreateCommand createCommand) {
         Long dayId = createCommand.getDayId();
