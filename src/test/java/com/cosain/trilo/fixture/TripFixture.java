@@ -2,10 +2,7 @@ package com.cosain.trilo.fixture;
 
 import com.cosain.trilo.trip.domain.entity.Day;
 import com.cosain.trilo.trip.domain.entity.Trip;
-import com.cosain.trilo.trip.domain.vo.DayColor;
-import com.cosain.trilo.trip.domain.vo.TripPeriod;
-import com.cosain.trilo.trip.domain.vo.TripStatus;
-import com.cosain.trilo.trip.domain.vo.TripTitle;
+import com.cosain.trilo.trip.domain.vo.*;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -130,6 +127,7 @@ public class TripFixture {
                 .tripTitle(TripTitle.of(rawTitle))
                 .status(tripStatus)
                 .tripPeriod(tripPeriod)
+                .tripImage(TripImage.defaultImage())
                 .build();
     }
 
