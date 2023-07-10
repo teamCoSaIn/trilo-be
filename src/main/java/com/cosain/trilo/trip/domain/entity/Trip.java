@@ -83,7 +83,7 @@ public class Trip {
         this.tripTitle = tripTitle;
         this.status = status;
         this.tripPeriod = tripPeriod;
-        this.tripImage = tripImage;
+        this.tripImage = tripImage == null ? TripImage.defaultImage() : tripImage;
         if (days != null) {
             this.days.addAll(days);
         }
