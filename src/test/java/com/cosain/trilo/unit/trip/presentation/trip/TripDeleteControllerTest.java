@@ -31,7 +31,7 @@ class TripDeleteControllerTest extends RestControllerTest {
     private final static String ACCESS_TOKEN = "Bearer accessToken";
 
     @Test
-    @DisplayName("인증된 사용자의 올바른 여행 삭제 요청 -> 미구현 500")
+    @DisplayName("인증된 사용자의 올바른 여행 삭제 요청 -> 성공")
     public void deleteTrip_with_authorizedUser() throws Exception {
         Long tripId = 1L;
         mockingForLoginUserAnnotation();
