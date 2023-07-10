@@ -1,4 +1,4 @@
-package com.cosain.trilo.unit.trip.presentation.day.docs;
+package com.cosain.trilo.unit.trip.presentation.day;
 
 
 import com.cosain.trilo.support.RestControllerTest;
