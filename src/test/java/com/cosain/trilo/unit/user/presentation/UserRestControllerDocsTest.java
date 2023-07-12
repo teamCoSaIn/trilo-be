@@ -64,7 +64,7 @@ public class UserRestControllerDocsTest extends RestDocsTestSupport {
                         ),
                         responseFields(
                                 fieldWithPath("id").type(JsonFieldType.NUMBER).description("회원 ID"),
-                                fieldWithPath("name").type(JsonFieldType.STRING).description("회원 이름"),
+                                fieldWithPath("nickName").type(JsonFieldType.STRING).description("회원 이름"),
                                 fieldWithPath("email").type(JsonFieldType.STRING).description("이메일"),
                                 fieldWithPath("profileImageURL").type(JsonFieldType.STRING).description("회원 프로필 이미지 URL(경로)"),
                                 fieldWithPath("authProvider").type(JsonFieldType.STRING).description("소셜 로그인 제공자"),
@@ -122,7 +122,7 @@ public class UserRestControllerDocsTest extends RestDocsTestSupport {
                                 parameterWithName("userId").description("조회할 회원 ID")
                         ),
                         responseFields(
-                                fieldWithPath("name").type(JsonFieldType.STRING).description("회원 이름"),
+                                fieldWithPath("nickName").type(JsonFieldType.STRING).description("회원 이름"),
                                 fieldWithPath("imageURL").type(JsonFieldType.STRING).description("이미지 URL"),
                                 subsectionWithPath("tripStatistics").type("TripStatistics").description("여행 통계 정보 (하단 표 참고)")
                         ),

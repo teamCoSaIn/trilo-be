@@ -7,7 +7,7 @@ import lombok.*;
 @Getter
 @Entity
 @Table(name = "users")
-@ToString(of = {"id", "name", "email", "profileImageURL", "authProvider", "role", "myPageImage"})
+@ToString(of = {"id", "nickName", "email", "profileImageURL", "authProvider", "role", "myPageImage"})
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User {
 
@@ -16,7 +16,7 @@ public class User {
     private Long id;
 
     @Column(nullable = false)
-    private String name;
+    private String nickName;
 
     @Column(nullable = false)
     private String email;
@@ -37,9 +37,9 @@ public class User {
     private MyPageImage myPageImage;
 
     @Builder(access = AccessLevel.PUBLIC)
-    private User(Long id,String name, String email, String profileImageUrl, AuthProvider authProvider, Role role) {
+    private User(Long id,String nickName, String email, String profileImageUrl, AuthProvider authProvider, Role role) {
         this.id = id;
-        this.name = name;
+        this.nickName = nickName;
         this.email = email;
         this.profileImageURL = profileImageUrl;
         this.authProvider = authProvider;
@@ -49,7 +49,7 @@ public class User {
 
     public static User from(OAuthProfileDto oAuthProfileDto) {
         return User.builder()
-                .name(oAuthProfileDto.getName())
+                .nickName(oAuthProfileDto.getName())
                 .email(oAuthProfileDto.getEmail())
                 .profileImageUrl(oAuthProfileDto.getProfileImageUrl())
                 .role(Role.MEMBER)
@@ -58,7 +58,7 @@ public class User {
     }
 
     public void updateUserByOauthProfile(OAuthProfileDto oAuthProfileDto) {
-        this.name = oAuthProfileDto.getName();
+        this.nickName = oAuthProfileDto.getName();
         this.profileImageURL = oAuthProfileDto.getProfileImageUrl();
     }
 }

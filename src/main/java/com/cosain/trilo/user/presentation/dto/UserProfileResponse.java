@@ -11,16 +11,16 @@ import lombok.Getter;
 public class UserProfileResponse {
 
     private Long id;
-    private String name;
+    private String nickName;
     private String email;
     private String profileImageURL;
     private AuthProvider authProvider;
     private Role role;
 
     @Builder(access = AccessLevel.PRIVATE)
-    private UserProfileResponse(Long id, String name, String email, String profileImageURL, AuthProvider authProvider, Role role) {
+    private UserProfileResponse(Long id, String nickName, String email, String profileImageURL, AuthProvider authProvider, Role role) {
         this.id = id;
-        this.name = name;
+        this.nickName = nickName;
         this.email = email;
         this.profileImageURL = profileImageURL;
         this.authProvider = authProvider;
@@ -30,7 +30,7 @@ public class UserProfileResponse {
     public static UserProfileResponse from(User user) {
         return UserProfileResponse.builder()
                 .id(user.getId())
-                .name(user.getName())
+                .nickName(user.getNickName())
                 .email(user.getEmail())
                 .profileImageURL(user.getProfileImageURL())
                 .authProvider(user.getAuthProvider())
