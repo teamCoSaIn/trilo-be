@@ -8,7 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@EqualsAndHashCode(of = {"baseURL", "fileName"})
+@EqualsAndHashCode(of = {"fileName"})
 @NoArgsConstructor(access = AccessLevel.PROTECTED, force = true)
 @Embeddable
 public class MyPageImage {
