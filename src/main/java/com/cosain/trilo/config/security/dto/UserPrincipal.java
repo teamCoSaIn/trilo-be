@@ -33,7 +33,7 @@ public class UserPrincipal implements OAuth2User {
 
     @Override
     public String getName() {
-        return user.getName();
+        return user.getNickName();
     }
 
     public static UserPrincipal from(User user){

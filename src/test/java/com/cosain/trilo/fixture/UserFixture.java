@@ -33,7 +33,7 @@ public enum UserFixture {
     public User create(){
         return User.builder()
                 .id(id)
-                .name(name)
+                .nickName(name)
                 .profileImageUrl(profileImageURL)
                 .email(email)
                 .authProvider(authProvider)

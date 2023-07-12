@@ -210,7 +210,7 @@ public class UserServiceTest {
             UserMyPageResponse myPageResponse = userService.getMyPage(userId, today);
 
             // then
-            assertThat(myPageResponse.getName()).isEqualTo(user.getName());
+            assertThat(myPageResponse.getNickName()).isEqualTo(user.getNickName());
             assertThat(myPageResponse.getTripStatistics().getTotalTripCnt()).isEqualTo(tripStatistics.getTotalTripCnt());
             assertThat(myPageResponse.getTripStatistics().getTerminatedTripCnt()).isEqualTo(tripStatistics.getTerminatedTripCnt());
         }

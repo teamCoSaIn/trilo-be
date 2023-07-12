@@ -55,7 +55,7 @@ public class UserIntegrationTest extends IntegrationTest {
                             .header(HttpHeaders.AUTHORIZATION, authorizationHeader(user)))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.id").value(user.getId()))
-                    .andExpect(jsonPath("$.name").value(user.getName()))
+                    .andExpect(jsonPath("$.nickName").value(user.getNickName()))
                     .andExpect(jsonPath("$.email").value(user.getEmail()))
                     .andExpect(jsonPath("$.profileImageURL").value(user.getProfileImageURL()))
                     .andExpect(jsonPath("$.role").value(user.getRole().name()));
@@ -137,7 +137,7 @@ public class UserIntegrationTest extends IntegrationTest {
             mockMvc.perform(RestDocumentationRequestBuilders.get(BASE_URL + "/{userId}/my-page", user.getId())
                             .header(HttpHeaders.AUTHORIZATION, authorizationHeader(user)))
                     .andExpect(MockMvcResultMatchers.status().isOk())
-                    .andExpect(jsonPath("$.name").value(user.getName()))
+                    .andExpect(jsonPath("$.nickName").value(user.getNickName()))
                     .andExpect(jsonPath("$.imageURL").value(myPageBaseUrl.concat(user.getMyPageImage().getFileName())))
                     .andExpect(jsonPath("$.tripStatistics.totalTripCnt").value(totalTripCnt))
                     .andExpect(jsonPath("$.tripStatistics.terminatedTripCnt").value(terminatedTripCnt));
