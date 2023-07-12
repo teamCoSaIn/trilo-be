@@ -1,10 +1,12 @@
 package com.cosain.trilo.unit.trip.domain.repository;
 
 import com.cosain.trilo.fixture.TripFixture;
+import com.cosain.trilo.fixture.UserFixture;
 import com.cosain.trilo.support.RepositoryTest;
 import com.cosain.trilo.trip.domain.entity.Day;
 import com.cosain.trilo.trip.domain.entity.Trip;
 import com.cosain.trilo.trip.domain.repository.DayRepository;
+import com.cosain.trilo.user.domain.User;
 import jakarta.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
@@ -32,7 +34,7 @@ public class DayRepositoryTest {
     @DisplayName("findBYWithTripTest - 같이 가져온 Trip이 실제 Trip 클래스인지 함께 검증")
     public void findByIdWithTripTest() {
         // given
-        Long tripperId = 1L;
+        Long tripperId = setupTripperId();
         LocalDate startDate = LocalDate.of(2023, 3, 1);
         LocalDate endDate = LocalDate.of(2023, 3, 1);
         Trip trip = TripFixture.decided_nullId(tripperId, startDate, endDate);
@@ -60,7 +62,7 @@ public class DayRepositoryTest {
     @DisplayName("deleteAllByIds- 전달받은 Id 목록의 Day들을 삭제")
     void deleteAllByIdsTest() {
         // given
-        Long tripperId = 1L;
+        Long tripperId = setupTripperId();
         LocalDate startDate = LocalDate.of(2023, 5, 1);
         LocalDate endDate = LocalDate.of(2023, 5, 4);
         Trip trip = TripFixture.decided_nullId(tripperId, startDate, endDate);
@@ -90,7 +92,7 @@ public class DayRepositoryTest {
     @DisplayName("deleteAllByTripId로 Day를 삭제하면, 해당 여행의 모든 Day들이 삭제된다.")
     void deleteAllByTripIdTest() {
         // given
-        Long tripperId = 1L;
+        Long tripperId = setupTripperId();
         LocalDate startDate = LocalDate.of(2023, 3, 1);
         LocalDate endDate = LocalDate.of(2023, 3, 3);
         Trip trip = TripFixture.decided_nullId(tripperId, startDate, endDate);
@@ -121,7 +123,7 @@ public class DayRepositoryTest {
         @Test
         void 전달받은_여행_ID_목록에_해당하는_모든_Day가_제거된다() {
             // given
-            Long tripperId = 1L;
+            Long tripperId = setupTripperId();
             LocalDate commonStartDate = LocalDate.of(2023,3,1);
             LocalDate commonEndDate = LocalDate.of(2023,3,3);
 
@@ -150,5 +152,10 @@ public class DayRepositoryTest {
         }
     }
 
+    private Long setupTripperId() {
+        User user = UserFixture.googleUser_NullId();
+        em.persist(user);
+        return user.getId();
+    }
 
 }

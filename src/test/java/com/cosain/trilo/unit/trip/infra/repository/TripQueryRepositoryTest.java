@@ -2,6 +2,7 @@
 package com.cosain.trilo.unit.trip.infra.repository;
 
 import com.cosain.trilo.fixture.TripFixture;
+import com.cosain.trilo.fixture.UserFixture;
 import com.cosain.trilo.support.RepositoryTest;
 import com.cosain.trilo.trip.domain.entity.Trip;
 import com.cosain.trilo.trip.infra.dto.TripDetail;
@@ -9,6 +10,7 @@ import com.cosain.trilo.trip.infra.dto.TripStatistics;
 import com.cosain.trilo.trip.infra.dto.TripSummary;
 import com.cosain.trilo.trip.infra.repository.trip.TripQueryRepository;
 import com.cosain.trilo.trip.presentation.trip.dto.request.TripPageCondition;
+import com.cosain.trilo.user.domain.User;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -37,7 +39,7 @@ public class TripQueryRepositoryTest {
     @DirtiesContext
     void findTripDetailTest() {
         // given
-        Long tripperId = 1L;
+        Long tripperId = setupTripperId();
         LocalDate startDate = LocalDate.of(2023, 3, 1);
         LocalDate endDate = LocalDate.of(2023, 3, 2);
 
@@ -66,12 +68,7 @@ public class TripQueryRepositoryTest {
         @DisplayName("여행의 TipperId가 일치하는 여행들이 커서에 해당하는 tripId 미만 row가 size 만큼 조회된다")
         void findTest() {
             // given
-            Long tripId = 3L;
-            Long tripperId = 1L;
-
-            int size = 2;
-            TripPageCondition tripPageCondition = new TripPageCondition(tripperId, tripId);
-            Pageable pageable = PageRequest.ofSize(size);
+            Long tripperId = setupTripperId();
 
             Trip trip1 = TripFixture.undecided_nullId(tripperId);
             Trip trip2 = TripFixture.undecided_nullId(tripperId);
@@ -81,6 +78,12 @@ public class TripQueryRepositoryTest {
             System.out.printf("trip ids = [%d, %d]%n", trip1.getId(), trip2.getId());
             em.flush();
             em.clear();
+
+            int size = 2;
+            Long tripId = trip2.getId() + 1L;
+
+            TripPageCondition tripPageCondition = new TripPageCondition(tripperId, tripId);
+            Pageable pageable = PageRequest.ofSize(size);
 
             // when
             Slice<TripSummary> tripSummariesByTripperId = tripQueryRepository.findTripSummariesByTripperId(tripPageCondition, pageable);
@@ -94,7 +97,7 @@ public class TripQueryRepositoryTest {
         @DisplayName("가장 최근에 생성된 여행 순으로 조회된다")
         void sortTest() {
             // given
-            Long tripperId = 1L;
+            Long tripperId = setupTripperId();
             Long tripId = 3L;
             TripPageCondition tripPageCondition = new TripPageCondition(tripperId, tripId);
             Pageable pageable = PageRequest.ofSize(3);
@@ -119,7 +122,7 @@ public class TripQueryRepositoryTest {
         @DirtiesContext
         void existByIdTest() {
             // given
-            Long tripperId = 5L;
+            Long tripperId = setupTripperId();
 
             Trip trip = TripFixture.undecided_nullId(tripperId);
             em.persist(trip);
@@ -139,7 +142,7 @@ public class TripQueryRepositoryTest {
         @Test
         void 총_여행_개수와_종료된_여행_개수를_반환한다(){
             // given
-            Long tripperId = 1L;
+            Long tripperId = setupTripperId();
             LocalDate today = LocalDate.of(2023, 4, 28);
             Trip terminatedTrip1 = TripFixture.decided_nullId(tripperId, today.minusDays(3), today.minusDays(1));
             Trip terminatedTrip2 = TripFixture.decided_nullId(tripperId, today.minusDays(3), today.minusDays(1));
@@ -161,6 +164,12 @@ public class TripQueryRepositoryTest {
             assertThat(tripStatistics.getTerminatedTripCnt()).isEqualTo(3);
             assertThat(tripStatistics.getTotalTripCnt()).isEqualTo(5);
         }
+    }
+
+    private Long setupTripperId() {
+        User user = UserFixture.googleUser_NullId();
+        em.persist(user);
+        return user.getId();
     }
 
 }

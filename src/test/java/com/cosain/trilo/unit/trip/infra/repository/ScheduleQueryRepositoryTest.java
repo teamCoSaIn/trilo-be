@@ -3,6 +3,7 @@ package com.cosain.trilo.unit.trip.infra.repository;
 
 import com.cosain.trilo.fixture.ScheduleFixture;
 import com.cosain.trilo.fixture.TripFixture;
+import com.cosain.trilo.fixture.UserFixture;
 import com.cosain.trilo.support.RepositoryTest;
 import com.cosain.trilo.trip.domain.entity.Schedule;
 import com.cosain.trilo.trip.domain.entity.Trip;
@@ -10,6 +11,7 @@ import com.cosain.trilo.trip.infra.dto.ScheduleDetail;
 import com.cosain.trilo.trip.infra.dto.ScheduleSummary;
 import com.cosain.trilo.trip.infra.repository.schedule.ScheduleQueryRepository;
 import com.cosain.trilo.trip.presentation.trip.dto.request.TempSchedulePageCondition;
+import com.cosain.trilo.user.domain.User;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -37,7 +39,7 @@ public class ScheduleQueryRepositoryTest {
     @Test
     void findScheduleTest(){
         // given
-        Long tripperId = 1L;
+        Long tripperId = setupTripperId();
         Trip trip = setupUndecidedTripAndPersist(tripperId);
 
         Schedule schedule = setupTemporaryScheduleAndPersist(trip, 0L);
@@ -67,7 +69,8 @@ public class ScheduleQueryRepositoryTest {
         @DisplayName("커서가 가리키는 일정 이후의 일정들이 size 만큼 조회된다.")
         void findTest(){
             // given
-            Trip trip = setupUndecidedTripAndPersist(1L);
+            Long tripperId = setupTripperId();
+            Trip trip = setupUndecidedTripAndPersist(tripperId);
 
             Schedule schedule1 = setupTemporaryScheduleAndPersist(trip, 10000L);
             Schedule schedule2 = setupTemporaryScheduleAndPersist(trip, 20000L);
@@ -91,7 +94,8 @@ public class ScheduleQueryRepositoryTest {
         @DisplayName("scheduleIndex 기준 오름차순으로 조회된다.")
         void sortTest(){
             // given
-            Trip trip = setupUndecidedTripAndPersist(1L);
+            Long tripperId = setupTripperId();
+            Trip trip = setupUndecidedTripAndPersist(tripperId);
 
             Schedule schedule1 = setupTemporaryScheduleAndPersist(trip, 10000L);
             Schedule schedule2 = setupTemporaryScheduleAndPersist(trip, 20000L);
@@ -118,7 +122,8 @@ public class ScheduleQueryRepositoryTest {
     @DirtiesContext
     void existByIdTest(){
         // given
-        Trip trip = setupUndecidedTripAndPersist(1L);
+        Long tripperId = setupTripperId();
+        Trip trip = setupUndecidedTripAndPersist(tripperId);
         Schedule schedule = setupTemporaryScheduleAndPersist(trip, 0L);
         em.flush();
         em.clear();
@@ -129,6 +134,12 @@ public class ScheduleQueryRepositoryTest {
         // when && then
         assertTrue(scheduleQueryRepository.existById(scheduleId));
         assertFalse(scheduleQueryRepository.existById(notExistScheduleId));
+    }
+
+    private Long setupTripperId() {
+        User user = UserFixture.googleUser_NullId();
+        em.persist(user);
+        return user.getId();
     }
 
     private Trip setupUndecidedTripAndPersist(Long tripperId) {

@@ -2,12 +2,15 @@ package com.cosain.trilo.unit.trip.domain.repository;
 
 import com.cosain.trilo.fixture.ScheduleFixture;
 import com.cosain.trilo.fixture.TripFixture;
+import com.cosain.trilo.fixture.UserFixture;
 import com.cosain.trilo.support.RepositoryTest;
 import com.cosain.trilo.trip.domain.entity.Day;
 import com.cosain.trilo.trip.domain.entity.Schedule;
 import com.cosain.trilo.trip.domain.entity.Trip;
 import com.cosain.trilo.trip.domain.repository.TripRepository;
-import com.cosain.trilo.trip.domain.vo.*;
+import com.cosain.trilo.trip.domain.vo.ScheduleIndex;
+import com.cosain.trilo.trip.domain.vo.TripTitle;
+import com.cosain.trilo.user.domain.User;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -37,7 +40,8 @@ public class TripRepositoryTest {
         @Test
         @DisplayName("같은 id로 조회하면 같은 여행이 찾아진다.")
         void successTest() {
-            Trip trip = Trip.create(TripTitle.of("제목"), 1L);
+            Long tripperId = setupTripperId();
+            Trip trip = Trip.create(TripTitle.of("제목"), tripperId);
             tripRepository.save(trip);
 
             em.clear();
@@ -52,7 +56,7 @@ public class TripRepositoryTest {
         @DisplayName("임시보관함을 지연로딩(기본 양방향 매핑)하여 얻어오면, 순서대로 요소들이 가져와진다.")
         void lazy_loading_TemporaryStorage() {
             // given
-            Long tripperId = 1L;
+            Long tripperId = setupTripperId();
             Trip trip = TripFixture.undecided_nullId(tripperId);
             tripRepository.save(trip);
 
@@ -85,7 +89,7 @@ public class TripRepositoryTest {
         @DisplayName("UnDecided 상태의 Trip을 조회하면 Trip만 조회된다.")
         public void findUndecidedTripTest() {
             // given
-            Long tripperId = 1L;
+            Long tripperId = setupTripperId();
             Trip trip = TripFixture.undecided_nullId(tripperId);
             em.persist(trip);
 
@@ -105,7 +109,7 @@ public class TripRepositoryTest {
         @DisplayName("findByIdWithDays -> Trip이 Day들을 가진 채 조회된다.")
         void testFindByIdWithDays(){
             // given
-            Long tripperId = 1L;
+            Long tripperId = setupTripperId();
             LocalDate startDate = LocalDate.of(2023,5,2);
             LocalDate endDate = LocalDate.of(2023,5,3);
 
@@ -132,7 +136,7 @@ public class TripRepositoryTest {
     @DisplayName("delete 테스트")
     public void deleteTest() {
         // given
-        Long tripperId = 1L;
+        Long tripperId = setupTripperId();
         Trip trip = setupUndecidedTripAndPersist(tripperId);
 
         // when
@@ -150,7 +154,7 @@ public class TripRepositoryTest {
         @Test
         void tripperId_에_해당하는_모든_trip이_제거된다(){
             // given
-            Long tripperId = 1L;
+            Long tripperId = setupTripperId();
             Trip trip1 = setupUndecidedTripAndPersist(tripperId);
             Trip trip2 = setupUndecidedTripAndPersist(tripperId);
             Trip trip3 = setupUndecidedTripAndPersist(tripperId);
@@ -168,6 +172,12 @@ public class TripRepositoryTest {
             assertThat(tripRepository.existsById(trip3.getId())).isFalse();
             assertThat(tripRepository.existsById(trip4.getId())).isFalse();
         }
+    }
+
+    private Long setupTripperId() {
+        User user = UserFixture.googleUser_NullId();
+        em.persist(user);
+        return user.getId();
     }
 
     private Trip setupUndecidedTripAndPersist(Long tripperId) {

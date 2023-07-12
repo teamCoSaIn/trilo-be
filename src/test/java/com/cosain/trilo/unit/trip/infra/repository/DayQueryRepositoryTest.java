@@ -2,6 +2,7 @@ package com.cosain.trilo.unit.trip.infra.repository;
 
 import com.cosain.trilo.fixture.ScheduleFixture;
 import com.cosain.trilo.fixture.TripFixture;
+import com.cosain.trilo.fixture.UserFixture;
 import com.cosain.trilo.support.RepositoryTest;
 import com.cosain.trilo.trip.domain.entity.Day;
 import com.cosain.trilo.trip.domain.entity.Schedule;
@@ -9,6 +10,7 @@ import com.cosain.trilo.trip.domain.entity.Trip;
 import com.cosain.trilo.trip.infra.dto.DayScheduleDetail;
 import com.cosain.trilo.trip.infra.dto.ScheduleSummary;
 import com.cosain.trilo.trip.infra.repository.day.DayQueryRepository;
+import com.cosain.trilo.user.domain.User;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -35,7 +37,7 @@ public class DayQueryRepositoryTest {
     @DisplayName("findDayWithSchedulesByDayId -> Day 및 소속 Schedule 요약정보 목록(순서 오름차순) 함께 조회됨")
     void testFindDayWithSchedulesByDayId() {
         // given
-        Long tripperId = 1L;
+        Long tripperId = setupTripperId();
         LocalDate startDate = LocalDate.of(2023, 5, 1);
         LocalDate endDate = LocalDate.of(2023, 5, 2);
 
@@ -73,7 +75,7 @@ public class DayQueryRepositoryTest {
         @DisplayName("tripId를 통해 Trip 에 매핑된 Day 들과 해당 Day 와 매핑된 Schedule 들이 조회되며 DTO 로 반환된다.")
         void findTest() {
             // given
-            Long tripperId = 1L;
+            Long tripperId = setupTripperId();
             LocalDate startDate = LocalDate.of(2023, 5, 10);
             LocalDate endDate = LocalDate.of(2023, 5, 11);
 
@@ -107,7 +109,7 @@ public class DayQueryRepositoryTest {
         @Test
         void Day에_속하는_Schedule이_하나도_존재하지_않는_경우_ScheduleSummary_리스트의_크기는_0_이된다() {
             // given
-            Long tripperId = 1L;
+            Long tripperId = setupTripperId();
             LocalDate startDate = LocalDate.of(2023, 5, 10);
             LocalDate endDate = LocalDate.of(2023, 5, 11);
 
@@ -127,7 +129,7 @@ public class DayQueryRepositoryTest {
         @DisplayName("여행 날짜 기준 오름차순, 일정 순서값 기준 오름 차순으로 조회된다.")
         void sortTest() {
             // given
-            Long tripperId = 1L;
+            Long tripperId = setupTripperId();
             LocalDate startDate = LocalDate.of(2023, 5, 10);
             LocalDate endDate = LocalDate.of(2023, 5, 11);
 
@@ -162,6 +164,12 @@ public class DayQueryRepositoryTest {
             assertThat(findSchedules.get(2).getScheduleId()).isEqualTo(schedule3.getId());
 
         }
+    }
+
+    private Long setupTripperId() {
+        User user = UserFixture.googleUser_NullId();
+        em.persist(user);
+        return user.getId();
     }
 
     private Trip setupDecidedTripAndPersist(Long tripperId, LocalDate startDate, LocalDate endDate) {
