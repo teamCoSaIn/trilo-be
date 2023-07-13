@@ -80,6 +80,10 @@ user-0004:
   message: No User Delete Authority
   detail: 해당 사용자를 삭제할 권한이 없습니다.
 
+user-0005:
+  message: No User Update Authority
+  detail: 해당 사용자를 수정할 권한이 없습니다.
+
 
 # 여행 관련
 trip-0001:
