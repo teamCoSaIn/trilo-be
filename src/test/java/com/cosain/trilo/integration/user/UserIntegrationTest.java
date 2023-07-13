@@ -167,7 +167,7 @@ public class UserIntegrationTest extends IntegrationTest {
             // when
             ResultActions resultActions = mockMvc.perform(RestDocumentationRequestBuilders.patch(BASE_URL + "/{userId}", user.getId())
                             .header(HttpHeaders.AUTHORIZATION, authorizationHeader(user))
-                            .content(createJson(userUpdateRequest))
+                            .content(createRequestJson(userUpdateRequest))
                             .contentType(MediaType.APPLICATION_JSON));
 
             // then
