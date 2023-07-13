@@ -6,11 +6,13 @@ import com.cosain.trilo.trip.infra.repository.trip.TripQueryRepository;
 import com.cosain.trilo.user.application.event.UserDeleteEvent;
 import com.cosain.trilo.user.application.exception.NoUserDeleteAuthorityException;
 import com.cosain.trilo.user.application.exception.NoUserProfileSearchAuthorityException;
+import com.cosain.trilo.user.application.exception.NoUserUpdateAuthorityException;
 import com.cosain.trilo.user.application.exception.UserNotFoundException;
 import com.cosain.trilo.user.domain.User;
 import com.cosain.trilo.user.domain.UserRepository;
 import com.cosain.trilo.user.presentation.dto.UserMyPageResponse;
 import com.cosain.trilo.user.presentation.dto.UserProfileResponse;
+import com.cosain.trilo.user.presentation.dto.UserUpdateRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -91,6 +93,18 @@ public class UserService {
         TripStatistics tripStatistics = tripQueryRepository.findTripStaticsByTripperId(userId, today);
         User user = findUserOrThrows(userId);
         return UserMyPageResponse.of(user, s3ImageBaseURL, tripStatistics);
+    }
+
+    public void update(Long targetUserId, Long requestUserId, UserUpdateRequest userUpdateRequest){
+        User user = findUserOrThrows(targetUserId);
+        validateUserUpdateAuthority(user, requestUserId);
+        user.update(userUpdateRequest);
+    }
+
+    private void validateUserUpdateAuthority(User user, Long requestUserId){
+        if(!user.getId().equals(requestUserId)){
+            throw new NoUserUpdateAuthorityException();
+        }
     }
 
 }

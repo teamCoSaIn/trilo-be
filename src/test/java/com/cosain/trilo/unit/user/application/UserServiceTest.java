@@ -7,17 +7,18 @@ import com.cosain.trilo.user.application.UserService;
 import com.cosain.trilo.user.application.event.UserDeleteEvent;
 import com.cosain.trilo.user.application.exception.NoUserDeleteAuthorityException;
 import com.cosain.trilo.user.application.exception.NoUserProfileSearchAuthorityException;
+import com.cosain.trilo.user.application.exception.NoUserUpdateAuthorityException;
 import com.cosain.trilo.user.application.exception.UserNotFoundException;
 import com.cosain.trilo.user.domain.AuthProvider;
 import com.cosain.trilo.user.domain.Role;
 import com.cosain.trilo.user.domain.User;
 import com.cosain.trilo.user.domain.UserRepository;
 import com.cosain.trilo.user.presentation.dto.UserMyPageResponse;
+import com.cosain.trilo.user.presentation.dto.UserUpdateRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationEventPublisher;
@@ -224,6 +225,51 @@ public class UserServiceTest {
             given(tripQueryRepository.findTripStaticsByTripperId(eq(userId), eq(today))).willReturn(tripStatistics);
             // when & then
             assertThatThrownBy(() -> userService.getMyPage(userId, today)).isInstanceOf(UserNotFoundException.class);
+        }
+    }
+
+    @Nested
+    class 회원_정보_수정{
+        @Test
+        void 메서드_호출_테스트(){
+            // given
+            Long targetUserId = 1L;
+            Long requestUserId = 1L;
+            UserUpdateRequest userUpdateRequest = new UserUpdateRequest("nickName");
+            User user = KAKAO_MEMBER.create(targetUserId);
+            given(userRepository.findById(eq(targetUserId))).willReturn(Optional.ofNullable(user));
+
+            // when
+            userService.update(targetUserId, requestUserId, userUpdateRequest);
+
+            // then
+            verify(userRepository).findById(eq(targetUserId));
+        }
+
+        @Test
+        void 조회할_회원이_존재하지_않는_경우_예외를_발생시킨다(){
+            // given
+            Long targetUserId = 1L;
+            Long requestUserId = 1L;
+            UserUpdateRequest userUpdateRequest = new UserUpdateRequest("nickName");
+            given(userRepository.findById(anyLong())).willReturn(Optional.empty());
+
+            // when
+            assertThatThrownBy(() -> userService.update(targetUserId, requestUserId, userUpdateRequest)).isInstanceOf(UserNotFoundException.class);
+
+        }
+
+        @Test
+        void 조회할_회원과_요청한_회원이_같지_않으면_예외를_발생시킨다(){
+            // given
+            Long targetUserId = 1L;
+            Long requestUserId = 2L;
+            UserUpdateRequest userUpdateRequest = new UserUpdateRequest("nickName");
+            User user = KAKAO_MEMBER.create(targetUserId);
+            given(userRepository.findById(eq(targetUserId))).willReturn(Optional.ofNullable(user));
+
+            // when
+            assertThatThrownBy(() -> userService.update(targetUserId, requestUserId, userUpdateRequest)).isInstanceOf(NoUserUpdateAuthorityException.class);
         }
     }
 
