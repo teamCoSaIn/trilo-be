@@ -40,4 +40,15 @@ public enum UserFixture {
                 .role(role)
                 .build();
     }
+
+    public User create(Long id){
+        return User.builder()
+                .id(id)
+                .nickName(name)
+                .profileImageUrl(profileImageURL)
+                .email(email)
+                .authProvider(authProvider)
+                .role(role)
+                .build();
+    }
 }

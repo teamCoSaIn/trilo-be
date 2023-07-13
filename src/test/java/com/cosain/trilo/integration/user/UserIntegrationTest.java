@@ -6,6 +6,7 @@ import com.cosain.trilo.trip.domain.entity.Trip;
 import com.cosain.trilo.trip.domain.repository.TripRepository;
 import com.cosain.trilo.user.domain.User;
 import com.cosain.trilo.user.domain.UserRepository;
+import com.cosain.trilo.user.presentation.dto.UserUpdateRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpHeaders;
 import org.junit.jupiter.api.DisplayName;
@@ -13,7 +14,9 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.time.Clock;
@@ -148,6 +151,34 @@ public class UserIntegrationTest extends IntegrationTest {
                 Trip trip = TripFixture.decided_nullId(user.getId(), startDate, endDate);
                 tripRepository.save(trip);
             }
+        }
+    }
+
+    @Nested
+    class 회원_정보_수정{
+        @Test
+        void 성공() throws Exception{
+            // given
+            String nickName = "변경할 닉네임";
+            User user = setupMockKakaoUser();
+            UserUpdateRequest userUpdateRequest = new UserUpdateRequest(nickName);
+
+            flushAndClear();
+            // when
+            ResultActions resultActions = mockMvc.perform(RestDocumentationRequestBuilders.patch(BASE_URL + "/{userId}", user.getId())
+                            .header(HttpHeaders.AUTHORIZATION, authorizationHeader(user))
+                            .content(createRequestJson(userUpdateRequest))
+                            .contentType(MediaType.APPLICATION_JSON));
+
+            flushAndClear();
+            // then
+            resultActions
+                    .andExpect(MockMvcResultMatchers.status().isOk());
+
+            User findUser = userRepository.findById(user.getId()).orElseThrow(IllegalStateException::new);
+            log.info("findUser = {}" , findUser);
+            assertThat(findUser.getNickName()).isEqualTo(nickName);
+
         }
     }
 }

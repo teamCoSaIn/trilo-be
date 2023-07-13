@@ -5,6 +5,8 @@ import com.cosain.trilo.user.application.UserService;
 import com.cosain.trilo.user.domain.User;
 import com.cosain.trilo.user.presentation.dto.UserMyPageResponse;
 import com.cosain.trilo.user.presentation.dto.UserProfileResponse;
+import com.cosain.trilo.user.presentation.dto.UserUpdateRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -39,6 +41,12 @@ public class UserRestController {
         LocalDate today = LocalDate.now(clock);
         UserMyPageResponse myPageResponse = userService.getMyPage(userId, today);
         return myPageResponse;
+    }
+
+    @PatchMapping("/{userId}")
+    @ResponseStatus(HttpStatus.OK)
+    public void updateUser(@PathVariable("userId") Long targetUserId, @LoginUser User user, @Valid @RequestBody UserUpdateRequest userUpdateRequest){
+        userService.update(targetUserId, user.getId(), userUpdateRequest);
     }
 
 }

@@ -844,6 +844,8 @@ include::{snippets}/user-rest-controller-docs-test/사용자_프로필_조회/ht
 ===== 응답
 include::{snippets}/user-rest-controller-docs-test/사용자_프로필_조회/http-response.adoc[]
 
+---
+
 === 회원 탈퇴
 
 ==== 기본 정보
@@ -865,9 +867,15 @@ include::{snippets}/user-rest-controller-docs-test/회원_탈퇴/http-request.ad
 ===== 응답
 include::{snippets}/user-rest-controller-docs-test/회원_탈퇴/http-response.adoc[]
 
+---
+
 === 마이페이지 조회
 
 ==== 기본 정보
+
+- 메서드 : GET
+- URL : `/api/users/{userId}/my-page`
+- 인증 방식 : 엑세스 토큰
 
 ==== 요청
 ===== 헤더
@@ -884,3 +892,26 @@ include::{snippets}/user-rest-controller-docs-test/마이페이지_조회/respon
 include::{snippets}/user-rest-controller-docs-test/마이페이지_조회/http-request.adoc[]
 ===== 응답
 include::{snippets}/user-rest-controller-docs-test/마이페이지_조회/http-response.adoc[]
+
+---
+
+=== 회원 정보 수정
+
+==== 기본 정보
+
+- 메서드 : PATCH
+- URL : `/api/users/{userId}`
+- 인증 방식 : 엑세스 토큰
+
+==== 요청
+===== 헤더
+include::{snippets}/user-rest-controller-docs-test/회원_정보_수정/request-headers.adoc[]
+===== 경로 변수
+include::{snippets}/user-rest-controller-docs-test/회원_정보_수정/path-parameters.adoc[]
+===== 본문
+include::{snippets}/user-rest-controller-docs-test/회원_정보_수정/request-fields.adoc[]
+==== 예제
+===== 요청
+include::{snippets}/user-rest-controller-docs-test/회원_정보_수정/http-request.adoc[]
+===== 응답
+include::{snippets}/user-rest-controller-docs-test/회원_정보_수정/http-response.adoc[]

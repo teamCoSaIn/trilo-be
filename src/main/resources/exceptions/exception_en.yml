@@ -81,6 +81,10 @@ user-0004:
   message: No User Delete Authority
   detail: You do not have any authority to delete the user
 
+user-0005:
+  message: No User Update Authority
+  detail: You do not have nay authority to update the user
+
 # 여행 관련
 trip-0001:
   message: Trip Not Found

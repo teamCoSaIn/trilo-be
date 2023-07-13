@@ -1,6 +1,7 @@
 package com.cosain.trilo.user.domain;
 
 import com.cosain.trilo.auth.infra.OAuthProfileDto;
+import com.cosain.trilo.user.presentation.dto.UserUpdateRequest;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -37,7 +38,7 @@ public class User {
     private MyPageImage myPageImage;
 
     @Builder(access = AccessLevel.PUBLIC)
-    private User(Long id,String nickName, String email, String profileImageUrl, AuthProvider authProvider, Role role) {
+    private User(Long id, String nickName, String email, String profileImageUrl, AuthProvider authProvider, Role role) {
         this.id = id;
         this.nickName = nickName;
         this.email = email;
@@ -60,5 +61,9 @@ public class User {
     public void updateUserByOauthProfile(OAuthProfileDto oAuthProfileDto) {
         this.nickName = oAuthProfileDto.getName();
         this.profileImageURL = oAuthProfileDto.getProfileImageUrl();
+    }
+
+    public void update(UserUpdateRequest userUpdateRequest){
+        this.nickName = userUpdateRequest.getNickName();
     }
 }

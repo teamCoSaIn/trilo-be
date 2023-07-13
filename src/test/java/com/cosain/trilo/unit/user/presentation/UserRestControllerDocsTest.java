@@ -7,11 +7,13 @@ import com.cosain.trilo.user.domain.User;
 import com.cosain.trilo.user.presentation.UserRestController;
 import com.cosain.trilo.user.presentation.dto.UserMyPageResponse;
 import com.cosain.trilo.user.presentation.dto.UserProfileResponse;
+import com.cosain.trilo.user.presentation.dto.UserUpdateRequest;
 import org.apache.http.HttpHeaders;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -29,6 +31,7 @@ import static org.springframework.restdocs.headers.HeaderDocumentation.requestHe
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.restdocs.snippet.Attributes.key;
 
 @WebMvcTest(UserRestController.class)
 public class UserRestControllerDocsTest extends RestDocsTestSupport {
@@ -44,7 +47,7 @@ public class UserRestControllerDocsTest extends RestDocsTestSupport {
     @Value("${cloud.aws.s3.bucket-path}")
     private String myPageBaseUrl;
     @Test
-    public void 사용자_프로필_조회() throws Exception{
+    void 사용자_프로필_조회() throws Exception{
         // given
         Long userId = 1L;
         mockingForLoginUserAnnotation();
@@ -74,7 +77,7 @@ public class UserRestControllerDocsTest extends RestDocsTestSupport {
     }
 
     @Test
-    public void 회원_탈퇴() throws Exception{
+    void 회원_탈퇴() throws Exception{
         // given
         Long userId = 1L;
         mockingForLoginUserAnnotation();
@@ -94,7 +97,7 @@ public class UserRestControllerDocsTest extends RestDocsTestSupport {
     }
 
     @Test
-    public void 마이페이지_조회() throws Exception{
+    void 마이페이지_조회() throws Exception{
         // given
         Long userId = 1L;
 
@@ -132,5 +135,32 @@ public class UserRestControllerDocsTest extends RestDocsTestSupport {
                         )
                 ));
 
+    }
+
+    @Test
+    void 회원_정보_수정() throws Exception{
+        // given
+        Long userId = 1L;
+        mockingForLoginUserAnnotation();
+        UserUpdateRequest userUpdateRequest = new UserUpdateRequest("nickName");
+
+        // when & then
+        mockMvc.perform(RestDocumentationRequestBuilders.patch(BASE_URL + "/{userId}", userId)
+                        .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)
+                        .content(createJson(userUpdateRequest))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andDo(restDocs.document(
+                        requestHeaders(
+                                headerWithName(HttpHeaders.AUTHORIZATION).description("Bearer 타입 AccessToken")
+                        ),
+                        pathParameters(
+                                parameterWithName("userId").description("수정할 회원 ID")
+                        ),
+                        requestFields(
+                                fieldWithPath("nickName").type(JsonFieldType.STRING).description("변경할 닉네임")
+                                        .attributes(key("constraints").value("null 또는 공백일 수 없으며, 길이는 1-20자까지만 허용됩니다."))
+                        )
+                ));
     }
 }
