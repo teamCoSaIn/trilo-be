@@ -84,6 +84,9 @@ user-0005:
   message: No User Update Authority
   detail: 해당 사용자를 수정할 권한이 없습니다.
 
+user-0006:
+  message: Invalid User NickName
+  detail: 사용자 닉네임이 유효하지 않습니다. 닉네임은 null일 수 없고 1자 이상 100자 이하여야합니다.
 
 # 여행 관련
 trip-0001:

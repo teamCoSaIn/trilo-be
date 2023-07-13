@@ -85,6 +85,10 @@ user-0005:
   message: No User Update Authority
   detail: You do not have nay authority to update the user
 
+user-0006:
+  message: Invalid User NickName
+  detail: The username is invalid. The username cannot be null and must be between 1 and 100 characters in length.
+
 # 여행 관련
 trip-0001:
   message: Trip Not Found
