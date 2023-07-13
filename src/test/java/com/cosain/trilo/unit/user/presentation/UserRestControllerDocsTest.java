@@ -1,5 +1,6 @@
 package com.cosain.trilo.unit.user.presentation;
 
+import com.cosain.trilo.fixture.UserFixture;
 import com.cosain.trilo.support.RestDocsTestSupport;
 import com.cosain.trilo.trip.infra.dto.TripStatistics;
 import com.cosain.trilo.user.application.UserService;
@@ -22,7 +23,6 @@ import java.time.Clock;
 import java.time.LocalDate;
 import java.time.ZoneId;
 
-import static com.cosain.trilo.fixture.UserFixture.KAKAO_MEMBER;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -51,7 +51,8 @@ public class UserRestControllerDocsTest extends RestDocsTestSupport {
         // given
         Long userId = 1L;
         mockingForLoginUserAnnotation();
-        User requestUser = KAKAO_MEMBER.create();
+
+        User requestUser = UserFixture.kakaoUser_Id(userId);
         given(userService.getUserProfile(userId, requestUser.getId())).willReturn(UserProfileResponse.from(requestUser));
 
         // when & then
@@ -109,7 +110,7 @@ public class UserRestControllerDocsTest extends RestDocsTestSupport {
         given(clock.getZone()).willReturn(fixedClock.getZone());
 
         mockingForLoginUserAnnotation();
-        User user = KAKAO_MEMBER.create();
+        User user = UserFixture.kakaoUser_Id(userId);
         TripStatistics tripStatistics = new TripStatistics(5L, 3L);
         given(userService.getMyPage(eq(userId), any(LocalDate.class))).willReturn(UserMyPageResponse.of(user, myPageBaseUrl, tripStatistics));
 

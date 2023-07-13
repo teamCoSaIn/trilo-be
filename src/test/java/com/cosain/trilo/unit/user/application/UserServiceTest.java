@@ -1,6 +1,7 @@
 package com.cosain.trilo.unit.user.application;
 
 import com.cosain.trilo.auth.infra.OAuthProfileDto;
+import com.cosain.trilo.fixture.UserFixture;
 import com.cosain.trilo.trip.infra.dto.TripStatistics;
 import com.cosain.trilo.trip.infra.repository.trip.TripQueryRepository;
 import com.cosain.trilo.user.application.UserService;
@@ -26,7 +27,6 @@ import org.springframework.context.ApplicationEventPublisher;
 import java.time.LocalDate;
 import java.util.Optional;
 
-import static com.cosain.trilo.fixture.UserFixture.KAKAO_MEMBER;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
@@ -163,7 +163,7 @@ public class UserServiceTest {
             Long targetUserId = 1L;
             Long requestUserId = 1L;
 
-            User user = KAKAO_MEMBER.create();
+            User user = UserFixture.kakaoUser_Id(targetUserId);
             given(userRepository.findById(eq(targetUserId))).willReturn(Optional.ofNullable(user));
 
             // when
@@ -203,7 +203,7 @@ public class UserServiceTest {
             // given
             Long userId = 1L;
             LocalDate today = LocalDate.of(2023, 4, 28);
-            User user = KAKAO_MEMBER.create();
+            User user = UserFixture.kakaoUser_Id(userId);
             TripStatistics tripStatistics = new TripStatistics(10L, 3L);
             given(userRepository.findById(eq(userId))).willReturn(Optional.ofNullable(user));
             given(tripQueryRepository.findTripStaticsByTripperId(eq(userId),eq(today))).willReturn(tripStatistics);
@@ -236,7 +236,7 @@ public class UserServiceTest {
             Long targetUserId = 1L;
             Long requestUserId = 1L;
             UserUpdateRequest userUpdateRequest = new UserUpdateRequest("nickName");
-            User user = KAKAO_MEMBER.create(targetUserId);
+            User user = UserFixture.kakaoUser_Id(targetUserId);
             given(userRepository.findById(eq(targetUserId))).willReturn(Optional.ofNullable(user));
 
             // when
@@ -265,7 +265,7 @@ public class UserServiceTest {
             Long targetUserId = 1L;
             Long requestUserId = 2L;
             UserUpdateRequest userUpdateRequest = new UserUpdateRequest("nickName");
-            User user = KAKAO_MEMBER.create(targetUserId);
+            User user = UserFixture.kakaoUser_Id(targetUserId);
             given(userRepository.findById(eq(targetUserId))).willReturn(Optional.ofNullable(user));
 
             // when

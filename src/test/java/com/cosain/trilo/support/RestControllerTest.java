@@ -6,6 +6,7 @@ import com.cosain.trilo.auth.infra.TokenProvider;
 import com.cosain.trilo.common.logging.query.QueryCounter;
 import com.cosain.trilo.config.MessageSourceTestConfig;
 import com.cosain.trilo.config.SecurityTestConfig;
+import com.cosain.trilo.fixture.UserFixture;
 import com.cosain.trilo.user.domain.UserRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -20,8 +21,6 @@ import org.springframework.web.context.WebApplicationContext;
 import java.util.Optional;
 
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
-
-import static com.cosain.trilo.fixture.UserFixture.KAKAO_MEMBER;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -64,8 +63,7 @@ public class RestControllerTest {
     protected void mockingForLoginUserAnnotation(){
         given(tokenAnalyzer.validateToken(any())).willReturn(true);
         given(tokenRepository.existsLogoutAccessTokenById(any())).willReturn(false);
-        given(userRepository.findById(any())).willReturn(Optional.ofNullable(KAKAO_MEMBER.create()));
+        given(userRepository.findById(any())).willReturn(Optional.ofNullable(UserFixture.kakaoUser_Id(1L)));
     }
-
 
 }

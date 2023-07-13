@@ -1,6 +1,7 @@
 package com.cosain.trilo.unit.user.presentation;
 
 
+import com.cosain.trilo.fixture.UserFixture;
 import com.cosain.trilo.support.RestControllerTest;
 import com.cosain.trilo.user.application.UserService;
 import com.cosain.trilo.user.presentation.UserRestController;
@@ -21,7 +22,6 @@ import java.time.Clock;
 import java.time.LocalDate;
 import java.time.ZoneId;
 
-import static com.cosain.trilo.fixture.UserFixture.KAKAO_MEMBER;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -47,7 +47,7 @@ public class UserRestControllerTest extends RestControllerTest {
             // given
             Long userId = 2L;
             mockingForLoginUserAnnotation();
-            given(userService.getUserProfile(userId, 1L)).willReturn(UserProfileResponse.from(KAKAO_MEMBER.create()));
+            given(userService.getUserProfile(userId, 1L)).willReturn(UserProfileResponse.from(UserFixture.kakaoUser_Id(userId)));
 
             // when & then
             mockMvc.perform(RestDocumentationRequestBuilders.get(BASE_URL + "/{userId}/profile", userId)
@@ -116,7 +116,7 @@ public class UserRestControllerTest extends RestControllerTest {
 
             // when & then
             mockMvc.perform(RestDocumentationRequestBuilders.get(BASE_URL + "/{userId}/my-page", userId)
-                        .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN))
+                            .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN))
                     .andExpect(MockMvcResultMatchers.status().isOk());
 
         }
