@@ -164,7 +164,7 @@ public class UserRestControllerTest extends RestControllerTest {
                             .content(createJson(userUpdateRequest))
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(MockMvcResultMatchers.status().isBadRequest())
-                    .andExpect(jsonPath("$.errorCode").value("request-0001"))
+                    .andExpect(jsonPath("$.errorCode").value("request-0003"))
                     .andExpect(jsonPath("$.errorMessage").exists())
                     .andExpect(jsonPath("$.errorDetail").exists());
         }

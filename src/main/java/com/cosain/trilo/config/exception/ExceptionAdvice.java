@@ -66,8 +66,7 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
 
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
-        log.info("요청 데이터 형식이 올바르지 않음");
-        String errorCode = "request-0001";
+        String errorCode = "request-0003";
         String errorMessage = getMessage(errorCode + ".message");
         String errorDetail = ex.getBindingResult().getFieldError().getDefaultMessage();
 
