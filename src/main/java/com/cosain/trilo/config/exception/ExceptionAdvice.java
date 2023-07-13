@@ -16,7 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingRequestCookieException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -63,6 +63,19 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
                 .badRequest()
                 .body(BasicErrorResponse.of(errorCode, errorMessage, errorDetail));
     }
+
+    @Override
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+        log.info("요청 데이터 형식이 올바르지 않음");
+        String errorCode = "request-0001";
+        String errorMessage = getMessage(errorCode + ".message");
+        String errorDetail = ex.getBindingResult().getFieldError().getDefaultMessage();
+
+        return ResponseEntity
+                .badRequest()
+                .body(BasicErrorResponse.of(errorCode, errorMessage, errorDetail));
+    }
+
 
     /**
      * 쿠키 누락 예외
