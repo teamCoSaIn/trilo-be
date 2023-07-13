@@ -1,5 +1,6 @@
 package com.cosain.trilo.unit.trip.application.trip.service;
 
+import com.cosain.trilo.fixture.UserFixture;
 import com.cosain.trilo.trip.application.exception.TripperNotFoundException;
 import com.cosain.trilo.trip.application.trip.service.TripListSearchService;
 import com.cosain.trilo.trip.domain.vo.TripStatus;
@@ -23,7 +24,6 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-import static com.cosain.trilo.fixture.UserFixture.KAKAO_MEMBER;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.*;
@@ -60,7 +60,7 @@ public class TripListSearchServiceTest {
         Slice<TripSummary> tripSummaries = new PageImpl<>(List.of(tripSummary1, tripSummary2));
 
         TripPageCondition tripPageCondition = new TripPageCondition(tripperId, standardTripId);
-        given(userRepository.findById(eq(tripperId))).willReturn(Optional.of(KAKAO_MEMBER.create()));
+        given(userRepository.findById(eq(tripperId))).willReturn(Optional.of(UserFixture.kakaoUser_Id(tripperId)));
         given(tripQueryRepository.findTripSummariesByTripperId(any(TripPageCondition.class), any(Pageable.class))).willReturn(tripSummaries);
         given(tripImageOutputAdapter.getFullTripImageURL(eq(imageName))).willReturn(imageURL);
 

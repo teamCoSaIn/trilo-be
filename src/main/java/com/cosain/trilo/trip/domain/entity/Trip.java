@@ -35,7 +35,7 @@ public class Trip {
     @Column(name = "tripper_id")
     private Long tripperId;
 
-    @Column(name = "title")
+    @Embedded
     private TripTitle tripTitle;
 
     @Enumerated(EnumType.STRING)

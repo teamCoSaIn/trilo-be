@@ -10,7 +10,7 @@ jobs:
   Build-Test:
     runs-on: ubuntu-latest
     env:
-      DB_DATABASE: trilo_db
+      DB_DATABASE: trilo_db_test
       DB_ROOT_PASSWORD: root
       DB_USER: test
       DB_USER_PASSWORD: db1004

@@ -2,12 +2,14 @@ package com.cosain.trilo.unit.trip.domain.repository;
 
 import com.cosain.trilo.fixture.ScheduleFixture;
 import com.cosain.trilo.fixture.TripFixture;
+import com.cosain.trilo.fixture.UserFixture;
 import com.cosain.trilo.support.RepositoryTest;
 import com.cosain.trilo.trip.domain.entity.Day;
 import com.cosain.trilo.trip.domain.entity.Schedule;
 import com.cosain.trilo.trip.domain.entity.Trip;
 import com.cosain.trilo.trip.domain.repository.ScheduleRepository;
 import com.cosain.trilo.trip.domain.vo.*;
+import com.cosain.trilo.user.domain.User;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceException;
 import jakarta.persistence.Query;
@@ -40,7 +42,7 @@ public class ScheduleRepositoryTest {
     @DisplayName("Schedule을 저장하고 같은 식별자로 찾으면 같은 Schedule이 찾아진다.")
     void saveTest() {
         // given
-        Long tripperId = 1L;
+        Long tripperId = setupTripperId();
         LocalDate startDate = LocalDate.of(2023, 3, 1);
         LocalDate endDate = LocalDate.of(2023, 3, 1);
         Trip trip = setupDecidedTripAndPersist(tripperId, startDate, endDate);
@@ -67,7 +69,7 @@ public class ScheduleRepositoryTest {
     @DisplayName("일정 본문을 65535 바이트보다 큰 일정 본문으로 수정 시도하면 데이터베이스 예외가 발생함")
     void contentChangeConstraintsTest() {
         // given
-        Long tripperId = 1L;
+        Long tripperId = setupTripperId();
         LocalDate startDate = LocalDate.of(2023, 3, 1);
         LocalDate endDate = LocalDate.of(2023, 3, 1);
 
@@ -96,7 +98,7 @@ public class ScheduleRepositoryTest {
     @DisplayName("delete로 일정을 삭제하면, 해당 일정이 삭제된다.")
     void deleteTest() {
         // given
-        Long tripperId = 1L;
+        Long tripperId = setupTripperId();
         LocalDate startDate = LocalDate.of(2023, 3, 1);
         LocalDate endDate = LocalDate.of(2023, 3, 1);
 
@@ -120,7 +122,7 @@ public class ScheduleRepositoryTest {
     @DisplayName("deleteAllByTripId로 일정을 삭제하면, 해당 여행의 모든 일정들이 삭제된다.")
     void deleteAllByTripIdTest() {
         // given
-        Long tripperId = 1L;
+        Long tripperId = setupTripperId();
         LocalDate startDate = LocalDate.of(2023, 3, 1);
         LocalDate endDate = LocalDate.of(2023, 3, 3);
 
@@ -148,7 +150,7 @@ public class ScheduleRepositoryTest {
     @DisplayName("findByIdWithTrip으로 일정을 조회하면 해당 일정만 조회된다.(여행도 같이 묶여서 조회됨)")
     void findByIdWithTripTest() {
         // given
-        Long tripperId = 1L;
+        Long tripperId = setupTripperId();
         LocalDate startDate = LocalDate.of(2023, 3, 1);
         LocalDate endDate = LocalDate.of(2023, 3, 1);
 
@@ -180,7 +182,7 @@ public class ScheduleRepositoryTest {
         @Test
         void relocateTemporaryStorage() {
             // given
-            Long tripperId = 1L;
+            Long tripperId = setupTripperId();
             LocalDate startDate = LocalDate.of(2023, 3, 1);
             LocalDate endDate = LocalDate.of(2023, 3, 2);
 
@@ -219,7 +221,7 @@ public class ScheduleRepositoryTest {
         @Test
         void relocateDaySchedules() {
             // given
-            Long tripperId = 1L;
+            Long tripperId = setupTripperId();
             LocalDate startDate = LocalDate.of(2023, 3, 1);
             LocalDate endDate = LocalDate.of(2023, 3, 2);
 
@@ -265,7 +267,7 @@ public class ScheduleRepositoryTest {
         @DisplayName("임시보관함에 다른 일정이 있으면, 맨 뒤 순서값 뒤에 day들의 일정들이 date, 순서값 순으로 오름차순으로 옮겨짐")
         public void test_When_TemporaryStorage_not_empty() {
             // given
-            Long tripperId = 1L;
+            Long tripperId = setupTripperId();
             LocalDate startDate = LocalDate.of(2023, 3, 1);
             LocalDate endDate = LocalDate.of(2023, 3, 3);
 
@@ -319,7 +321,7 @@ public class ScheduleRepositoryTest {
         @DisplayName("임시보관함이 비어있으면, day들의 일정들이 date, 순서값 순으로 오름차순으로 0번 순서부터 지정되어 옮겨짐")
         public void test_When_TemporaryStorage_empty() {
             // given
-            Long tripperId = 1L;
+            Long tripperId = setupTripperId();
             LocalDate startDate = LocalDate.of(2023, 3, 1);
             LocalDate endDate = LocalDate.of(2023, 3, 3);
 
@@ -369,7 +371,8 @@ public class ScheduleRepositoryTest {
         @DisplayName("아무 일정도 없을 때 0 반환")
         @Test
         public void emptyScheduleTest() {
-            Trip trip = setupUndecidedTripAndPersist(1L);
+            Long tripperId = setupTripperId();
+            Trip trip = setupUndecidedTripAndPersist(tripperId);
 
             int scheduleTripCount = scheduleRepository.findTripScheduleCount(trip.getId());
             assertThat(scheduleTripCount).isEqualTo(0);
@@ -378,7 +381,8 @@ public class ScheduleRepositoryTest {
         @DisplayName("임시보관함 일정 2개 -> 2 반환")
         @Test
         public void temporaryStorageScheduleTest() {
-            Trip trip = setupUndecidedTripAndPersist(1L);
+            Long tripperId = setupTripperId();
+            Trip trip = setupUndecidedTripAndPersist(tripperId);
 
             Schedule schedule1 = setupTemporaryScheduleAndPersist(trip, 0L);
             Schedule schedule2 = setupTemporaryScheduleAndPersist(trip, 100L);
@@ -392,7 +396,7 @@ public class ScheduleRepositoryTest {
         @DisplayName("Trip의 어떤 Day에 일정 3개 -> 3 반환")
         @Test
         public void dayScheduleScheduleTest() {
-            Long tripperId = 1L;
+            Long tripperId = setupTripperId();
             LocalDate startDate = LocalDate.of(2023, 3, 1);
             LocalDate endDate = LocalDate.of(2023, 3, 1);
 
@@ -413,7 +417,7 @@ public class ScheduleRepositoryTest {
         @DisplayName("Trip의 임시보관함, 여러 Day에 일정 -> 여행 소속 일정 갯수 반환")
         @Test
         public void manyDayScheduleTest() {
-            Long tripperId = 1L;
+            Long tripperId = setupTripperId();
             LocalDate startDate = LocalDate.of(2023, 3, 1);
             LocalDate endDate = LocalDate.of(2023, 3, 3);
 
@@ -442,7 +446,7 @@ public class ScheduleRepositoryTest {
         @DisplayName("Day에 아무 일정도 없음 -> 0 반환")
         @Test
         void noDayScheduleTest() {
-            Long tripperId = 1L;
+            Long tripperId = setupTripperId();
             LocalDate startDate = LocalDate.of(2023, 3, 1);
             LocalDate endDate = LocalDate.of(2023, 3, 1);
 
@@ -458,7 +462,7 @@ public class ScheduleRepositoryTest {
         @DisplayName("Day에 일정 3개 -> 3 반환")
         @Test
         void threeDayScheduleTest() {
-            Long tripperId = 1L;
+            Long tripperId = setupTripperId();
             LocalDate startDate = LocalDate.of(2023, 3, 1);
             LocalDate endDate = LocalDate.of(2023, 3, 2);
 
@@ -484,7 +488,7 @@ public class ScheduleRepositoryTest {
         @Test
         void 전달받은_여행_ID_목록에_해당하는_모든_일정이_삭제된다() {
             // given
-            Long tripperId = 1L;
+            Long tripperId = setupTripperId();
             LocalDate startDate = LocalDate.of(2023, 3, 1);
             LocalDate endDate = LocalDate.of(2023, 3, 2);
 
@@ -505,6 +509,12 @@ public class ScheduleRepositoryTest {
             List<Schedule> findSchedules = scheduleRepository.findAllById(List.of(schedule1.getId(), schedule2.getId(), schedule3.getId(), schedule4.getId(), schedule5.getId()));
             assertThat(findSchedules).isEmpty();
         }
+    }
+
+    private Long setupTripperId() {
+        User user = UserFixture.googleUser_NullId();
+        em.persist(user);
+        return user.getId();
     }
 
     private Trip setupUndecidedTripAndPersist(Long tripperId) {

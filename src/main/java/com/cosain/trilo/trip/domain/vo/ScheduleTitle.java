@@ -14,7 +14,7 @@ public class ScheduleTitle {
 
     private static final int MAX_LENGTH = 20;
 
-    @Column(name = "title")
+    @Column(name = "schedule_title")
     private String value;
 
     public static ScheduleTitle of(String value) {

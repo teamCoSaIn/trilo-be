@@ -35,6 +35,7 @@ public class Day {
     private Trip trip;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "day_color")
     private DayColor dayColor;
 
     @OneToMany(mappedBy = "day")

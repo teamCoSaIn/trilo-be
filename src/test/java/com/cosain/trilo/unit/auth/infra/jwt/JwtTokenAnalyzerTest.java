@@ -4,12 +4,11 @@ import com.cosain.trilo.auth.infra.TokenAnalyzer;
 import com.cosain.trilo.auth.infra.TokenProvider;
 import com.cosain.trilo.auth.infra.jwt.JwtTokenAnalyzer;
 import com.cosain.trilo.auth.infra.jwt.JwtTokenProvider;
+import com.cosain.trilo.fixture.UserFixture;
 import com.cosain.trilo.user.domain.User;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import static com.cosain.trilo.fixture.UserFixture.KAKAO_MEMBER;
 
 class JwtTokenAnalyzerTest {
 
@@ -40,7 +39,7 @@ class JwtTokenAnalyzerTest {
     @Test
     void 토큰에서_ID_추출하기(){
         // given
-        User user = KAKAO_MEMBER.create();
+        User user = UserFixture.kakaoUser_Id(1L);
         String accessToken = tokenProvider.createAccessTokenById(user.getId());
 
         // when
@@ -53,7 +52,7 @@ class JwtTokenAnalyzerTest {
     @Test
     void 토큰_유효성_검사_성공시_TRUE를_반환한다(){
         // given
-        User user = KAKAO_MEMBER.create();
+        User user = UserFixture.kakaoUser_Id(1L);
         String accessToken = tokenProvider.createAccessTokenById(user.getId());
 
         // when
@@ -67,7 +66,7 @@ class JwtTokenAnalyzerTest {
     void 토큰_유효성_검사시_secretKey가_다르면_FALSE를_반환한다(){
         // given
         tokenProvider = new JwtTokenProvider(ACCESS_TOKEN_EXPIRY, REFRESH_TOKEN_EXPIRY, "S".repeat(32));
-        User user = KAKAO_MEMBER.create();
+        User user = UserFixture.kakaoUser_Id(1L);
         String accessToken = tokenProvider.createAccessTokenById(user.getId());
 
         // when
@@ -80,7 +79,7 @@ class JwtTokenAnalyzerTest {
     @Test
     void 만료된_토큰_유효성_검사시_토큰_만료기간이_지났다면_FALSE를_반환한다(){
         // given
-        User user = KAKAO_MEMBER.create();
+        User user = UserFixture.kakaoUser_Id(1L);
         tokenProvider = new JwtTokenProvider(0, 0, SECRET_KEY);
         String accessToken = tokenProvider.createAccessTokenById(user.getId());
 
@@ -94,7 +93,7 @@ class JwtTokenAnalyzerTest {
     @Test
     void 토큰에서_유효기간_추출하기(){
         // given
-        User user = KAKAO_MEMBER.create();
+        User user = UserFixture.kakaoUser_Id(1L);
         String accessToken = tokenProvider.createAccessTokenById(user.getId());
 
         // when
