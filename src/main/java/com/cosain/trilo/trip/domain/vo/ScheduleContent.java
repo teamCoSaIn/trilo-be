@@ -18,7 +18,7 @@ public class ScheduleContent {
     private static final ScheduleContent DEFAULT_CONTENT = ScheduleContent.of("");
     private static final int MAX_BYTE = 65535;
 
-    @Column(name = "content", length = MAX_BYTE)
+    @Column(name = "schedule_content")
     private String value;
 
     public static ScheduleContent of(String rawContent) {

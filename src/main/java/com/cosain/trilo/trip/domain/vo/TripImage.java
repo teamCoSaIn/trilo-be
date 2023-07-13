@@ -16,7 +16,7 @@ public class TripImage {
     public static final String DEFAULT_IMAGE_NAME = "trips/trip-default-image.png";
     private static final TripImage DEFAULT_IMAGE = new TripImage(DEFAULT_IMAGE_NAME);
 
-    @Column(name = "image-file-name")
+    @Column(name = "trip_image_file_name")
     private String fileName;
 
     public static TripImage of(String fileName) {

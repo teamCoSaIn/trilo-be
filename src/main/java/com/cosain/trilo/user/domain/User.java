@@ -14,38 +14,38 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "user_id")
     private Long id;
 
-    @Column(nullable = false)
+    @Column(name = "nick_name")
     private String nickName;
 
-    @Column(nullable = false)
+    @Column(name = "email")
     private String email;
 
-    @Column(nullable = true)
+    @Column(name = "profile_image_url")
     private String profileImageURL;
 
-    @Column(nullable = false)
+    @Column(name = "auth_provider")
     @Enumerated(EnumType.STRING)
     private AuthProvider authProvider;
 
-    @Column(nullable = false)
+    @Column(name = "user_role")
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    @Column(nullable = false)
     @Embedded
     private MyPageImage myPageImage;
 
     @Builder(access = AccessLevel.PUBLIC)
-    private User(Long id, String nickName, String email, String profileImageUrl, AuthProvider authProvider, Role role) {
+    private User(Long id, String nickName, String email, String profileImageUrl, AuthProvider authProvider, Role role, MyPageImage myPageImage) {
         this.id = id;
         this.nickName = nickName;
         this.email = email;
         this.profileImageURL = profileImageUrl;
         this.authProvider = authProvider;
         this.role = role;
-        this.myPageImage = MyPageImage.initializeMyPageImage();
+        this.myPageImage = myPageImage == null ? MyPageImage.initializeMyPageImage() : myPageImage;
     }
 
     public static User from(OAuthProfileDto oAuthProfileDto) {
