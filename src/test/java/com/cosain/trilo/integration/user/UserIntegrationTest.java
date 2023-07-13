@@ -170,6 +170,7 @@ public class UserIntegrationTest extends IntegrationTest {
                             .content(createRequestJson(userUpdateRequest))
                             .contentType(MediaType.APPLICATION_JSON));
 
+            flushAndClear();
             // then
             resultActions
                     .andExpect(MockMvcResultMatchers.status().isOk());
