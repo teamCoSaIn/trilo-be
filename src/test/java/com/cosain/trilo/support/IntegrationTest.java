@@ -61,6 +61,10 @@ public class IntegrationTest {
                 .build();
     }
 
+    protected String createJson(Object dto) throws JsonProcessingException{
+        return objectMapper.writeValueAsString(dto);
+    }
+
     protected void flushAndClear(){
         em.flush();
         em.clear();
