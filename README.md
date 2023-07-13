@@ -2,16 +2,53 @@
 - 웹 서버(프론트엔드 서버) : [링크](http://cosain-trilo.com/)
 - api 문서(백엔드 서버 API 문서) : [링크](http://api.cosain-trilo.com/docs/)
 
-##  Team Members
-### Back-End
-[땃쥐](https://gihtub.com/ttasjwi),
-[LUKAS](https://github.com/pia2011)
-### Front-End
-[Oliver](https://github.com/jthw1005),
-[Bangtae](https://github.com/bangdler)
+## 팀 구성 👪
 
-### Design
-Joy
+|                   BackEnd                    |                   BackEnd                    |                  FrontEnd                  |                       FrontEnd                       |                                                  Design                                                   |
+|:--------------------------------------------:|:--------------------------------------------:|:------------------------------------------:|:----------------------------------------------------:|:---------------------------------------------------------------------------------------------------------:|
+| ![](https://github.com/ttasjwi.png?size=200) | ![](https://github.com/pia2011.png?size=200) | ![](https://github.com/jthw1005.png?size=200) | ![](https://github.com/bangdler.png?size=200) | ![](https://github.com/teamCoSaIn/trilo-be/assets/53935439/a14a6b7d-ed57-4a4c-89c1-a31cde1cefa7?size=200) |
+|      [땃쥐](https://gihtub.com/ttasjwi)      |     [LUKAS](https://github.com/pia2011)      |   [‍♂Oliver](https://github.com/jthw1005)   |         [Bangtae](https://github.com/bangdler)          |                                                    Joy                                                    |
+
+## 프로젝트 간단 시연 📺
+
+<details>
+   <summary> 확인하기 (👈 클릭)</summary>
+<br />
+
+### 로그인 
+
+![1 로그인](https://github.com/teamCoSaIn/trilo-be/assets/53935439/b55ef318-78a6-4e4c-89fe-095025dd7a12)
+
+### 여행 생성 및 이미지 업로드
+
+![2 여행 생성 및 이미지 업로드](https://github.com/teamCoSaIn/trilo-be/assets/53935439/28a765ff-2f5e-4e53-ac2d-6a7bca065eb1)
+
+### 여행 기간 수정
+
+![3 여행 기간 수립](https://github.com/teamCoSaIn/trilo-be/assets/53935439/3d1f171a-8fd8-468e-bc0d-a56174708992)
+
+### 여행 일정 추가
+
+![4 여행 일정 추가](https://github.com/teamCoSaIn/trilo-be/assets/53935439/21d1076f-644b-4998-a20d-140cf663ac26)
+
+### 여행 일정 이동
+
+![5 여행 일정 이동](https://github.com/teamCoSaIn/trilo-be/assets/53935439/4a790cac-2858-437a-b94f-1d825ef36bee)
+
+### 일정 목록 조회
+
+![6 일정 목록 조회](https://github.com/teamCoSaIn/trilo-be/assets/53935439/600a1f6d-9ce7-45dc-9aa9-e7434336e0c8)
+
+### Day 색상 변경
+
+![7 Day 색상 변경](https://github.com/teamCoSaIn/trilo-be/assets/53935439/46825d3b-6ca8-409c-9dba-5a7c549d2aa3)
+
+### 여행 기간 수정 & 기간안에 포함되지 않는 일정들 일괄 임시보관함 이동
+
+![8 여행 기간 변경에 따른 일괄 임시보관함 이동](https://github.com/teamCoSaIn/trilo-be/assets/53935439/03eedb85-4e22-4248-a210-3a0125221eca)
+
+
+</details>
 
 ## 프로젝트 설명
 - 사용자는 google, naver, kakao 소셜 서비스와 연동하여 우리 서비스에 로그인할 수 있습니다.
