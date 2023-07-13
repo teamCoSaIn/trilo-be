@@ -158,7 +158,8 @@ public class UserRestControllerDocsTest extends RestDocsTestSupport {
                                 parameterWithName("userId").description("수정할 회원 ID")
                         ),
                         requestFields(
-                                fieldWithPath("nickName").type(JsonFieldType.STRING).description("변경할 닉네임").attributes(key("constraints").value("null 또는 공백일 수 없으며, 길이는 1-20자까지만 허용됩니다."))
+                                fieldWithPath("nickName").type(JsonFieldType.STRING).description("변경할 닉네임")
+                                        .attributes(key("constraints").value("null 또는 공백일 수 없으며, 길이는 1-20자까지만 허용됩니다."))
                         )
                 ));
     }
