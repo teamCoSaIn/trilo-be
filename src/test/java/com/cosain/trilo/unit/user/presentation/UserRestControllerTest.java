@@ -62,8 +62,7 @@ public class UserRestControllerTest extends RestControllerTest {
             Long userId = 1L;
 
             // when & then
-            mockMvc.perform(RestDocumentationRequestBuilders.get(BASE_URL + "/{userId}/profile", userId)
-                            .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN))
+            mockMvc.perform(RestDocumentationRequestBuilders.get(BASE_URL + "/{userId}/profile", userId))
                     .andExpect(MockMvcResultMatchers.status().isUnauthorized())
                     .andExpect(jsonPath("$.errorCode").value("auth-0001"))
                     .andExpect(jsonPath("$.errorMessage").exists())
@@ -91,8 +90,7 @@ public class UserRestControllerTest extends RestControllerTest {
             Long userId = 1L;
 
             // when & then
-            mockMvc.perform(RestDocumentationRequestBuilders.delete(BASE_URL + "/{userId}", userId)
-                            .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN))
+            mockMvc.perform(RestDocumentationRequestBuilders.delete(BASE_URL + "/{userId}", userId))
                     .andExpect(MockMvcResultMatchers.status().isUnauthorized())
                     .andExpect(jsonPath("$.errorCode").value("auth-0001"))
                     .andExpect(jsonPath("$.errorMessage").exists())
@@ -126,8 +124,7 @@ public class UserRestControllerTest extends RestControllerTest {
         @Test
         void 미인증된_사용자_요청_401() throws Exception{
             // when & then
-            mockMvc.perform(RestDocumentationRequestBuilders.get(BASE_URL + "/{userId}/my-page", userId)
-                            .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN))
+            mockMvc.perform(RestDocumentationRequestBuilders.get(BASE_URL + "/{userId}/my-page", userId))
                     .andExpect(MockMvcResultMatchers.status().isUnauthorized());
         }
     }
@@ -176,7 +173,6 @@ public class UserRestControllerTest extends RestControllerTest {
 
             // when & then
             mockMvc.perform(RestDocumentationRequestBuilders.patch(BASE_URL + "/{userId}", userId)
-                            .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)
                             .content(createJson(userUpdateRequest))
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(MockMvcResultMatchers.status().isUnauthorized());
