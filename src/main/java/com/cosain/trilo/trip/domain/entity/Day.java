@@ -138,7 +138,9 @@ public class Day {
      * @return
      */
     private boolean isSamePositionMove(Schedule schedule, int targetOrder) {
-        return Objects.equals(this, schedule.getDay()) && (targetOrder == schedules.indexOf(schedule) || targetOrder == schedules.indexOf(schedule) + 1);
+        return (schedule.getDay() != null)
+                && Objects.equals(this.id, schedule.getDay().getId())
+                && (targetOrder == schedules.indexOf(schedule) || targetOrder == schedules.indexOf(schedule) + 1);
     }
 
     /**

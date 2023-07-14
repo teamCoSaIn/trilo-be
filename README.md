@@ -7,7 +7,7 @@
 |                   BackEnd                    |                   BackEnd                    |                  FrontEnd                  |                       FrontEnd                       |                                                  Design                                                   |
 |:--------------------------------------------:|:--------------------------------------------:|:------------------------------------------:|:----------------------------------------------------:|:---------------------------------------------------------------------------------------------------------:|
 | ![](https://github.com/ttasjwi.png?size=200) | ![](https://github.com/pia2011.png?size=200) | ![](https://github.com/jthw1005.png?size=200) | ![](https://github.com/bangdler.png?size=200) | ![](https://github.com/teamCoSaIn/trilo-be/assets/53935439/a14a6b7d-ed57-4a4c-89c1-a31cde1cefa7?size=200) |
-|      [땃쥐](https://gihtub.com/ttasjwi)      |     [LUKAS](https://github.com/pia2011)      |   [‍♂Oliver](https://github.com/jthw1005)   |         [Bangtae](https://github.com/bangdler)          |                                                    Joy                                                    |
+|       [땃쥐](https://github.com/ttasjwi)       |     [LUKAS](https://github.com/pia2011)      |   [‍♂Oliver](https://github.com/jthw1005)   |         [Bangtae](https://github.com/bangdler)          |                                                    Joy                                                    |
 
 ## 프로젝트 간단 시연 📺
 
