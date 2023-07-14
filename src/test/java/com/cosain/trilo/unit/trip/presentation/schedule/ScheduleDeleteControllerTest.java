@@ -33,7 +33,7 @@ class ScheduleDeleteControllerTest extends RestControllerTest {
     private final static String ACCESS_TOKEN = "Bearer accessToken";
 
     @Test
-    @DisplayName("인증된 사용자 요청 -> 미구현 500")
+    @DisplayName("인증된 사용자 요청 -> 성공")
     @WithMockUser
     public void deleteSchedule_with_authorizedUser() throws Exception {
         mockingForLoginUserAnnotation();
