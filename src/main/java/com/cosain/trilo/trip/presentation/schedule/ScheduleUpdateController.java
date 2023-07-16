@@ -1,6 +1,8 @@
 package com.cosain.trilo.trip.presentation.schedule;
 
-import com.cosain.trilo.common.LoginUser;
+import com.cosain.trilo.auth.infra.jwt.UserPayload;
+import com.cosain.trilo.auth.presentation.Login;
+import com.cosain.trilo.auth.presentation.LoginUser;
 import com.cosain.trilo.trip.application.schedule.service.ScheduleUpdateService;
 import com.cosain.trilo.trip.application.schedule.dto.ScheduleUpdateCommand;
 import com.cosain.trilo.trip.application.schedule.dto.factory.ScheduleUpdateCommandFactory;
@@ -22,8 +24,9 @@ public class ScheduleUpdateController {
 
     @PutMapping("/api/schedules/{scheduleId}")
     @ResponseStatus(HttpStatus.OK)
-    public ScheduleUpdateResponse updateSchedule(@LoginUser User user, @PathVariable Long scheduleId, @RequestBody ScheduleUpdateRequest request) {
-        Long tripperId = user.getId();
+    @Login
+    public ScheduleUpdateResponse updateSchedule(@LoginUser UserPayload userPayload, @PathVariable Long scheduleId, @RequestBody ScheduleUpdateRequest request) {
+        Long tripperId = userPayload.getId();
 
         ScheduleUpdateCommand scheduleUpdateCommand = scheduleUpdateCommandFactory.createCommand(request.getTitle(),request.getContent(), request.getStartTime(), request.getEndTime());
         Long updatedScheduleId = scheduleUpdateService.updateSchedule(scheduleId,tripperId, scheduleUpdateCommand);

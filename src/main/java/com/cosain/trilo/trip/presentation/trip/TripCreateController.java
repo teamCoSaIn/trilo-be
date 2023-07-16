@@ -1,6 +1,8 @@
 package com.cosain.trilo.trip.presentation.trip;
 
-import com.cosain.trilo.common.LoginUser;
+import com.cosain.trilo.auth.infra.jwt.UserPayload;
+import com.cosain.trilo.auth.presentation.Login;
+import com.cosain.trilo.auth.presentation.LoginUser;
 import com.cosain.trilo.trip.application.trip.service.TripCreateService;
 import com.cosain.trilo.trip.application.trip.dto.TripCreateCommand;
 import com.cosain.trilo.trip.application.trip.dto.factory.TripCreateCommandFactory;
@@ -24,8 +26,9 @@ public class TripCreateController {
     private final TripCreateCommandFactory tripCreateCommandFactory;
 
     @PostMapping("/api/trips")
-    public ResponseEntity<TripCreateResponse> createTrip(@LoginUser User user, @RequestBody TripCreateRequest request) {
-        Long tripperId = user.getId();
+    @Login
+    public ResponseEntity<TripCreateResponse> createTrip(@LoginUser UserPayload userPayload, @RequestBody TripCreateRequest request) {
+        Long tripperId = userPayload.getId();
         TripCreateCommand createCommand = tripCreateCommandFactory.createCommand(request.getTitle());
 
         Long tripId = tripCreateService.createTrip(tripperId, createCommand);

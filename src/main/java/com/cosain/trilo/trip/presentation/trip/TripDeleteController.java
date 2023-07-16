@@ -1,6 +1,8 @@
 package com.cosain.trilo.trip.presentation.trip;
 
-import com.cosain.trilo.common.LoginUser;
+import com.cosain.trilo.auth.infra.jwt.UserPayload;
+import com.cosain.trilo.auth.presentation.Login;
+import com.cosain.trilo.auth.presentation.LoginUser;
 import com.cosain.trilo.trip.application.trip.service.TripDeleteService;
 import com.cosain.trilo.user.domain.User;
 import lombok.RequiredArgsConstructor;
@@ -20,8 +22,9 @@ public class TripDeleteController {
 
     @DeleteMapping("/api/trips/{tripId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteTrip(@LoginUser User user, @PathVariable Long tripId) {
-        Long tripperId = user.getId();
+    @Login
+    public void deleteTrip(@LoginUser UserPayload userPayload, @PathVariable Long tripId) {
+        Long tripperId = userPayload.getId();
         tripDeleteService.deleteTrip(tripId, tripperId);
     }
 }

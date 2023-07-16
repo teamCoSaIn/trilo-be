@@ -1,6 +1,8 @@
 package com.cosain.trilo.trip.presentation.schedule;
 
-import com.cosain.trilo.common.LoginUser;
+import com.cosain.trilo.auth.infra.jwt.UserPayload;
+import com.cosain.trilo.auth.presentation.Login;
+import com.cosain.trilo.auth.presentation.LoginUser;
 import com.cosain.trilo.trip.application.schedule.service.ScheduleMoveService;
 import com.cosain.trilo.trip.application.schedule.dto.ScheduleMoveCommand;
 import com.cosain.trilo.trip.application.schedule.dto.ScheduleMoveResult;
@@ -23,8 +25,9 @@ public class ScheduleMoveController {
 
     @PutMapping("/api/schedules/{scheduleId}/position")
     @ResponseStatus(HttpStatus.OK)
-    public ScheduleMoveResponse moveSchedule(@LoginUser User user, @PathVariable Long scheduleId, @RequestBody ScheduleMoveRequest request) {
-        Long moveTripperId = user.getId();
+    @Login
+    public ScheduleMoveResponse moveSchedule(@LoginUser UserPayload userPayload, @PathVariable Long scheduleId, @RequestBody ScheduleMoveRequest request) {
+        Long moveTripperId = userPayload.getId();
 
         ScheduleMoveCommand scheduleMoveCommand = scheduleMoveCommandFactory.createCommand(request.getTargetDayId(), request.getTargetOrder());
         ScheduleMoveResult scheduleMoveResult = scheduleMoveService.moveSchedule(scheduleId, moveTripperId, scheduleMoveCommand);

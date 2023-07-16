@@ -1,8 +1,9 @@
 package com.cosain.trilo.user.presentation;
 
-import com.cosain.trilo.common.LoginUser;
+import com.cosain.trilo.auth.infra.jwt.UserPayload;
+import com.cosain.trilo.auth.presentation.Login;
+import com.cosain.trilo.auth.presentation.LoginUser;
 import com.cosain.trilo.user.application.UserService;
-import com.cosain.trilo.user.domain.User;
 import com.cosain.trilo.user.presentation.dto.UserMyPageResponse;
 import com.cosain.trilo.user.presentation.dto.UserProfileResponse;
 import com.cosain.trilo.user.presentation.dto.UserUpdateRequest;
@@ -24,15 +25,17 @@ public class UserRestController {
 
     @GetMapping("/{userId}/profile")
     @ResponseStatus(HttpStatus.OK)
-    public UserProfileResponse getUserProfile(@PathVariable("userId") Long targetUserId, @LoginUser User user){
-        UserProfileResponse userProfileResponse = userService.getUserProfile(targetUserId, user.getId());
+    @Login
+    public UserProfileResponse getUserProfile(@PathVariable("userId") Long targetUserId, @LoginUser UserPayload userPayload){
+        UserProfileResponse userProfileResponse = userService.getUserProfile(targetUserId, userPayload.getId());
         return userProfileResponse;
     }
 
     @DeleteMapping("/{userId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteUser(@PathVariable("userId") Long targetUserId, @LoginUser User user){
-        userService.delete(targetUserId, user.getId());
+    @Login
+    public void deleteUser(@PathVariable("userId") Long targetUserId, @LoginUser UserPayload userPayload){
+        userService.delete(targetUserId, userPayload.getId());
     }
 
     @GetMapping("/{userId}/my-page")
@@ -45,8 +48,9 @@ public class UserRestController {
 
     @PatchMapping("/{userId}")
     @ResponseStatus(HttpStatus.OK)
-    public void updateUser(@PathVariable("userId") Long targetUserId, @LoginUser User user, @Valid @RequestBody UserUpdateRequest userUpdateRequest){
-        userService.update(targetUserId, user.getId(), userUpdateRequest);
+    @Login
+    public void updateUser(@PathVariable("userId") Long targetUserId, @LoginUser UserPayload userPayload, @Valid @RequestBody UserUpdateRequest userUpdateRequest){
+        userService.update(targetUserId, userPayload.getId(), userUpdateRequest);
     }
 
 }

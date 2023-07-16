@@ -1,6 +1,8 @@
 package com.cosain.trilo.trip.presentation.schedule;
 
-import com.cosain.trilo.common.LoginUser;
+import com.cosain.trilo.auth.infra.jwt.UserPayload;
+import com.cosain.trilo.auth.presentation.Login;
+import com.cosain.trilo.auth.presentation.LoginUser;
 import com.cosain.trilo.common.exception.CustomException;
 import com.cosain.trilo.trip.application.schedule.service.ScheduleCreateService;
 import com.cosain.trilo.trip.application.schedule.dto.ScheduleCreateCommand;
@@ -31,8 +33,9 @@ public class ScheduleCreateController {
 
     @PostMapping("/api/schedules")
     @ResponseStatus(HttpStatus.CREATED)
-    public ScheduleCreateResponse createSchedule(@LoginUser User user, @RequestBody ScheduleCreateRequest request) {
-        Long tripperId = user.getId();
+    @Login
+    public ScheduleCreateResponse createSchedule(@LoginUser UserPayload userPayload, @RequestBody ScheduleCreateRequest request) {
+        Long tripperId = userPayload.getId();
         ScheduleCreateCommand command = createCommand(request);
 
         Long scheduleId = scheduleCreateService.createSchedule(tripperId, command);
