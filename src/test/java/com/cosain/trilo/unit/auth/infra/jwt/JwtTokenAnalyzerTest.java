@@ -4,6 +4,7 @@ import com.cosain.trilo.auth.infra.TokenAnalyzer;
 import com.cosain.trilo.auth.infra.TokenProvider;
 import com.cosain.trilo.auth.infra.jwt.JwtTokenAnalyzer;
 import com.cosain.trilo.auth.infra.jwt.JwtTokenProvider;
+import com.cosain.trilo.auth.presentation.AuthTokenExtractor;
 import com.cosain.trilo.fixture.UserFixture;
 import com.cosain.trilo.user.domain.User;
 import org.assertj.core.api.Assertions;
@@ -17,11 +18,12 @@ class JwtTokenAnalyzerTest {
     private final int REFRESH_TOKEN_EXPIRY = 10000;
     private TokenAnalyzer tokenAnalyzer;
     private TokenProvider tokenProvider;
+    private AuthTokenExtractor authTokenExtractor;
 
     @BeforeEach
     void setUp(){
         tokenProvider =  new JwtTokenProvider(ACCESS_TOKEN_EXPIRY, REFRESH_TOKEN_EXPIRY, SECRET_KEY);
-        tokenAnalyzer = new JwtTokenAnalyzer(SECRET_KEY);
+        tokenAnalyzer = new JwtTokenAnalyzer(authTokenExtractor, SECRET_KEY);
     }
 
     @Test

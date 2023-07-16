@@ -1,12 +1,10 @@
 package com.cosain.trilo.auth.infra.jwt;
 
 import com.cosain.trilo.auth.infra.TokenProvider;
-import com.cosain.trilo.config.security.dto.UserPrincipal;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
@@ -15,6 +13,8 @@ import java.util.Date;
 @Component
 public class JwtTokenProvider implements TokenProvider {
 
+    private static final String ACCESS_TOKEN_SUBJECT = "AccessToken";
+    private static final String REFRESH_TOKEN_SUBJECT = "RefreshToken";
     private final long accessTokenExpiryMs;
     private final long refreshTokenExpiryMs;
     private final Key secretKey;
@@ -31,23 +31,18 @@ public class JwtTokenProvider implements TokenProvider {
 
 
     @Override
-    public String createAccessTokenById(final Long id){
+    public String createAccessTokenById(Long id){
 
-        return createToken(String.valueOf(id), accessTokenExpiryMs);
+        return createToken(id, accessTokenExpiryMs, ACCESS_TOKEN_SUBJECT);
     }
 
     @Override
     public String createRefreshTokenById(Long id) {
 
-        return createToken(String.valueOf(id), refreshTokenExpiryMs);
+        return createToken(id, refreshTokenExpiryMs, REFRESH_TOKEN_SUBJECT);
     }
 
-    private Long getUserId(final Authentication authentication){
-        UserPrincipal principal = (UserPrincipal) authentication.getPrincipal();
-        return principal.getId();
-    }
-
-    private String createToken(final String subject, final long tokenExpiryMs){
+    private String createToken(Long id, long tokenExpiryMs, String subject){
         Date nowDate = new Date();
         Date endDate = new Date(nowDate.getTime() + tokenExpiryMs);
 
@@ -55,6 +50,7 @@ public class JwtTokenProvider implements TokenProvider {
                 .setSubject(subject)
                 .setIssuedAt(nowDate)
                 .setExpiration(endDate)
+                .claim("id", id)
                 .signWith(secretKey, SignatureAlgorithm.HS256)
                 .compact();
     }

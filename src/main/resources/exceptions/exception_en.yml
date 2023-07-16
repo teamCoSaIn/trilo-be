@@ -32,32 +32,24 @@ request-0005:
 
 # 인증/인가 관련
 auth-0001:
-  message: AuthenticationFailed
-  detail: Authentication failed.
+  message: Token Not Exist
+  detail: The Token is Not Exist
 
 auth-0002:
-  message: AccessDenied
-  detail: Access is denied.
-
+  message: Token Not Valid
+  detail: The Token is Not Valid
 
 auth-0003:
-  message: UserNotFound
-  detail: The user corresponding to the authentication target could not be found.
-
+  message: Token Format Not Valid
+  detail: The Token Format is Not Valid
 
 auth-0004:
   message: NotValidToken
   detail: The provided token is not valid.
 
-
 auth-0005:
   message: Not Support ClientId
   detail: The login method is not supported.
-
-
-auth-0006:
-  message: TokenAuthenticationFilterError
-  detail: An error occurred during token verification process.
 
 auth-0007:
   message: NotExistRefreshToken

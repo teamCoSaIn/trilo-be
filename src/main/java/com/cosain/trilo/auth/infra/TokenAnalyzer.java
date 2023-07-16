@@ -1,10 +1,11 @@
 package com.cosain.trilo.auth.infra;
 
-import java.time.LocalDateTime;
+import com.cosain.trilo.auth.infra.jwt.UserPayload;
 
 public interface TokenAnalyzer {
     boolean validateToken(String token);
+    boolean isValidToken(String authorizationHeader);
+    UserPayload getPayload(String authorizationHeader);
     Long getUserIdFromToken(String token);
-    LocalDateTime getTokenExpiryDateTime(String token);
     Long getTokenRemainExpiryFrom(String token);
 }

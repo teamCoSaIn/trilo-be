@@ -1,12 +1,6 @@
 package com.cosain.trilo.support;
 
 import com.cosain.trilo.auth.infra.TokenProvider;
-import com.cosain.trilo.trip.domain.entity.Trip;
-import com.cosain.trilo.trip.domain.repository.TripRepository;
-import com.cosain.trilo.trip.domain.vo.TripImage;
-import com.cosain.trilo.trip.domain.vo.TripPeriod;
-import com.cosain.trilo.trip.domain.vo.TripStatus;
-import com.cosain.trilo.trip.domain.vo.TripTitle;
 import com.cosain.trilo.user.domain.AuthProvider;
 import com.cosain.trilo.user.domain.Role;
 import com.cosain.trilo.user.domain.User;
@@ -26,9 +20,6 @@ import org.springframework.web.context.WebApplicationContext;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDate;
-
-import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -57,7 +48,6 @@ public class IntegrationTest {
     void setUp() {
         mockMvc = MockMvcBuilders
                 .webAppContextSetup(context)
-                .apply(springSecurity())
                 .build();
     }
 
