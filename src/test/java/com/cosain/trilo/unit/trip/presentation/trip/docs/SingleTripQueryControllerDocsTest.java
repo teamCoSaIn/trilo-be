@@ -15,7 +15,6 @@ import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
@@ -43,7 +42,7 @@ public class SingleTripQueryControllerDocsTest extends RestDocsTestSupport {
         Long tripId = 1L;
         mockingForLoginUserAnnotation();
         TripDetail tripDetail = new TripDetail(tripId, 2L, "여행 제목", TripStatus.DECIDED, LocalDate.of(2023, 4, 4), LocalDate.of(2023, 4, 5));
-        given(tripDetailSearchService.searchTripDetail(anyLong(), any())).willReturn(tripDetail);
+        given(tripDetailSearchService.searchTripDetail(anyLong())).willReturn(tripDetail);
 
         mockMvc.perform(RestDocumentationRequestBuilders.get(BASE_URL + "/{tripId}", tripId)
                         .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)

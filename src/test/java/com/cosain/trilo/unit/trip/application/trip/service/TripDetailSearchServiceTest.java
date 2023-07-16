@@ -40,7 +40,7 @@ public class TripDetailSearchServiceTest {
         given(tripQueryRepository.findTripDetailById(anyLong())).willReturn(Optional.of(tripDetail));
 
         // when
-        TripDetail dto = tripDetailSearchService.searchTripDetail(1L, 1L);
+        TripDetail dto = tripDetailSearchService.searchTripDetail( 1L);
 
         // then
         verify(tripQueryRepository).findTripDetailById(anyLong());
@@ -51,27 +51,13 @@ public class TripDetailSearchServiceTest {
     }
 
     @Test
-    @DisplayName("조회 자격이 없는 사람이 요청할 경우 NoTripDetailSearchAuthorityException 이 발생한다")
-    void when_no_authority_tripper_request_trip_detail_it_throws_NoTripDetailSearchAuthorityException(){
-
-        // given
-        TripDetail tripDetail = new TripDetail(1L, 1L, "제목", TripStatus.DECIDED, LocalDate.of(2023, 5, 10), LocalDate.of(2023, 5, 15));
-        given(tripQueryRepository.findTripDetailById(anyLong())).willReturn(Optional.of(tripDetail));
-
-        // when && then
-        assertThatThrownBy(() -> tripDetailSearchService.searchTripDetail(1L, 2L))
-                .isInstanceOf(NoTripDetailSearchAuthorityException.class);
-
-    }
-
-    @Test
     @DisplayName("조회한 Trip이 없을 경우 TripNotFoundException 이 발생한다.")
     void when_the_trip_is_not_exist_is_throws_TripNotFoundException(){
         // given
         given(tripQueryRepository.findTripDetailById(anyLong())).willReturn(Optional.empty());
 
         // when & then
-        assertThatThrownBy(() -> tripDetailSearchService.searchTripDetail(2L, 1L))
+        assertThatThrownBy(() -> tripDetailSearchService.searchTripDetail( 1L))
                 .isInstanceOf(TripNotFoundException.class);
     }
 }

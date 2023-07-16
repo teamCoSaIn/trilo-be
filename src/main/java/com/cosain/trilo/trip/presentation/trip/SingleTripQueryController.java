@@ -1,9 +1,7 @@
 package com.cosain.trilo.trip.presentation.trip;
 
-import com.cosain.trilo.common.LoginUser;
 import com.cosain.trilo.trip.application.trip.service.TripDetailSearchService;
 import com.cosain.trilo.trip.infra.dto.TripDetail;
-import com.cosain.trilo.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -20,10 +18,7 @@ public class SingleTripQueryController {
 
     @GetMapping("/api/trips/{tripId}")
     @ResponseStatus(HttpStatus.OK)
-    public TripDetail findSingleTrip(@LoginUser User user, @PathVariable Long tripId) {
-
-        Long tripperId = user.getId();
-
-        return tripDetailSearchService.searchTripDetail(tripId, tripperId);
+    public TripDetail findSingleTrip(@PathVariable Long tripId) {
+        return tripDetailSearchService.searchTripDetail(tripId);
     }
 }
