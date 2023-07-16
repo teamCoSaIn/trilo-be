@@ -17,7 +17,6 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.test.web.servlet.ResultActions;
 
 import java.nio.charset.StandardCharsets;
@@ -78,7 +77,6 @@ public class DayColorUpdateIntegrationTest extends IntegrationTest {
 
     @Test
     @DisplayName("미인증 사용자 요청 -> 인증 실패 401")
-    @WithAnonymousUser
     public void updateDayColor_with_unauthorizedUser() throws Exception {
         // given
         String updateColorName = "RED";

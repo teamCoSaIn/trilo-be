@@ -16,7 +16,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.SliceImpl;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithAnonymousUser;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
@@ -25,7 +24,6 @@ import java.util.List;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -74,15 +72,23 @@ class TripperTripListQueryControllerTest extends RestControllerTest {
     }
 
     @Test
-    @DisplayName("미인증 사용자 요청 -> 인증 실패 401")
-    @WithAnonymousUser
+    @DisplayName("미인증 사용자 요청 -> 200")
     public void findTripperTripList_with_unauthorizedUser() throws Exception {
+
+        long tripperId = 1L;
+
+        TripSummary tripSummary1 = new TripSummary(1L, tripperId, "제목 1", TripStatus.DECIDED, LocalDate.of(2023, 3,4), LocalDate.of(2023, 4, 1), "image.jpg");
+        TripSummary tripSummary2 = new TripSummary(2L, tripperId, "제목 2", TripStatus.UNDECIDED, null, null, "image.jpg");
+        TripSummary tripSummary3 = new TripSummary(3L, tripperId, "제목 3", TripStatus.DECIDED, LocalDate.of(2023, 4,4), LocalDate.of(2023, 4, 5), "image.jpg");
+        Pageable pageable = PageRequest.of(0, 3);
+
+        SliceImpl<TripSummary> tripDetails = new SliceImpl<>(List.of(tripSummary3, tripSummary2, tripSummary1), pageable, true);
+
+        given(tripListSearchService.searchTripSummaries(any(TripPageCondition.class), any(Pageable.class))).willReturn(tripDetails);
+
+
         mockMvc.perform(get("/api/trips?tripper-id=1"))
-                .andDo(print())
-                .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("$.errorCode").exists())
-                .andExpect(jsonPath("$.errorMessage").exists())
-                .andExpect(jsonPath("$.errorDetail").exists());
+                .andExpect(status().isOk());
     }
 
 }

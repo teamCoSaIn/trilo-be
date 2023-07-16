@@ -12,8 +12,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithAnonymousUser;
-import org.springframework.security.test.context.support.WithMockUser;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
@@ -36,7 +34,6 @@ class TripDayListQueryControllerTest extends RestControllerTest {
 
     @Test
     @DisplayName("Day 목록 조회 -> 성공")
-    @WithMockUser
     public void findTripDayList_with_authorizedUser() throws Exception {
 
         Long tripId = 1L;
@@ -67,14 +64,9 @@ class TripDayListQueryControllerTest extends RestControllerTest {
     }
 
     @Test
-    @DisplayName("미인증 사용자 요청 -> 인증 실패 401")
-    @WithAnonymousUser
+    @DisplayName("미인증 사용자 요청 -> 200")
     public void findTripDayList_with_unauthorizedUser() throws Exception {
         mockMvc.perform(get("/api/trips/1/days"))
-                .andDo(print())
-                .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("$.errorCode").exists())
-                .andExpect(jsonPath("$.errorMessage").exists())
-                .andExpect(jsonPath("$.errorDetail").exists());
+                .andExpect(status().isOk());
     }
 }

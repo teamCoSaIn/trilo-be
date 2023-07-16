@@ -18,8 +18,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithAnonymousUser;
-import org.springframework.security.test.context.support.WithMockUser;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -50,7 +48,6 @@ class ScheduleCreateControllerTest extends RestControllerTest {
 
     @Test
     @DisplayName("인증된 사용자의 올바른 요청 -> 일정 생성됨")
-    @WithMockUser
     public void createSchedule_with_authorizedUser() throws Exception {
         mockingForLoginUserAnnotation();
 
@@ -112,7 +109,6 @@ class ScheduleCreateControllerTest extends RestControllerTest {
 
     @Test
     @DisplayName("미인증 사용자 요청 -> 인증 실패 401")
-    @WithAnonymousUser
     public void createSchedule_with_unauthorizedUser() throws Exception {
         Long dayId = 1L;
         Long tripId = 1L;

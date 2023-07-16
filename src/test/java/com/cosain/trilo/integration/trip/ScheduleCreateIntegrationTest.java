@@ -20,7 +20,6 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.ResultActions;
 
 import java.nio.charset.StandardCharsets;
@@ -47,7 +46,6 @@ class ScheduleCreateIntegrationTest extends IntegrationTest {
 
     @Test
     @DisplayName("임시보관함에 일정 생성 -> 맨 앞에 일정 생성됨")
-    @WithMockUser
     public void testTempScheduleCreate() throws Exception {
         // given
         User user = setupMockNaverUser();
@@ -90,7 +88,6 @@ class ScheduleCreateIntegrationTest extends IntegrationTest {
 
     @Test
     @DisplayName("Day에 일정 생성 -> 맨 뒤에 일정 생성됨")
-    @WithMockUser
     public void testDayScheduleCreate() throws Exception {
         // given
         User user = setupMockNaverUser();

@@ -11,7 +11,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.security.test.context.support.WithAnonymousUser;
 
 import java.io.FileInputStream;
 import java.nio.charset.StandardCharsets;
@@ -167,7 +166,6 @@ public class TripImageUpdateControllerTest extends RestControllerTest {
 
     @Test
     @DisplayName("미인증 사용자 -> 인증 실패 401")
-    @WithAnonymousUser
     public void testUnAuthorizedUser() throws Exception {
         Long tripId = 1L;
 
