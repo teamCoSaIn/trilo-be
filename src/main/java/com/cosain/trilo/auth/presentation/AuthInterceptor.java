@@ -1,6 +1,6 @@
 package com.cosain.trilo.auth.presentation;
 
-import com.cosain.trilo.auth.application.JwtProvider;
+import com.cosain.trilo.auth.application.token.JwtProvider;
 import com.cosain.trilo.common.exception.auth.TokenNotExistException;
 import com.cosain.trilo.common.exception.auth.TokenNotValidException;
 import jakarta.servlet.http.HttpServletRequest;

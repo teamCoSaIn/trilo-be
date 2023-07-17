@@ -1,6 +1,7 @@
 package com.cosain.trilo.auth.infra.token;
 
-import com.cosain.trilo.auth.application.JwtProvider;
+import com.cosain.trilo.auth.application.token.JwtProvider;
+import com.cosain.trilo.auth.application.token.UserPayload;
 import com.cosain.trilo.common.exception.auth.TokenInvalidFormatException;
 import com.cosain.trilo.common.exception.auth.TokenNotExistException;
 import io.jsonwebtoken.*;

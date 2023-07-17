@@ -1,6 +1,6 @@
 package com.cosain.trilo.auth.presentation;
 
-import com.cosain.trilo.auth.application.JwtProvider;
+import com.cosain.trilo.auth.application.token.JwtProvider;
 import lombok.RequiredArgsConstructor;
 import org.apache.http.HttpHeaders;
 import org.springframework.core.MethodParameter;

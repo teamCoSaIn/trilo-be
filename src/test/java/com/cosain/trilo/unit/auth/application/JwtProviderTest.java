@@ -1,6 +1,6 @@
 package com.cosain.trilo.unit.auth.application;
 
-import com.cosain.trilo.auth.application.JwtProvider;
+import com.cosain.trilo.auth.application.token.JwtProvider;
 import com.cosain.trilo.auth.infra.token.JwtProviderImpl;
 import com.cosain.trilo.fixture.UserFixture;
 import com.cosain.trilo.user.domain.User;

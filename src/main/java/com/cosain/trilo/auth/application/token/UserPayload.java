@@ -1,4 +1,4 @@
-package com.cosain.trilo.auth.infra.token;
+package com.cosain.trilo.auth.application.token;
 
 import lombok.Getter;
 

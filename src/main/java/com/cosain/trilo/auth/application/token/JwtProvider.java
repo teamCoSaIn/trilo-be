@@ -1,6 +1,4 @@
-package com.cosain.trilo.auth.application;
-
-import com.cosain.trilo.auth.infra.token.UserPayload;
+package com.cosain.trilo.auth.application.token;
 
 public interface JwtProvider {
     String createAccessToken(Long id);

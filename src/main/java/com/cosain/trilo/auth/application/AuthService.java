@@ -3,6 +3,7 @@ package com.cosain.trilo.auth.application;
 import com.cosain.trilo.auth.application.dto.LoginResult;
 import com.cosain.trilo.auth.application.dto.OAuthLoginParams;
 import com.cosain.trilo.auth.application.dto.ReIssueAccessTokenResult;
+import com.cosain.trilo.auth.application.token.JwtProvider;
 import com.cosain.trilo.auth.domain.LogoutAccessToken;
 import com.cosain.trilo.auth.domain.RefreshToken;
 import com.cosain.trilo.auth.domain.repository.TokenRepository;

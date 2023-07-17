@@ -1,7 +1,7 @@
 package com.cosain.trilo.unit.auth.application;
 
 import com.cosain.trilo.auth.application.AuthService;
-import com.cosain.trilo.auth.application.JwtProvider;
+import com.cosain.trilo.auth.application.token.JwtProvider;
 import com.cosain.trilo.auth.application.OAuthProfileRequestService;
 import com.cosain.trilo.auth.application.dto.KakaoLoginParams;
 import com.cosain.trilo.auth.application.dto.LoginResult;

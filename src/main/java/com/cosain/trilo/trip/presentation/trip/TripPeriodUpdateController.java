@@ -1,6 +1,6 @@
 package com.cosain.trilo.trip.presentation.trip;
 
-import com.cosain.trilo.auth.infra.token.UserPayload;
+import com.cosain.trilo.auth.application.token.UserPayload;
 import com.cosain.trilo.auth.presentation.Login;
 import com.cosain.trilo.auth.presentation.LoginUser;
 import com.cosain.trilo.trip.application.trip.service.TripPeriodUpdateService;

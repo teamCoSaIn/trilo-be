@@ -1,7 +1,7 @@
 package com.cosain.trilo.support;
 
 import com.cosain.trilo.auth.infra.token.JwtProviderImpl;
-import com.cosain.trilo.auth.infra.token.UserPayload;
+import com.cosain.trilo.auth.application.token.UserPayload;
 import com.cosain.trilo.common.logging.query.QueryCounter;
 import com.cosain.trilo.config.MessageSourceTestConfig;
 import com.fasterxml.jackson.core.JsonProcessingException;
