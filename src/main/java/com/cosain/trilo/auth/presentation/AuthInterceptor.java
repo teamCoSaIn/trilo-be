@@ -1,6 +1,6 @@
 package com.cosain.trilo.auth.presentation;
 
-import com.cosain.trilo.auth.infra.jwt.JwtTokenAnalyzer;
+import com.cosain.trilo.auth.application.JwtProvider;
 import com.cosain.trilo.common.exception.auth.TokenNotExistException;
 import com.cosain.trilo.common.exception.auth.TokenNotValidException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -17,7 +17,7 @@ import org.springframework.web.servlet.HandlerInterceptor;
 @RequiredArgsConstructor
 public class AuthInterceptor implements HandlerInterceptor {
 
-    private final JwtTokenAnalyzer jwtTokenAnalyzer;
+    private final JwtProvider jwtProvider;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)  {
@@ -42,7 +42,7 @@ public class AuthInterceptor implements HandlerInterceptor {
 
     private void validateAuthorization(HttpServletRequest request){
         String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-        if(!jwtTokenAnalyzer.isValidToken(authorizationHeader)){
+        if(!jwtProvider.isValidAccessToken(authorizationHeader)){
             throw new TokenNotValidException();
         }
     }

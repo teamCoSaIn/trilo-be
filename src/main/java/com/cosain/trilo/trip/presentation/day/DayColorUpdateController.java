@@ -1,6 +1,6 @@
 package com.cosain.trilo.trip.presentation.day;
 
-import com.cosain.trilo.auth.infra.jwt.UserPayload;
+import com.cosain.trilo.auth.infra.token.UserPayload;
 import com.cosain.trilo.auth.presentation.Login;
 import com.cosain.trilo.auth.presentation.LoginUser;
 import com.cosain.trilo.trip.application.day.dto.DayColorUpdateCommand;
@@ -8,7 +8,6 @@ import com.cosain.trilo.trip.application.day.dto.factory.DayColorUpdateCommandFa
 import com.cosain.trilo.trip.application.day.service.DayColorUpdateService;
 import com.cosain.trilo.trip.presentation.day.dto.DayColorUpdateRequest;
 import com.cosain.trilo.trip.presentation.day.dto.DayColorUpdateResponse;
-import com.cosain.trilo.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;

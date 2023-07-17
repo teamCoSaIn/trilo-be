@@ -1,4 +1,4 @@
-package com.cosain.trilo.auth.infra.jwt;
+package com.cosain.trilo.auth.infra.token;
 
 import lombok.Getter;
 

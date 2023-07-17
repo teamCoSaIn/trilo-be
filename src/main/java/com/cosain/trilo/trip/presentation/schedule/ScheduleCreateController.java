@@ -1,6 +1,6 @@
 package com.cosain.trilo.trip.presentation.schedule;
 
-import com.cosain.trilo.auth.infra.jwt.UserPayload;
+import com.cosain.trilo.auth.infra.token.UserPayload;
 import com.cosain.trilo.auth.presentation.Login;
 import com.cosain.trilo.auth.presentation.LoginUser;
 import com.cosain.trilo.common.exception.CustomException;
@@ -11,7 +11,6 @@ import com.cosain.trilo.trip.presentation.exception.NullRequestCoordinateExcepti
 import com.cosain.trilo.trip.presentation.schedule.dto.request.RequestCoordinate;
 import com.cosain.trilo.trip.presentation.schedule.dto.request.ScheduleCreateRequest;
 import com.cosain.trilo.trip.presentation.schedule.dto.response.ScheduleCreateResponse;
-import com.cosain.trilo.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;

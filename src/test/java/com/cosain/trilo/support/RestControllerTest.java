@@ -1,7 +1,7 @@
 package com.cosain.trilo.support;
 
-import com.cosain.trilo.auth.infra.jwt.JwtTokenAnalyzer;
-import com.cosain.trilo.auth.infra.jwt.UserPayload;
+import com.cosain.trilo.auth.infra.token.JwtProviderImpl;
+import com.cosain.trilo.auth.infra.token.UserPayload;
 import com.cosain.trilo.common.logging.query.QueryCounter;
 import com.cosain.trilo.config.MessageSourceTestConfig;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -34,20 +34,20 @@ public class RestControllerTest {
     }
 
     @MockBean
-    protected JwtTokenAnalyzer tokenAnalyzer;
+    protected JwtProviderImpl jwtProvider;
 
     protected String createJson(Object dto) throws JsonProcessingException{
         return objectMapper.writeValueAsString(dto);
     }
 
     protected void mockingForLoginUserAnnotation(Long id){
-        given(tokenAnalyzer.isValidToken(any())).willReturn(true);
-        given(tokenAnalyzer.getPayload(any())).willReturn(new UserPayload(id));
+        given(jwtProvider.isValidAccessToken(any())).willReturn(true);
+        given(jwtProvider.getPayload(any())).willReturn(new UserPayload(id));
     }
 
     protected void mockingForLoginUserAnnotation(){
-        given(tokenAnalyzer.isValidToken(any())).willReturn(true);
-        given(tokenAnalyzer.getPayload(any())).willReturn(new UserPayload(1L));
+        given(jwtProvider.isValidAccessToken(any())).willReturn(true);
+        given(jwtProvider.getPayload(any())).willReturn(new UserPayload(1L));
     }
 
 }

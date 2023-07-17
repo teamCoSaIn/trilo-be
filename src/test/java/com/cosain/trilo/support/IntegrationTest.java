@@ -1,6 +1,6 @@
 package com.cosain.trilo.support;
 
-import com.cosain.trilo.auth.infra.TokenProvider;
+import com.cosain.trilo.auth.infra.token.JwtProviderImpl;
 import com.cosain.trilo.user.domain.AuthProvider;
 import com.cosain.trilo.user.domain.Role;
 import com.cosain.trilo.user.domain.User;
@@ -33,7 +33,7 @@ public class IntegrationTest {
     protected WebApplicationContext context;
 
     @Autowired
-    private TokenProvider tokenProvider;
+    private JwtProviderImpl jwtProvider;
 
     @Autowired
     private UserRepository userRepository;
@@ -69,7 +69,7 @@ public class IntegrationTest {
     }
 
     protected String authorizationHeader(User user) {
-        String accessToken = tokenProvider.createAccessTokenById(user.getId());
+        String accessToken = jwtProvider.createAccessToken(user.getId());
         return String.format("Bearer %s",  accessToken);
     }
 

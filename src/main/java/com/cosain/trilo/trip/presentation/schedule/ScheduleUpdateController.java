@@ -1,6 +1,6 @@
 package com.cosain.trilo.trip.presentation.schedule;
 
-import com.cosain.trilo.auth.infra.jwt.UserPayload;
+import com.cosain.trilo.auth.infra.token.UserPayload;
 import com.cosain.trilo.auth.presentation.Login;
 import com.cosain.trilo.auth.presentation.LoginUser;
 import com.cosain.trilo.trip.application.schedule.service.ScheduleUpdateService;
@@ -8,7 +8,6 @@ import com.cosain.trilo.trip.application.schedule.dto.ScheduleUpdateCommand;
 import com.cosain.trilo.trip.application.schedule.dto.factory.ScheduleUpdateCommandFactory;
 import com.cosain.trilo.trip.presentation.schedule.dto.request.ScheduleUpdateRequest;
 import com.cosain.trilo.trip.presentation.schedule.dto.response.ScheduleUpdateResponse;
-import com.cosain.trilo.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;

@@ -1,6 +1,6 @@
 package com.cosain.trilo.auth.presentation;
 
-import com.cosain.trilo.auth.infra.jwt.JwtTokenAnalyzer;
+import com.cosain.trilo.auth.application.JwtProvider;
 import lombok.RequiredArgsConstructor;
 import org.apache.http.HttpHeaders;
 import org.springframework.core.MethodParameter;
@@ -14,7 +14,7 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 @RequiredArgsConstructor
 public class AuthArgumentResolver implements HandlerMethodArgumentResolver {
 
-    private final JwtTokenAnalyzer jwtTokenAnalyzer;
+    private final JwtProvider jwtTokenAnalyzer;
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
