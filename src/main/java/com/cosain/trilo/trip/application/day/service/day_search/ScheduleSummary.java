@@ -1,6 +1,5 @@
 package com.cosain.trilo.trip.application.day.service.day_search;
 
-import com.cosain.trilo.trip.application.schedule.service.schedule_detail_search.Coordinate;
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.Getter;
 
@@ -10,7 +9,7 @@ public class ScheduleSummary {
     private String title;
     private String placeName;
     private String placeId;
-    private Coordinate coordinate;
+    private CoordinateDto coordinate;
 
     @QueryProjection
     public ScheduleSummary(Long scheduleId, String title, String placeName,String placeId, double latitude, double longitude) {
@@ -18,6 +17,18 @@ public class ScheduleSummary {
         this.title = title;
         this.placeName = placeName;
         this.placeId = placeId;
-        this.coordinate = Coordinate.from(latitude, longitude);
+        this.coordinate = new CoordinateDto(latitude, longitude);
+    }
+
+    @Getter
+    public static class CoordinateDto {
+
+        private final double latitude;
+        private final double longitude;
+
+        public CoordinateDto(double latitude, double longitude) {
+            this.latitude = latitude;
+            this.longitude = longitude;
+        }
     }
 }
