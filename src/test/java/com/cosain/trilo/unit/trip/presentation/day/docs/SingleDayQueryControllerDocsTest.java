@@ -43,7 +43,7 @@ public class SingleDayQueryControllerDocsTest extends RestDocsTestSupport {
 
         Long dayId = 1L;
         DayScheduleDetail dayScheduleDetail = new DayScheduleDetail(dayId, 1L, LocalDate.of(2023, 2, 3), DayColor.BLACK, List.of(scheduleSummary1, scheduleSummary2));
-        given(daySearchService.searchDeySchedule(eq(dayId))).willReturn(dayScheduleDetail);
+        given(daySearchService.searchDaySchedule(eq(dayId))).willReturn(dayScheduleDetail);
 
         mockMvc.perform(RestDocumentationRequestBuilders.get("/api/days"+"/{dayId}",dayId)
                         .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)

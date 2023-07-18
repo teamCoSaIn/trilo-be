@@ -39,7 +39,7 @@ class SingleDayQueryControllerTest extends RestControllerTest {
         ScheduleSummary scheduleSummary2 = new ScheduleSummary(2L, "제목2", "장소 이름2","장소 식별자2", 33.33, 33.33);
 
         DayScheduleDetail dayScheduleDetail = new DayScheduleDetail(1L, 1L, LocalDate.of(2023, 2, 3), DayColor.RED, List.of(scheduleSummary1, scheduleSummary2));
-        given(daySearchService.searchDeySchedule(eq(1L))).willReturn(dayScheduleDetail);
+        given(daySearchService.searchDaySchedule(eq(1L))).willReturn(dayScheduleDetail);
 
         mockMvc.perform(get("/api/days/1")
                         .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)

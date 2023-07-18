@@ -45,7 +45,7 @@ public class DaySearchServiceTest {
         given(dayQueryRepository.findDayWithSchedulesByDayId(1L)).willReturn(Optional.of(dayScheduleDetail));
 
         // when
-        DayScheduleDetail findDayScheduleDetail = daySearchService.searchDeySchedule(1L);
+        DayScheduleDetail findDayScheduleDetail = daySearchService.searchDaySchedule(1L);
         // then
         assertThat(findDayScheduleDetail.getDayId()).isEqualTo(dayId);
         verify(dayQueryRepository, times(1)).findDayWithSchedulesByDayId(dayId);
@@ -59,7 +59,7 @@ public class DaySearchServiceTest {
         given(dayQueryRepository.findDayWithSchedulesByDayId(dayId)).willReturn(Optional.empty());
 
         // when & then
-        Assertions.assertThatThrownBy(() -> daySearchService.searchDeySchedule(dayId)).isInstanceOf(DayNotFoundException.class);
+        Assertions.assertThatThrownBy(() -> daySearchService.searchDaySchedule(dayId)).isInstanceOf(DayNotFoundException.class);
     }
 
     @Test

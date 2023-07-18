@@ -20,6 +20,6 @@ public class SingleDayQueryController {
     @GetMapping("/api/days/{dayId}")
     @ResponseStatus(HttpStatus.OK)
     public DayScheduleDetail findSingleDay(@PathVariable Long dayId) {
-        return daySearchService.searchDeySchedule(dayId);
+        return daySearchService.searchDaySchedule(dayId);
     }
 }

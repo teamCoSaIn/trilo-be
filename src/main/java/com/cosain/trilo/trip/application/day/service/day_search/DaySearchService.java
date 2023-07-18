@@ -16,14 +16,23 @@ public class DaySearchService{
 
     private final DayQueryRepository dayQueryRepository;
 
-    public DayScheduleDetail searchDeySchedule(Long dayId) {
+    /**
+     * Day 및 Day에 속한 일정들에 대한 정보를 조회해옵니다.
+     * @param dayId : day의 식별자
+     */
+    public DayScheduleDetail searchDaySchedule(Long dayId) {
         return findDayWithScheduleByDayId(dayId);
     }
 
     private DayScheduleDetail findDayWithScheduleByDayId(Long dayId){
-        return dayQueryRepository.findDayWithSchedulesByDayId(dayId).orElseThrow(DayNotFoundException::new);
+        return dayQueryRepository.findDayWithSchedulesByDayId(dayId)
+                .orElseThrow(() -> new DayNotFoundException("일치하는 식별자의 여행을 조회할 수 없습니다."));
     }
 
+    /**
+     * Trip에 속한 Day 및 그 Day 각각이 각진 일정들에 대한 정보를 목록으로 조회해옵니다.
+     * @param tripId : trip의 식별자
+     */
     public List<DayScheduleDetail> searchDaySchedules(Long tripId){
         return dayQueryRepository.findDayScheduleListByTripId(tripId);
     }
