@@ -1,8 +1,8 @@
 package com.cosain.trilo.auth.presentation;
 
 import com.cosain.trilo.auth.application.token.JwtProvider;
-import com.cosain.trilo.common.exception.auth.TokenNotExistException;
-import com.cosain.trilo.common.exception.auth.TokenNotValidException;
+import com.cosain.trilo.common.exception.auth.AccessTokenNotExistException;
+import com.cosain.trilo.common.exception.auth.AccessTokenNotValidException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -43,14 +43,14 @@ public class AuthInterceptor implements HandlerInterceptor {
     private void validateAuthorization(HttpServletRequest request){
         String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
         if(!jwtProvider.isValidAccessToken(authorizationHeader)){
-            throw new TokenNotValidException();
+            throw new AccessTokenNotValidException();
         }
     }
 
     private void validateTokenRequired(Object handler) {
         Login loginAnnotation = getLoginAnnotation(handler);
         if(loginAnnotation != null && loginAnnotation.required()){
-            throw new TokenNotExistException();
+            throw new AccessTokenNotExistException();
         }
     }
 

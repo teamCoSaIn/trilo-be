@@ -2,8 +2,9 @@ package com.cosain.trilo.auth.infra.token;
 
 import com.cosain.trilo.auth.application.token.JwtProvider;
 import com.cosain.trilo.auth.application.token.UserPayload;
-import com.cosain.trilo.common.exception.auth.TokenInvalidFormatException;
-import com.cosain.trilo.common.exception.auth.TokenNotExistException;
+import com.cosain.trilo.common.exception.auth.AccessTokenNotValidException;
+import com.cosain.trilo.common.exception.auth.AuthorizationHeaderFormatNotValidException;
+import com.cosain.trilo.common.exception.auth.AccessTokenNotExistException;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
@@ -72,7 +73,7 @@ public class JwtProviderImpl implements JwtProvider {
             Long id = claims.get("id", Long.class);
             return new UserPayload(id);
         }catch (RequiredTypeException | NullPointerException | IllegalArgumentException e){
-            throw new TokenInvalidFormatException();
+            throw new AccessTokenNotValidException();
         }
     }
 
@@ -123,13 +124,13 @@ public class JwtProviderImpl implements JwtProvider {
     }
 
     private String extractToken(String authorizationHeader){
-        if(authorizationHeader == null){
-            throw new TokenNotExistException();
+        if(authorizationHeader == null || authorizationHeader.isEmpty()){
+            throw new AccessTokenNotExistException();
         }
 
         String[] splits = authorizationHeader.split(" ");
         if(splits.length != 2 || !splits[0].equalsIgnoreCase(TOKEN_TYPE)){
-            throw new TokenInvalidFormatException();
+            throw new AuthorizationHeaderFormatNotValidException();
         }
         return splits[1];
     }

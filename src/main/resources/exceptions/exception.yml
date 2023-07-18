@@ -32,29 +32,24 @@ request-0005:
 # 인증/인가 관련
 
 auth-0001:
-  message: Token Not Exist
-  detail: 토큰이 존재하지 않습니다.
+  message: AccessToken Not Exist
+  detail: 엑세스 토큰이 존재하지 않습니다.
 
 auth-0002:
-  message: Token Not Valid
-  detail: 토큰이 유효하지 않습니다.
+  message: AccessToken Not Valid
+  detail: 엑세스 토큰이 유효하지 않습니다.
 
 auth-0003:
-  message: Token Format Not Valid
-  detail: 토큰 형식이 올바르지 않습니다.
+  message: AuthorizationHeader Format Not Valid
+  detail: 인증 헤더 형식이 올바르지 않습니다. 토큰 타입이 Bearer 로 시작하는지 확인해주세요. ex) Bearer accessToken
 
 auth-0004:
-  message: NotValidToken
-  detail: 전달한 토큰이 유효하지 않습니다.
-
-auth-0005:
-  message: Not Support ClientId
-  detail: 지원하지 않는 로그인 방식입니다.
-
-auth-0007:
-  message: NotExistRefreshToken
+  message: RefreshToken Not Exist
   detail: 리프레시 토큰이 존재하지 않습니다.
 
+auth-0005:
+  message: RefreshToken Not Valid
+  detail: 리프레시 토큰이 유효하지 않습니다.
 
 # 사용자(여행자) 관련
 user-0001:

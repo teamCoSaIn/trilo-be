@@ -31,29 +31,26 @@ request-0005:
 
 
 # 인증/인가 관련
+
 auth-0001:
-  message: Token Not Exist
-  detail: The Token is Not Exist
+  message: AccessToken Not Exist
+  detail: AccessToken is not exist
 
 auth-0002:
-  message: Token Not Valid
-  detail: The Token is Not Valid
+  message: AccessToken Not Valid
+  detail: AccessToken is not valid
 
 auth-0003:
-  message: Token Format Not Valid
-  detail: The Token Format is Not Valid
+  message: AuthorizationHeader Format Not Valid
+  detail: AuthorizationHeader format is not valid. Please make sure it starts with the type "Bearer" ex) Bearer accessToken
 
 auth-0004:
-  message: NotValidToken
-  detail: The provided token is not valid.
+  message: RefreshToken Not Exist
+  detail: RefreshToken is not exist
 
 auth-0005:
-  message: Not Support ClientId
-  detail: The login method is not supported.
-
-auth-0007:
-  message: NotExistRefreshToken
-  detail: The refresh token does not exist.
+  message: RefreshToken Not Valid
+  detail: RefreshToken is not valid
 
 
 # 사용자(여행자) 관련

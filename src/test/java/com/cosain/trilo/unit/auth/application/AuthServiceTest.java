@@ -10,7 +10,7 @@ import com.cosain.trilo.auth.application.dto.ReIssueAccessTokenResult;
 import com.cosain.trilo.auth.domain.repository.TokenRepository;
 import com.cosain.trilo.auth.infra.OAuthProfileDto;
 import com.cosain.trilo.auth.presentation.dto.RefreshTokenStatusResponse;
-import com.cosain.trilo.common.exception.NotValidTokenException;
+import com.cosain.trilo.common.exception.auth.RefreshTokenNotValidException;
 import com.cosain.trilo.user.application.UserService;
 import com.cosain.trilo.user.domain.AuthProvider;
 import org.assertj.core.api.Assertions;
@@ -57,7 +57,7 @@ class AuthServiceTest {
 
         given(jwtProvider.isValidRefreshToken(any())).willReturn(false);
 
-        assertThatThrownBy(() -> authService.reissueAccessToken(any())).isInstanceOf(NotValidTokenException.class);
+        assertThatThrownBy(() -> authService.reissueAccessToken(any())).isInstanceOf(RefreshTokenNotValidException.class);
     }
 
     @Test

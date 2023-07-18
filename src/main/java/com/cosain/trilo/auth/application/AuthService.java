@@ -9,8 +9,8 @@ import com.cosain.trilo.auth.domain.RefreshToken;
 import com.cosain.trilo.auth.domain.repository.TokenRepository;
 import com.cosain.trilo.auth.infra.OAuthProfileDto;
 import com.cosain.trilo.auth.presentation.dto.RefreshTokenStatusResponse;
-import com.cosain.trilo.common.exception.NotExistRefreshTokenException;
-import com.cosain.trilo.common.exception.NotValidTokenException;
+import com.cosain.trilo.common.exception.auth.RefreshTokenNotExistException;
+import com.cosain.trilo.common.exception.auth.RefreshTokenNotValidException;
 import com.cosain.trilo.user.application.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,12 +37,12 @@ public class AuthService {
     }
     private void checkIfValidTokenOrThrow(String refreshToken){
         if(!jwtProvider.isValidRefreshToken(refreshToken)){
-            throw new NotValidTokenException();
+            throw new RefreshTokenNotValidException();
         }
     }
     private void checkTokenExistenceOrThrow(String refreshToken){
         if(!tokenRepository.existsRefreshTokenById(refreshToken)){
-            throw new NotExistRefreshTokenException();
+            throw new RefreshTokenNotExistException();
         }
     }
 

@@ -3,9 +3,9 @@ package com.cosain.trilo.common.exception.auth;
 import com.cosain.trilo.common.exception.CustomException;
 import org.springframework.http.HttpStatus;
 
-public class TokenNotValidException extends CustomException {
+public class AuthorizationHeaderFormatNotValidException extends CustomException {
 
-    private static final String ERROR_CODE = "auth-0002";
+    private static final String ERROR_CODE = "auth-0003";
     private static final HttpStatus HTTP_STATUS = HttpStatus.UNAUTHORIZED;
 
     @Override
