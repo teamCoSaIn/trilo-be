@@ -2,7 +2,7 @@ package com.cosain.trilo.unit.trip.presentation.trip;
 
 import com.cosain.trilo.support.RestControllerTest;
 import com.cosain.trilo.trip.application.trip.service.temporary_search.TemporarySearchService;
-import com.cosain.trilo.trip.infra.dto.ScheduleSummary;
+import com.cosain.trilo.trip.application.day.service.day_search.ScheduleSummary;
 import com.cosain.trilo.trip.presentation.trip.TripTemporaryStorageQueryController;
 import com.cosain.trilo.trip.presentation.trip.dto.request.TempSchedulePageCondition;
 import org.junit.jupiter.api.DisplayName;

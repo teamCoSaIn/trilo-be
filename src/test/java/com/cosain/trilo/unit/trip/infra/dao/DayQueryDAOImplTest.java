@@ -1,15 +1,15 @@
-package com.cosain.trilo.unit.trip.infra.repository;
+package com.cosain.trilo.unit.trip.infra.dao;
 
 import com.cosain.trilo.fixture.ScheduleFixture;
 import com.cosain.trilo.fixture.TripFixture;
 import com.cosain.trilo.fixture.UserFixture;
 import com.cosain.trilo.support.RepositoryTest;
+import com.cosain.trilo.trip.application.day.service.day_search.DayScheduleDetail;
+import com.cosain.trilo.trip.application.day.service.day_search.ScheduleSummary;
 import com.cosain.trilo.trip.domain.entity.Day;
 import com.cosain.trilo.trip.domain.entity.Schedule;
 import com.cosain.trilo.trip.domain.entity.Trip;
-import com.cosain.trilo.trip.infra.dto.DayScheduleDetail;
-import com.cosain.trilo.trip.infra.dto.ScheduleSummary;
-import com.cosain.trilo.trip.infra.repository.day.DayQueryRepository;
+import com.cosain.trilo.trip.infra.dao.DayQueryDAOImpl;
 import com.cosain.trilo.user.domain.User;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.DisplayName;
@@ -24,11 +24,11 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RepositoryTest
-@DisplayName("DayQueryRepositoryTest 테스트")
-public class DayQueryRepositoryTest {
+@DisplayName("DayQueryDAOImpl 테스트")
+public class DayQueryDAOImplTest {
 
     @Autowired
-    private DayQueryRepository dayQueryRepository;
+    private DayQueryDAOImpl dayQueryDAOImpl;
 
     @Autowired
     private EntityManager em;
@@ -55,7 +55,7 @@ public class DayQueryRepositoryTest {
 
         // when
         long findDayId = day1.getId();
-        DayScheduleDetail dayScheduleDetail = dayQueryRepository.findDayWithSchedulesByDayId(findDayId).get();
+        DayScheduleDetail dayScheduleDetail = dayQueryDAOImpl.findDayWithSchedulesByDayId(findDayId).get();
 
         // then
         int findSchedulesSize = 3;
@@ -91,7 +91,7 @@ public class DayQueryRepositoryTest {
             em.clear();
 
             // when
-            List<DayScheduleDetail> dayScheduleDetails = dayQueryRepository.findDayScheduleListByTripId(trip.getId());
+            List<DayScheduleDetail> dayScheduleDetails = dayQueryDAOImpl.findDayScheduleListByTripId(trip.getId());
 
             // then
             DayScheduleDetail dayScheduleDetail1 = dayScheduleDetails.get(0);
@@ -119,7 +119,7 @@ public class DayQueryRepositoryTest {
             em.clear();
 
             // when
-            List<DayScheduleDetail> dayScheduleDetails = dayQueryRepository.findDayScheduleListByTripId(trip.getId());
+            List<DayScheduleDetail> dayScheduleDetails = dayQueryDAOImpl.findDayScheduleListByTripId(trip.getId());
             List<ScheduleSummary> findSchedules = dayScheduleDetails.get(0).getSchedules();
             assertThat(findSchedules).isEmpty();
         }
@@ -153,7 +153,7 @@ public class DayQueryRepositoryTest {
             em.clear();
 
             // when
-            List<DayScheduleDetail> dayScheduleDetails = dayQueryRepository.findDayScheduleListByTripId(trip.getId());
+            List<DayScheduleDetail> dayScheduleDetails = dayQueryDAOImpl.findDayScheduleListByTripId(trip.getId());
             List<ScheduleSummary> findSchedules = dayScheduleDetails.get(0).getSchedules();
 
             // then

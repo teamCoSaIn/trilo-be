@@ -1,8 +1,7 @@
 package com.cosain.trilo.trip.application.schedule.service.schedule_detail_search;
 
 import com.cosain.trilo.trip.application.exception.ScheduleNotFoundException;
-import com.cosain.trilo.trip.infra.dto.ScheduleDetail;
-import com.cosain.trilo.trip.infra.repository.schedule.ScheduleQueryRepository;
+import com.cosain.trilo.trip.application.dao.ScheduleQueryDAO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,14 +11,14 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class ScheduleDetailSearchService {
 
-    private final ScheduleQueryRepository scheduleQueryRepository;
+    private final ScheduleQueryDAO scheduleQueryDAO;
 
     public ScheduleDetail searchScheduleDetail(Long scheduleId) {
         return findSchedule(scheduleId);
     }
 
     private ScheduleDetail findSchedule(Long scheduleId) {
-        return scheduleQueryRepository.findScheduleDetailById(scheduleId).orElseThrow(ScheduleNotFoundException::new);
+        return scheduleQueryDAO.findScheduleDetailById(scheduleId).orElseThrow(ScheduleNotFoundException::new);
     }
 
 }

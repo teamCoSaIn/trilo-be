@@ -1,7 +1,7 @@
 package com.cosain.trilo.trip.presentation.schedule;
 
 import com.cosain.trilo.trip.application.schedule.service.schedule_detail_search.ScheduleDetailSearchService;
-import com.cosain.trilo.trip.infra.dto.ScheduleDetail;
+import com.cosain.trilo.trip.application.schedule.service.schedule_detail_search.ScheduleDetail;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;

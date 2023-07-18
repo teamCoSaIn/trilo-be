@@ -1,14 +1,14 @@
 
-package com.cosain.trilo.unit.trip.infra.repository;
+package com.cosain.trilo.unit.trip.infra.dao;
 
 import com.cosain.trilo.fixture.TripFixture;
 import com.cosain.trilo.fixture.UserFixture;
 import com.cosain.trilo.support.RepositoryTest;
+import com.cosain.trilo.trip.application.trip.service.trip_detail_search.TripDetail;
+import com.cosain.trilo.trip.application.trip.service.trip_list_search.TripSummary;
 import com.cosain.trilo.trip.domain.entity.Trip;
-import com.cosain.trilo.trip.infra.dto.TripDetail;
+import com.cosain.trilo.trip.infra.dao.TripQueryDAOImpl;
 import com.cosain.trilo.trip.infra.dto.TripStatistics;
-import com.cosain.trilo.trip.infra.dto.TripSummary;
-import com.cosain.trilo.trip.infra.repository.trip.TripQueryRepository;
 import com.cosain.trilo.trip.presentation.trip.dto.request.TripPageCondition;
 import com.cosain.trilo.user.domain.User;
 import jakarta.persistence.EntityManager;
@@ -26,11 +26,11 @@ import java.time.LocalDate;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RepositoryTest
-@DisplayName("TripQueryRepository 테스트")
-public class TripQueryRepositoryTest {
+@DisplayName("TripQueryDAOImpl 테스트")
+public class TripQueryDAOImplTest {
 
     @Autowired
-    private TripQueryRepository tripQueryRepository;
+    private TripQueryDAOImpl tripQueryDAOImpl;
 
     @Autowired
     private EntityManager em;
@@ -48,7 +48,7 @@ public class TripQueryRepositoryTest {
         trip.getDays().forEach(em::persist);
 
         // when
-        TripDetail tripDetail = tripQueryRepository.findTripDetailById(1L).get();
+        TripDetail tripDetail = tripQueryDAOImpl.findTripDetailById(1L).get();
 
         // then
         assertThat(tripDetail.getTitle()).isEqualTo(trip.getTripTitle().getValue());
@@ -86,7 +86,7 @@ public class TripQueryRepositoryTest {
             Pageable pageable = PageRequest.ofSize(size);
 
             // when
-            Slice<TripSummary> tripSummariesByTripperId = tripQueryRepository.findTripSummariesByTripperId(tripPageCondition, pageable);
+            Slice<TripSummary> tripSummariesByTripperId = tripQueryDAOImpl.findTripSummariesByTripperId(tripPageCondition, pageable);
 
             // then
             assertThat(tripSummariesByTripperId.getContent().size()).isEqualTo(2);
@@ -110,7 +110,7 @@ public class TripQueryRepositoryTest {
             em.clear();
 
             // when
-            Slice<TripSummary> tripSummariesByTripperId = tripQueryRepository.findTripSummariesByTripperId(tripPageCondition, pageable);
+            Slice<TripSummary> tripSummariesByTripperId = tripQueryDAOImpl.findTripSummariesByTripperId(tripPageCondition, pageable);
 
 
             // then
@@ -131,8 +131,8 @@ public class TripQueryRepositoryTest {
 
             // when & then
             long notExistTripId = 2L;
-            assertThat(tripQueryRepository.existById(trip.getId())).isTrue();
-            assertThat(tripQueryRepository.existById(notExistTripId)).isFalse();
+            assertThat(tripQueryDAOImpl.existById(trip.getId())).isTrue();
+            assertThat(tripQueryDAOImpl.existById(notExistTripId)).isFalse();
         }
 
     }
@@ -158,7 +158,7 @@ public class TripQueryRepositoryTest {
 
 
             // when
-            TripStatistics tripStatistics = tripQueryRepository.findTripStaticsByTripperId(tripperId, today);
+            TripStatistics tripStatistics = tripQueryDAOImpl.findTripStaticsByTripperId(tripperId, today);
 
             // then
             assertThat(tripStatistics.getTerminatedTripCnt()).isEqualTo(3);

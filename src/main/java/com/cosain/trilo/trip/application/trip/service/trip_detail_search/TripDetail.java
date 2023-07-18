@@ -1,4 +1,4 @@
-package com.cosain.trilo.trip.infra.dto;
+package com.cosain.trilo.trip.application.trip.service.trip_detail_search;
 
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.Getter;

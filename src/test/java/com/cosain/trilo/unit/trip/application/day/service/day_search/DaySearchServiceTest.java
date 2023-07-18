@@ -3,9 +3,9 @@ package com.cosain.trilo.unit.trip.application.day.service.day_search;
 import com.cosain.trilo.trip.application.day.service.day_search.DaySearchService;
 import com.cosain.trilo.trip.application.exception.DayNotFoundException;
 import com.cosain.trilo.trip.domain.vo.DayColor;
-import com.cosain.trilo.trip.infra.dto.DayScheduleDetail;
-import com.cosain.trilo.trip.infra.dto.ScheduleSummary;
-import com.cosain.trilo.trip.infra.repository.day.DayQueryRepository;
+import com.cosain.trilo.trip.application.day.service.day_search.DayScheduleDetail;
+import com.cosain.trilo.trip.application.day.service.day_search.ScheduleSummary;
+import com.cosain.trilo.trip.application.dao.DayQueryDAO;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -33,7 +33,7 @@ public class DaySearchServiceTest {
     private DaySearchService daySearchService;
 
     @Mock
-    private DayQueryRepository dayQueryRepository;
+    private DayQueryDAO dayQueryDAO;
 
     @Test
     void Day_단건_조회(){
@@ -42,13 +42,13 @@ public class DaySearchServiceTest {
         Long dayId = 1L;
         ScheduleSummary scheduleSummary = new ScheduleSummary(1L, "제목", "장소","장소 식별자", 33.33, 33.33);
         DayScheduleDetail dayScheduleDetail = new DayScheduleDetail(dayId, 1L, LocalDate.of(2023, 5, 5), DayColor.RED, List.of(scheduleSummary));
-        given(dayQueryRepository.findDayWithSchedulesByDayId(1L)).willReturn(Optional.of(dayScheduleDetail));
+        given(dayQueryDAO.findDayWithSchedulesByDayId(1L)).willReturn(Optional.of(dayScheduleDetail));
 
         // when
         DayScheduleDetail findDayScheduleDetail = daySearchService.searchDaySchedule(1L);
         // then
         assertThat(findDayScheduleDetail.getDayId()).isEqualTo(dayId);
-        verify(dayQueryRepository, times(1)).findDayWithSchedulesByDayId(dayId);
+        verify(dayQueryDAO, times(1)).findDayWithSchedulesByDayId(dayId);
     }
 
     @Test
@@ -56,7 +56,7 @@ public class DaySearchServiceTest {
 
         // given
         Long dayId = 1L;
-        given(dayQueryRepository.findDayWithSchedulesByDayId(dayId)).willReturn(Optional.empty());
+        given(dayQueryDAO.findDayWithSchedulesByDayId(dayId)).willReturn(Optional.empty());
 
         // when & then
         Assertions.assertThatThrownBy(() -> daySearchService.searchDaySchedule(dayId)).isInstanceOf(DayNotFoundException.class);
@@ -67,11 +67,11 @@ public class DaySearchServiceTest {
         // given
         Long tripId = 1L;
         List<DayScheduleDetail> dayScheduleDetails = new ArrayList<>();
-        given(dayQueryRepository.findDayScheduleListByTripId(eq(tripId))).willReturn(dayScheduleDetails);
+        given(dayQueryDAO.findDayScheduleListByTripId(eq(tripId))).willReturn(dayScheduleDetails);
         // when
         List<DayScheduleDetail> daysWithSchedulesByTripId = daySearchService.searchDaySchedules(tripId);
         // then
-        verify(dayQueryRepository).findDayScheduleListByTripId(eq(tripId));
+        verify(dayQueryDAO).findDayScheduleListByTripId(eq(tripId));
         assertThat(daysWithSchedulesByTripId).isEqualTo(dayScheduleDetails);
     }
 

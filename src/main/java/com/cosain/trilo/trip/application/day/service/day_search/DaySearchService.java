@@ -1,8 +1,7 @@
 package com.cosain.trilo.trip.application.day.service.day_search;
 
 import com.cosain.trilo.trip.application.exception.DayNotFoundException;
-import com.cosain.trilo.trip.infra.dto.DayScheduleDetail;
-import com.cosain.trilo.trip.infra.repository.day.DayQueryRepository;
+import com.cosain.trilo.trip.application.dao.DayQueryDAO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,7 +13,7 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class DaySearchService{
 
-    private final DayQueryRepository dayQueryRepository;
+    private final DayQueryDAO dayQueryDAO;
 
     /**
      * Day 및 Day에 속한 일정들에 대한 정보를 조회해옵니다.
@@ -25,7 +24,7 @@ public class DaySearchService{
     }
 
     private DayScheduleDetail findDayWithScheduleByDayId(Long dayId){
-        return dayQueryRepository.findDayWithSchedulesByDayId(dayId)
+        return dayQueryDAO.findDayWithSchedulesByDayId(dayId)
                 .orElseThrow(() -> new DayNotFoundException("일치하는 식별자의 여행을 조회할 수 없습니다."));
     }
 
@@ -34,6 +33,6 @@ public class DaySearchService{
      * @param tripId : trip의 식별자
      */
     public List<DayScheduleDetail> searchDaySchedules(Long tripId){
-        return dayQueryRepository.findDayScheduleListByTripId(tripId);
+        return dayQueryDAO.findDayScheduleListByTripId(tripId);
     }
 }

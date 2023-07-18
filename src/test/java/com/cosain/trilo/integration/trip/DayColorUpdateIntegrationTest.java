@@ -63,7 +63,7 @@ public class DayColorUpdateIntegrationTest extends IntegrationTest {
         flushAndClear();
 
         // then
-        Day findDay = dayRepository.findById(day.getId()).orElseThrow(IllegalStateException::new);
+        Day findDay = em.find(Day.class, day.getId());
 
         // then 1: 응답 메시지 검증
         resultActions
@@ -90,7 +90,7 @@ public class DayColorUpdateIntegrationTest extends IntegrationTest {
         flushAndClear();
 
         // then
-        Day findDay = dayRepository.findById(day.getId()).orElseThrow(IllegalStateException::new);
+        Day findDay = em.find(Day.class, day.getId());
 
         // then 1 : 응답 메시지 검증
         resultActions
@@ -119,7 +119,7 @@ public class DayColorUpdateIntegrationTest extends IntegrationTest {
         flushAndClear();
 
         // then
-        Day findDay = dayRepository.findById(day.getId()).orElseThrow(IllegalStateException::new);
+        Day findDay = em.find(Day.class, day.getId());
 
         // then 1 : 응답 메시지 검증
         resultActions
@@ -152,7 +152,7 @@ public class DayColorUpdateIntegrationTest extends IntegrationTest {
         flushAndClear();
 
         // then
-        Day findDay = dayRepository.findById(day.getId()).orElseThrow(IllegalStateException::new);
+        Day findDay = em.find(Day.class, day.getId());
 
         // then1 : 응답메시지 검증
         resultActions
@@ -182,7 +182,7 @@ public class DayColorUpdateIntegrationTest extends IntegrationTest {
         flushAndClear();
 
         // then
-        Day findDay = dayRepository.findById(day.getId()).orElseThrow(IllegalStateException::new);
+        Day findDay = em.find(Day.class, day.getId());
 
         // then1 : 응답 메시지 검증
         resultActions
@@ -212,7 +212,7 @@ public class DayColorUpdateIntegrationTest extends IntegrationTest {
         flushAndClear();
 
         // then
-        Day findDay = dayRepository.findById(day.getId()).orElseThrow(IllegalStateException::new);
+        Day findDay = em.find(Day.class, day.getId());
 
         // then1 : 응답 메시지 검증
         resultActions
@@ -242,7 +242,7 @@ public class DayColorUpdateIntegrationTest extends IntegrationTest {
         flushAndClear();
 
         // then
-        Day findDay = dayRepository.findById(day.getId()).orElseThrow(IllegalStateException::new);
+        Day findDay = em.find(Day.class, day.getId());
 
         // then1 : 응답 메시지 검증
         resultActions
@@ -271,7 +271,7 @@ public class DayColorUpdateIntegrationTest extends IntegrationTest {
         flushAndClear();
 
         // then
-        Day findDay = dayRepository.findById(day.getId()).orElseThrow(IllegalStateException::new);
+        Day findDay = em.find(Day.class, day.getId());
 
         // then 1: 응답 메시지 검증
         resultActions
@@ -306,7 +306,7 @@ public class DayColorUpdateIntegrationTest extends IntegrationTest {
         flushAndClear();
 
         // then
-        Day findDay = dayRepository.findById(day.getId()).orElseThrow(IllegalStateException::new);
+        Day findDay = em.find(Day.class, day.getId());
 
         // then 1: 응답 메시지 검증
         resultActions

@@ -2,8 +2,8 @@ package com.cosain.trilo.unit.trip.application.schedule.service.schedule_detail_
 
 import com.cosain.trilo.trip.application.exception.ScheduleNotFoundException;
 import com.cosain.trilo.trip.application.schedule.service.schedule_detail_search.ScheduleDetailSearchService;
-import com.cosain.trilo.trip.infra.dto.ScheduleDetail;
-import com.cosain.trilo.trip.infra.repository.schedule.ScheduleQueryRepository;
+import com.cosain.trilo.trip.application.schedule.service.schedule_detail_search.ScheduleDetail;
+import com.cosain.trilo.trip.application.dao.ScheduleQueryDAO;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -27,14 +27,14 @@ public class ScheduleDetailSearchServiceTest {
     private ScheduleDetailSearchService scheduleDetailSearchService;
 
     @Mock
-    private ScheduleQueryRepository scheduleQueryRepository;
+    private ScheduleQueryDAO scheduleQueryDAO;
 
     @Test
     @DisplayName("정상 호출 및 반환 테스트")
     void searchScheduleDetailTest(){
         // given
         ScheduleDetail scheduleDetail = new ScheduleDetail(1L, 1L, "제목", "장소 이름", 24.24, 24.24, 3L, "내용", LocalTime.of(15, 30), LocalTime.of(16, 0));
-        given(scheduleQueryRepository.findScheduleDetailById(anyLong())).willReturn(Optional.of(scheduleDetail));
+        given(scheduleQueryDAO.findScheduleDetailById(anyLong())).willReturn(Optional.of(scheduleDetail));
 
         // when
         ScheduleDetail dto = scheduleDetailSearchService.searchScheduleDetail(anyLong());
@@ -57,7 +57,7 @@ public class ScheduleDetailSearchServiceTest {
     @DisplayName("조회한 일정이 없을 경우 ScheduleNotFoundException 이 발생한다 ")
     void searchScheduleDetail_Fail_ScheduleNotFound() {
         // given
-        given(scheduleQueryRepository.findScheduleDetailById(anyLong())).willReturn(Optional.empty());
+        given(scheduleQueryDAO.findScheduleDetailById(anyLong())).willReturn(Optional.empty());
 
         // when & then
         Assertions.assertThatThrownBy(() -> scheduleDetailSearchService.searchScheduleDetail(1L)).isInstanceOf(ScheduleNotFoundException.class);

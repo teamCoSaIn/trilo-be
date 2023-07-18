@@ -6,7 +6,6 @@ import com.cosain.trilo.support.IntegrationTest;
 import com.cosain.trilo.trip.domain.entity.Day;
 import com.cosain.trilo.trip.domain.entity.Schedule;
 import com.cosain.trilo.trip.domain.entity.Trip;
-import com.cosain.trilo.trip.domain.repository.DayRepository;
 import com.cosain.trilo.trip.domain.repository.ScheduleRepository;
 import com.cosain.trilo.trip.domain.repository.TripRepository;
 import com.cosain.trilo.user.domain.User;
@@ -33,9 +32,6 @@ class TripDeleteIntegrationTest extends IntegrationTest {
 
     @Autowired
     private TripRepository tripRepository;
-
-    @Autowired
-    private DayRepository dayRepository;
 
     @Autowired
     private ScheduleRepository scheduleRepository;
@@ -86,10 +82,10 @@ class TripDeleteIntegrationTest extends IntegrationTest {
         assertThat(tripRepository.findById(trip.getId())).isEmpty();
 
         // then3: 해당 여행의 Day가 존재하지 않음
-        assertThat(dayRepository.findAllById(List.of(day1.getId(), day2.getId(), day3.getId()))).isEmpty();
+        assertThat(findAllDayByIds(List.of(day1.getId(), day2.getId(), day3.getId()))).isEmpty();
 
         // then4: 해당 여행의 Schedule이 존재하지 않음
-        assertThat(scheduleRepository.findAllById(
+        assertThat(findAllScheduleByIds(
                 List.of(tempSchedule.getId(), day1Schedule.getId(), day2Schedule.getId(), day3Schedule.getId()))).isEmpty();
     }
 
@@ -236,5 +232,25 @@ class TripDeleteIntegrationTest extends IntegrationTest {
         Schedule schedule = ScheduleFixture.day_NullId(trip, day, scheduleIndexValue);
         em.persist(schedule);
         return schedule;
+    }
+
+    private List<Day> findAllDayByIds(List<Long> dayIds) {
+        return em.createQuery("""
+                                SELECT d
+                                FROM Day as d
+                                WHERE d in :dayIds
+                                """, Day.class)
+                .setParameter("dayIds", dayIds)
+                .getResultList();
+    }
+
+    private List<Schedule> findAllScheduleByIds(List<Long> scheduleIds) {
+        return em.createQuery("""
+                        SELECT s
+                        FROM Schedule s
+                        WHERE s.id in :scheduleIds
+                        """, Schedule.class)
+                .setParameter("scheduleIds", scheduleIds)
+                .getResultList();
     }
 }

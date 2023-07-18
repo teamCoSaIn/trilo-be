@@ -235,8 +235,8 @@ public class TripPeriodUpdateIntegrationTest extends IntegrationTest {
             assertThat(findTrip.getTripPeriod()).isEqualTo(TripPeriod.of(newStartDate, newEndDate));
 
             // then3 : 수정된 기간에 속하지 않는 Day 존재하지 않음 검증
-            assertThat(dayRepository.findById(beforeDay1.getId())).isEmpty();
-            assertThat(dayRepository.findById(beforeDay2.getId())).isEmpty();
+            assertThat(findDayById(beforeDay1.getId())).isNull();
+            assertThat(findDayById(beforeDay2.getId())).isNull();
 
             // then4 : 수정된 후 여행이 가진 Day 검증
             assertThat(findDays.size()).isEqualTo(3);
@@ -617,4 +617,9 @@ public class TripPeriodUpdateIntegrationTest extends IntegrationTest {
         em.persist(schedule);
         return schedule;
     }
+
+    private Day findDayById(Long dayId) {
+        return em.find(Day.class, dayId);
+    }
+
 }

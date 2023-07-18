@@ -1,11 +1,11 @@
-package com.cosain.trilo.unit.trip.domain.repository;
+package com.cosain.trilo.unit.trip.infra.repository;
 
 import com.cosain.trilo.fixture.TripFixture;
 import com.cosain.trilo.fixture.UserFixture;
 import com.cosain.trilo.support.RepositoryTest;
 import com.cosain.trilo.trip.domain.entity.Day;
 import com.cosain.trilo.trip.domain.entity.Trip;
-import com.cosain.trilo.trip.domain.repository.DayRepository;
+import com.cosain.trilo.trip.infra.repository.DayRepositoryImpl;
 import com.cosain.trilo.user.domain.User;
 import jakarta.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
@@ -22,10 +22,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
 @RepositoryTest
-public class DayRepositoryTest {
+@DisplayName("DayRepositoryImpl 테스트")
+public class DayRepositoryImplTest {
 
     @Autowired
-    private DayRepository dayRepository;
+    private DayRepositoryImpl dayRepository;
 
     @Autowired
     private EntityManager em;
@@ -82,7 +83,7 @@ public class DayRepositoryTest {
         dayRepository.deleteAllByIds(List.of(day1.getId(), day2.getId()));
 
         // then
-        List<Day> remainingDays = dayRepository.findAll();
+        List<Day> remainingDays = findAllDayByIds(List.of(day1.getId(), day2.getId(), day3.getId(), day4.getId()));
         assertThat(remainingDays.size()).isEqualTo(2);
         assertThat(remainingDays).map(Day::getId).containsExactlyInAnyOrder(day3.getId(), day4.getId());
     }
@@ -113,7 +114,7 @@ public class DayRepositoryTest {
         em.clear();
 
         // then
-        List<Day> findDays = dayRepository.findAllById(List.of(day1.getId(), day2.getId(), day3.getId()));
+        List<Day> findDays = findAllDayByIds(List.of(day1.getId(), day2.getId(), day3.getId()));
         assertThat(findDays).isEmpty();
     }
 
@@ -146,7 +147,7 @@ public class DayRepositoryTest {
             dayRepository.deleteAllByTripIds(List.of(trip1.getId(), trip2.getId(), trip3.getId()));
 
             // then
-            List<Day> days = dayRepository.findAllById(List.of(day1.getId(), day2.getId(), day3.getId()));
+            List<Day> days = findAllDayByIds(List.of(day1.getId(), day2.getId(), day3.getId()));
             assertThat(days).isEmpty();
 
         }
@@ -156,6 +157,16 @@ public class DayRepositoryTest {
         User user = UserFixture.googleUser_NullId();
         em.persist(user);
         return user.getId();
+    }
+
+    private List<Day> findAllDayByIds(List<Long> dayIds) {
+        return em.createQuery("""
+                                SELECT d
+                                FROM Day as d
+                                WHERE d in :dayIds
+                                """, Day.class)
+                .setParameter("dayIds", dayIds)
+                .getResultList();
     }
 
 }

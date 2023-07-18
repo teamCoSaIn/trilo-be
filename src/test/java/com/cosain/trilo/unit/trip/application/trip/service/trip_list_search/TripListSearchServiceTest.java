@@ -5,8 +5,8 @@ import com.cosain.trilo.trip.application.exception.TripperNotFoundException;
 import com.cosain.trilo.trip.application.trip.service.trip_list_search.TripListSearchService;
 import com.cosain.trilo.trip.domain.vo.TripStatus;
 import com.cosain.trilo.trip.infra.adapter.TripImageOutputAdapter;
-import com.cosain.trilo.trip.infra.dto.TripSummary;
-import com.cosain.trilo.trip.infra.repository.trip.TripQueryRepository;
+import com.cosain.trilo.trip.application.trip.service.trip_list_search.TripSummary;
+import com.cosain.trilo.trip.application.dao.TripQueryDAO;
 import com.cosain.trilo.trip.presentation.trip.dto.request.TripPageCondition;
 import com.cosain.trilo.user.domain.UserRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -37,7 +37,7 @@ public class TripListSearchServiceTest {
     private TripListSearchService tripListSearchService;
 
     @Mock
-    private TripQueryRepository tripQueryRepository;
+    private TripQueryDAO tripQueryDAO;
 
     @Mock
     private UserRepository userRepository;
@@ -61,7 +61,7 @@ public class TripListSearchServiceTest {
 
         TripPageCondition tripPageCondition = new TripPageCondition(tripperId, standardTripId);
         given(userRepository.findById(eq(tripperId))).willReturn(Optional.of(UserFixture.kakaoUser_Id(tripperId)));
-        given(tripQueryRepository.findTripSummariesByTripperId(any(TripPageCondition.class), any(Pageable.class))).willReturn(tripSummaries);
+        given(tripQueryDAO.findTripSummariesByTripperId(any(TripPageCondition.class), any(Pageable.class))).willReturn(tripSummaries);
         given(tripImageOutputAdapter.getFullTripImageURL(eq(imageName))).willReturn(imageURL);
 
         // when
@@ -76,7 +76,7 @@ public class TripListSearchServiceTest {
         assertThat(searchTripSummaries.hasNext()).isFalse();
 
         verify(userRepository, times(1)).findById(eq(tripperId));
-        verify(tripQueryRepository, times(1)).findTripSummariesByTripperId(any(TripPageCondition.class), any(Pageable.class));
+        verify(tripQueryDAO, times(1)).findTripSummariesByTripperId(any(TripPageCondition.class), any(Pageable.class));
         verify(tripImageOutputAdapter, times(2)).getFullTripImageURL(anyString());
     }
 

@@ -3,7 +3,7 @@ package com.cosain.trilo.unit.trip.presentation.trip.docs;
 import com.cosain.trilo.support.RestDocsTestSupport;
 import com.cosain.trilo.trip.application.trip.service.trip_list_search.TripListSearchService;
 import com.cosain.trilo.trip.domain.vo.TripStatus;
-import com.cosain.trilo.trip.infra.dto.TripSummary;
+import com.cosain.trilo.trip.application.trip.service.trip_list_search.TripSummary;
 import com.cosain.trilo.trip.presentation.trip.TripperTripListQueryController;
 import com.cosain.trilo.trip.presentation.trip.dto.request.TripPageCondition;
 import org.junit.jupiter.api.Test;

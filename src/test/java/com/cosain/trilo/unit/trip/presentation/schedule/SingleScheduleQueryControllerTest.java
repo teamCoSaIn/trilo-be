@@ -2,7 +2,7 @@ package com.cosain.trilo.unit.trip.presentation.schedule;
 
 import com.cosain.trilo.support.RestControllerTest;
 import com.cosain.trilo.trip.application.schedule.service.schedule_detail_search.ScheduleDetailSearchService;
-import com.cosain.trilo.trip.infra.dto.ScheduleDetail;
+import com.cosain.trilo.trip.application.schedule.service.schedule_detail_search.ScheduleDetail;
 import com.cosain.trilo.trip.presentation.schedule.SingleScheduleQueryController;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

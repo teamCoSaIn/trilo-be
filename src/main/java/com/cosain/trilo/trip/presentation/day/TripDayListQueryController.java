@@ -1,7 +1,7 @@
 package com.cosain.trilo.trip.presentation.day;
 
 import com.cosain.trilo.trip.application.day.service.day_search.DaySearchService;
-import com.cosain.trilo.trip.infra.dto.DayScheduleDetail;
+import com.cosain.trilo.trip.application.day.service.day_search.DayScheduleDetail;
 import com.cosain.trilo.trip.presentation.day.dto.DayListResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

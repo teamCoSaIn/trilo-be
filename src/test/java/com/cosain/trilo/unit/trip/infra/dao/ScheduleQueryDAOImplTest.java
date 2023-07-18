@@ -1,15 +1,15 @@
 
-package com.cosain.trilo.unit.trip.infra.repository;
+package com.cosain.trilo.unit.trip.infra.dao;
 
 import com.cosain.trilo.fixture.ScheduleFixture;
 import com.cosain.trilo.fixture.TripFixture;
 import com.cosain.trilo.fixture.UserFixture;
 import com.cosain.trilo.support.RepositoryTest;
+import com.cosain.trilo.trip.application.day.service.day_search.ScheduleSummary;
+import com.cosain.trilo.trip.application.schedule.service.schedule_detail_search.ScheduleDetail;
 import com.cosain.trilo.trip.domain.entity.Schedule;
 import com.cosain.trilo.trip.domain.entity.Trip;
-import com.cosain.trilo.trip.infra.dto.ScheduleDetail;
-import com.cosain.trilo.trip.infra.dto.ScheduleSummary;
-import com.cosain.trilo.trip.infra.repository.schedule.ScheduleQueryRepository;
+import com.cosain.trilo.trip.infra.dao.ScheduleQueryDAOImpl;
 import com.cosain.trilo.trip.presentation.trip.dto.request.TempSchedulePageCondition;
 import com.cosain.trilo.user.domain.User;
 import org.junit.jupiter.api.DisplayName;
@@ -27,11 +27,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 @RepositoryTest
-@DisplayName("ScheduleQueryRepository 테스트")
-public class ScheduleQueryRepositoryTest {
+@DisplayName("ScheduleQueryDAOImpl 테스트")
+public class ScheduleQueryDAOImplTest {
 
     @Autowired
-    private ScheduleQueryRepository scheduleQueryRepository;
+    private ScheduleQueryDAOImpl scheduleQueryDAOImpl;
 
     @Autowired
     private TestEntityManager em;
@@ -47,7 +47,7 @@ public class ScheduleQueryRepositoryTest {
         em.clear();
 
         // when
-        ScheduleDetail dto = scheduleQueryRepository.findScheduleDetailById(schedule.getId()).get();
+        ScheduleDetail dto = scheduleQueryDAOImpl.findScheduleDetailById(schedule.getId()).get();
 
         // then
         assertThat(dto.getScheduleId()).isEqualTo(schedule.getId());
@@ -84,7 +84,7 @@ public class ScheduleQueryRepositoryTest {
             TempSchedulePageCondition tempSchedulePageCondition = new TempSchedulePageCondition(cursorScheduleId);
 
             // when
-            Slice<ScheduleSummary> scheduleSummaries = scheduleQueryRepository.findTemporaryScheduleListByTripId(tripId,tempSchedulePageCondition,PageRequest.ofSize(3));
+            Slice<ScheduleSummary> scheduleSummaries = scheduleQueryDAOImpl.findTemporaryScheduleListByTripId(tripId,tempSchedulePageCondition,PageRequest.ofSize(3));
 
             // then
             assertThat(scheduleSummaries.getSize()).isEqualTo(3);
@@ -108,7 +108,7 @@ public class ScheduleQueryRepositoryTest {
             TempSchedulePageCondition tempSchedulePageCondition = new TempSchedulePageCondition(cursorScheduleId);
 
             // when
-            Slice<ScheduleSummary> scheduleSummaries = scheduleQueryRepository.findTemporaryScheduleListByTripId(tripId, tempSchedulePageCondition, PageRequest.ofSize(2));
+            Slice<ScheduleSummary> scheduleSummaries = scheduleQueryDAOImpl.findTemporaryScheduleListByTripId(tripId, tempSchedulePageCondition, PageRequest.ofSize(2));
 
             // then
             assertThat(scheduleSummaries.getSize()).isEqualTo(2);
@@ -132,8 +132,8 @@ public class ScheduleQueryRepositoryTest {
         long notExistScheduleId = scheduleId + 1; // 존재하지 않는 일정 식별자
 
         // when && then
-        assertTrue(scheduleQueryRepository.existById(scheduleId));
-        assertFalse(scheduleQueryRepository.existById(notExistScheduleId));
+        assertTrue(scheduleQueryDAOImpl.existById(scheduleId));
+        assertFalse(scheduleQueryDAOImpl.existById(notExistScheduleId));
     }
 
     private Long setupTripperId() {

@@ -1,12 +1,12 @@
-package com.cosain.trilo.trip.infra.repository.day;
+package com.cosain.trilo.trip.infra.dao.querydsl;
 
-import com.cosain.trilo.trip.infra.dto.DayScheduleDetail;
-import com.cosain.trilo.trip.infra.dto.QDayScheduleDetail;
-import com.cosain.trilo.trip.infra.dto.QScheduleSummary;
+import com.cosain.trilo.trip.application.day.service.day_search.DayScheduleDetail;
+import com.cosain.trilo.trip.application.day.service.day_search.QDayScheduleDetail;
+import com.cosain.trilo.trip.application.day.service.day_search.QScheduleSummary;
 import com.querydsl.core.group.GroupBy;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,15 +16,15 @@ import static com.cosain.trilo.trip.domain.entity.QSchedule.schedule;
 import static com.querydsl.core.group.GroupBy.groupBy;
 import static com.querydsl.core.group.GroupBy.list;
 
-@Repository
+@Component
 @RequiredArgsConstructor
-public class DayQueryRepository {
+public class QuerydslDayQueryRepository {
 
     private final JPAQueryFactory query;
 
     public Optional<DayScheduleDetail> findDayWithSchedulesByDayId(Long dayId) {
-
         DayScheduleDetail dayScheduleDetail = query
+                .from()
                 .from(day)
                 .innerJoin(day.schedules, schedule)
                 .where(day.id.eq(dayId))
@@ -48,7 +48,6 @@ public class DayQueryRepository {
     }
 
     public List<DayScheduleDetail> findDayScheduleListByTripId(Long tripId){
-
         return query.from(day)
                 .leftJoin(day.schedules, schedule)
                 .where(day.trip.id.eq(tripId))

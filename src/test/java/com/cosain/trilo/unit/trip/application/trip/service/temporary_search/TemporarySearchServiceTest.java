@@ -3,10 +3,10 @@ package com.cosain.trilo.unit.trip.application.trip.service.temporary_search;
 import com.cosain.trilo.trip.application.exception.ScheduleNotFoundException;
 import com.cosain.trilo.trip.application.exception.TripNotFoundException;
 import com.cosain.trilo.trip.application.trip.service.temporary_search.TemporarySearchService;
-import com.cosain.trilo.trip.infra.dto.ScheduleDetail;
-import com.cosain.trilo.trip.infra.dto.ScheduleSummary;
-import com.cosain.trilo.trip.infra.repository.schedule.ScheduleQueryRepository;
-import com.cosain.trilo.trip.infra.repository.trip.TripQueryRepository;
+import com.cosain.trilo.trip.application.schedule.service.schedule_detail_search.ScheduleDetail;
+import com.cosain.trilo.trip.application.day.service.day_search.ScheduleSummary;
+import com.cosain.trilo.trip.application.dao.ScheduleQueryDAO;
+import com.cosain.trilo.trip.application.dao.TripQueryDAO;
 import com.cosain.trilo.trip.presentation.trip.dto.request.TempSchedulePageCondition;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,10 +33,10 @@ public class TemporarySearchServiceTest {
     private TemporarySearchService temporarySearchService;
 
     @Mock
-    private TripQueryRepository tripQueryRepository;
+    private TripQueryDAO tripQueryDAO;
 
     @Mock
-    private ScheduleQueryRepository scheduleQueryRepository;
+    private ScheduleQueryDAO scheduleQueryDAO;
 
     @Test
     void tripId가_유효하고_임시보관함이_비어있지_않으면_페이지_요청의_크기만큼의_ScheduleDetail들을_반환한다(){
@@ -48,9 +48,9 @@ public class TemporarySearchServiceTest {
         ScheduleDetail scheduleDetail1 = new ScheduleDetail(2L, 1L, "제목", "장소", 33.33, 33.33, 1L, "내용", LocalTime.of(12, 10), LocalTime.of(13, 30));
         ScheduleDetail scheduleDetail2 = new ScheduleDetail(3L, 1L, "제목", "장소", 33.33, 33.33, 1L, "내용", LocalTime.of(15, 0 ), LocalTime.of(16, 0));
         ScheduleDetail scheduleDetail3 = new ScheduleDetail(4L, 1L, "제목", "장소", 33.33, 33.33, 1L, "내용", LocalTime.of(16, 0), LocalTime.of(17, 0));
-        given(tripQueryRepository.existById(eq(tripId))).willReturn(true);
-        given(scheduleQueryRepository.existById(eq(tempSchedulePageCondition.getScheduleId()))).willReturn(true);
-        given(scheduleQueryRepository.findTemporaryScheduleListByTripId(eq(tripId), eq(tempSchedulePageCondition) ,eq(pageable))).willReturn(new SliceImpl(List.of(scheduleDetail1, scheduleDetail2, scheduleDetail3)));
+        given(tripQueryDAO.existById(eq(tripId))).willReturn(true);
+        given(scheduleQueryDAO.existById(eq(tempSchedulePageCondition.getScheduleId()))).willReturn(true);
+        given(scheduleQueryDAO.findTemporaryScheduleListByTripId(eq(tripId), eq(tempSchedulePageCondition) ,eq(pageable))).willReturn(new SliceImpl(List.of(scheduleDetail1, scheduleDetail2, scheduleDetail3)));
 
         // when
         Slice<ScheduleSummary> scheduleSummaries = temporarySearchService.searchTemporary(tripId,tempSchedulePageCondition,pageable);
@@ -63,7 +63,7 @@ public class TemporarySearchServiceTest {
         // given
         Pageable pageable = PageRequest.of(0, 3);
         TempSchedulePageCondition tempSchedulePageCondition = new TempSchedulePageCondition(1L);
-        given(tripQueryRepository.existById(anyLong())).willReturn(false);
+        given(tripQueryDAO.existById(anyLong())).willReturn(false);
 
         // when & then
         assertThatThrownBy(() -> temporarySearchService.searchTemporary(1L, tempSchedulePageCondition, pageable))
@@ -76,8 +76,8 @@ public class TemporarySearchServiceTest {
         // given
         Pageable pageable = Pageable.ofSize(3);
         TempSchedulePageCondition tempSchedulePageCondition = new TempSchedulePageCondition(1L);
-        given(tripQueryRepository.existById(any())).willReturn(true);
-        given(scheduleQueryRepository.existById(any())).willReturn(false);
+        given(tripQueryDAO.existById(any())).willReturn(true);
+        given(scheduleQueryDAO.existById(any())).willReturn(false);
 
         // when & then
         assertThatThrownBy(() -> temporarySearchService.searchTemporary(1L, tempSchedulePageCondition, pageable))

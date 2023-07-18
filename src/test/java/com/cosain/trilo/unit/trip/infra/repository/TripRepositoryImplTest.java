@@ -1,4 +1,4 @@
-package com.cosain.trilo.unit.trip.domain.repository;
+package com.cosain.trilo.unit.trip.infra.repository;
 
 import com.cosain.trilo.fixture.ScheduleFixture;
 import com.cosain.trilo.fixture.TripFixture;
@@ -7,9 +7,9 @@ import com.cosain.trilo.support.RepositoryTest;
 import com.cosain.trilo.trip.domain.entity.Day;
 import com.cosain.trilo.trip.domain.entity.Schedule;
 import com.cosain.trilo.trip.domain.entity.Trip;
-import com.cosain.trilo.trip.domain.repository.TripRepository;
 import com.cosain.trilo.trip.domain.vo.ScheduleIndex;
 import com.cosain.trilo.trip.domain.vo.TripTitle;
+import com.cosain.trilo.trip.infra.repository.TripRepositoryImpl;
 import com.cosain.trilo.user.domain.User;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -24,11 +24,11 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RepositoryTest
-@DisplayName("[TripCommand] TripRepository 테스트")
-public class TripRepositoryTest {
+@DisplayName("TripRepositoryImpl 테스트")
+public class TripRepositoryImplTest {
 
     @Autowired
-    private TripRepository tripRepository;
+    private TripRepositoryImpl tripRepositoryImpl;
 
     @Autowired
     private TestEntityManager em;
@@ -42,11 +42,11 @@ public class TripRepositoryTest {
         void successTest() {
             Long tripperId = setupTripperId();
             Trip trip = Trip.create(TripTitle.of("제목"), tripperId);
-            tripRepository.save(trip);
+            tripRepositoryImpl.save(trip);
 
             em.clear();
 
-            Trip findTrip = tripRepository.findById(trip.getId()).get();
+            Trip findTrip = tripRepositoryImpl.findById(trip.getId()).get();
             assertThat(findTrip.getId()).isEqualTo(trip.getId());
             assertThat(findTrip.getTripperId()).isEqualTo(trip.getTripperId());
             assertThat(findTrip.getTripPeriod()).isEqualTo(trip.getTripPeriod());
@@ -58,7 +58,7 @@ public class TripRepositoryTest {
             // given
             Long tripperId = setupTripperId();
             Trip trip = TripFixture.undecided_nullId(tripperId);
-            tripRepository.save(trip);
+            tripRepositoryImpl.save(trip);
 
             Schedule schedule1 = ScheduleFixture.temporaryStorage_NullId(trip, 30_000_000L);
             Schedule schedule2 = ScheduleFixture.temporaryStorage_NullId(trip, 50_000_000L);
@@ -71,7 +71,7 @@ public class TripRepositoryTest {
             em.clear();
 
             // when
-            Trip findTrip = tripRepository.findById(trip.getId()).get();
+            Trip findTrip = tripRepositoryImpl.findById(trip.getId()).get();
             List<Schedule> temporaryStorage = findTrip.getTemporaryStorage();
 
             // then
@@ -96,7 +96,7 @@ public class TripRepositoryTest {
             em.clear();
 
             // when
-            Trip findTrip = tripRepository.findByIdWithDays(trip.getId()).get();
+            Trip findTrip = tripRepositoryImpl.findByIdWithDays(trip.getId()).get();
 
             // then
             assertThat(findTrip.getTripTitle()).isEqualTo(trip.getTripTitle());
@@ -121,7 +121,7 @@ public class TripRepositoryTest {
             em.clear();
 
             // when
-            Trip findTrip = tripRepository.findByIdWithDays(trip.getId()).get();
+            Trip findTrip = tripRepositoryImpl.findByIdWithDays(trip.getId()).get();
 
             // then
             assertThat(findTrip.getTripTitle()).isEqualTo(trip.getTripTitle());
@@ -140,12 +140,12 @@ public class TripRepositoryTest {
         Trip trip = setupUndecidedTripAndPersist(tripperId);
 
         // when
-        tripRepository.delete(trip);
+        tripRepositoryImpl.delete(trip);
         em.flush();
         em.clear();
 
         // then
-        Trip findTrip = tripRepository.findById(trip.getId()).orElse(null);
+        Trip findTrip = tripRepositoryImpl.findById(trip.getId()).orElse(null);
         assertThat(findTrip).isNull();
     }
 
@@ -164,13 +164,13 @@ public class TripRepositoryTest {
             em.clear();
 
             // when
-            tripRepository.deleteAllByTripperId(tripperId);
+            tripRepositoryImpl.deleteAllByTripperId(tripperId);
+            em.flush();
+            em.clear();
 
             // then
-            assertThat(tripRepository.existsById(trip1.getId())).isFalse();
-            assertThat(tripRepository.existsById(trip2.getId())).isFalse();
-            assertThat(tripRepository.existsById(trip3.getId())).isFalse();
-            assertThat(tripRepository.existsById(trip4.getId())).isFalse();
+            List<Trip> trips = tripRepositoryImpl.findAllByTripperId(tripperId);
+            assertThat(trips).isEmpty();
         }
     }
 

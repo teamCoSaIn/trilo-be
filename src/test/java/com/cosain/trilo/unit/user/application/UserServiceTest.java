@@ -3,7 +3,7 @@ package com.cosain.trilo.unit.user.application;
 import com.cosain.trilo.auth.infra.OAuthProfileDto;
 import com.cosain.trilo.fixture.UserFixture;
 import com.cosain.trilo.trip.infra.dto.TripStatistics;
-import com.cosain.trilo.trip.infra.repository.trip.TripQueryRepository;
+import com.cosain.trilo.trip.application.dao.TripQueryDAO;
 import com.cosain.trilo.user.application.UserService;
 import com.cosain.trilo.user.application.event.UserDeleteEvent;
 import com.cosain.trilo.user.application.exception.NoUserDeleteAuthorityException;
@@ -42,14 +42,14 @@ public class UserServiceTest {
     @Mock
     private UserRepository userRepository;
     @Mock
-    private TripQueryRepository tripQueryRepository;
+    private TripQueryDAO tripQueryDAO;
     @Mock
     private ApplicationEventPublisher eventPublisher;
 
     @BeforeEach
     void setUp(){
         String bucketPath = "/path/to/bucket/";
-        userService = new UserService(userRepository, tripQueryRepository, eventPublisher, bucketPath);
+        userService = new UserService(userRepository, tripQueryDAO, eventPublisher, bucketPath);
     }
 
     @Nested
@@ -206,7 +206,7 @@ public class UserServiceTest {
             User user = UserFixture.kakaoUser_Id(userId);
             TripStatistics tripStatistics = new TripStatistics(10L, 3L);
             given(userRepository.findById(eq(userId))).willReturn(Optional.ofNullable(user));
-            given(tripQueryRepository.findTripStaticsByTripperId(eq(userId),eq(today))).willReturn(tripStatistics);
+            given(tripQueryDAO.findTripStaticsByTripperId(eq(userId),eq(today))).willReturn(tripStatistics);
             // when
             UserMyPageResponse myPageResponse = userService.getMyPage(userId, today);
 
@@ -222,7 +222,7 @@ public class UserServiceTest {
             Long userId = 1L;
             LocalDate today = LocalDate.of(2023, 4, 28);
             TripStatistics tripStatistics = new TripStatistics(10L, 3L);
-            given(tripQueryRepository.findTripStaticsByTripperId(eq(userId), eq(today))).willReturn(tripStatistics);
+            given(tripQueryDAO.findTripStaticsByTripperId(eq(userId), eq(today))).willReturn(tripStatistics);
             // when & then
             assertThatThrownBy(() -> userService.getMyPage(userId, today)).isInstanceOf(UserNotFoundException.class);
         }

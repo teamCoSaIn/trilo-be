@@ -1,4 +1,4 @@
-package com.cosain.trilo.unit.trip.domain.repository;
+package com.cosain.trilo.unit.trip.infra.repository;
 
 import com.cosain.trilo.fixture.ScheduleFixture;
 import com.cosain.trilo.fixture.TripFixture;
@@ -7,8 +7,8 @@ import com.cosain.trilo.support.RepositoryTest;
 import com.cosain.trilo.trip.domain.entity.Day;
 import com.cosain.trilo.trip.domain.entity.Schedule;
 import com.cosain.trilo.trip.domain.entity.Trip;
-import com.cosain.trilo.trip.domain.repository.ScheduleRepository;
 import com.cosain.trilo.trip.domain.vo.*;
+import com.cosain.trilo.trip.infra.repository.ScheduleRepositoryImpl;
 import com.cosain.trilo.user.domain.User;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceException;
@@ -28,11 +28,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @RepositoryTest
-@DisplayName("[TripCommand] ScheduleRepository 테스트")
-public class ScheduleRepositoryTest {
+@DisplayName("ScheduleRepositoryImpl 테스트")
+public class ScheduleRepositoryImplTest {
 
     @Autowired
-    private ScheduleRepository scheduleRepository;
+    private ScheduleRepositoryImpl scheduleRepositoryImpl;
 
     @Autowired
     private EntityManager em;
@@ -51,12 +51,12 @@ public class ScheduleRepositoryTest {
         Schedule schedule = ScheduleFixture.day_NullId(trip, day, 0L);
 
         // when
-        scheduleRepository.save(schedule);
+        scheduleRepositoryImpl.save(schedule);
         em.flush();
         em.clear();
 
         // then
-        Schedule findSchedule = scheduleRepository.findById(schedule.getId()).get();
+        Schedule findSchedule = scheduleRepositoryImpl.findById(schedule.getId()).get();
         assertThat(findSchedule.getId()).isEqualTo(schedule.getId());
         assertThat(findSchedule.getScheduleTitle()).isEqualTo(schedule.getScheduleTitle());
         assertThat(findSchedule.getScheduleContent()).isEqualTo(schedule.getScheduleContent());
@@ -108,12 +108,12 @@ public class ScheduleRepositoryTest {
         Schedule schedule = setupDayScheduleAndPersist(trip, day, 0L);
 
         // when
-        scheduleRepository.delete(schedule);
+        scheduleRepositoryImpl.delete(schedule);
         em.flush();
         em.clear();
 
         // then
-        Schedule findSchedule = scheduleRepository.findById(schedule.getId()).orElse(null);
+        Schedule findSchedule = scheduleRepositoryImpl.findById(schedule.getId()).orElse(null);
         assertThat(findSchedule).isNull();
     }
 
@@ -137,11 +137,11 @@ public class ScheduleRepositoryTest {
         Schedule schedule4 = setupTemporaryScheduleAndPersist(trip, 0L);
 
         // when
-        scheduleRepository.deleteAllByTripId(trip.getId());
+        scheduleRepositoryImpl.deleteAllByTripId(trip.getId());
         em.clear();
 
         // then
-        List<Schedule> findSchedules = scheduleRepository.findAllById(List.of(schedule1.getId(), schedule2.getId(), schedule3.getId(), schedule4.getId()));
+        List<Schedule> findSchedules = findAllScheduleByIds(List.of(schedule1.getId(), schedule2.getId(), schedule3.getId(), schedule4.getId()));
         assertThat(findSchedules).isEmpty();
     }
 
@@ -165,7 +165,7 @@ public class ScheduleRepositoryTest {
         em.clear();
 
         // when
-        Schedule findSchedule = scheduleRepository.findByIdWithTrip(schedule2.getId()).get();
+        Schedule findSchedule = scheduleRepositoryImpl.findByIdWithTrip(schedule2.getId()).get();
 
         // then
         assertThat(findSchedule.getId()).isEqualTo(schedule2.getId());
@@ -201,10 +201,10 @@ public class ScheduleRepositoryTest {
             Schedule schedule9 = setupDayScheduleAndPersist(trip, day2, 5L);
 
             // when
-            int affectedRowCount = scheduleRepository.relocateDaySchedules(trip.getId(), null); // 임시보관함 재배치
+            int affectedRowCount = scheduleRepositoryImpl.relocateDaySchedules(trip.getId(), null); // 임시보관함 재배치
 
             // then
-            List<Schedule> schedules = scheduleRepository.findAllById(
+            List<Schedule> schedules = findAllScheduleByIds(
                     List.of(schedule1.getId(), schedule2.getId(), schedule3.getId(),
                             schedule4.getId(), schedule5.getId(), schedule6.getId(),
                             schedule7.getId(), schedule8.getId(), schedule9.getId()));
@@ -240,10 +240,10 @@ public class ScheduleRepositoryTest {
             Schedule schedule9 = setupDayScheduleAndPersist(trip, day2, 5L);
 
             // when
-            int affectedRowCount = scheduleRepository.relocateDaySchedules(trip.getId(), day1.getId());
+            int affectedRowCount = scheduleRepositoryImpl.relocateDaySchedules(trip.getId(), day1.getId());
 
             // then
-            List<Schedule> schedules = scheduleRepository.findAllById(
+            List<Schedule> schedules = findAllScheduleByIds(
                     List.of(schedule1.getId(), schedule2.getId(), schedule3.getId(),
                             schedule4.getId(), schedule5.getId(), schedule6.getId(),
                             schedule7.getId(), schedule8.getId(), schedule9.getId()));
@@ -286,7 +286,7 @@ public class ScheduleRepositoryTest {
             Schedule schedule8 = setupDayScheduleAndPersist(trip, day3, 1);
 
             // when
-            int affectedRowCount = scheduleRepository.moveSchedulesToTemporaryStorage(trip.getId(), List.of(day1.getId(), day2.getId()));
+            int affectedRowCount = scheduleRepositoryImpl.moveSchedulesToTemporaryStorage(trip.getId(), List.of(day1.getId(), day2.getId()));
 
             // then
             Schedule findSchedule1 = em.find(Schedule.class, schedule1.getId());
@@ -338,7 +338,7 @@ public class ScheduleRepositoryTest {
             Schedule schedule6 = setupDayScheduleAndPersist(trip, day3, 1);
 
             // when
-            int affectedRowCount = scheduleRepository.moveSchedulesToTemporaryStorage(trip.getId(), List.of(day1.getId(), day2.getId()));
+            int affectedRowCount = scheduleRepositoryImpl.moveSchedulesToTemporaryStorage(trip.getId(), List.of(day1.getId(), day2.getId()));
 
             // then
             Schedule findSchedule1 = em.find(Schedule.class, schedule1.getId());
@@ -374,7 +374,7 @@ public class ScheduleRepositoryTest {
             Long tripperId = setupTripperId();
             Trip trip = setupUndecidedTripAndPersist(tripperId);
 
-            int scheduleTripCount = scheduleRepository.findTripScheduleCount(trip.getId());
+            int scheduleTripCount = scheduleRepositoryImpl.findTripScheduleCount(trip.getId());
             assertThat(scheduleTripCount).isEqualTo(0);
         }
 
@@ -389,7 +389,7 @@ public class ScheduleRepositoryTest {
             em.flush();
             em.clear();
 
-            int scheduleTripCount = scheduleRepository.findTripScheduleCount(trip.getId());
+            int scheduleTripCount = scheduleRepositoryImpl.findTripScheduleCount(trip.getId());
             assertThat(scheduleTripCount).isEqualTo(2);
         }
 
@@ -410,7 +410,7 @@ public class ScheduleRepositoryTest {
             em.flush();
             em.clear();
 
-            int scheduleTripCount = scheduleRepository.findTripScheduleCount(trip.getId());
+            int scheduleTripCount = scheduleRepositoryImpl.findTripScheduleCount(trip.getId());
             assertThat(scheduleTripCount).isEqualTo(3);
         }
 
@@ -433,7 +433,7 @@ public class ScheduleRepositoryTest {
             em.flush();
             em.clear();
 
-            int scheduleTripCount = scheduleRepository.findTripScheduleCount(trip.getId());
+            int scheduleTripCount = scheduleRepositoryImpl.findTripScheduleCount(trip.getId());
             assertThat(scheduleTripCount).isEqualTo(4);
         }
 
@@ -455,7 +455,7 @@ public class ScheduleRepositoryTest {
             em.flush();
             em.clear();
 
-            int scheduleTripCount = scheduleRepository.findDayScheduleCount(day.getId());
+            int scheduleTripCount = scheduleRepositoryImpl.findDayScheduleCount(day.getId());
             assertThat(scheduleTripCount).isEqualTo(0);
         }
 
@@ -478,7 +478,7 @@ public class ScheduleRepositoryTest {
             em.flush();
             em.clear();
 
-            int dayScheduleCount = scheduleRepository.findDayScheduleCount(day1.getId());
+            int dayScheduleCount = scheduleRepositoryImpl.findDayScheduleCount(day1.getId());
             assertThat(dayScheduleCount).isEqualTo(3);
         }
     }
@@ -503,10 +503,10 @@ public class ScheduleRepositoryTest {
             Schedule schedule5 = setupDayScheduleAndPersist(trip, day2, 100L);
 
             // when
-            scheduleRepository.deleteAllByTripIds(List.of(trip.getId()));
+            scheduleRepositoryImpl.deleteAllByTripIds(List.of(trip.getId()));
 
             // then
-            List<Schedule> findSchedules = scheduleRepository.findAllById(List.of(schedule1.getId(), schedule2.getId(), schedule3.getId(), schedule4.getId(), schedule5.getId()));
+            List<Schedule> findSchedules = findAllScheduleByIds(List.of(schedule1.getId(), schedule2.getId(), schedule3.getId(), schedule4.getId(), schedule5.getId()));
             assertThat(findSchedules).isEmpty();
         }
     }
@@ -540,6 +540,16 @@ public class ScheduleRepositoryTest {
         Schedule schedule = ScheduleFixture.day_NullId(trip, day, scheduleIndexValue);
         em.persist(schedule);
         return schedule;
+    }
+
+    private List<Schedule> findAllScheduleByIds(List<Long> scheduleIds) {
+        return em.createQuery("""
+                        SELECT s
+                        FROM Schedule s
+                        WHERE s.id in :scheduleIds
+                        """, Schedule.class)
+                .setParameter("scheduleIds", scheduleIds)
+                .getResultList();
     }
 
 }

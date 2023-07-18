@@ -1,8 +1,7 @@
 package com.cosain.trilo.trip.application.trip.service.trip_detail_search;
 
 import com.cosain.trilo.trip.application.exception.TripNotFoundException;
-import com.cosain.trilo.trip.infra.dto.TripDetail;
-import com.cosain.trilo.trip.infra.repository.trip.TripQueryRepository;
+import com.cosain.trilo.trip.application.dao.TripQueryDAO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -14,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class TripDetailSearchService {
 
-    private final TripQueryRepository tripQueryRepository;
+    private final TripQueryDAO tripQueryDAO;
 
     public TripDetail searchTripDetail(Long tripId) {
 
@@ -23,7 +22,7 @@ public class TripDetailSearchService {
     }
 
     private TripDetail findTripDetail(Long tripId){
-        return tripQueryRepository.findTripDetailById(tripId).orElseThrow(TripNotFoundException::new);
+        return tripQueryDAO.findTripDetailById(tripId).orElseThrow(TripNotFoundException::new);
     }
 
 }

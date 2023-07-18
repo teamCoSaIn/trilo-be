@@ -2,8 +2,7 @@ package com.cosain.trilo.trip.application.trip.service.trip_list_search;
 
 import com.cosain.trilo.trip.application.exception.TripperNotFoundException;
 import com.cosain.trilo.trip.infra.adapter.TripImageOutputAdapter;
-import com.cosain.trilo.trip.infra.dto.TripSummary;
-import com.cosain.trilo.trip.infra.repository.trip.TripQueryRepository;
+import com.cosain.trilo.trip.application.dao.TripQueryDAO;
 import com.cosain.trilo.trip.presentation.trip.dto.request.TripPageCondition;
 import com.cosain.trilo.user.domain.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class TripListSearchService {
 
-    private final TripQueryRepository tripQueryRepository;
+    private final TripQueryDAO tripQueryDAO;
     private final UserRepository userRepository;
     private final TripImageOutputAdapter tripImageOutputAdapter;
 
@@ -36,7 +35,7 @@ public class TripListSearchService {
     }
 
     private Slice<TripSummary> findTripSummaries(TripPageCondition tripPageCondition, Pageable pageable) {
-        return tripQueryRepository.findTripSummariesByTripperId(tripPageCondition, pageable);
+        return tripQueryDAO.findTripSummariesByTripperId(tripPageCondition, pageable);
     }
 
     private void updateImageURL(TripSummary tripSummary) {

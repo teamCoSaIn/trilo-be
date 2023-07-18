@@ -1,5 +1,6 @@
-package com.cosain.trilo.trip.infra.dto;
+package com.cosain.trilo.trip.application.day.service.day_search;
 
+import com.cosain.trilo.trip.application.schedule.service.schedule_detail_search.Coordinate;
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.Getter;
 

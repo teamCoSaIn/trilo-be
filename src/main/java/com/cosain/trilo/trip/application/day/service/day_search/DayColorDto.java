@@ -1,4 +1,4 @@
-package com.cosain.trilo.trip.infra.dto;
+package com.cosain.trilo.trip.application.day.service.day_search;
 
 import lombok.Getter;
 
