@@ -13,7 +13,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithAnonymousUser;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
@@ -74,7 +73,6 @@ class TripPeriodUpdateControllerTest extends RestControllerTest {
 
     @Test
     @DisplayName("미인증 사용자 요청 -> 인증 실패 401")
-    @WithAnonymousUser
     public void updateTripPeriod_with_unauthorizedUser() throws Exception {
         // given
         Long tripId = 1L;

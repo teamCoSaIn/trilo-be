@@ -14,8 +14,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingRequestCookieException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -131,33 +129,6 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
             String errorDetail = getMessage(errorCode + ".detail");
             response.addError(errorCode, errorMessage, errorDetail);
         }
-    }
-
-    @ExceptionHandler(AuthenticationException.class)
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    public BasicErrorResponse handleAuthenticationException(AuthenticationException e) {
-        log.info("인증 예외!");
-        String errorCode = "auth-0001";
-        String errorMessage = getMessage(errorCode + ".message");
-        String errorDetail = getMessage(errorCode + ".detail");
-
-        log.info("[{}] errorMessage={}", errorCode, errorMessage);
-        log.info("-----> errorDetail={}", errorDetail);
-        return BasicErrorResponse.of(errorCode, errorMessage, errorDetail);
-    }
-
-    @ExceptionHandler(AccessDeniedException.class)
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    public BasicErrorResponse handleAccessDeniedException(AccessDeniedException e) {
-        log.info("인가 예외!");
-
-        String errorCode = "auth-0002";
-        String errorMessage = getMessage(errorCode + ".message");
-        String errorDetail = getMessage(errorCode + ".detail");
-
-        log.info("[{}] errorMessage={}", errorCode, errorMessage);
-        log.info("-----> errorDetail={}", errorDetail);
-        return BasicErrorResponse.of(errorCode, errorMessage, errorDetail);
     }
 
     @ExceptionHandler(MultipartException.class)

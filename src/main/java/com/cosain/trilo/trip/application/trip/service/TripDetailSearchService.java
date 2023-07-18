@@ -1,6 +1,5 @@
 package com.cosain.trilo.trip.application.trip.service;
 
-import com.cosain.trilo.trip.application.exception.NoTripDetailSearchAuthorityException;
 import com.cosain.trilo.trip.application.exception.TripNotFoundException;
 import com.cosain.trilo.trip.infra.dto.TripDetail;
 import com.cosain.trilo.trip.infra.repository.trip.TripQueryRepository;
@@ -17,21 +16,14 @@ public class TripDetailSearchService {
 
     private final TripQueryRepository tripQueryRepository;
 
-    public TripDetail searchTripDetail(Long tripId, Long tripperId) {
+    public TripDetail searchTripDetail(Long tripId) {
 
         TripDetail tripDetail = findTripDetail(tripId);
-        validateTripDetailQueryAuthority(tripDetail, tripperId);
         return tripDetail;
     }
 
     private TripDetail findTripDetail(Long tripId){
         return tripQueryRepository.findTripDetailById(tripId).orElseThrow(TripNotFoundException::new);
-    }
-
-    private void validateTripDetailQueryAuthority(TripDetail tripDetail, Long tripperId){
-        if (tripDetail.getTripperId() != tripperId) {
-            throw new NoTripDetailSearchAuthorityException("여행 단건 조회 권한이 없습니다.");
-        }
     }
 
 }

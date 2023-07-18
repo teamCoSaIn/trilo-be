@@ -11,12 +11,10 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithAnonymousUser;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
@@ -39,7 +37,7 @@ class SingleTripQueryControllerTest extends RestControllerTest {
         // given
         mockingForLoginUserAnnotation();
         TripDetail tripDetail = new TripDetail(1L, 2L, "여행 제목", TripStatus.DECIDED, LocalDate.of(2023, 4, 4), LocalDate.of(2023, 4, 5));
-        given(tripDetailSearchService.searchTripDetail(anyLong(), any())).willReturn(tripDetail);
+        given(tripDetailSearchService.searchTripDetail(anyLong())).willReturn(tripDetail);
 
         // when & then
         mockMvc.perform(get("/api/trips/1")
@@ -54,19 +52,15 @@ class SingleTripQueryControllerTest extends RestControllerTest {
                 .andExpect(jsonPath("$.endDate").value(tripDetail.getEndDate().toString()));
 
 
-        verify(tripDetailSearchService).searchTripDetail(anyLong(), any());
+        verify(tripDetailSearchService).searchTripDetail(anyLong());
     }
 
     @Test
-    @DisplayName("미인증 사용자 요청 -> 인증 실패 401")
-    @WithAnonymousUser
+    @DisplayName("미인증 사용자 요청 -> 200")
     public void findSingleTrip_with_unauthorizedUser() throws Exception {
         mockMvc.perform(get("/api/trips/1"))
                 .andDo(print())
-                .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("$.errorCode").exists())
-                .andExpect(jsonPath("$.errorMessage").exists())
-                .andExpect(jsonPath("$.errorDetail").exists());
+                .andExpect(status().isOk());
     }
 
 }

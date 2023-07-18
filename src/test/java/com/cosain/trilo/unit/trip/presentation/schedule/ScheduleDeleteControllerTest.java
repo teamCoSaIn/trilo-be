@@ -9,8 +9,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithAnonymousUser;
-import org.springframework.security.test.context.support.WithMockUser;
 
 import java.nio.charset.StandardCharsets;
 
@@ -34,7 +32,6 @@ class ScheduleDeleteControllerTest extends RestControllerTest {
 
     @Test
     @DisplayName("인증된 사용자 요청 -> 성공")
-    @WithMockUser
     public void deleteSchedule_with_authorizedUser() throws Exception {
         mockingForLoginUserAnnotation();
         willDoNothing().given(scheduleDeleteService).deleteSchedule(eq(1L), any());
@@ -52,7 +49,6 @@ class ScheduleDeleteControllerTest extends RestControllerTest {
 
     @Test
     @DisplayName("미인증 사용자 요청 -> 인증 실패 401")
-    @WithAnonymousUser
     public void deleteSchedule_with_unauthorizedUser() throws Exception {
         mockMvc.perform(delete("/api/schedules/1")
                         .characterEncoding(StandardCharsets.UTF_8)

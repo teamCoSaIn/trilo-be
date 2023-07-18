@@ -17,7 +17,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
-import org.springframework.security.test.context.support.WithMockUser;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -84,8 +83,10 @@ class AuthRestControllerTest extends RestControllerTest {
     }
 
     @Test
-    @WithMockUser
     void 쿠키와_인증_헤더를_포함한_로그아웃_요청시_200_상태코드_반환_확인() throws Exception {
+
+        mockingForLoginUserAnnotation();
+
         mockMvc.perform(RestDocumentationRequestBuilders.post(BASE_URL + "/logout")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken")
                         .cookie(new Cookie("refreshToken", "refreshToken")))
@@ -93,8 +94,9 @@ class AuthRestControllerTest extends RestControllerTest {
     }
 
     @Test
-    @WithMockUser
     void 로그아웃_요청시_쿠키가_존재하지_않으면_400_BadRequest_에러를_발생시킨다() throws Exception{
+
+        mockingForLoginUserAnnotation();
 
         mockMvc.perform(RestDocumentationRequestBuilders.post(BASE_URL + "/logout")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken"))

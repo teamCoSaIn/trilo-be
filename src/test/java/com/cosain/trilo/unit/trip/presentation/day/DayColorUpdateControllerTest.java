@@ -14,7 +14,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithAnonymousUser;
 
 import java.nio.charset.StandardCharsets;
 
@@ -81,7 +80,6 @@ public class DayColorUpdateControllerTest extends RestControllerTest {
 
     @Test
     @DisplayName("미인증 사용자 요청 -> 인증 실패 401")
-    @WithAnonymousUser
     public void updateDayColor_with_unauthorizedUser() throws Exception {
         Long dayId = 1L;
         String rawColorName = "RED";

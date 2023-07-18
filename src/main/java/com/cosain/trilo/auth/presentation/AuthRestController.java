@@ -32,6 +32,7 @@ public class AuthRestController {
     }
 
     @PostMapping("/logout")
+    @Login
     public void logout(@RequestHeader(value = "Authorization") String authHeaderValue, @CookieValue(value = "refreshToken", required = true) String refreshToken){
         authService.logout(authHeaderValue, refreshToken);
     }

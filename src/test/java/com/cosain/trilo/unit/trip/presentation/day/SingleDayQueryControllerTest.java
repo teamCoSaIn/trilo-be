@@ -12,7 +12,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithAnonymousUser;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
@@ -21,7 +20,6 @@ import java.util.List;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -67,15 +65,10 @@ class SingleDayQueryControllerTest extends RestControllerTest {
     }
 
     @Test
-    @DisplayName("미인증 사용자 요청 -> 인증 실패 401")
-    @WithAnonymousUser
+    @DisplayName("미인증 사용자 요청 -> 200")
     public void findSingleSchedule_with_unauthorizedUser() throws Exception {
         mockMvc.perform(get("/api/days/1"))
-                .andDo(print())
-                .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("$.errorCode").exists())
-                .andExpect(jsonPath("$.errorMessage").exists())
-                .andExpect(jsonPath("$.errorDetail").exists());
+                .andExpect(status().isOk());
     }
 
 }

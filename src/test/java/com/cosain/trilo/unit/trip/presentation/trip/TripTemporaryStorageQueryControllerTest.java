@@ -14,7 +14,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.SliceImpl;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithAnonymousUser;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -76,14 +75,25 @@ class TripTemporaryStorageQueryControllerTest extends RestControllerTest {
     }
 
     @Test
-    @DisplayName("미인증 사용자 요청 -> 인증 실패 401")
-    @WithAnonymousUser
+    @DisplayName("미인증 사용자 요청 -> 200")
     public void findTripTemporaryStorage_with_unauthorizedUser() throws Exception {
-        mockMvc.perform(get("/api/trips/1/temporary-storage"))
+
+        // given
+        int size = 2;
+        Long tripId = 1L;
+        Long scheduleId = 1L;
+        mockingForLoginUserAnnotation();
+        ScheduleSummary scheduleSummary1 = new ScheduleSummary(2L, null, "제목","장소 식별자", 33.33, 33.33);
+        ScheduleSummary scheduleSummary2 = new ScheduleSummary(3L, null, "제목","장소 식별자",33.33, 33.33);
+        SliceImpl<ScheduleSummary> scheduleSummaries = new SliceImpl<>(List.of(scheduleSummary1, scheduleSummary2));
+        Pageable pageable = PageRequest.ofSize(size);
+        given(temporarySearchService.searchTemporary(eq(tripId), any(TempSchedulePageCondition.class), eq(pageable))).willReturn(scheduleSummaries);
+
+
+        mockMvc.perform(get("/api/trips/1/temporary-storage")
+                        .param("size", String.valueOf(size))
+                        .param("scheduleId", String.valueOf(scheduleId)))
                 .andDo(print())
-                .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("$.errorCode").exists())
-                .andExpect(jsonPath("$.errorMessage").exists())
-                .andExpect(jsonPath("$.errorDetail").exists());
+                .andExpect(status().isOk());
     }
 }

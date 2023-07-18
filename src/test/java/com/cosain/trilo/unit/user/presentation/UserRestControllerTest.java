@@ -22,8 +22,7 @@ import java.time.Clock;
 import java.time.LocalDate;
 import java.time.ZoneId;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -46,8 +45,8 @@ public class UserRestControllerTest extends RestControllerTest {
         public void 인증된_사용자_요청_200() throws Exception{
             // given
             Long userId = 2L;
-            mockingForLoginUserAnnotation();
-            given(userService.getUserProfile(userId, 1L)).willReturn(UserProfileResponse.from(UserFixture.kakaoUser_Id(userId)));
+            mockingForLoginUserAnnotation(userId);
+            given(userService.getUserProfile(eq(userId), eq(userId))).willReturn(UserProfileResponse.from(UserFixture.kakaoUser_Id(userId)));
 
             // when & then
             mockMvc.perform(RestDocumentationRequestBuilders.get(BASE_URL + "/{userId}/profile", userId)
@@ -76,7 +75,7 @@ public class UserRestControllerTest extends RestControllerTest {
         void 인증된_사용자_요청_204() throws Exception{
             // given
             Long userId = 1L;
-            mockingForLoginUserAnnotation();
+            mockingForLoginUserAnnotation(userId);
 
             // when & then
             mockMvc.perform(RestDocumentationRequestBuilders.delete(BASE_URL + "/{userId}", userId)
@@ -105,7 +104,7 @@ public class UserRestControllerTest extends RestControllerTest {
         @Test
         void 인증된_사용자_요청_200() throws Exception{
             // given
-            mockingForLoginUserAnnotation();
+            mockingForLoginUserAnnotation(userId);
 
             Clock fixedClock = Clock.fixed(
                     LocalDate.of(2023, 4, 28).atStartOfDay(ZoneId.systemDefault()).toInstant(),
@@ -122,10 +121,16 @@ public class UserRestControllerTest extends RestControllerTest {
         }
 
         @Test
-        void 미인증된_사용자_요청_401() throws Exception{
+        void 미인증된_사용자_요청_200() throws Exception{
             // when & then
+            Clock fixedClock = Clock.fixed(
+                    LocalDate.of(2023, 4, 28).atStartOfDay(ZoneId.systemDefault()).toInstant(),
+                    ZoneId.systemDefault()
+            );
+            given(clock.instant()).willReturn(fixedClock.instant());
+            given(clock.getZone()).willReturn(fixedClock.getZone());
             mockMvc.perform(RestDocumentationRequestBuilders.get(BASE_URL + "/{userId}/my-page", userId))
-                    .andExpect(MockMvcResultMatchers.status().isUnauthorized());
+                    .andExpect(MockMvcResultMatchers.status().isOk());
         }
     }
 
@@ -135,7 +140,7 @@ public class UserRestControllerTest extends RestControllerTest {
         @Test
         void 인증된_사용자_요청_200() throws Exception{
             // given
-            mockingForLoginUserAnnotation();
+            mockingForLoginUserAnnotation(userId);
             UserUpdateRequest userUpdateRequest = new UserUpdateRequest("nickName");
 
             // when & then
@@ -152,7 +157,7 @@ public class UserRestControllerTest extends RestControllerTest {
         @ParameterizedTest
         void 변경하려는_닉네임이_유효하지_않은_요청_400(String nickName) throws Exception{
             // given
-            mockingForLoginUserAnnotation();
+            mockingForLoginUserAnnotation(userId);
             UserUpdateRequest userUpdateRequest = new UserUpdateRequest(nickName);
 
             // when & then

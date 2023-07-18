@@ -1,12 +1,13 @@
 package com.cosain.trilo.trip.presentation.day;
 
-import com.cosain.trilo.common.LoginUser;
+import com.cosain.trilo.auth.application.token.UserPayload;
+import com.cosain.trilo.auth.presentation.Login;
+import com.cosain.trilo.auth.presentation.LoginUser;
 import com.cosain.trilo.trip.application.day.dto.DayColorUpdateCommand;
 import com.cosain.trilo.trip.application.day.dto.factory.DayColorUpdateCommandFactory;
 import com.cosain.trilo.trip.application.day.service.DayColorUpdateService;
 import com.cosain.trilo.trip.presentation.day.dto.DayColorUpdateRequest;
 import com.cosain.trilo.trip.presentation.day.dto.DayColorUpdateResponse;
-import com.cosain.trilo.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -22,12 +23,13 @@ public class DayColorUpdateController {
 
     @PutMapping("/api/days/{dayId}/color")
     @ResponseStatus(HttpStatus.OK)
+    @Login
     public DayColorUpdateResponse updateDayColor(
             @PathVariable("dayId") Long dayId,
-            @LoginUser User user,
+            @LoginUser UserPayload userPayload,
             @RequestBody DayColorUpdateRequest request) {
 
-        Long tripperId = user.getId();
+        Long tripperId = userPayload.getId();
 
         DayColorUpdateCommand command = dayColorUpdateCommandFactory.createCommand(request.getColorName());
 

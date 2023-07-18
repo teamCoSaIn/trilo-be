@@ -1,6 +1,8 @@
 package com.cosain.trilo.trip.presentation.schedule;
 
-import com.cosain.trilo.common.LoginUser;
+import com.cosain.trilo.auth.application.token.UserPayload;
+import com.cosain.trilo.auth.presentation.Login;
+import com.cosain.trilo.auth.presentation.LoginUser;
 import com.cosain.trilo.common.exception.CustomException;
 import com.cosain.trilo.trip.application.schedule.service.ScheduleCreateService;
 import com.cosain.trilo.trip.application.schedule.dto.ScheduleCreateCommand;
@@ -9,7 +11,6 @@ import com.cosain.trilo.trip.presentation.exception.NullRequestCoordinateExcepti
 import com.cosain.trilo.trip.presentation.schedule.dto.request.RequestCoordinate;
 import com.cosain.trilo.trip.presentation.schedule.dto.request.ScheduleCreateRequest;
 import com.cosain.trilo.trip.presentation.schedule.dto.response.ScheduleCreateResponse;
-import com.cosain.trilo.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -31,8 +32,9 @@ public class ScheduleCreateController {
 
     @PostMapping("/api/schedules")
     @ResponseStatus(HttpStatus.CREATED)
-    public ScheduleCreateResponse createSchedule(@LoginUser User user, @RequestBody ScheduleCreateRequest request) {
-        Long tripperId = user.getId();
+    @Login
+    public ScheduleCreateResponse createSchedule(@LoginUser UserPayload userPayload, @RequestBody ScheduleCreateRequest request) {
+        Long tripperId = userPayload.getId();
         ScheduleCreateCommand command = createCommand(request);
 
         Long scheduleId = scheduleCreateService.createSchedule(tripperId, command);

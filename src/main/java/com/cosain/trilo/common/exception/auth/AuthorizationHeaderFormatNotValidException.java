@@ -1,15 +1,12 @@
-package com.cosain.trilo.common.exception;
+package com.cosain.trilo.common.exception.auth;
 
+import com.cosain.trilo.common.exception.CustomException;
 import org.springframework.http.HttpStatus;
 
-public class TokenAuthenticationFilterException extends CustomException {
+public class AuthorizationHeaderFormatNotValidException extends CustomException {
 
-    private static final String ERROR_CODE = "auth-0006";
+    private static final String ERROR_CODE = "auth-0003";
     private static final HttpStatus HTTP_STATUS = HttpStatus.UNAUTHORIZED;
-
-    public TokenAuthenticationFilterException(Throwable cause) {
-        super(cause);
-    }
 
     @Override
     public String getErrorCode() {
@@ -20,5 +17,4 @@ public class TokenAuthenticationFilterException extends CustomException {
     public HttpStatus getHttpStatus() {
         return HTTP_STATUS;
     }
-
 }

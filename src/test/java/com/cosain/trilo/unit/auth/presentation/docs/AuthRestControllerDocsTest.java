@@ -17,7 +17,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
-import org.springframework.security.test.context.support.WithMockUser;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -75,8 +74,9 @@ class AuthRestControllerDocsTest extends RestDocsTestSupport {
     }
 
     @Test
-    @WithMockUser
     void 로그아웃_요청() throws Exception{
+
+        mockingForLoginUserAnnotation();
 
         mockMvc.perform(RestDocumentationRequestBuilders.post(BASE_URL + "/logout")
                 .cookie(new Cookie("refreshToken", "refreshToken"))
