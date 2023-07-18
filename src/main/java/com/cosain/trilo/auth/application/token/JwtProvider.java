@@ -1,9 +1,8 @@
 package com.cosain.trilo.auth.application.token;
 
 public interface JwtProvider {
-    String createAccessToken(Long id);
-    String createRefreshToken(Long id);
-
+    String createAccessToken(Long userId);
+    String createRefreshToken(Long userId);
     boolean isValidAccessToken(String authorizationHeader);
 
     boolean isValidRefreshToken(String token);
