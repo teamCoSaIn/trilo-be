@@ -2,8 +2,8 @@ package com.cosain.trilo.unit.trip.application.day.dto.factory;
 
 import com.cosain.trilo.common.exception.CustomException;
 import com.cosain.trilo.common.exception.CustomValidationException;
-import com.cosain.trilo.trip.application.day.dto.DayColorUpdateCommand;
-import com.cosain.trilo.trip.application.day.dto.factory.DayColorUpdateCommandFactory;
+import com.cosain.trilo.trip.application.day.service.day_color_update.DayColorUpdateCommand;
+import com.cosain.trilo.trip.application.day.service.day_color_update.DayColorUpdateCommandFactory;
 import com.cosain.trilo.trip.domain.exception.InvalidDayColorNameException;
 import com.cosain.trilo.trip.domain.vo.DayColor;
 import org.junit.jupiter.api.BeforeEach;

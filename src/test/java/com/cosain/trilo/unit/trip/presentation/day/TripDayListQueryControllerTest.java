@@ -1,10 +1,10 @@
 package com.cosain.trilo.unit.trip.presentation.day;
 
 import com.cosain.trilo.support.RestControllerTest;
-import com.cosain.trilo.trip.application.day.service.DaySearchService;
+import com.cosain.trilo.trip.application.day.service.day_search.DaySearchService;
 import com.cosain.trilo.trip.domain.vo.DayColor;
-import com.cosain.trilo.trip.infra.dto.DayScheduleDetail;
-import com.cosain.trilo.trip.infra.dto.ScheduleSummary;
+import com.cosain.trilo.trip.application.day.service.day_search.DayScheduleDetail;
+import com.cosain.trilo.trip.application.day.service.day_search.ScheduleSummary;
 import com.cosain.trilo.trip.presentation.day.TripDayListQueryController;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,7 +19,6 @@ import java.util.List;
 
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 

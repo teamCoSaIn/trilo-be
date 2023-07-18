@@ -1,8 +1,8 @@
 package com.cosain.trilo.user.application;
 
 import com.cosain.trilo.auth.infra.OAuthProfileDto;
+import com.cosain.trilo.trip.application.dao.TripQueryDAO;
 import com.cosain.trilo.trip.infra.dto.TripStatistics;
-import com.cosain.trilo.trip.infra.repository.trip.TripQueryRepository;
 import com.cosain.trilo.user.application.event.UserDeleteEvent;
 import com.cosain.trilo.user.application.exception.NoUserDeleteAuthorityException;
 import com.cosain.trilo.user.application.exception.NoUserProfileSearchAuthorityException;
@@ -26,18 +26,18 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
-    private final TripQueryRepository tripQueryRepository;
+    private final TripQueryDAO tripQueryDAO;
     private final ApplicationEventPublisher eventPublisher;
     private final String s3ImageBaseURL;
 
     public UserService(
             UserRepository userRepository,
-            TripQueryRepository tripQueryRepository,
+            TripQueryDAO tripQueryDAO,
             ApplicationEventPublisher eventPublisher,
             @Value("${cloud.aws.s3.bucket-path}") String bucketPath
     ) {
         this.userRepository = userRepository;
-        this.tripQueryRepository = tripQueryRepository;
+        this.tripQueryDAO = tripQueryDAO;
         this.eventPublisher = eventPublisher;
         this.s3ImageBaseURL = bucketPath;
     }
@@ -90,7 +90,7 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public UserMyPageResponse getMyPage(Long userId, LocalDate today){
-        TripStatistics tripStatistics = tripQueryRepository.findTripStaticsByTripperId(userId, today);
+        TripStatistics tripStatistics = tripQueryDAO.findTripStaticsByTripperId(userId, today);
         User user = findUserOrThrows(userId);
         return UserMyPageResponse.of(user, s3ImageBaseURL, tripStatistics);
     }

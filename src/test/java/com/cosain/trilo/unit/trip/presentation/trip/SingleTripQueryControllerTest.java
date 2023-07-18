@@ -1,9 +1,9 @@
 package com.cosain.trilo.unit.trip.presentation.trip;
 
 import com.cosain.trilo.support.RestControllerTest;
-import com.cosain.trilo.trip.application.trip.service.TripDetailSearchService;
+import com.cosain.trilo.trip.application.trip.service.trip_detail_search.TripDetailSearchService;
 import com.cosain.trilo.trip.domain.vo.TripStatus;
-import com.cosain.trilo.trip.infra.dto.TripDetail;
+import com.cosain.trilo.trip.application.trip.service.trip_detail_search.TripDetail;
 import com.cosain.trilo.trip.presentation.trip.SingleTripQueryController;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

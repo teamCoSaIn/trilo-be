@@ -1,7 +1,7 @@
 package com.cosain.trilo.unit.trip.presentation.schedule.docs;
 
 import com.cosain.trilo.support.RestDocsTestSupport;
-import com.cosain.trilo.trip.application.schedule.service.ScheduleDeleteService;
+import com.cosain.trilo.trip.application.schedule.service.schedule_delete.ScheduleDeleteService;
 import com.cosain.trilo.trip.presentation.schedule.ScheduleDeleteController;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

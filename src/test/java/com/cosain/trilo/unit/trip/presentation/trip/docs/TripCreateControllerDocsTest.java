@@ -1,9 +1,9 @@
 package com.cosain.trilo.unit.trip.presentation.trip.docs;
 
 import com.cosain.trilo.support.RestDocsTestSupport;
-import com.cosain.trilo.trip.application.trip.service.TripCreateService;
-import com.cosain.trilo.trip.application.trip.dto.TripCreateCommand;
-import com.cosain.trilo.trip.application.trip.dto.factory.TripCreateCommandFactory;
+import com.cosain.trilo.trip.application.trip.service.trip_create.TripCreateCommand;
+import com.cosain.trilo.trip.application.trip.service.trip_create.TripCreateCommandFactory;
+import com.cosain.trilo.trip.application.trip.service.trip_create.TripCreateService;
 import com.cosain.trilo.trip.domain.vo.TripTitle;
 import com.cosain.trilo.trip.presentation.trip.TripCreateController;
 import com.cosain.trilo.trip.presentation.trip.dto.request.TripCreateRequest;

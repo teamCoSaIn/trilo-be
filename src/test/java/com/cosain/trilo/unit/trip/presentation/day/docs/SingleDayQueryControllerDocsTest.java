@@ -2,10 +2,10 @@ package com.cosain.trilo.unit.trip.presentation.day.docs;
 
 
 import com.cosain.trilo.support.RestDocsTestSupport;
-import com.cosain.trilo.trip.application.day.service.DaySearchService;
+import com.cosain.trilo.trip.application.day.service.day_search.DaySearchService;
 import com.cosain.trilo.trip.domain.vo.DayColor;
-import com.cosain.trilo.trip.infra.dto.DayScheduleDetail;
-import com.cosain.trilo.trip.infra.dto.ScheduleSummary;
+import com.cosain.trilo.trip.application.day.service.day_search.DayScheduleDetail;
+import com.cosain.trilo.trip.application.day.service.day_search.ScheduleSummary;
 import com.cosain.trilo.trip.presentation.day.SingleDayQueryController;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -43,7 +43,7 @@ public class SingleDayQueryControllerDocsTest extends RestDocsTestSupport {
 
         Long dayId = 1L;
         DayScheduleDetail dayScheduleDetail = new DayScheduleDetail(dayId, 1L, LocalDate.of(2023, 2, 3), DayColor.BLACK, List.of(scheduleSummary1, scheduleSummary2));
-        given(daySearchService.searchDeySchedule(eq(dayId))).willReturn(dayScheduleDetail);
+        given(daySearchService.searchDaySchedule(eq(dayId))).willReturn(dayScheduleDetail);
 
         mockMvc.perform(RestDocumentationRequestBuilders.get("/api/days"+"/{dayId}",dayId)
                         .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)

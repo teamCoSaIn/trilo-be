@@ -1,10 +1,10 @@
 package com.cosain.trilo.unit.trip.presentation.schedule.docs;
 
 import com.cosain.trilo.support.RestDocsTestSupport;
-import com.cosain.trilo.trip.application.schedule.service.ScheduleMoveService;
-import com.cosain.trilo.trip.application.schedule.dto.ScheduleMoveCommand;
-import com.cosain.trilo.trip.application.schedule.dto.ScheduleMoveResult;
-import com.cosain.trilo.trip.application.schedule.dto.factory.ScheduleMoveCommandFactory;
+import com.cosain.trilo.trip.application.schedule.service.schedule_move.ScheduleMoveCommand;
+import com.cosain.trilo.trip.application.schedule.service.schedule_move.ScheduleMoveCommandFactory;
+import com.cosain.trilo.trip.application.schedule.service.schedule_move.ScheduleMoveResult;
+import com.cosain.trilo.trip.application.schedule.service.schedule_move.ScheduleMoveService;
 import com.cosain.trilo.trip.presentation.schedule.ScheduleMoveController;
 import com.cosain.trilo.trip.presentation.schedule.dto.request.ScheduleMoveRequest;
 import org.junit.jupiter.api.DisplayName;

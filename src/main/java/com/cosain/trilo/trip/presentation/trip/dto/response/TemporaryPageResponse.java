@@ -1,6 +1,6 @@
 package com.cosain.trilo.trip.presentation.trip.dto.response;
 
-import com.cosain.trilo.trip.infra.dto.ScheduleSummary;
+import com.cosain.trilo.trip.application.day.service.day_search.ScheduleSummary;
 import lombok.Getter;
 import org.springframework.data.domain.Slice;
 
