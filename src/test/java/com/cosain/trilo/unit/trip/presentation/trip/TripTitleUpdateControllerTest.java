@@ -1,9 +1,9 @@
 package com.cosain.trilo.unit.trip.presentation.trip;
 
 import com.cosain.trilo.support.RestControllerTest;
-import com.cosain.trilo.trip.application.trip.service.TripTitleUpdateService;
-import com.cosain.trilo.trip.application.trip.dto.TripTitleUpdateCommand;
-import com.cosain.trilo.trip.application.trip.dto.factory.TripTitleUpdateCommandFactory;
+import com.cosain.trilo.trip.application.trip.service.trip_title_update.TripTitleUpdateCommand;
+import com.cosain.trilo.trip.application.trip.service.trip_title_update.TripTitleUpdateCommandFactory;
+import com.cosain.trilo.trip.application.trip.service.trip_title_update.TripTitleUpdateService;
 import com.cosain.trilo.trip.domain.vo.TripTitle;
 import com.cosain.trilo.trip.presentation.trip.TripTitleUpdateController;
 import com.cosain.trilo.trip.presentation.trip.dto.request.TripTitleUpdateRequest;

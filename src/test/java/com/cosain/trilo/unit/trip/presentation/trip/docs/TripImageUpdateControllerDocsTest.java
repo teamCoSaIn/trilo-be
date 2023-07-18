@@ -2,7 +2,7 @@ package com.cosain.trilo.unit.trip.presentation.trip.docs;
 
 import com.cosain.trilo.common.file.ImageFile;
 import com.cosain.trilo.support.RestDocsTestSupport;
-import com.cosain.trilo.trip.application.trip.service.TripImageUpdateService;
+import com.cosain.trilo.trip.application.trip.service.trip_image_update.TripImageUpdateService;
 import com.cosain.trilo.trip.presentation.trip.TripImageUpdateController;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

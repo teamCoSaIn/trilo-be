@@ -1,6 +1,6 @@
 package com.cosain.trilo.trip.presentation.trip;
 
-import com.cosain.trilo.trip.application.trip.service.TripDetailSearchService;
+import com.cosain.trilo.trip.application.trip.service.trip_detail_search.TripDetailSearchService;
 import com.cosain.trilo.trip.infra.dto.TripDetail;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

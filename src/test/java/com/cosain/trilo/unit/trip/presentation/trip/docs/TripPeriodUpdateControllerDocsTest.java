@@ -1,9 +1,9 @@
 package com.cosain.trilo.unit.trip.presentation.trip.docs;
 
 import com.cosain.trilo.support.RestDocsTestSupport;
-import com.cosain.trilo.trip.application.trip.service.TripPeriodUpdateService;
-import com.cosain.trilo.trip.application.trip.dto.TripPeriodUpdateCommand;
-import com.cosain.trilo.trip.application.trip.dto.factory.TripPeriodUpdateCommandFactory;
+import com.cosain.trilo.trip.application.trip.service.trip_period_update.TripPeriodUpdateCommand;
+import com.cosain.trilo.trip.application.trip.service.trip_period_update.TripPeriodUpdateCommandFactory;
+import com.cosain.trilo.trip.application.trip.service.trip_period_update.TripPeriodUpdateService;
 import com.cosain.trilo.trip.domain.vo.TripPeriod;
 import com.cosain.trilo.trip.presentation.trip.TripPeriodUpdateController;
 import com.cosain.trilo.trip.presentation.trip.dto.request.TripPeriodUpdateRequest;

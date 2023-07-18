@@ -2,7 +2,7 @@ package com.cosain.trilo.unit.trip.presentation.day.docs;
 
 
 import com.cosain.trilo.support.RestDocsTestSupport;
-import com.cosain.trilo.trip.application.day.service.DaySearchService;
+import com.cosain.trilo.trip.application.day.service.day_search.DaySearchService;
 import com.cosain.trilo.trip.domain.vo.DayColor;
 import com.cosain.trilo.trip.infra.dto.DayScheduleDetail;
 import com.cosain.trilo.trip.infra.dto.ScheduleSummary;

@@ -2,7 +2,7 @@ package com.cosain.trilo.unit.trip.presentation.trip;
 
 
 import com.cosain.trilo.support.RestControllerTest;
-import com.cosain.trilo.trip.application.trip.service.TripListSearchService;
+import com.cosain.trilo.trip.application.trip.service.trip_list_search.TripListSearchService;
 import com.cosain.trilo.trip.domain.vo.TripStatus;
 import com.cosain.trilo.trip.infra.dto.TripSummary;
 import com.cosain.trilo.trip.presentation.trip.TripperTripListQueryController;

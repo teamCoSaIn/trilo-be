@@ -1,7 +1,7 @@
 package com.cosain.trilo.unit.trip.presentation.trip.docs;
 
 import com.cosain.trilo.support.RestDocsTestSupport;
-import com.cosain.trilo.trip.application.trip.service.TemporarySearchService;
+import com.cosain.trilo.trip.application.trip.service.temporary_search.TemporarySearchService;
 import com.cosain.trilo.trip.infra.dto.ScheduleSummary;
 import com.cosain.trilo.trip.presentation.trip.TripTemporaryStorageQueryController;
 import com.cosain.trilo.trip.presentation.trip.dto.request.TempSchedulePageCondition;

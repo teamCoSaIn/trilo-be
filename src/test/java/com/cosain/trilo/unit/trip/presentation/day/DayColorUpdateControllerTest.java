@@ -2,9 +2,9 @@ package com.cosain.trilo.unit.trip.presentation.day;
 
 
 import com.cosain.trilo.support.RestControllerTest;
-import com.cosain.trilo.trip.application.day.dto.DayColorUpdateCommand;
-import com.cosain.trilo.trip.application.day.dto.factory.DayColorUpdateCommandFactory;
-import com.cosain.trilo.trip.application.day.service.DayColorUpdateService;
+import com.cosain.trilo.trip.application.day.service.day_color_update.DayColorUpdateCommand;
+import com.cosain.trilo.trip.application.day.service.day_color_update.DayColorUpdateCommandFactory;
+import com.cosain.trilo.trip.application.day.service.day_color_update.DayColorUpdateService;
 import com.cosain.trilo.trip.domain.vo.DayColor;
 import com.cosain.trilo.trip.presentation.day.DayColorUpdateController;
 import com.cosain.trilo.trip.presentation.day.dto.DayColorUpdateRequest;

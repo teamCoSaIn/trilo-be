@@ -1,9 +1,9 @@
 package com.cosain.trilo.unit.trip.presentation.schedule.docs;
 
 import com.cosain.trilo.support.RestDocsTestSupport;
-import com.cosain.trilo.trip.application.schedule.service.ScheduleUpdateService;
-import com.cosain.trilo.trip.application.schedule.dto.ScheduleUpdateCommand;
-import com.cosain.trilo.trip.application.schedule.dto.factory.ScheduleUpdateCommandFactory;
+import com.cosain.trilo.trip.application.schedule.service.schedule_update.ScheduleUpdateCommand;
+import com.cosain.trilo.trip.application.schedule.service.schedule_update.ScheduleUpdateCommandFactory;
+import com.cosain.trilo.trip.application.schedule.service.schedule_update.ScheduleUpdateService;
 import com.cosain.trilo.trip.domain.vo.ScheduleContent;
 import com.cosain.trilo.trip.domain.vo.ScheduleTime;
 import com.cosain.trilo.trip.domain.vo.ScheduleTitle;

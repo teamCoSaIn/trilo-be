@@ -4,7 +4,7 @@ import com.cosain.trilo.auth.application.token.UserPayload;
 import com.cosain.trilo.auth.presentation.Login;
 import com.cosain.trilo.auth.presentation.LoginUser;
 import com.cosain.trilo.common.file.ImageFile;
-import com.cosain.trilo.trip.application.trip.service.TripImageUpdateService;
+import com.cosain.trilo.trip.application.trip.service.trip_image_update.TripImageUpdateService;
 import com.cosain.trilo.trip.presentation.trip.dto.response.TripImageUpdateResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

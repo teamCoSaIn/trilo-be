@@ -1,6 +1,6 @@
 package com.cosain.trilo.trip.presentation.trip;
 
-import com.cosain.trilo.trip.application.trip.service.TripListSearchService;
+import com.cosain.trilo.trip.application.trip.service.trip_list_search.TripListSearchService;
 import com.cosain.trilo.trip.infra.dto.TripSummary;
 import com.cosain.trilo.trip.presentation.trip.dto.request.TripPageCondition;
 import com.cosain.trilo.trip.presentation.trip.dto.response.TripPageResponse;

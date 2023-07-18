@@ -1,7 +1,7 @@
 package com.cosain.trilo.unit.trip.presentation.schedule.docs;
 
 import com.cosain.trilo.support.RestDocsTestSupport;
-import com.cosain.trilo.trip.application.schedule.service.ScheduleDetailSearchService;
+import com.cosain.trilo.trip.application.schedule.service.schedule_detail_search.ScheduleDetailSearchService;
 import com.cosain.trilo.trip.infra.dto.ScheduleDetail;
 import com.cosain.trilo.trip.presentation.schedule.SingleScheduleQueryController;
 import org.junit.jupiter.api.Test;
@@ -18,7 +18,8 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
-import static org.springframework.restdocs.payload.JsonFieldType.*;
+import static org.springframework.restdocs.payload.JsonFieldType.NUMBER;
+import static org.springframework.restdocs.payload.JsonFieldType.STRING;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
