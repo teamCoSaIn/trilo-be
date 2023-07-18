@@ -14,7 +14,7 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 @RequiredArgsConstructor
 public class AuthArgumentResolver implements HandlerMethodArgumentResolver {
 
-    private final JwtProvider jwtTokenAnalyzer;
+    private final JwtProvider jwtProvider;
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
@@ -26,6 +26,6 @@ public class AuthArgumentResolver implements HandlerMethodArgumentResolver {
                                   NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
         String authorizationHeader = webRequest.getHeader(HttpHeaders.AUTHORIZATION);
         if(authorizationHeader == null) return null;
-        return jwtTokenAnalyzer.getPayload(authorizationHeader);
+        return jwtProvider.getPayload(authorizationHeader);
     }
 }
