@@ -1,7 +1,8 @@
 package com.cosain.trilo.config.exception;
 
 import com.cosain.trilo.common.dto.BasicErrorResponse;
-import com.cosain.trilo.common.dto.ValidationErrorResponse;
+import com.cosain.trilo.common.dto.BusinessInputValidationErrorResponse;
+import com.cosain.trilo.common.dto.ControllerInputValidationErrorResponse;
 import com.cosain.trilo.common.exception.CustomException;
 import com.cosain.trilo.common.exception.CustomValidationException;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +15,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingRequestCookieException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -62,15 +65,34 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
                 .body(BasicErrorResponse.of(errorCode, errorMessage, errorDetail));
     }
 
+    /**
+     * BeanValidation 후속 예외 처리 (@Valid) - 컨트롤러 검증
+     */
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+        BindingResult bindingResult = ex.getBindingResult();
+
         String errorCode = "request-0003";
         String errorMessage = getMessage(errorCode + ".message");
-        String errorDetail = ex.getBindingResult().getFieldError().getDefaultMessage();
+        String errorDetail = getMessage(errorCode + ".detail");
 
+        var response = ControllerInputValidationErrorResponse.of(errorCode, errorMessage, errorDetail);
+
+        addFieldErrorsToErrorResponse(response, bindingResult.getFieldErrors());
         return ResponseEntity
                 .badRequest()
-                .body(BasicErrorResponse.of(errorCode, errorMessage, errorDetail));
+                .body(response);
+    }
+
+    private void addFieldErrorsToErrorResponse(ControllerInputValidationErrorResponse response, List<FieldError> fieldErrors) {
+        for (FieldError error : fieldErrors) {
+            String errorCode = getMessage(error.getCode());
+            String errorMessage = getMessage(errorCode + ".message");
+            String errorDetail = getMessage(errorCode + ".detail");
+            String field = error.getField();
+
+            response.addError(errorCode, errorMessage, errorDetail, field);
+        }
     }
 
 
@@ -109,20 +131,23 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
         return ResponseEntity.badRequest().body(response);
     }
 
+    /**
+     * 비즈니스 레이어 모델 변환 과정에서의 검증 실패 처리(비즈니스 입력 검증)
+     */
     @ExceptionHandler(CustomValidationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ValidationErrorResponse handleCustomValidationException(CustomValidationException ex) {
+    public BusinessInputValidationErrorResponse handleCustomValidationException(CustomValidationException ex) {
         String errorCode = "request-0003";
         String errorMessage = getMessage(errorCode + ".message");
         String errorDetail = getMessage(errorCode + ".detail");
 
-        var response = ValidationErrorResponse.of(errorCode, errorMessage, errorDetail);
+        var response = BusinessInputValidationErrorResponse.of(errorCode, errorMessage, errorDetail);
         List<CustomException> exceptions = ex.getExceptions();
         addExceptionsToValidationErrorResponse(response, exceptions);
         return response;
     }
 
-    private void addExceptionsToValidationErrorResponse(ValidationErrorResponse response, List<CustomException> exceptions) {
+    private void addExceptionsToValidationErrorResponse(BusinessInputValidationErrorResponse response, List<CustomException> exceptions) {
         for (CustomException ex : exceptions) {
             String errorCode = ex.getErrorCode();
             String errorMessage = getMessage(errorCode + ".message");
