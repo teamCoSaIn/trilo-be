@@ -9,7 +9,6 @@ import com.cosain.trilo.trip.domain.entity.Trip;
 import com.cosain.trilo.trip.domain.repository.DayRepository;
 import com.cosain.trilo.trip.domain.repository.ScheduleRepository;
 import com.cosain.trilo.trip.domain.repository.TripRepository;
-import com.cosain.trilo.trip.domain.vo.TripPeriod;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -53,11 +52,11 @@ public class TripPeriodUpdateServiceTest {
         LocalDate startDate = LocalDate.of(2023, 3, 1);
         LocalDate endDate = LocalDate.of(2023, 3, 3);
 
-        TripPeriodUpdateCommand updateCommand = createCommand(startDate, endDate);
+        TripPeriodUpdateCommand command = TripPeriodUpdateCommand.of(tripId, tripperId, startDate, endDate);
         given(tripRepository.findByIdWithDays(eq(tripId))).willReturn(Optional.empty());
 
         // when & then
-        assertThatThrownBy(() -> tripPeriodUpdateService.updateTripPeriod(tripId, tripperId, updateCommand))
+        assertThatThrownBy(() -> tripPeriodUpdateService.updateTripPeriod(command))
                 .isInstanceOf(TripNotFoundException.class);
         verify(tripRepository).findByIdWithDays(eq(tripId));
     }
@@ -71,13 +70,13 @@ public class TripPeriodUpdateServiceTest {
         LocalDate startDate = LocalDate.of(2023, 3, 1);
         LocalDate endDate = LocalDate.of(2023, 3, 3);
 
-        TripPeriodUpdateCommand updateCommand = createCommand(startDate, endDate);
+        TripPeriodUpdateCommand command = TripPeriodUpdateCommand.of(tripId, tripperId, startDate, endDate);
 
         Trip trip = TripFixture.undecided_Id(tripId, tripperId);
         given(tripRepository.findByIdWithDays(eq(tripId))).willReturn(Optional.of(trip));
 
         // when
-        tripPeriodUpdateService.updateTripPeriod(tripId, tripperId, updateCommand);
+        tripPeriodUpdateService.updateTripPeriod(command);
 
         // then
         verify(tripRepository, times(1)).findByIdWithDays(eq(tripId));
@@ -90,20 +89,25 @@ public class TripPeriodUpdateServiceTest {
     @Test
     public void 여행_상태가_DECIDED이고_다른_제목과_기간으로_수정하는_경우() throws Exception {
         // given
-        Long tripId = 1L;
+        long tripId = 1L;
         Long tripperId = 2L;
 
-        TripPeriodUpdateCommand updateCommand = createCommand(LocalDate.of(2023, 3, 2), LocalDate.of(2023,3,5));
-        Trip trip = TripFixture.decided_Id(tripId, tripperId, LocalDate.of(2023,3,1), LocalDate.of(2023,3,4), 1L);
+        LocalDate beforeStartDate = LocalDate.of(2023,3,1);
+        LocalDate beforeEndDate = LocalDate.of(2023,3,4);
+        LocalDate newStartDate = LocalDate.of(2023,3,2);
+        LocalDate newEndDate = LocalDate.of(2023,3,5);
+
+        TripPeriodUpdateCommand command = TripPeriodUpdateCommand.of(tripId, tripperId, newStartDate, newEndDate);
+
+        Trip trip = TripFixture.decided_Id(tripId, tripperId, beforeStartDate, beforeEndDate, 1L);
 
         given(tripRepository.findByIdWithDays(eq(tripId))).willReturn(Optional.of(trip)); // trip 조회 일어남.
-
         given(scheduleRepository.relocateDaySchedules(eq(tripId), isNull())).willReturn(0);
         given(scheduleRepository.moveSchedulesToTemporaryStorage(eq(tripId), anyList())).willReturn(0);
         given(dayRepository.deleteAllByIds(anyList())).willReturn(2);
 
         // when
-        tripPeriodUpdateService.updateTripPeriod(tripId, tripperId, updateCommand);
+        tripPeriodUpdateService.updateTripPeriod(command);
 
         // then
         verify(tripRepository, times(1)).findByIdWithDays(anyLong());
@@ -125,22 +129,18 @@ public class TripPeriodUpdateServiceTest {
             Long tripperId = 2L;
             Long noAuthorityTripperId = 3L;
 
-            TripPeriodUpdateCommand updateCommand = createCommand(LocalDate.of(2023,3,1), LocalDate.of(2023,3,3));
+            TripPeriodUpdateCommand command = TripPeriodUpdateCommand.of(tripId, noAuthorityTripperId, null, null);
 
             Trip trip = TripFixture.undecided_Id(tripId, tripperId);
             given(tripRepository.findByIdWithDays(eq(tripId))).willReturn(Optional.of(trip));
 
             // when & then
-            assertThatThrownBy(() -> tripPeriodUpdateService.updateTripPeriod(tripId, noAuthorityTripperId, updateCommand))
+            assertThatThrownBy(() -> tripPeriodUpdateService.updateTripPeriod(command))
                     .isInstanceOf(NoTripUpdateAuthorityException.class);
 
             verify(tripRepository, times(1)).findByIdWithDays(eq(tripId));
         }
 
-    }
-
-    private TripPeriodUpdateCommand createCommand(LocalDate startDate, LocalDate endDate) {
-        return new TripPeriodUpdateCommand(TripPeriod.of(startDate, endDate));
     }
 
 }

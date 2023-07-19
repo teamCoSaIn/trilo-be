@@ -23,10 +23,10 @@ public class TripPeriodUpdateService {
     private final ScheduleRepository scheduleRepository;
 
     @Transactional
-    public void updateTripPeriod(Long tripId, Long tripperId, TripPeriodUpdateCommand updateCommand) {
-        Trip trip = findTrip(tripId);
-        validateTripUpdateAuthority(trip, tripperId);
-        changePeriod(trip, updateCommand.getTripPeriod());
+    public void updateTripPeriod(TripPeriodUpdateCommand command) {
+        Trip trip = findTrip(command.getTripId());
+        validateTripUpdateAuthority(trip, command.getRequestTripperId());
+        changePeriod(trip, command.getTripPeriod());
     }
 
     private Trip findTrip(Long tripId) {
