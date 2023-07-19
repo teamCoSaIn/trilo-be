@@ -189,7 +189,7 @@ place-0002:
 # 파일 관련
 file-0001:
   message: Empty File
-  detail: 파일이 없거나, 내용이 비어있는 파일입니다.
+  detail: 파일이 없거나, 내용이 비어있는 파일입니다. Multipart 요청을 통해 파일을 보내주세요.
 
 file-0002:
   message: No File Name

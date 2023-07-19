@@ -25,24 +25,25 @@ public class TripImageUpdateService {
 
     /**
      * 여행의 이미지를 수정합니다.
-     * @param tripId : 여행의 식별자
-     * @param tripperId : 사용자(여행자)의 식별자
-     * @param file : 이미지 파일
+     * @param command : 여행 이미지 수정에 필요한 command
      * @return 교체된 이미지의 전체 URL(경로)
      * @throws TripNotFoundException : 일치하는 식별자의 여행을 찾을 수 없을 경우 발생
      * @throws NoTripUpdateAuthorityException : 여행을 수정할 권한이 없을 때 발생
      * @throws TripImageUploadFailedException : 여행의 이미지를 이미지 저장소에 올리는데 실패했을 때 발생
      */
     @Transactional
-    public String updateTripImage(Long tripId, Long tripperId, ImageFile file)
+    public String updateTripImage(TripImageUpdateCommand command)
             throws TripNotFoundException, NoTripUpdateAuthorityException, TripImageUploadFailedException {
+        Long tripId = command.getTripId();
+        Long requestTripperId = command.getRequestTripperId();
+        ImageFile imageFile = command.getImageFile();
 
         Trip trip = findTrip(tripId);
 
-        validateTripUpdateAuthority(trip, tripperId); // 이미지를 수정할 권한이 있는 지 검증
+        validateTripUpdateAuthority(trip, requestTripperId); // 이미지를 수정할 권한이 있는 지 검증
 
-        String uploadName = makeUploadFileName(tripId, file); // 이미지 저장소에 올릴 이름 구성
-        tripImageOutputAdapter.uploadImage(file, uploadName); // 이미지 저장소에 업로드 후, 전체 이미지 경로(fullPath)를 구성
+        String uploadName = makeUploadFileName(tripId, imageFile); // 이미지 저장소에 올릴 이름 구성
+        tripImageOutputAdapter.uploadImage(imageFile, uploadName); // 이미지 저장소에 업로드 후, 전체 이미지 경로(fullPath)를 구성
 
         trip.changeImage(TripImage.of(uploadName)); // 여행이미지 도메인의 실제 이미지 변경
         return tripImageOutputAdapter.getFullTripImageURL(uploadName); // 이미지 전체 경로를 반환

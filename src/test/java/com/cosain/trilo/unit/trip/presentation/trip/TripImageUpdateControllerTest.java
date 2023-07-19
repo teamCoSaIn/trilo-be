@@ -1,7 +1,7 @@
 package com.cosain.trilo.unit.trip.presentation.trip;
 
-import com.cosain.trilo.common.file.ImageFile;
 import com.cosain.trilo.support.RestControllerTest;
+import com.cosain.trilo.trip.application.trip.service.trip_image_update.TripImageUpdateCommand;
 import com.cosain.trilo.trip.application.trip.service.trip_image_update.TripImageUpdateService;
 import com.cosain.trilo.trip.presentation.trip.TripImageUpdateController;
 import org.junit.jupiter.api.DisplayName;
@@ -15,7 +15,7 @@ import org.springframework.mock.web.MockMultipartFile;
 import java.io.FileInputStream;
 import java.nio.charset.StandardCharsets;
 
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -39,7 +39,8 @@ public class TripImageUpdateControllerTest extends RestControllerTest {
     @Test
     @DisplayName("실제 jpeg -> 성공")
     public void testRealJpegImage() throws Exception {
-        mockingForLoginUserAnnotation();
+        long tripperId = 2L;
+        mockingForLoginUserAnnotation(tripperId);
         Long tripId = 1L;
 
         String name = "image";
@@ -47,11 +48,10 @@ public class TripImageUpdateControllerTest extends RestControllerTest {
         String filePath = "src/test/resources/testFiles/" + fileName;
         FileInputStream fileInputStream = new FileInputStream(filePath);
         String contentType = "image/jpeg";
-
         MockMultipartFile multipartFile = new MockMultipartFile(name, fileName, contentType, fileInputStream);
 
         String imageURL = String.format("https://{이미지 파일 저장소 주소}/trips/%s/{이미지 파일명}.jpeg", tripId);
-        given(tripImageUpdateService.updateTripImage(eq(tripId), any(), any(ImageFile.class)))
+        given(tripImageUpdateService.updateTripImage(any(TripImageUpdateCommand.class)))
                 .willReturn(imageURL);
 
         mockMvc.perform(multipart(POST, "/api/trips/{tripId}/image/update", tripId)
@@ -65,13 +65,14 @@ public class TripImageUpdateControllerTest extends RestControllerTest {
                 .andExpect(jsonPath("$.tripId").value(tripId))
                 .andExpect(jsonPath("$.imageURL").value(imageURL));
 
-        verify(tripImageUpdateService, times(1)).updateTripImage(eq(tripId), any(), any(ImageFile.class));
+        verify(tripImageUpdateService, times(1)).updateTripImage(any(TripImageUpdateCommand.class));
     }
 
     @Test
     @DisplayName("실제 gif -> 성공")
     public void testRealGifImage() throws Exception {
-        mockingForLoginUserAnnotation();
+        long tripperId = 2L;
+        mockingForLoginUserAnnotation(tripperId);
         Long tripId = 1L;
 
         String name = "image";
@@ -84,8 +85,7 @@ public class TripImageUpdateControllerTest extends RestControllerTest {
         MockMultipartFile multipartFile = new MockMultipartFile(name, fileName, contentType, fileInputStream);
 
         String imageURL = String.format("https://{이미지 파일 저장소 주소}/trips/%s/{이미지 파일명}.gif", tripId);
-        given(tripImageUpdateService.updateTripImage(eq(tripId), any(), any(ImageFile.class)))
-                .willReturn(imageURL);
+        given(tripImageUpdateService.updateTripImage(any(TripImageUpdateCommand.class))).willReturn(imageURL);
 
         mockMvc.perform(multipart(POST, "/api/trips/{tripId}/image/update", tripId)
                         .file(multipartFile)
@@ -98,13 +98,14 @@ public class TripImageUpdateControllerTest extends RestControllerTest {
                 .andExpect(jsonPath("$.tripId").value(tripId))
                 .andExpect(jsonPath("$.imageURL").value(imageURL));
 
-        verify(tripImageUpdateService, times(1)).updateTripImage(eq(tripId), any(), any(ImageFile.class));
+        verify(tripImageUpdateService, times(1)).updateTripImage(any(TripImageUpdateCommand.class));
     }
 
     @Test
     @DisplayName("실제 png -> 성공")
     public void testRealPngImage() throws Exception {
-        mockingForLoginUserAnnotation();
+        long tripperId = 2L;
+        mockingForLoginUserAnnotation(tripperId);
         Long tripId = 1L;
 
         String name = "image";
@@ -112,11 +113,10 @@ public class TripImageUpdateControllerTest extends RestControllerTest {
         String filePath = "src/test/resources/testFiles/" + fileName;
         FileInputStream fileInputStream = new FileInputStream(filePath);
         String contentType = "image/png";
-
         MockMultipartFile multipartFile = new MockMultipartFile(name, fileName, contentType, fileInputStream);
 
         String imageURL = String.format("https://{이미지 파일 저장소 주소}/trips/%s/{이미지 파일명}.png", tripId);
-        given(tripImageUpdateService.updateTripImage(eq(tripId), any(), any(ImageFile.class)))
+        given(tripImageUpdateService.updateTripImage(any(TripImageUpdateCommand.class)))
                 .willReturn(imageURL);
 
         mockMvc.perform(multipart(POST, "/api/trips/{tripId}/image/update", tripId)
@@ -130,13 +130,14 @@ public class TripImageUpdateControllerTest extends RestControllerTest {
                 .andExpect(jsonPath("$.tripId").value(tripId))
                 .andExpect(jsonPath("$.imageURL").value(imageURL));
 
-        verify(tripImageUpdateService, times(1)).updateTripImage(eq(tripId), any(), any(ImageFile.class));
+        verify(tripImageUpdateService, times(1)).updateTripImage(any(TripImageUpdateCommand.class));
     }
 
     @Test
     @DisplayName("실제 webp -> 성공")
     public void testRealWebpImage() throws Exception {
-        mockingForLoginUserAnnotation();
+        Long tripperId = 2L;
+        mockingForLoginUserAnnotation(tripperId);
         Long tripId = 1L;
 
         String name = "image";
@@ -147,7 +148,7 @@ public class TripImageUpdateControllerTest extends RestControllerTest {
 
         MockMultipartFile multipartFile = new MockMultipartFile(name, fileName, contentType, fileInputStream);
         String imageURL = String.format("https://{이미지 파일 저장소 주소}/trips/%s/{이미지 파일명}.webp", tripId);
-        given(tripImageUpdateService.updateTripImage(eq(tripId), any(), any(ImageFile.class)))
+        given(tripImageUpdateService.updateTripImage(any(TripImageUpdateCommand.class)))
                 .willReturn(imageURL);
 
         mockMvc.perform(multipart(POST, "/api/trips/{tripId}/image/update", tripId)
@@ -161,7 +162,7 @@ public class TripImageUpdateControllerTest extends RestControllerTest {
                 .andExpect(jsonPath("$.tripId").value(tripId))
                 .andExpect(jsonPath("$.imageURL").value(imageURL));
 
-        verify(tripImageUpdateService, times(1)).updateTripImage(eq(tripId), any(), any(ImageFile.class));
+        verify(tripImageUpdateService, times(1)).updateTripImage(any(TripImageUpdateCommand.class));
     }
 
     @Test
@@ -186,19 +187,20 @@ public class TripImageUpdateControllerTest extends RestControllerTest {
                 .andExpect(jsonPath("$.errorMessage").exists())
                 .andExpect(jsonPath("$.errorDetail").exists());
 
-        verify(tripImageUpdateService, times(0)).updateTripImage(eq(tripId), any(), any(ImageFile.class));
+        verify(tripImageUpdateService, times(0)).updateTripImage(any(TripImageUpdateCommand.class));
     }
 
     @Test
     @DisplayName("비어 있는 파일 -> 파일 비어 있음 관련 400 에러 발생")
     public void emptyFileTest() throws Exception {
-        mockingForLoginUserAnnotation();
+        long tripperId = 2L;
+        mockingForLoginUserAnnotation(tripperId);
 
         // given
         Long tripId = 1L;
         String name = "image";
         String fileName = "empty-file.jpg";
-        String filePath = "src/test/resources/testFiles/"+fileName;
+        String filePath = "src/test/resources/testFiles/" + fileName;
 
         FileInputStream fileInputStream = new FileInputStream(filePath);
         MockMultipartFile multipartFile = new MockMultipartFile(name, fileInputStream);
@@ -215,7 +217,7 @@ public class TripImageUpdateControllerTest extends RestControllerTest {
                 .andExpect(jsonPath("$.errorMessage").exists())
                 .andExpect(jsonPath("$.errorDetail").exists());
 
-        verify(tripImageUpdateService, times(0)).updateTripImage(eq(tripId), any(), any(ImageFile.class));
+        verify(tripImageUpdateService, times(0)).updateTripImage(any(TripImageUpdateCommand.class));
     }
 
     @Test
@@ -231,7 +233,6 @@ public class TripImageUpdateControllerTest extends RestControllerTest {
         String contentType = "image/jpeg";
 
         MockMultipartFile multipartFile = new MockMultipartFile(name, fileName, contentType, fileInputStream);
-
         mockMvc.perform(multipart(POST, "/api/trips/{tripId}/image/update", invalidTripId)
                         .file(multipartFile)
                         .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)
@@ -244,38 +245,45 @@ public class TripImageUpdateControllerTest extends RestControllerTest {
                 .andExpect(jsonPath("$.errorMessage").exists())
                 .andExpect(jsonPath("$.errorDetail").exists());
 
-        verify(tripImageUpdateService, times(0)).updateTripImage(anyLong(), any(), any(ImageFile.class));
+        verify(tripImageUpdateService, times(0)).updateTripImage(any(TripImageUpdateCommand.class));
     }
 
     @Test
-    @DisplayName("Mutipart 요청이 아님 -> Multipart 관련 400 에러")
+    @DisplayName("파일을 보내지 않음 -> 검증 오류 400 에러")
     public void testNotMultipartRequest() throws Exception {
-        mockingForLoginUserAnnotation();
+        long tripperId = 2L;
+        mockingForLoginUserAnnotation(tripperId);
         Long tripId = 1L;
 
-        mockMvc.perform(post("/api/trips/{tripId}/image/update" , tripId)
+        mockMvc.perform(post("/api/trips/{tripId}/image/update", tripId)
                         .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                 )
                 .andDo(print())
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.errorCode").value("request-0005"))
+                .andExpect(jsonPath("$.errorCode").value("request-0003"))
                 .andExpect(jsonPath("$.errorMessage").exists())
-                .andExpect(jsonPath("$.errorDetail").exists());
+                .andExpect(jsonPath("$.errorDetail").exists())
+                .andExpect(jsonPath("$.errors").isNotEmpty())
+                .andExpect(jsonPath("$.errors[0].errorCode").value("file-0001"))
+                .andExpect(jsonPath("$.errors[0].errorMessage").exists())
+                .andExpect(jsonPath("$.errors[0].errorDetail").exists())
+                .andExpect(jsonPath("$.errors[0].field").value("image"));
 
-        verify(tripImageUpdateService, times(0)).updateTripImage(eq(tripId), any(), any(ImageFile.class));
+        verify(tripImageUpdateService, times(0)).updateTripImage(any(TripImageUpdateCommand.class));
     }
 
     @Test
     @DisplayName("MultipartFile에 파일 이름 없음 -> NoFileName 400 에러 발생")
     public void noFileName() throws Exception {
-        mockingForLoginUserAnnotation();
+        long tripperId = 2L;
+        mockingForLoginUserAnnotation(tripperId);
         Long tripId = 1L;
 
         String name = "image";
         String fileName = "test-jpeg-image.jpeg";
-        String filePath = "src/test/resources/testFiles/"+fileName;
+        String filePath = "src/test/resources/testFiles/" + fileName;
         FileInputStream fileInputStream = new FileInputStream(filePath);
 
         // MultipartFile에 파일 이름 정보가 전달되지 않은 특수상황 가정
@@ -293,18 +301,19 @@ public class TripImageUpdateControllerTest extends RestControllerTest {
                 .andExpect(jsonPath("$.errorMessage").exists())
                 .andExpect(jsonPath("$.errorDetail").exists());
 
-        verify(tripImageUpdateService, times(0)).updateTripImage(eq(tripId), any(), any(ImageFile.class));
+        verify(tripImageUpdateService, times(0)).updateTripImage(any(TripImageUpdateCommand.class));
     }
 
     @Test
     @DisplayName("확장자 없음 -> NoFileExtension 400 예외 발생")
     public void noFileExtension() throws Exception {
-        mockingForLoginUserAnnotation();
+        long tripperId = 2L;
+        mockingForLoginUserAnnotation(tripperId);
         Long tripId = 1L;
 
         String name = "image";
         String fileName = "no-extension"; // 확장자 없음
-        String filePath = "src/test/resources/testFiles/"+fileName;
+        String filePath = "src/test/resources/testFiles/" + fileName;
         FileInputStream fileInputStream = new FileInputStream(filePath);
         String contentType = "application/octet-stream";
 
@@ -322,18 +331,19 @@ public class TripImageUpdateControllerTest extends RestControllerTest {
                 .andExpect(jsonPath("$.errorMessage").exists())
                 .andExpect(jsonPath("$.errorDetail").exists());
 
-        verify(tripImageUpdateService, times(0)).updateTripImage(eq(tripId), any(), any(ImageFile.class));
+        verify(tripImageUpdateService, times(0)).updateTripImage(any(TripImageUpdateCommand.class));
     }
 
     @Test
     @DisplayName("이미지 파일 확장자 아님 -> NotImageFileExtension 400 에러 발생")
     public void notImageFileExtension() throws Exception {
-        mockingForLoginUserAnnotation();
+        long tripperId = 2L;
+        mockingForLoginUserAnnotation(tripperId);
         Long tripId = 1L;
 
         String name = "image";
         String fileName = "not-image-extension.txt"; // 확장자가 이미지가 아님
-        String filePath = "src/test/resources/testFiles/"+fileName;
+        String filePath = "src/test/resources/testFiles/" + fileName;
         FileInputStream fileInputStream = new FileInputStream(filePath);
         String contentType = "text/plain";
 
@@ -351,23 +361,23 @@ public class TripImageUpdateControllerTest extends RestControllerTest {
                 .andExpect(jsonPath("$.errorMessage").exists())
                 .andExpect(jsonPath("$.errorDetail").exists());
 
-        verify(tripImageUpdateService, times(0)).updateTripImage(eq(tripId), any(), any(ImageFile.class));
+        verify(tripImageUpdateService, times(0)).updateTripImage(any(TripImageUpdateCommand.class));
     }
 
     @Test
     @DisplayName("이미지 아님 -> NotImageFile 400 예외 발생")
     public void noImageFile() throws Exception {
-        mockingForLoginUserAnnotation();
+        long tripperId = 2L;
+        mockingForLoginUserAnnotation(tripperId);
         Long tripId = 1L;
 
         String name = "image";
         String fileName = "no-image.jpg"; // 확장자는 jpg인데 실제로 이미지가 아님
-        String filePath = "src/test/resources/testFiles/"+fileName;
+        String filePath = "src/test/resources/testFiles/" + fileName;
         FileInputStream fileInputStream = new FileInputStream(filePath);
         String contentType = "image/jpg";
 
         MockMultipartFile multipartFile = new MockMultipartFile(name, fileName, contentType, fileInputStream);
-
 
         mockMvc.perform(multipart(POST, "/api/trips/{tripId}/image/update", tripId)
                         .file(multipartFile)
@@ -381,6 +391,6 @@ public class TripImageUpdateControllerTest extends RestControllerTest {
                 .andExpect(jsonPath("$.errorMessage").exists())
                 .andExpect(jsonPath("$.errorDetail").exists());
 
-        verify(tripImageUpdateService, times(0)).updateTripImage(eq(tripId), any(), any(ImageFile.class));
+        verify(tripImageUpdateService, times(0)).updateTripImage(any(TripImageUpdateCommand.class));
     }
 }

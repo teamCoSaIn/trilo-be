@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -65,6 +66,22 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
                 .body(BasicErrorResponse.of(errorCode, errorMessage, errorDetail));
     }
 
+    @Override
+    protected ResponseEntity<Object> handleBindException(BindException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+        BindingResult bindingResult = ex.getBindingResult();
+
+        String errorCode = "request-0003";
+        String errorMessage = getMessage(errorCode + ".message");
+        String errorDetail = getMessage(errorCode + ".detail");
+
+        var response = ControllerInputValidationErrorResponse.of(errorCode, errorMessage, errorDetail);
+
+        addFieldErrorsToErrorResponse(response, bindingResult.getFieldErrors());
+        return ResponseEntity
+                .badRequest()
+                .body(response);
+    }
+
     /**
      * BeanValidation 후속 예외 처리 (@Valid) - 컨트롤러 검증
      */
@@ -86,7 +103,7 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
 
     private void addFieldErrorsToErrorResponse(ControllerInputValidationErrorResponse response, List<FieldError> fieldErrors) {
         for (FieldError error : fieldErrors) {
-            String errorCode = getMessage(error.getCode());
+            String errorCode = getMessage(error.getDefaultMessage());
             String errorMessage = getMessage(errorCode + ".message");
             String errorDetail = getMessage(errorCode + ".detail");
             String field = error.getField();
