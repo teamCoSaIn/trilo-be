@@ -38,6 +38,29 @@ public class DayColorUpdateServiceTest {
     private DayRepository dayRepository;
 
     @Test
+    @DisplayName("색상 수정 성공 테스트")
+    public void successTest() {
+        Long dayId = 1L;
+        Long tripId = 2L;
+        Long tripOwnerId = 3L;
+
+        DayColor beforeDayColor = DayColor.BLACK;
+        String requestDayColorName = "RED";
+        var command = DayColorUpdateCommand.of(dayId, tripOwnerId, requestDayColorName);
+
+        Day day = fixtureDayForColorTest(tripId, tripOwnerId, beforeDayColor);
+        given(dayRepository.findByIdWithTrip(eq(dayId))).willReturn(Optional.of(day));
+
+        // when
+        dayColorUpdateService.updateDayColor(command);
+
+        // then
+        verify(dayRepository, times(1)).findByIdWithTrip(eq(dayId));
+        assertThat(day.getDayColor()).isSameAs(DayColor.of(requestDayColorName));
+    }
+
+
+    @Test
     @DisplayName("존재하지 않는 Day의 식별자 -> DayNotFoundException")
     public void dayNotFoundTest() {
         // given
@@ -45,12 +68,12 @@ public class DayColorUpdateServiceTest {
         Long dayId = 1L;
         Long tripperId = 2L;
         String rawColorName = "RED";
-        DayColorUpdateCommand updateCommand = new DayColorUpdateCommand(DayColor.of(rawColorName));
+        var command = DayColorUpdateCommand.of(dayId, tripperId, rawColorName);
 
         given(dayRepository.findByIdWithTrip(eq(dayId))).willReturn(Optional.empty());
 
         // when & then
-        assertThatThrownBy(() -> dayColorUpdateService.updateDayColor(dayId, tripperId, updateCommand))
+        assertThatThrownBy(() -> dayColorUpdateService.updateDayColor(command))
                 .isInstanceOf(DayNotFoundException.class);
 
         verify(dayRepository, times(1)).findByIdWithTrip(eq(dayId));
@@ -66,40 +89,17 @@ public class DayColorUpdateServiceTest {
         Long invalidTripperId = 4L;
 
         DayColor beforeDayColor = DayColor.BLACK;
-        DayColor requestDayColor = DayColor.RED;
+        String requestDayColorName = "RED";
         Day day = fixtureDayForColorTest(tripId, tripOwnerId, beforeDayColor);
-        DayColorUpdateCommand updateCommand = new DayColorUpdateCommand(requestDayColor);
+        var command = DayColorUpdateCommand.of(dayId, invalidTripperId, requestDayColorName);
 
         given(dayRepository.findByIdWithTrip(eq(dayId))).willReturn(Optional.of(day));
 
         // when & then
-        assertThatThrownBy(() -> dayColorUpdateService.updateDayColor(dayId, invalidTripperId, updateCommand))
+        assertThatThrownBy(() -> dayColorUpdateService.updateDayColor(command))
                 .isInstanceOf(NoDayUpdateAuthorityException.class);
 
         verify(dayRepository, times(1)).findByIdWithTrip(eq(dayId));
-    }
-
-    @Test
-    @DisplayName("색상 수정 성공 테스트")
-    public void successTest() {
-        Long dayId = 1L;
-        Long tripId = 2L;
-        Long tripOwnerId = 3L;
-
-        DayColor beforeDayColor = DayColor.BLACK;
-        DayColor requestDayColor = DayColor.RED;
-
-        Day day = fixtureDayForColorTest(tripId, tripOwnerId, beforeDayColor);
-        DayColorUpdateCommand updateCommand = new DayColorUpdateCommand(requestDayColor);
-
-        given(dayRepository.findByIdWithTrip(eq(dayId))).willReturn(Optional.of(day));
-
-        // when
-        dayColorUpdateService.updateDayColor(dayId, tripOwnerId, updateCommand);
-
-        // then
-        verify(dayRepository, times(1)).findByIdWithTrip(eq(dayId));
-        assertThat(day.getDayColor()).isSameAs(requestDayColor);
     }
 
     private Day fixtureDayForColorTest(Long tripId, Long tripperId, DayColor dayColor) {

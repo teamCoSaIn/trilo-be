@@ -3,10 +3,8 @@ package com.cosain.trilo.unit.trip.application.day.dto.factory;
 import com.cosain.trilo.common.exception.CustomException;
 import com.cosain.trilo.common.exception.CustomValidationException;
 import com.cosain.trilo.trip.application.day.service.day_color_update.DayColorUpdateCommand;
-import com.cosain.trilo.trip.application.day.service.day_color_update.DayColorUpdateCommandFactory;
 import com.cosain.trilo.trip.domain.exception.InvalidDayColorNameException;
 import com.cosain.trilo.trip.domain.vo.DayColor;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -17,15 +15,8 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowableOfType;
 
-@DisplayName("DayColorUpdateCommandFactory 테스트")
-public class DayColorUpdateCommandFactoryTest {
-
-    private DayColorUpdateCommandFactory dayColorUpdateCommandFactory;
-
-    @BeforeEach
-    void setUp() {
-        this.dayColorUpdateCommandFactory = new DayColorUpdateCommandFactory();
-    }
+@DisplayName("DayColorUpdateCommand 테스트")
+public class DayColorUpdateCommandTest {
 
     @DisplayName("정상적인 색상명 -> command 생성됨")
     @ValueSource(strings = {"BLACK", "RED", "Blue", "light_GREEN"})
@@ -34,7 +25,7 @@ public class DayColorUpdateCommandFactoryTest {
         // given : rawColorName
 
         // when
-        DayColorUpdateCommand command = dayColorUpdateCommandFactory.createCommand(rawColorName);
+        var command = makeCommand(rawColorName);
 
         // then
         assertThat(command.getDayColor()).isNotNull();
@@ -51,7 +42,7 @@ public class DayColorUpdateCommandFactoryTest {
 
         // when
         CustomValidationException cve = catchThrowableOfType(
-                () -> dayColorUpdateCommandFactory.createCommand(rawColorName),
+                () -> makeCommand(rawColorName),
                 CustomValidationException.class);
 
         // then
@@ -71,7 +62,7 @@ public class DayColorUpdateCommandFactoryTest {
 
         // when
         CustomValidationException cve = catchThrowableOfType(
-                () -> dayColorUpdateCommandFactory.createCommand(rawColorName),
+                () -> makeCommand(rawColorName),
                 CustomValidationException.class);
 
         // then
@@ -82,4 +73,9 @@ public class DayColorUpdateCommandFactoryTest {
         assertThat(exceptions.get(0)).isInstanceOf(InvalidDayColorNameException.class);
     }
 
+    private DayColorUpdateCommand makeCommand(String colorName) {
+        long dayId = 1L;
+        long requestTripperId = 1L;
+        return DayColorUpdateCommand.of(dayId, requestTripperId, colorName);
+    }
 }

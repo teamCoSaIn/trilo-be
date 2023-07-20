@@ -15,10 +15,10 @@ public class DayColorUpdateService {
     private final DayRepository dayRepository;
 
     @Transactional
-    public void updateDayColor(Long dayId, Long tripperId, DayColorUpdateCommand command) {
-        Day day = findDay(dayId);
+    public void updateDayColor(DayColorUpdateCommand command) {
+        Day day = findDay(command.getDayId());
 
-        validateDayUpdateAuthority(day, tripperId);
+        validateDayUpdateAuthority(day, command.getRequestTripperId());
         day.changeColor(command.getDayColor());
     }
 
@@ -27,10 +27,10 @@ public class DayColorUpdateService {
                 .orElseThrow(() -> new DayNotFoundException("일치하는 식별자의 day를 찾지 못 함"));
     }
 
-    private void validateDayUpdateAuthority(Day day, Long tripperId) {
+    private void validateDayUpdateAuthority(Day day, Long requestTripperId) {
         Long realDayOwnerId = day.getTrip().getTripperId();
 
-        if (!tripperId.equals(realDayOwnerId)) {
+        if (!requestTripperId.equals(realDayOwnerId)) {
             throw new NoDayUpdateAuthorityException("Day를 수정할 권한이 없는 사람이 수정하려 시도함");
         }
     }

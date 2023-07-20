@@ -4,7 +4,6 @@ import com.cosain.trilo.auth.application.token.UserPayload;
 import com.cosain.trilo.auth.presentation.Login;
 import com.cosain.trilo.auth.presentation.LoginUser;
 import com.cosain.trilo.trip.application.day.service.day_color_update.DayColorUpdateCommand;
-import com.cosain.trilo.trip.application.day.service.day_color_update.DayColorUpdateCommandFactory;
 import com.cosain.trilo.trip.application.day.service.day_color_update.DayColorUpdateService;
 import com.cosain.trilo.trip.presentation.day.dto.DayColorUpdateRequest;
 import com.cosain.trilo.trip.presentation.day.dto.DayColorUpdateResponse;
@@ -19,7 +18,6 @@ import org.springframework.web.bind.annotation.*;
 public class DayColorUpdateController {
 
     private final DayColorUpdateService dayColorUpdateService;
-    private final DayColorUpdateCommandFactory dayColorUpdateCommandFactory;
 
     @PutMapping("/api/days/{dayId}/color")
     @ResponseStatus(HttpStatus.OK)
@@ -29,11 +27,10 @@ public class DayColorUpdateController {
             @LoginUser UserPayload userPayload,
             @RequestBody DayColorUpdateRequest request) {
 
-        Long tripperId = userPayload.getId();
+        long requestTripperId = userPayload.getId();
 
-        DayColorUpdateCommand command = dayColorUpdateCommandFactory.createCommand(request.getColorName());
-
-        dayColorUpdateService.updateDayColor(dayId, tripperId, command);
+        var command = DayColorUpdateCommand.of(dayId, requestTripperId, request.getColorName());
+        dayColorUpdateService.updateDayColor(command);
         return new DayColorUpdateResponse(dayId);
     }
 }
