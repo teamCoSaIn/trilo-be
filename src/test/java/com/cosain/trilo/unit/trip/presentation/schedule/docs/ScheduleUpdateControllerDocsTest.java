@@ -91,7 +91,7 @@ public class ScheduleUpdateControllerDocsTest extends RestDocsTestSupport {
                                 fieldWithPath("title")
                                         .type(STRING)
                                         .description("일정의 제목")
-                                        .attributes(key("constraints").value("null 일 수 없으며, 길이는 20자 이하까지 허용됩니다. (공백, 빈 문자열 허용)")),
+                                        .attributes(key("constraints").value("null 일 수 없으며, 길이는 35자 이하까지 허용됩니다. (공백, 빈 문자열 허용)")),
                                 fieldWithPath("content")
                                         .type(STRING)
                                         .description("일정의 본문")

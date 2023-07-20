@@ -136,13 +136,13 @@ public class ScheduleCreateCommandFactoryTest {
         assertThat(cve.getExceptions().get(0)).isInstanceOf(InvalidScheduleTitleException.class);
     }
 
-    @DisplayName("제목이 20자보다 긴 문자열 -> 검증 예외 발생")
+    @DisplayName("제목이 35자보다 긴 문자열 -> 검증 예외 발생")
     @Test
     void tooLongScheduleTitleTest() {
         // given
         Long dayId = 1L;
         Long tripId = 1L;
-        String rawScheduleTitle = "가".repeat(21);
+        String rawScheduleTitle = "가".repeat(36);
         String placeId = "place-id";
         String placeName = "place-name";
         Double latitude = 39.123;

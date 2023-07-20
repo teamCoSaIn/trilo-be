@@ -44,11 +44,11 @@ public class ScheduleUpdateCommandFactoryTest {
         assertThat(scheduleUpdateCommand.getScheduleTime()).isEqualTo(ScheduleTime.of(startTime, endTime));
     }
 
-    @DisplayName("제목이 20자보다 긴 문자열 -> 검증 예외 발생")
+    @DisplayName("제목이 35자보다 긴 문자열 -> 검증 예외 발생")
     @Test
     void tooLongScheduleTitleTest() {
         // given
-        String rawScheduleTitle = "가".repeat(21);
+        String rawScheduleTitle = "가".repeat(36);
         String rawScheduleContent = "일정 본문";
         LocalTime startTime = LocalTime.of(13,0);
         LocalTime endTime = LocalTime.of(13,5);
