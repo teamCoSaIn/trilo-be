@@ -39,10 +39,10 @@ public class ScheduleTitleTest {
     }
 
     @Test
-    @DisplayName("20자보다 긴 제목 -> InvalidScheduleTitleException 발생")
+    @DisplayName("35자보다 긴 제목 -> InvalidScheduleTitleException 발생")
     void tooLongScheduleTitleTest() {
         // given
-        String tooLongTitle = "A".repeat(21);
+        String tooLongTitle = "A".repeat(36);
 
         // when
         assertThatThrownBy(() -> ScheduleTitle.of(tooLongTitle))

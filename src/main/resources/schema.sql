@@ -38,7 +38,7 @@ CREATE TABLE IF NOT EXISTS `trilo_db`.`schedules` (
     trip_id          BIGINT      NOT NULL,
     day_id           BIGINT,
     schedule_index   BIGINT      NOT NULL,
-    schedule_title   VARCHAR(20) NOT NULL,
+    schedule_title   VARCHAR(35) NOT NULL,
     schedule_content TEXT        NOT NULL,
     place_id         VARCHAR(255),
     place_name       VARCHAR(255),

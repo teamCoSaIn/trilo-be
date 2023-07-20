@@ -12,7 +12,7 @@ import lombok.*;
 @Embeddable
 public class ScheduleTitle {
 
-    private static final int MAX_LENGTH = 20;
+    private static final int MAX_LENGTH = 35;
 
     @Column(name = "schedule_title")
     private String value;

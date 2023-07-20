@@ -406,13 +406,13 @@ class ScheduleCreateIntegrationTest extends IntegrationTest {
                 .andExpect(jsonPath("$.errors[0].errorDetail").exists());
     }
     @Test
-    @DisplayName("20자를 넘는 일정 제목 -> 입력 검증 실패 400 예외")
+    @DisplayName("35자를 넘는 일정 제목 -> 입력 검증 실패 400 예외")
     public void tooLongScheduleTitle() throws Exception {
         // given
         User user = setupMockNaverUser();
         Trip trip = setupUndecidedTrip(user.getId());
 
-        String tooLongTitle = "가".repeat(21);
+        String tooLongTitle = "가".repeat(36);
         var request = defaultRequestBuilder(null, trip.getId()).title(tooLongTitle).build();
         flushAndClear();
 
