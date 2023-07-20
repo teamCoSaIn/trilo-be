@@ -2,9 +2,7 @@ package com.cosain.trilo.unit.trip.presentation.trip;
 
 import com.cosain.trilo.support.RestControllerTest;
 import com.cosain.trilo.trip.application.trip.service.trip_title_update.TripTitleUpdateCommand;
-import com.cosain.trilo.trip.application.trip.service.trip_title_update.TripTitleUpdateCommandFactory;
 import com.cosain.trilo.trip.application.trip.service.trip_title_update.TripTitleUpdateService;
-import com.cosain.trilo.trip.domain.vo.TripTitle;
 import com.cosain.trilo.trip.presentation.trip.TripTitleUpdateController;
 import com.cosain.trilo.trip.presentation.trip.dto.request.TripTitleUpdateRequest;
 import org.junit.jupiter.api.DisplayName;
@@ -18,7 +16,6 @@ import java.nio.charset.StandardCharsets;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -34,25 +31,21 @@ public class TripTitleUpdateControllerTest extends RestControllerTest {
     @MockBean
     private TripTitleUpdateService tripTitleUpdateService;
 
-    @MockBean
-    private TripTitleUpdateCommandFactory tripTitleUpdateCommandFactory;
-
     private final String ACCESS_TOKEN = "Bearer accessToken";
 
     @Test
     @DisplayName("인증된 사용자 요청 -> 성공")
     public void updateTripTitle_with_authorizedUser() throws Exception {
         // given
-        mockingForLoginUserAnnotation();
+        long requestTripperId = 2L;
+        mockingForLoginUserAnnotation(requestTripperId);
 
         Long tripId = 1L;
         String rawTitle = "변경할 제목";
+        var request = new TripTitleUpdateRequest(rawTitle);
+        var command = TripTitleUpdateCommand.of(tripId, requestTripperId, rawTitle);
 
-        TripTitleUpdateRequest request = new TripTitleUpdateRequest(rawTitle);
-
-        given(tripTitleUpdateCommandFactory.createCommand(eq(rawTitle)))
-                .willReturn(new TripTitleUpdateCommand(TripTitle.of(rawTitle)));
-        willDoNothing().given(tripTitleUpdateService).updateTripTitle(eq(tripId), any(), any(TripTitleUpdateCommand.class));
+        willDoNothing().given(tripTitleUpdateService).updateTripTitle(eq(command));
 
 
         mockMvc.perform(put("/api/trips/{tripId}/title", tripId)
@@ -65,21 +58,16 @@ public class TripTitleUpdateControllerTest extends RestControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.tripId").value(tripId));
 
-        verify(tripTitleUpdateService, times(1)).updateTripTitle(eq(tripId), any(), any(TripTitleUpdateCommand.class));
-        verify(tripTitleUpdateCommandFactory, times(1)).createCommand(eq(rawTitle));
+        verify(tripTitleUpdateService, times(1)).updateTripTitle(eq(command));
     }
 
     @Test
     @DisplayName("미인증 사용자 요청 -> 인증 실패 401")
     public void updateTripTitle_with_unauthorizedUser() throws Exception {
         // given
-        mockingForLoginUserAnnotation();
-
         Long tripId = 1L;
         String rawTitle = "변경할 제목";
-
-        TripTitleUpdateRequest request = new TripTitleUpdateRequest(rawTitle);
-
+        var request = new TripTitleUpdateRequest(rawTitle);
         mockMvc.perform(put("/api/trips/{tripId}/title", tripId)
                         .content(createJson(request))
                         .characterEncoding(StandardCharsets.UTF_8)
@@ -91,8 +79,7 @@ public class TripTitleUpdateControllerTest extends RestControllerTest {
                 .andExpect(jsonPath("$.errorMessage").exists())
                 .andExpect(jsonPath("$.errorDetail").exists());
 
-        verify(tripTitleUpdateService, times(0)).updateTripTitle(eq(tripId), any(), any(TripTitleUpdateCommand.class));
-        verify(tripTitleUpdateCommandFactory, times(0)).createCommand(eq(rawTitle));
+        verify(tripTitleUpdateService, times(0)).updateTripTitle(any(TripTitleUpdateCommand.class));
     }
 
     @Test
@@ -117,6 +104,8 @@ public class TripTitleUpdateControllerTest extends RestControllerTest {
                 .andExpect(jsonPath("$.errorCode").value("request-0004"))
                 .andExpect(jsonPath("$.errorMessage").exists())
                 .andExpect(jsonPath("$.errorDetail").exists());
+
+        verify(tripTitleUpdateService, times(0)).updateTripTitle(any(TripTitleUpdateCommand.class));
     }
 
     @Test
@@ -139,8 +128,7 @@ public class TripTitleUpdateControllerTest extends RestControllerTest {
                 .andExpect(jsonPath("$.errorMessage").exists())
                 .andExpect(jsonPath("$.errorDetail").exists());
 
-        verify(tripTitleUpdateService, times(0)).updateTripTitle(eq(tripId), any(), any(TripTitleUpdateCommand.class));
-        verify(tripTitleUpdateCommandFactory, times(0)).createCommand(any());
+        verify(tripTitleUpdateService, times(0)).updateTripTitle(any(TripTitleUpdateCommand.class));
     }
 
     @Test
@@ -167,9 +155,7 @@ public class TripTitleUpdateControllerTest extends RestControllerTest {
                 .andExpect(jsonPath("$.errorMessage").exists())
                 .andExpect(jsonPath("$.errorDetail").exists());
 
-
-        verify(tripTitleUpdateService, times(0)).updateTripTitle(eq(tripId), any(), any(TripTitleUpdateCommand.class));
-        verify(tripTitleUpdateCommandFactory, times(0)).createCommand(any());
+        verify(tripTitleUpdateService, times(0)).updateTripTitle(any(TripTitleUpdateCommand.class));
     }
 
 }

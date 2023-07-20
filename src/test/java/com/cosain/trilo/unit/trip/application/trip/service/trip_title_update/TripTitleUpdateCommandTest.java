@@ -3,11 +3,9 @@ package com.cosain.trilo.unit.trip.application.trip.service.trip_title_update;
 
 import com.cosain.trilo.common.exception.CustomValidationException;
 import com.cosain.trilo.trip.application.trip.service.trip_title_update.TripTitleUpdateCommand;
-import com.cosain.trilo.trip.application.trip.service.trip_title_update.TripTitleUpdateCommandFactory;
 import com.cosain.trilo.trip.domain.exception.InvalidTripTitleException;
 import com.cosain.trilo.trip.domain.vo.TripTitle;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -16,14 +14,7 @@ import static org.assertj.core.api.Assertions.catchThrowableOfType;
 
 @Slf4j
 @DisplayName("TripTitleUpdateCommandFactory 테스트")
-public class TripTitleUpdateCommandFactoryTest {
-
-    private TripTitleUpdateCommandFactory tripTitleUpdateCommandFactory;
-
-    @BeforeEach
-    void setUp() {
-        this.tripTitleUpdateCommandFactory = new TripTitleUpdateCommandFactory();
-    }
+public class TripTitleUpdateCommandTest {
 
     @DisplayName("올바른 길이의 제목 -> 정상 생성")
     @Test
@@ -32,7 +23,7 @@ public class TripTitleUpdateCommandFactoryTest {
         String normalTitle = "제목";
 
         // when
-        TripTitleUpdateCommand command = tripTitleUpdateCommandFactory.createCommand(normalTitle);
+        var command = makeCommand(normalTitle);
 
         // then
         assertThat(command).isNotNull();
@@ -47,7 +38,7 @@ public class TripTitleUpdateCommandFactoryTest {
 
         // when
         CustomValidationException cve = catchThrowableOfType(
-                () -> tripTitleUpdateCommandFactory.createCommand(nullTitle),
+                () -> makeCommand(nullTitle),
                 CustomValidationException.class);
 
         // then
@@ -64,7 +55,7 @@ public class TripTitleUpdateCommandFactoryTest {
 
         // when
         CustomValidationException cve = catchThrowableOfType(
-                () -> tripTitleUpdateCommandFactory.createCommand(emptyTitle),
+                () -> makeCommand(emptyTitle),
                 CustomValidationException.class);
 
         // then
@@ -81,7 +72,7 @@ public class TripTitleUpdateCommandFactoryTest {
 
         // when
         CustomValidationException cve = catchThrowableOfType(
-                () -> tripTitleUpdateCommandFactory.createCommand(whiteSpaceTitle),
+                () -> makeCommand(whiteSpaceTitle),
                 CustomValidationException.class);
 
         // then
@@ -98,13 +89,19 @@ public class TripTitleUpdateCommandFactoryTest {
 
         // when
         CustomValidationException cve = catchThrowableOfType(
-                () -> tripTitleUpdateCommandFactory.createCommand(tooLongTitle),
+                () -> makeCommand(tooLongTitle),
                 CustomValidationException.class);
 
         // then
         assertThat(cve).isNotNull();
         assertThat(cve.getExceptions()).hasSize(1);
         assertThat(cve.getExceptions().get(0)).isInstanceOf(InvalidTripTitleException.class);
+    }
+
+    private TripTitleUpdateCommand makeCommand(String rawTitle) {
+        long tripId = 1L;
+        long tripperId = 2L;
+        return TripTitleUpdateCommand.of(tripId, tripperId, rawTitle);
     }
 
 }

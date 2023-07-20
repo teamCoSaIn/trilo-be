@@ -2,9 +2,7 @@ package com.cosain.trilo.unit.trip.presentation.trip.docs;
 
 import com.cosain.trilo.support.RestDocsTestSupport;
 import com.cosain.trilo.trip.application.trip.service.trip_title_update.TripTitleUpdateCommand;
-import com.cosain.trilo.trip.application.trip.service.trip_title_update.TripTitleUpdateCommandFactory;
 import com.cosain.trilo.trip.application.trip.service.trip_title_update.TripTitleUpdateService;
-import com.cosain.trilo.trip.domain.vo.TripTitle;
 import com.cosain.trilo.trip.presentation.trip.TripTitleUpdateController;
 import com.cosain.trilo.trip.presentation.trip.dto.request.TripTitleUpdateRequest;
 import org.junit.jupiter.api.DisplayName;
@@ -16,9 +14,7 @@ import org.springframework.http.MediaType;
 
 import java.nio.charset.StandardCharsets;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -42,25 +38,22 @@ public class TripTitleUpdateControllerDocsTest extends RestDocsTestSupport {
     @MockBean
     private TripTitleUpdateService tripTitleUpdateService;
 
-    @MockBean
-    private TripTitleUpdateCommandFactory tripTitleUpdateCommandFactory;
-
     private final String ACCESS_TOKEN = "Bearer accessToken";
 
     @Test
     @DisplayName("인증된 사용자 요청 -> 성공")
     public void updateTripTitle_with_authorizedUser() throws Exception {
         // given
-        mockingForLoginUserAnnotation();
+        long requestTripperId = 2L;
+        mockingForLoginUserAnnotation(requestTripperId);
 
         Long tripId = 1L;
         String rawTitle = "변경할 제목";
+        var request = new TripTitleUpdateRequest(rawTitle);
+        var command = TripTitleUpdateCommand.of(tripId, requestTripperId, rawTitle);
 
-        TripTitleUpdateRequest request = new TripTitleUpdateRequest(rawTitle);
+        willDoNothing().given(tripTitleUpdateService).updateTripTitle(eq(command));
 
-        given(tripTitleUpdateCommandFactory.createCommand(eq(rawTitle)))
-                .willReturn(new TripTitleUpdateCommand(TripTitle.of(rawTitle)));
-        willDoNothing().given(tripTitleUpdateService).updateTripTitle(eq(tripId), any(), any(TripTitleUpdateCommand.class));
 
         mockMvc.perform(put("/api/trips/{tripId}/title", tripId)
                         .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)
@@ -93,7 +86,6 @@ public class TripTitleUpdateControllerDocsTest extends RestDocsTestSupport {
                         )
                 ));
 
-        verify(tripTitleUpdateService, times(1)).updateTripTitle(eq(tripId), any(), any(TripTitleUpdateCommand.class));
-        verify(tripTitleUpdateCommandFactory, times(1)).createCommand(eq(rawTitle));
+        verify(tripTitleUpdateService, times(1)).updateTripTitle(eq(command));
     }
 }
