@@ -7,18 +7,16 @@ import com.cosain.trilo.fixture.UserFixture;
 import com.cosain.trilo.support.RepositoryTest;
 import com.cosain.trilo.trip.application.day.service.day_search.ScheduleSummary;
 import com.cosain.trilo.trip.application.schedule.service.schedule_detail_search.ScheduleDetail;
+import com.cosain.trilo.trip.application.trip.service.temporary_search.TempScheduleListQueryParam;
 import com.cosain.trilo.trip.domain.entity.Schedule;
 import com.cosain.trilo.trip.domain.entity.Trip;
 import com.cosain.trilo.trip.infra.dao.ScheduleQueryDAOImpl;
-import com.cosain.trilo.trip.presentation.trip.dto.request.TempSchedulePageCondition;
 import com.cosain.trilo.user.domain.User;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Slice;
 import org.springframework.test.annotation.DirtiesContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -64,58 +62,40 @@ public class ScheduleQueryDAOImplTest {
     @DisplayName("임시 보관함 조회 시")
     class findTemporaryScheduleListByTripIdTest{
 
+        //TODO: cursor ScheduleId 없을 때에 대한 테스트 필요
+
         @Test
         @DirtiesContext
-        @DisplayName("커서가 가리키는 일정 이후의 일정들이 size 만큼 조회된다.")
-        void findTest(){
+        @DisplayName("커서가 가리키는 일정 이후의 일정들이 size 만큼, ScheduleIndex에 오름차순으로 조회된다.")
+        void find_With_CursorTest(){
             // given
             Long tripperId = setupTripperId();
             Trip trip = setupUndecidedTripAndPersist(tripperId);
 
             Schedule schedule1 = setupTemporaryScheduleAndPersist(trip, 10000L);
-            Schedule schedule2 = setupTemporaryScheduleAndPersist(trip, 20000L);
-            Schedule schedule3 = setupTemporaryScheduleAndPersist(trip, 30000L);
-            Schedule schedule4 = setupTemporaryScheduleAndPersist(trip, 40000L);
+            Schedule schedule2 = setupTemporaryScheduleAndPersist(trip, 50000L);
+            Schedule schedule3 = setupTemporaryScheduleAndPersist(trip, 40000L);
+            Schedule schedule4 = setupTemporaryScheduleAndPersist(trip, 30000L);
+            Schedule schedule5 = setupTemporaryScheduleAndPersist(trip, 20000L);
             em.flush();
             em.clear();
 
             Long tripId = trip.getId();
             Long cursorScheduleId = schedule1.getId();
-            TempSchedulePageCondition tempSchedulePageCondition = new TempSchedulePageCondition(cursorScheduleId);
+            int pageSize = 3;
+
+            var queryParam = TempScheduleListQueryParam.of(tripId, cursorScheduleId, pageSize);
 
             // when
-            Slice<ScheduleSummary> scheduleSummaries = scheduleQueryDAOImpl.findTemporaryScheduleListByTripId(tripId,tempSchedulePageCondition,PageRequest.ofSize(3));
+            var result = scheduleQueryDAOImpl.findTemporarySchedules(queryParam);
 
             // then
-            assertThat(scheduleSummaries.getSize()).isEqualTo(3);
+            assertTrue(result.isHasNext());
+            assertThat(result.getTempSchedules().size()).isEqualTo(3);
+            assertThat(result.getTempSchedules()).map(ScheduleSummary::getScheduleId)
+                    .containsExactly(schedule5.getId(), schedule4.getId(), schedule3.getId());
         }
 
-        @Test
-        @DisplayName("scheduleIndex 기준 오름차순으로 조회된다.")
-        void sortTest(){
-            // given
-            Long tripperId = setupTripperId();
-            Trip trip = setupUndecidedTripAndPersist(tripperId);
-
-            Schedule schedule1 = setupTemporaryScheduleAndPersist(trip, 10000L);
-            Schedule schedule2 = setupTemporaryScheduleAndPersist(trip, 20000L);
-            Schedule schedule3 = setupTemporaryScheduleAndPersist(trip, 30000L);
-            em.flush();
-            em.clear();
-
-            Long tripId = trip.getId();
-            Long cursorScheduleId = schedule1.getId();
-            TempSchedulePageCondition tempSchedulePageCondition = new TempSchedulePageCondition(cursorScheduleId);
-
-            // when
-            Slice<ScheduleSummary> scheduleSummaries = scheduleQueryDAOImpl.findTemporaryScheduleListByTripId(tripId, tempSchedulePageCondition, PageRequest.ofSize(2));
-
-            // then
-            assertThat(scheduleSummaries.getSize()).isEqualTo(2);
-            assertThat(scheduleSummaries)
-                    .map(ScheduleSummary::getScheduleId)
-                    .containsExactly(schedule2.getId(), schedule3.getId());
-        }
     }
 
     @Test

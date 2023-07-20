@@ -1,13 +1,11 @@
 package com.cosain.trilo.trip.infra.dao;
 
 import com.cosain.trilo.trip.application.dao.ScheduleQueryDAO;
-import com.cosain.trilo.trip.application.day.service.day_search.ScheduleSummary;
 import com.cosain.trilo.trip.application.schedule.service.schedule_detail_search.ScheduleDetail;
+import com.cosain.trilo.trip.application.trip.service.temporary_search.TempScheduleListQueryParam;
+import com.cosain.trilo.trip.application.trip.service.temporary_search.TempScheduleListSearchResult;
 import com.cosain.trilo.trip.infra.dao.querydsl.QuerydslScheduleQueryRepository;
-import com.cosain.trilo.trip.presentation.trip.dto.request.TempSchedulePageCondition;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
@@ -24,8 +22,8 @@ public class ScheduleQueryDAOImpl implements ScheduleQueryDAO {
     }
 
     @Override
-    public Slice<ScheduleSummary> findTemporaryScheduleListByTripId(Long tripId, TempSchedulePageCondition tempSchedulePageCondition, Pageable pageable) {
-        return querydslScheduleQueryRepository.findTemporaryScheduleListByTripId(tripId, tempSchedulePageCondition, pageable);
+    public TempScheduleListSearchResult findTemporarySchedules(TempScheduleListQueryParam queryParam) {
+        return querydslScheduleQueryRepository.findTemporarySchedules(queryParam);
     }
 
     @Override
