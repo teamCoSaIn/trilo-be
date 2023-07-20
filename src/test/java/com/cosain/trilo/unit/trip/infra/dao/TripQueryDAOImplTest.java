@@ -5,20 +5,17 @@ import com.cosain.trilo.fixture.TripFixture;
 import com.cosain.trilo.fixture.UserFixture;
 import com.cosain.trilo.support.RepositoryTest;
 import com.cosain.trilo.trip.application.trip.service.trip_detail_search.TripDetail;
-import com.cosain.trilo.trip.application.trip.service.trip_list_search.TripSummary;
+import com.cosain.trilo.trip.application.trip.service.trip_list_search.TripListQueryParam;
+import com.cosain.trilo.trip.application.trip.service.trip_list_search.TripListSearchResult;
 import com.cosain.trilo.trip.domain.entity.Trip;
 import com.cosain.trilo.trip.infra.dao.TripQueryDAOImpl;
 import com.cosain.trilo.trip.infra.dto.TripStatistics;
-import com.cosain.trilo.trip.presentation.trip.dto.request.TripPageCondition;
 import com.cosain.trilo.user.domain.User;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
 import org.springframework.test.annotation.DirtiesContext;
 
 import java.time.LocalDate;
@@ -79,17 +76,15 @@ public class TripQueryDAOImplTest {
             em.flush();
             em.clear();
 
-            int size = 2;
+            int pageSize = 2;
             Long tripId = trip2.getId() + 1L;
-
-            TripPageCondition tripPageCondition = new TripPageCondition(tripperId, tripId);
-            Pageable pageable = PageRequest.ofSize(size);
+            TripListQueryParam queryParam = TripListQueryParam.of(tripperId, tripId, pageSize);
 
             // when
-            Slice<TripSummary> tripSummariesByTripperId = tripQueryDAOImpl.findTripSummariesByTripperId(tripPageCondition, pageable);
+            TripListSearchResult tripListSearchResult = tripQueryDAOImpl.findTripSummariesByTripperId(queryParam);
 
             // then
-            assertThat(tripSummariesByTripperId.getContent().size()).isEqualTo(2);
+            assertThat(tripListSearchResult.getTrips().size()).isEqualTo(2);
         }
 
         @Test
@@ -98,9 +93,7 @@ public class TripQueryDAOImplTest {
         void sortTest() {
             // given
             Long tripperId = setupTripperId();
-            Long tripId = 3L;
-            TripPageCondition tripPageCondition = new TripPageCondition(tripperId, tripId);
-            Pageable pageable = PageRequest.ofSize(3);
+            int pageSize = 3;
 
             Trip trip1 = TripFixture.undecided_nullId(tripperId);
             Trip trip2 = TripFixture.undecided_nullId(tripperId);
@@ -109,13 +102,17 @@ public class TripQueryDAOImplTest {
             em.flush();
             em.clear();
 
+            Long tripId = trip2.getId() + 1L;
+            TripListQueryParam queryParam = TripListQueryParam.of(tripperId, tripId, pageSize);
+
+
             // when
-            Slice<TripSummary> tripSummariesByTripperId = tripQueryDAOImpl.findTripSummariesByTripperId(tripPageCondition, pageable);
+            TripListSearchResult searchResult = tripQueryDAOImpl.findTripSummariesByTripperId(queryParam);
 
 
             // then
-            assertThat(tripSummariesByTripperId.getContent().get(0).getTitle()).isEqualTo(trip2.getTripTitle().getValue());
-            assertThat(tripSummariesByTripperId.getContent().get(1).getTitle()).isEqualTo(trip1.getTripTitle().getValue());
+            assertThat(searchResult.getTrips().get(0).getTitle()).isEqualTo(trip2.getTripTitle().getValue());
+            assertThat(searchResult.getTrips().get(1).getTitle()).isEqualTo(trip1.getTripTitle().getValue());
         }
 
         @Test

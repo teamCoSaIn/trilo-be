@@ -2,17 +2,17 @@ package com.cosain.trilo.trip.infra.dao.querydsl;
 
 import com.cosain.trilo.trip.application.trip.service.trip_detail_search.QTripDetail;
 import com.cosain.trilo.trip.application.trip.service.trip_detail_search.TripDetail;
-import com.cosain.trilo.trip.application.trip.service.trip_list_search.QTripSummary;
-import com.cosain.trilo.trip.application.trip.service.trip_list_search.TripSummary;
+import com.cosain.trilo.trip.application.trip.service.trip_list_search.QTripListSearchResult_TripSummary;
+import com.cosain.trilo.trip.application.trip.service.trip_list_search.TripListQueryParam;
+import com.cosain.trilo.trip.application.trip.service.trip_list_search.TripListSearchResult;
 import com.cosain.trilo.trip.infra.dto.QTripStatistics;
 import com.cosain.trilo.trip.infra.dto.TripStatistics;
-import com.cosain.trilo.trip.presentation.trip.dto.request.TripPageCondition;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.JPQLQuery;
-import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
@@ -45,20 +45,21 @@ public class QuerydslTripQueryRepository {
                 .fetchOne());
     }
 
-    public Slice<TripSummary> findTripSummariesByTripperId(TripPageCondition tripPageCondition, Pageable pageable) {
-        JPAQuery<TripSummary> jpaQuery = query.select(new QTripSummary(trip.id, trip.tripperId, trip.tripTitle.value, trip.status, trip.tripPeriod.startDate, trip.tripPeriod.endDate, trip.tripImage.fileName))
+    public TripListSearchResult findTripSummariesByTripperId(TripListQueryParam queryParam) {
+        List<TripListSearchResult.TripSummary> result = query.select(new QTripListSearchResult_TripSummary(trip.id, trip.tripperId, trip.tripTitle.value, trip.status, trip.tripPeriod.startDate, trip.tripPeriod.endDate, trip.tripImage.fileName))
                 .from(trip)
                 .where(
-                        trip.tripperId.eq(tripPageCondition.getTripperId()),
-                        ltTripId(tripPageCondition.getTripId())
+                        trip.tripperId.eq(queryParam.getTripperId()),
+                        ltTripId(queryParam.getTripId())
                 )
                 .orderBy(trip.id.desc())
-                .limit(pageable.getPageSize() + 1);
+                .limit(queryParam.getPageSize() + 1)
+                .fetch();
 
-        List<TripSummary> result = jpaQuery.fetch();
+        Pageable pageable = PageRequest.ofSize(queryParam.getPageSize());
         boolean hasNext = isHasNext(result, pageable);
-
-        return new SliceImpl<>(result, pageable, hasNext);
+        Slice<TripListSearchResult.TripSummary> slice = new SliceImpl<>(result, pageable, hasNext);
+        return TripListSearchResult.of(slice.hasNext(), result);
     }
 
     /**

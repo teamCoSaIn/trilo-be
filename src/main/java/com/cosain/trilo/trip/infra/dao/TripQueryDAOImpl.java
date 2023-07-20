@@ -2,13 +2,11 @@ package com.cosain.trilo.trip.infra.dao;
 
 import com.cosain.trilo.trip.application.dao.TripQueryDAO;
 import com.cosain.trilo.trip.application.trip.service.trip_detail_search.TripDetail;
-import com.cosain.trilo.trip.application.trip.service.trip_list_search.TripSummary;
+import com.cosain.trilo.trip.application.trip.service.trip_list_search.TripListQueryParam;
+import com.cosain.trilo.trip.application.trip.service.trip_list_search.TripListSearchResult;
 import com.cosain.trilo.trip.infra.dao.querydsl.QuerydslTripQueryRepository;
 import com.cosain.trilo.trip.infra.dto.TripStatistics;
-import com.cosain.trilo.trip.presentation.trip.dto.request.TripPageCondition;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -25,8 +23,8 @@ public class TripQueryDAOImpl implements TripQueryDAO {
     }
 
     @Override
-    public Slice<TripSummary> findTripSummariesByTripperId(TripPageCondition tripPageCondition, Pageable pageable) {
-        return querydslTripQueryRepository.findTripSummariesByTripperId(tripPageCondition, pageable);
+    public TripListSearchResult findTripSummariesByTripperId(TripListQueryParam queryParam) {
+        return querydslTripQueryRepository.findTripSummariesByTripperId(queryParam);
     }
 
     @Override

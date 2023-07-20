@@ -1,13 +1,13 @@
 package com.cosain.trilo.unit.trip.application.trip.service.trip_list_search;
 
 import com.cosain.trilo.fixture.UserFixture;
+import com.cosain.trilo.trip.application.dao.TripQueryDAO;
 import com.cosain.trilo.trip.application.exception.TripperNotFoundException;
+import com.cosain.trilo.trip.application.trip.service.trip_list_search.TripListQueryParam;
+import com.cosain.trilo.trip.application.trip.service.trip_list_search.TripListSearchResult;
 import com.cosain.trilo.trip.application.trip.service.trip_list_search.TripListSearchService;
 import com.cosain.trilo.trip.domain.vo.TripStatus;
 import com.cosain.trilo.trip.infra.adapter.TripImageOutputAdapter;
-import com.cosain.trilo.trip.application.trip.service.trip_list_search.TripSummary;
-import com.cosain.trilo.trip.application.dao.TripQueryDAO;
-import com.cosain.trilo.trip.presentation.trip.dto.request.TripPageCondition;
 import com.cosain.trilo.user.domain.UserRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,10 +15,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -26,7 +22,8 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -51,32 +48,33 @@ public class TripListSearchServiceTest {
         // given
         Long tripperId = 1L;
         Long standardTripId = 3L;
-        Pageable pageable = PageRequest.of(0, 10);
+        int pageSize = 10;
+        TripListQueryParam queryParam = TripListQueryParam.of(tripperId, standardTripId, pageSize);
+
+//        Pageable pageable = PageRequest.of(0, 10);
         String imageName = "image.jpg";
         String imageURL = "https://.../image.jpg";
-        TripSummary tripSummary1 = new TripSummary(2L, tripperId, "여행 1", TripStatus.DECIDED, LocalDate.of(2023,5,1), LocalDate.of(2023,5,1), imageName);
-        TripSummary tripSummary2 = new TripSummary(1L, tripperId, "여행 2", TripStatus.UNDECIDED, null, null, imageName);
+        TripListSearchResult.TripSummary tripSummary1 = new TripListSearchResult.TripSummary(2L, tripperId, "여행 1", TripStatus.DECIDED, LocalDate.of(2023,5,1), LocalDate.of(2023,5,1), imageName);
+        TripListSearchResult.TripSummary tripSummary2 = new TripListSearchResult.TripSummary(1L, tripperId, "여행 2", TripStatus.UNDECIDED, null, null, imageName);
+        TripListSearchResult result = TripListSearchResult.of(false, List.of(tripSummary1, tripSummary2));
 
-        Slice<TripSummary> tripSummaries = new PageImpl<>(List.of(tripSummary1, tripSummary2));
-
-        TripPageCondition tripPageCondition = new TripPageCondition(tripperId, standardTripId);
         given(userRepository.findById(eq(tripperId))).willReturn(Optional.of(UserFixture.kakaoUser_Id(tripperId)));
-        given(tripQueryDAO.findTripSummariesByTripperId(any(TripPageCondition.class), any(Pageable.class))).willReturn(tripSummaries);
+        given(tripQueryDAO.findTripSummariesByTripperId(eq(queryParam))).willReturn(result);
         given(tripImageOutputAdapter.getFullTripImageURL(eq(imageName))).willReturn(imageURL);
 
         // when
-        Slice<TripSummary> searchTripSummaries = tripListSearchService.searchTripSummaries(tripPageCondition, pageable);
+        TripListSearchResult searchResult = tripListSearchService.searchTripList(queryParam);
 
         // then
-        assertThat(searchTripSummaries).isNotNull();
-        assertThat(searchTripSummaries.getContent()).hasSize(2);
-        assertThat(searchTripSummaries.getContent().get(0).getTitle()).isEqualTo(tripSummary1.getTitle());
-        assertThat(searchTripSummaries.getContent().get(1).getTitle()).isEqualTo(tripSummary2.getTitle());
-        assertThat(searchTripSummaries.getContent()).map(TripSummary::getImageURL).allMatch(url -> url.equals(imageURL));
-        assertThat(searchTripSummaries.hasNext()).isFalse();
+        assertThat(searchResult).isNotNull();
+        assertThat(searchResult.getTrips()).hasSize(2);
+        assertThat(searchResult.getTrips().get(0).getTripId()).isEqualTo(tripSummary1.getTripId());
+        assertThat(searchResult.getTrips().get(1).getTripId()).isEqualTo(tripSummary2.getTripId());
+        assertThat(searchResult.getTrips()).map(TripListSearchResult.TripSummary::getImageURL).allMatch(url -> url.equals(imageURL));
+        assertThat(searchResult.isHasNext()).isFalse();
 
         verify(userRepository, times(1)).findById(eq(tripperId));
-        verify(tripQueryDAO, times(1)).findTripSummariesByTripperId(any(TripPageCondition.class), any(Pageable.class));
+        verify(tripQueryDAO, times(1)).findTripSummariesByTripperId(eq(queryParam));
         verify(tripImageOutputAdapter, times(2)).getFullTripImageURL(anyString());
     }
 
@@ -85,12 +83,13 @@ public class TripListSearchServiceTest {
     void when_the_user_is_not_exist_that_coincide_with_tripper_id_it_will_throws_TripperNotFoundException(){
         // given
         Long tripperId = 1L;
-        Pageable pageable = PageRequest.of(0, 10);
-        TripPageCondition tripPageCondition = new TripPageCondition(1L, 1L);
+        Long tripId = 2L;
+        int pageSize = 10;
+        TripListQueryParam queryParam = TripListQueryParam.of(tripperId, tripId, pageSize);
         given(userRepository.findById(tripperId)).willReturn(Optional.empty());
 
         // when & then
-        assertThatThrownBy(() -> tripListSearchService.searchTripSummaries(tripPageCondition, pageable))
+        assertThatThrownBy(() -> tripListSearchService.searchTripList(queryParam))
                 .isInstanceOf(TripperNotFoundException.class);
     }
 
