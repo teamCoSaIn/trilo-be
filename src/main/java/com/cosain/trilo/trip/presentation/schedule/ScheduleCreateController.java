@@ -3,60 +3,46 @@ package com.cosain.trilo.trip.presentation.schedule;
 import com.cosain.trilo.auth.application.token.UserPayload;
 import com.cosain.trilo.auth.presentation.Login;
 import com.cosain.trilo.auth.presentation.LoginUser;
-import com.cosain.trilo.common.exception.CustomException;
 import com.cosain.trilo.trip.application.schedule.service.schedule_create.ScheduleCreateCommand;
-import com.cosain.trilo.trip.application.schedule.service.schedule_create.ScheduleCreateCommandFactory;
 import com.cosain.trilo.trip.application.schedule.service.schedule_create.ScheduleCreateService;
-import com.cosain.trilo.trip.presentation.exception.NullRequestCoordinateException;
-import com.cosain.trilo.trip.presentation.schedule.dto.request.RequestCoordinate;
 import com.cosain.trilo.trip.presentation.schedule.dto.request.ScheduleCreateRequest;
 import com.cosain.trilo.trip.presentation.schedule.dto.response.ScheduleCreateResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
-import java.util.List;
-
-@Slf4j
 @RequiredArgsConstructor
 @RestController
 public class ScheduleCreateController {
 
     private final ScheduleCreateService scheduleCreateService;
-    private final ScheduleCreateCommandFactory scheduleCreateCommandFactory;
 
     @PostMapping("/api/schedules")
     @ResponseStatus(HttpStatus.CREATED)
     @Login
-    public ScheduleCreateResponse createSchedule(@LoginUser UserPayload userPayload, @RequestBody ScheduleCreateRequest request) {
-        Long tripperId = userPayload.getId();
-        ScheduleCreateCommand command = createCommand(request);
+    public ScheduleCreateResponse createSchedule(@LoginUser UserPayload userPayload, @RequestBody @Valid ScheduleCreateRequest request) {
+        Long requestTripperId = userPayload.getId();
+        var command = makeCommand(request, requestTripperId);
 
-        Long scheduleId = scheduleCreateService.createSchedule(tripperId, command);
-        log.info("scheduleId = {}", scheduleId);
+        Long scheduleId = scheduleCreateService.createSchedule(command);
         return ScheduleCreateResponse.from(scheduleId);
     }
 
-    private ScheduleCreateCommand createCommand(ScheduleCreateRequest request) {
-        List<CustomException> exceptions = new ArrayList<>();
-
-        RequestCoordinate requestCoordinate = request.getCoordinate();
-
-        if (requestCoordinate == null) {
-            // 사용자가 좌표를 누락시킨 경우, 예외 수집기에 좌표 누락 예외를 수집하고, 요청좌표를 위도 경도가 모두 null 인 요청좌표로 대체함
-            exceptions.add(new NullRequestCoordinateException("입력 좌표가 누락됨"));
-            requestCoordinate = new RequestCoordinate(null, null);
-        }
-
-        return scheduleCreateCommandFactory.createCommand(
-                    request.getDayId(), request.getTripId(), request.getTitle(),
-                    request.getPlaceId(), request.getPlaceName(),
-                    requestCoordinate.getLatitude(), requestCoordinate.getLongitude(), exceptions);
+    private static ScheduleCreateCommand makeCommand(ScheduleCreateRequest request, Long requestTripperId) {
+        return ScheduleCreateCommand.of(
+                requestTripperId,
+                request.getTripId(),
+                request.getDayId(),
+                request.getTitle(),
+                request.getPlaceId(),
+                request.getPlaceName(),
+                request.getCoordinate().getLatitude(),
+                request.getCoordinate().getLongitude()
+        );
     }
 
 }

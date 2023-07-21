@@ -1,17 +1,10 @@
 package com.cosain.trilo.unit.trip.presentation.schedule;
 
-import com.cosain.trilo.common.exception.CustomException;
-import com.cosain.trilo.common.exception.CustomValidationException;
 import com.cosain.trilo.support.RestControllerTest;
 import com.cosain.trilo.trip.application.schedule.service.schedule_create.ScheduleCreateCommand;
-import com.cosain.trilo.trip.application.schedule.service.schedule_create.ScheduleCreateCommandFactory;
 import com.cosain.trilo.trip.application.schedule.service.schedule_create.ScheduleCreateService;
-import com.cosain.trilo.trip.domain.exception.InvalidCoordinateException;
-import com.cosain.trilo.trip.domain.vo.Coordinate;
-import com.cosain.trilo.trip.domain.vo.Place;
-import com.cosain.trilo.trip.domain.vo.ScheduleTitle;
-import com.cosain.trilo.trip.presentation.exception.NullRequestCoordinateException;
 import com.cosain.trilo.trip.presentation.schedule.ScheduleCreateController;
+import com.cosain.trilo.trip.presentation.schedule.dto.request.ScheduleCreateRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -20,13 +13,12 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
 
-import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasSize;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -41,18 +33,16 @@ class ScheduleCreateControllerTest extends RestControllerTest {
     @MockBean
     private ScheduleCreateService scheduleCreateService;
 
-    @MockBean
-    private ScheduleCreateCommandFactory scheduleCreateCommandFactory;
-
     private final String ACCESS_TOKEN = "Bearer accessToken";
 
     @Test
     @DisplayName("인증된 사용자의 올바른 요청 -> 일정 생성됨")
     public void createSchedule_with_authorizedUser() throws Exception {
-        mockingForLoginUserAnnotation();
 
-        Long dayId = 1L;
         Long tripId = 1L;
+        long requestTripperId = 2L;
+        mockingForLoginUserAnnotation(requestTripperId);
+        Long dayId = 3L;
         String rawScheduleTitle = "일정 제목";
         String placeId = "place-id";
         String placeName = "place-Name";
@@ -73,21 +63,10 @@ class ScheduleCreateControllerTest extends RestControllerTest {
                 }
                 """, dayId, tripId, rawScheduleTitle, placeId, placeName, latitude, longitude);
 
-
-        ScheduleCreateCommand command = ScheduleCreateCommand.builder()
-                .dayId(dayId)
-                .tripId(tripId)
-                .scheduleTitle(ScheduleTitle.of(rawScheduleTitle))
-                .place(Place.of(placeId, placeName, Coordinate.of(latitude, longitude)))
-                .build();
-
+        var command = ScheduleCreateCommand.of(requestTripperId, tripId, dayId, rawScheduleTitle, placeId, placeName, latitude, longitude);
         Long createdScheduleId = 3L;
 
-        given(scheduleCreateCommandFactory.createCommand(
-                eq(dayId), eq(tripId), eq(rawScheduleTitle),
-                eq(placeId), eq(placeName),
-                eq(latitude), eq(longitude), anyList())).willReturn(command);
-        given(scheduleCreateService.createSchedule(any(), any(ScheduleCreateCommand.class))).willReturn(createdScheduleId);
+        given(scheduleCreateService.createSchedule(eq(command))).willReturn(createdScheduleId);
 
         mockMvc.perform(post("/api/schedules")
                         .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)
@@ -99,19 +78,14 @@ class ScheduleCreateControllerTest extends RestControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.scheduleId").value(createdScheduleId));
 
-        verify(scheduleCreateService).createSchedule(any(), any(ScheduleCreateCommand.class));
-        verify(scheduleCreateCommandFactory).createCommand(
-                eq(dayId), eq(tripId), eq(rawScheduleTitle),
-                eq(placeId), eq(placeName),
-                eq(latitude), eq(longitude), anyList()
-        );
+        verify(scheduleCreateService, times(1)).createSchedule(eq(command));
     }
 
     @Test
     @DisplayName("미인증 사용자 요청 -> 인증 실패 401")
     public void createSchedule_with_unauthorizedUser() throws Exception {
-        Long dayId = 1L;
         Long tripId = 1L;
+        Long dayId = 2L;
         String rawScheduleTitle = "일정 제목";
         String placeId = "place-id";
         String placeName = "place-Name";
@@ -143,13 +117,16 @@ class ScheduleCreateControllerTest extends RestControllerTest {
                 .andExpect(jsonPath("$.errorCode").exists())
                 .andExpect(jsonPath("$.errorMessage").exists())
                 .andExpect(jsonPath("$.errorDetail").exists());
+
+        verify(scheduleCreateService, times(0)).createSchedule(any(ScheduleCreateCommand.class));
     }
 
 
     @Test
     @DisplayName("비어있는 바디 -> 올바르지 않은 요청 데이터 형식으로 간주하고 400 예외")
     public void createSchedule_with_emptyContent() throws Exception {
-        mockingForLoginUserAnnotation();
+        long requestTripperId = 2L;
+        mockingForLoginUserAnnotation(requestTripperId);
 
         String emptyContent = "";
 
@@ -164,12 +141,15 @@ class ScheduleCreateControllerTest extends RestControllerTest {
                 .andExpect(jsonPath("$.errorCode").value("request-0001"))
                 .andExpect(jsonPath("$.errorMessage").exists())
                 .andExpect(jsonPath("$.errorDetail").exists());
+
+        verify(scheduleCreateService, times(0)).createSchedule(any(ScheduleCreateCommand.class));
     }
 
     @Test
     @DisplayName("형식이 올바르지 않은 바디 -> 올바르지 않은 요청 데이터 형식으로 간주하고 400 예외")
     public void createSchedule_with_invalidContent() throws Exception {
-        mockingForLoginUserAnnotation();
+        long requestTripperId = 2L;
+        mockingForLoginUserAnnotation(requestTripperId);
         String invalidContent = """
                 {
                     "dayId"+ 1,
@@ -195,12 +175,15 @@ class ScheduleCreateControllerTest extends RestControllerTest {
                 .andExpect(jsonPath("$.errorCode").value("request-0001"))
                 .andExpect(jsonPath("$.errorMessage").exists())
                 .andExpect(jsonPath("$.errorDetail").exists());
+
+        verify(scheduleCreateService, times(0)).createSchedule(any(ScheduleCreateCommand.class));
     }
 
     @Test
     @DisplayName("타입이 올바르지 않은 요청 데이터 -> 올바르지 않은 요청 데이터 형식으로 간주하고 400 예외")
     public void createSchedule_with_invalidType() throws Exception {
-        mockingForLoginUserAnnotation();
+        long requestTripperId = 2L;
+        mockingForLoginUserAnnotation(requestTripperId);
         String invalidTypeContent = """
                 {
                     "dayId": 1,
@@ -225,6 +208,8 @@ class ScheduleCreateControllerTest extends RestControllerTest {
                 .andExpect(jsonPath("$.errorCode").value("request-0001"))
                 .andExpect(jsonPath("$.errorMessage").exists())
                 .andExpect(jsonPath("$.errorDetail").exists());
+
+        verify(scheduleCreateService, times(0)).createSchedule(any(ScheduleCreateCommand.class));
     }
 
     @Test
@@ -248,16 +233,6 @@ class ScheduleCreateControllerTest extends RestControllerTest {
                 }
                 """, dayId, tripId, rawScheduleTitle, placeId, placeName); // 좌표 누락됨
 
-        List<CustomException> exceptions = new ArrayList<>();
-        exceptions.add(new NullRequestCoordinateException());
-        exceptions.add(new InvalidCoordinateException());
-
-        given(scheduleCreateCommandFactory.createCommand(
-                eq(dayId), eq(tripId), eq(rawScheduleTitle),
-                eq(placeId), eq(placeName), isNull(), isNull(), anyList()))
-                .willThrow(new CustomValidationException(exceptions));
-
-
         mockMvc.perform(post("/api/schedules")
                         .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)
                         .content(requestJson)
@@ -269,16 +244,99 @@ class ScheduleCreateControllerTest extends RestControllerTest {
                 .andExpect(jsonPath("$.errorCode").value("request-0003"))
                 .andExpect(jsonPath("$.errorMessage").exists())
                 .andExpect(jsonPath("$.errorDetail").exists())
-                .andExpect(jsonPath("$.errors", hasSize(2)))
-                .andExpect(jsonPath("$.errors[*].errorCode", hasItem("place-0001")))
-                .andExpect(jsonPath("$.errors[*].errorCode", hasItem("place-0002")))
-                .andExpect(jsonPath("$.errors[*].errorMessage").exists())
-                .andExpect(jsonPath("$.errors[*].errorDetail").exists());
+                .andExpect(jsonPath("$.errors", hasSize(1)))
+                .andExpect(jsonPath("$.errors[0].errorCode").value("place-0002"))
+                .andExpect(jsonPath("$.errors[0].errorMessage").exists())
+                .andExpect(jsonPath("$.errors[0].errorDetail").exists());
 
-        verify(scheduleCreateCommandFactory).createCommand(
-                eq(dayId), eq(tripId), eq(rawScheduleTitle),
-                eq(placeId), eq(placeName), isNull(), isNull(), anyList()
-        );
+        verify(scheduleCreateService, times(0)).createSchedule(any(ScheduleCreateCommand.class));
+    }
+
+    @Test
+    @DisplayName("tripId 누락 데이터 -> 입력 검증 실패 400 예외")
+    public void createSchedule_with_nullTripId() throws Exception {
+        long tripperId = 1L;
+        mockingForLoginUserAnnotation(tripperId);
+
+        Long dayId = 2L;
+        Long tripId = null;
+        String rawScheduleTitle = "일정 제목";
+        String placeId = "place-id";
+        String placeName = "place-Name";
+        Double latitude = 37.5642;
+        Double longitude = 127.0016;
+
+        ScheduleCreateRequest request = ScheduleCreateRequest.builder()
+                .tripId(tripId)
+                .dayId(dayId)
+                .title(rawScheduleTitle)
+                .placeId(placeId)
+                .placeName(placeName)
+                .coordinate(new ScheduleCreateRequest.CoordinateDto(latitude, longitude))
+                .build();
+
+        mockMvc.perform(post("/api/schedules")
+                        .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)
+                        .content(createJson(request))
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errorCode").value("request-0003"))
+                .andExpect(jsonPath("$.errorMessage").exists())
+                .andExpect(jsonPath("$.errorDetail").exists())
+                .andExpect(jsonPath("$.errors", hasSize(1)))
+                .andExpect(jsonPath("$.errors[0].errorCode").value("schedule-0007"))
+                .andExpect(jsonPath("$.errors[0].errorMessage").exists())
+                .andExpect(jsonPath("$.errors[0].errorDetail").exists());
+
+        verify(scheduleCreateService, times(0)).createSchedule(any(ScheduleCreateCommand.class));
+    }
+
+    @Test
+    @DisplayName("tripId, 좌표 누락 데이터 -> 입력 검증 실패 400 예외")
+    public void createSchedule_with_nullTripId_and_nullCoordinate() throws Exception {
+        long tripperId = 1L;
+        mockingForLoginUserAnnotation(tripperId);
+
+        Long dayId = 2L;
+        Long tripId = null;
+        String rawScheduleTitle = "일정 제목";
+        String placeId = "place-id";
+        String placeName = "place-Name";
+
+        ScheduleCreateRequest request = ScheduleCreateRequest.builder()
+                .tripId(tripId)
+                .dayId(dayId)
+                .title(rawScheduleTitle)
+                .placeId(placeId)
+                .placeName(placeName)
+                .coordinate(null)
+                .build();
+
+        mockMvc.perform(post("/api/schedules")
+                        .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)
+                        .content(createJson(request))
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errorCode").value("request-0003"))
+                .andExpect(jsonPath("$.errorMessage").exists())
+                .andExpect(jsonPath("$.errorDetail").exists())
+                .andExpect(jsonPath("$.errors", hasSize(2)))
+                .andExpect(jsonPath("$.errors[0].errorCode").value("schedule-0007"))
+                .andExpect(jsonPath("$.errors[0].errorMessage").exists())
+                .andExpect(jsonPath("$.errors[0].errorDetail").exists())
+                .andExpect(jsonPath("$.errors[0].field").exists())
+                .andExpect(jsonPath("$.errors[1].errorCode").value("place-0002"))
+                .andExpect(jsonPath("$.errors[1].errorMessage").exists())
+                .andExpect(jsonPath("$.errors[1].errorDetail").exists())
+                .andExpect(jsonPath("$.errors[1].field").exists());
+
+        verify(scheduleCreateService, times(0)).createSchedule(any(ScheduleCreateCommand.class));
     }
 
 }

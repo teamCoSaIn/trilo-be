@@ -2,11 +2,7 @@ package com.cosain.trilo.unit.trip.presentation.schedule.docs;
 
 import com.cosain.trilo.support.RestDocsTestSupport;
 import com.cosain.trilo.trip.application.schedule.service.schedule_create.ScheduleCreateCommand;
-import com.cosain.trilo.trip.application.schedule.service.schedule_create.ScheduleCreateCommandFactory;
 import com.cosain.trilo.trip.application.schedule.service.schedule_create.ScheduleCreateService;
-import com.cosain.trilo.trip.domain.vo.Coordinate;
-import com.cosain.trilo.trip.domain.vo.Place;
-import com.cosain.trilo.trip.domain.vo.ScheduleTitle;
 import com.cosain.trilo.trip.presentation.schedule.ScheduleCreateController;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,8 +13,9 @@ import org.springframework.http.MediaType;
 
 import java.nio.charset.StandardCharsets;
 
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
@@ -38,18 +35,15 @@ public class ScheduleCreateControllerDocsTest extends RestDocsTestSupport {
     @MockBean
     private ScheduleCreateService scheduleCreateService;
 
-    @MockBean
-    private ScheduleCreateCommandFactory scheduleCreateCommandFactory;
-
     private final String ACCESS_TOKEN = "Bearer accessToken";
 
     @Test
     @DisplayName("인증된 사용자의 일정 생성 요청 -> 성공")
     void scheduleCreateDocTest() throws Exception {
-        mockingForLoginUserAnnotation();
-
-        Long dayId = 1L;
-        Long tripId = 1L;
+        long requestTripperId = 1L;
+        mockingForLoginUserAnnotation(requestTripperId);
+        Long tripId = 2L;
+        Long dayId = 3L;
         String rawScheduleTitle = "일정 제목";
         String placeId = "place-id";
         String placeName = "place-Name";
@@ -70,20 +64,10 @@ public class ScheduleCreateControllerDocsTest extends RestDocsTestSupport {
                 }
                 """, dayId, tripId, rawScheduleTitle, placeId, placeName, latitude, longitude);
 
-        ScheduleCreateCommand command = ScheduleCreateCommand.builder()
-                .dayId(dayId)
-                .tripId(tripId)
-                .scheduleTitle(ScheduleTitle.of(rawScheduleTitle))
-                .place(Place.of(placeId, placeName, Coordinate.of(latitude, longitude)))
-                .build();
+        var command = ScheduleCreateCommand.of(requestTripperId, tripId, dayId, rawScheduleTitle, placeId, placeName, latitude, longitude);
 
         Long createdScheduleId = 3L;
-
-        given(scheduleCreateCommandFactory.createCommand(
-                eq(dayId), eq(tripId), eq(rawScheduleTitle),
-                eq(placeId), eq(placeName),
-                eq(latitude), eq(longitude), anyList())).willReturn(command);
-        given(scheduleCreateService.createSchedule(any(), any(ScheduleCreateCommand.class))).willReturn(createdScheduleId);
+        given(scheduleCreateService.createSchedule(eq(command))).willReturn(createdScheduleId);
 
 
         mockMvc.perform(post("/api/schedules")
@@ -147,11 +131,6 @@ public class ScheduleCreateControllerDocsTest extends RestDocsTestSupport {
                         )
                 ));
 
-        verify(scheduleCreateService).createSchedule(any(), any(ScheduleCreateCommand.class));
-        verify(scheduleCreateCommandFactory).createCommand(
-                eq(dayId), eq(tripId), eq(rawScheduleTitle),
-                eq(placeId), eq(placeName),
-                eq(latitude), eq(longitude), anyList()
-        );
+        verify(scheduleCreateService, times(1)).createSchedule(eq(command));
     }
 }

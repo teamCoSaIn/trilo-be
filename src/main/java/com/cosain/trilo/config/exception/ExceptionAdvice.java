@@ -103,7 +103,7 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
 
     private void addFieldErrorsToErrorResponse(ControllerInputValidationErrorResponse response, List<FieldError> fieldErrors) {
         for (FieldError error : fieldErrors) {
-            String errorCode = getMessage(error.getDefaultMessage());
+            String errorCode = error.getDefaultMessage();
             String errorMessage = getMessage(errorCode + ".message");
             String errorDetail = getMessage(errorCode + ".detail");
             String field = error.getField();
