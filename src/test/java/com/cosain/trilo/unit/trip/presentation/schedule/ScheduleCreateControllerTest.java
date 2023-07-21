@@ -14,7 +14,7 @@ import org.springframework.http.MediaType;
 
 import java.nio.charset.StandardCharsets;
 
-import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -327,11 +327,11 @@ class ScheduleCreateControllerTest extends RestControllerTest {
                 .andExpect(jsonPath("$.errorMessage").exists())
                 .andExpect(jsonPath("$.errorDetail").exists())
                 .andExpect(jsonPath("$.errors", hasSize(2)))
-                .andExpect(jsonPath("$.errors[0].errorCode").value("schedule-0007"))
+                .andExpect(jsonPath("$.errors[*].errorCode", hasItem("schedule-0007")))
                 .andExpect(jsonPath("$.errors[0].errorMessage").exists())
                 .andExpect(jsonPath("$.errors[0].errorDetail").exists())
                 .andExpect(jsonPath("$.errors[0].field").exists())
-                .andExpect(jsonPath("$.errors[1].errorCode").value("place-0002"))
+                .andExpect(jsonPath("$.errors[*].errorCode", hasItem("place-0002")))
                 .andExpect(jsonPath("$.errors[1].errorMessage").exists())
                 .andExpect(jsonPath("$.errors[1].errorDetail").exists())
                 .andExpect(jsonPath("$.errors[1].field").exists());
