@@ -10,9 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindException;
@@ -23,16 +21,14 @@ import org.springframework.web.bind.MissingRequestCookieException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.multipart.MultipartException;
-import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
 @RestControllerAdvice
-public class ExceptionAdvice extends ResponseEntityExceptionHandler {
+public class ExceptionAdvice {
 
     private final MessageSource messageSource;
 
@@ -54,39 +50,23 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
     /**
      * 요청 데이터 형식 또는 데이터 타입이 올바르지 않을 때에 대한 예외 API
      */
-    @Override
-    protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public BasicErrorResponse handleHttpMessageNotReadable(HttpMessageNotReadableException ex) {
         log.info("요청 데이터 형식이 올바르지 않음");
         String errorCode = "request-0001";
         String errorMessage = getMessage(errorCode + ".message");
         String errorDetail = getMessage(errorCode + ".detail");
 
-        return ResponseEntity
-                .badRequest()
-                .body(BasicErrorResponse.of(errorCode, errorMessage, errorDetail));
-    }
-
-    @Override
-    protected ResponseEntity<Object> handleBindException(BindException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
-        BindingResult bindingResult = ex.getBindingResult();
-
-        String errorCode = "request-0003";
-        String errorMessage = getMessage(errorCode + ".message");
-        String errorDetail = getMessage(errorCode + ".detail");
-
-        var response = ControllerInputValidationErrorResponse.of(errorCode, errorMessage, errorDetail);
-
-        addFieldErrorsToErrorResponse(response, bindingResult.getFieldErrors());
-        return ResponseEntity
-                .badRequest()
-                .body(response);
+        return BasicErrorResponse.of(errorCode, errorMessage, errorDetail);
     }
 
     /**
-     * BeanValidation 후속 예외 처리 (@Valid) - 컨트롤러 검증
+     * '@ModelAttribute' -> Bean Validation(@Valid) 후속 예외 처리  - 컨트롤러 검증
      */
-    @Override
-    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+    @ExceptionHandler(BindException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ControllerInputValidationErrorResponse handleBindException(BindException ex) {
         BindingResult bindingResult = ex.getBindingResult();
 
         String errorCode = "request-0003";
@@ -96,9 +76,24 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
         var response = ControllerInputValidationErrorResponse.of(errorCode, errorMessage, errorDetail);
 
         addFieldErrorsToErrorResponse(response, bindingResult.getFieldErrors());
-        return ResponseEntity
-                .badRequest()
-                .body(response);
+        return response;
+    }
+
+    /**
+     * '@RequestBody' -> Bean Validation(@Valid) 후속 예외 처리  - 컨트롤러 검증
+     */
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ControllerInputValidationErrorResponse handleMethodArgumentNotValid(MethodArgumentNotValidException ex) {
+        BindingResult bindingResult = ex.getBindingResult();
+
+        String errorCode = "request-0003";
+        String errorMessage = getMessage(errorCode + ".message");
+        String errorDetail = getMessage(errorCode + ".detail");
+
+        var response = ControllerInputValidationErrorResponse.of(errorCode, errorMessage, errorDetail);
+        addFieldErrorsToErrorResponse(response, bindingResult.getFieldErrors());
+        return  response;
     }
 
     private void addFieldErrorsToErrorResponse(ControllerInputValidationErrorResponse response, List<FieldError> fieldErrors) {
@@ -133,8 +128,9 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
     /**
      * URL의 파라미터 변수 또는 쿼리 파라미터의 타입 에러
      */
-    @Override
-    protected ResponseEntity<Object> handleTypeMismatch(TypeMismatchException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+    @ExceptionHandler(TypeMismatchException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public BasicErrorResponse handleTypeMismatch(TypeMismatchException ex) {
         log.info("URL의 파라미터 변수 또는 쿼리 파라미터의 타입 에러");
         log.error("ex", ex);
 
@@ -144,8 +140,7 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
 
         log.info("[{}] errorMessage={}", errorCode, errorMessage);
         log.info("-----> errorDetail={}", errorDetail);
-        var response = BasicErrorResponse.of(errorCode, errorMessage, errorDetail);
-        return ResponseEntity.badRequest().body(response);
+        return BasicErrorResponse.of(errorCode, errorMessage, errorDetail);
     }
 
     /**
@@ -180,7 +175,7 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
 
         String errorCode = "request-0005";
         String errorMessage = getMessage(errorCode + ".message");
-        String errorDetail = getMessage(errorCode +".detail");
+        String errorDetail = getMessage(errorCode + ".detail");
 
         return BasicErrorResponse.of(errorCode, errorMessage, errorDetail);
     }
