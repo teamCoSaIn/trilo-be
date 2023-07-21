@@ -15,16 +15,13 @@ public class ScheduleUpdateService {
     private final ScheduleRepository scheduleRepository;
 
     @Transactional
-    public Long updateSchedule(Long scheduleId, Long tripperId, ScheduleUpdateCommand scheduleUpdateCommand) {
+    public void updateSchedule(ScheduleUpdateCommand command) {
+        Schedule schedule = findSchedule(command.getScheduleId());
+        validateScheduleUpdateAuthority(schedule, command.getRequestTripperId());
 
-        Schedule schedule = findSchedule(scheduleId);
-        validateScheduleUpdateAuthority(schedule, tripperId);
-
-        schedule.changeTitle(scheduleUpdateCommand.getScheduleTitle());
-        schedule.changeContent(scheduleUpdateCommand.getScheduleContent());
-        schedule.changeTime(scheduleUpdateCommand.getScheduleTime());
-
-        return schedule.getId();
+        schedule.changeTitle(command.getScheduleTitle());
+        schedule.changeContent(command.getScheduleContent());
+        schedule.changeTime(command.getScheduleTime());
     }
 
     private Schedule findSchedule(Long scheduleId) {

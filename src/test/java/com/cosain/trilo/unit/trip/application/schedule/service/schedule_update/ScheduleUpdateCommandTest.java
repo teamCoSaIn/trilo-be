@@ -2,7 +2,6 @@ package com.cosain.trilo.unit.trip.application.schedule.service.schedule_update;
 
 import com.cosain.trilo.common.exception.CustomValidationException;
 import com.cosain.trilo.trip.application.schedule.service.schedule_update.ScheduleUpdateCommand;
-import com.cosain.trilo.trip.application.schedule.service.schedule_update.ScheduleUpdateCommandFactory;
 import com.cosain.trilo.trip.domain.exception.InvalidScheduleContentException;
 import com.cosain.trilo.trip.domain.exception.InvalidScheduleTimeException;
 import com.cosain.trilo.trip.domain.exception.InvalidScheduleTitleException;
@@ -21,33 +20,33 @@ import java.util.Arrays;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowableOfType;
 
-@DisplayName("ScheduleUpdateCommandFactory 테스트")
-public class ScheduleUpdateCommandFactoryTest {
-
-    private ScheduleUpdateCommandFactory scheduleUpdateCommandFactory = new ScheduleUpdateCommandFactory();
+@DisplayName("ScheduleUpdateCommand 테스트")
+public class ScheduleUpdateCommandTest {
 
     @DisplayName("일정 제목이 null 아니고 20자 이하(공백 허용) -> 정상 생성")
     @ValueSource(strings = {"일정 제목", "", "     "})
     @ParameterizedTest
     void scheduleTitleSuccessTest(String rawScheduleTitle) {
         // given
+        long scheduleId = 1L;
+        long requestTripperId = 2L;
         String rawScheduleContent = "일정 본문";
         LocalTime startTime = LocalTime.of(13,0);
         LocalTime endTime = LocalTime.of(13,5);
-
-        ScheduleUpdateCommand scheduleUpdateCommand = scheduleUpdateCommandFactory.createCommand(
-                rawScheduleTitle, rawScheduleContent, startTime, endTime);
+        var command = ScheduleUpdateCommand.of(scheduleId, requestTripperId, rawScheduleTitle, rawScheduleContent, startTime, endTime);
 
         // then
-        assertThat(scheduleUpdateCommand.getScheduleTitle()).isEqualTo(ScheduleTitle.of(rawScheduleTitle));
-        assertThat(scheduleUpdateCommand.getScheduleContent()).isEqualTo(ScheduleContent.of(rawScheduleContent));
-        assertThat(scheduleUpdateCommand.getScheduleTime()).isEqualTo(ScheduleTime.of(startTime, endTime));
+        assertThat(command.getScheduleTitle()).isEqualTo(ScheduleTitle.of(rawScheduleTitle));
+        assertThat(command.getScheduleContent()).isEqualTo(ScheduleContent.of(rawScheduleContent));
+        assertThat(command.getScheduleTime()).isEqualTo(ScheduleTime.of(startTime, endTime));
     }
 
     @DisplayName("제목이 35자보다 긴 문자열 -> 검증 예외 발생")
     @Test
     void tooLongScheduleTitleTest() {
         // given
+        long scheduleId = 1L;
+        long requestTripperId = 2L;
         String rawScheduleTitle = "가".repeat(36);
         String rawScheduleContent = "일정 본문";
         LocalTime startTime = LocalTime.of(13,0);
@@ -55,7 +54,7 @@ public class ScheduleUpdateCommandFactoryTest {
 
         // when
         CustomValidationException cve = catchThrowableOfType(
-                () -> scheduleUpdateCommandFactory.createCommand(rawScheduleTitle, rawScheduleContent, startTime, endTime),
+                () -> ScheduleUpdateCommand.of(scheduleId, requestTripperId, rawScheduleTitle, rawScheduleContent, startTime, endTime),
                 CustomValidationException.class);
 
         // then
@@ -68,6 +67,8 @@ public class ScheduleUpdateCommandFactoryTest {
     @Test
     void nullContentTest() {
         // given
+        long scheduleId = 1L;
+        long requestTripperId = 2L;
         String rawScheduleTitle = "일정 제목";
         String rawScheduleContent = null;
         LocalTime startTime = LocalTime.of(13,0);
@@ -75,7 +76,7 @@ public class ScheduleUpdateCommandFactoryTest {
 
         // when
         CustomValidationException cve = catchThrowableOfType(
-                () -> scheduleUpdateCommandFactory.createCommand(rawScheduleTitle, rawScheduleContent, startTime, endTime),
+                () -> ScheduleUpdateCommand.of(scheduleId, requestTripperId, rawScheduleTitle, rawScheduleContent, startTime, endTime),
                 CustomValidationException.class);
 
         // then
@@ -89,6 +90,8 @@ public class ScheduleUpdateCommandFactoryTest {
     @ParameterizedTest
     void largeContentTest(int size) {
         // given
+        long scheduleId = 1L;
+        long requestTripperId = 2L;
         String rawScheduleTitle = "일정 제목";
 
         byte[] bytes = new byte[size];
@@ -100,7 +103,7 @@ public class ScheduleUpdateCommandFactoryTest {
 
         // when
         CustomValidationException cve = catchThrowableOfType(
-                () -> scheduleUpdateCommandFactory.createCommand(rawScheduleTitle, rawScheduleContent, startTime, endTime),
+                () -> ScheduleUpdateCommand.of(scheduleId, requestTripperId, rawScheduleTitle, rawScheduleContent, startTime, endTime),
                 CustomValidationException.class);
 
         // then
@@ -113,6 +116,8 @@ public class ScheduleUpdateCommandFactoryTest {
     @Test
     void startTimeNullTest() {
         // given
+        long scheduleId = 1L;
+        long requestTripperId = 2L;
         String rawScheduleTitle = "일정 제목";
         String rawScheduleContent = "일정 본문";
         LocalTime startTime = null;
@@ -120,7 +125,7 @@ public class ScheduleUpdateCommandFactoryTest {
 
         // when
         CustomValidationException cve = catchThrowableOfType(
-                () -> scheduleUpdateCommandFactory.createCommand(rawScheduleTitle, rawScheduleContent, startTime, endTime),
+                () -> ScheduleUpdateCommand.of(scheduleId, requestTripperId, rawScheduleTitle, rawScheduleContent, startTime, endTime),
                 CustomValidationException.class);
 
         // then
@@ -133,6 +138,8 @@ public class ScheduleUpdateCommandFactoryTest {
     @Test
     void endTimeNullTest() {
         // given
+        long scheduleId = 1L;
+        long requestTripperId = 2L;
         String rawScheduleTitle = "일정 제목";
         String rawScheduleContent = "일정 본문";
         LocalTime startTime = LocalTime.of(13,5);
@@ -140,7 +147,7 @@ public class ScheduleUpdateCommandFactoryTest {
 
         // when
         CustomValidationException cve = catchThrowableOfType(
-                () -> scheduleUpdateCommandFactory.createCommand(rawScheduleTitle, rawScheduleContent, startTime, endTime),
+                () -> ScheduleUpdateCommand.of(scheduleId, requestTripperId, rawScheduleTitle, rawScheduleContent, startTime, endTime),
                 CustomValidationException.class);
 
         // then
@@ -153,6 +160,8 @@ public class ScheduleUpdateCommandFactoryTest {
     @Test
     void bothTimeNullTest() {
         // given
+        long scheduleId = 1L;
+        long requestTripperId = 2L;
         String rawScheduleTitle = "일정 제목";
         String rawScheduleContent = "일정 본문";
         LocalTime startTime = null;
@@ -160,7 +169,7 @@ public class ScheduleUpdateCommandFactoryTest {
 
         // when
         CustomValidationException cve = catchThrowableOfType(
-                () -> scheduleUpdateCommandFactory.createCommand(rawScheduleTitle, rawScheduleContent, startTime, endTime),
+                () -> ScheduleUpdateCommand.of(scheduleId, requestTripperId, rawScheduleTitle, rawScheduleContent, startTime, endTime),
                 CustomValidationException.class);
 
         // then

@@ -2,11 +2,7 @@ package com.cosain.trilo.unit.trip.presentation.schedule.docs;
 
 import com.cosain.trilo.support.RestDocsTestSupport;
 import com.cosain.trilo.trip.application.schedule.service.schedule_update.ScheduleUpdateCommand;
-import com.cosain.trilo.trip.application.schedule.service.schedule_update.ScheduleUpdateCommandFactory;
 import com.cosain.trilo.trip.application.schedule.service.schedule_update.ScheduleUpdateService;
-import com.cosain.trilo.trip.domain.vo.ScheduleContent;
-import com.cosain.trilo.trip.domain.vo.ScheduleTime;
-import com.cosain.trilo.trip.domain.vo.ScheduleTitle;
 import com.cosain.trilo.trip.presentation.schedule.ScheduleUpdateController;
 import com.cosain.trilo.trip.presentation.schedule.dto.request.ScheduleUpdateRequest;
 import org.junit.jupiter.api.DisplayName;
@@ -15,13 +11,13 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.ResultActions;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalTime;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
@@ -43,38 +39,29 @@ public class ScheduleUpdateControllerDocsTest extends RestDocsTestSupport {
     @MockBean
     private ScheduleUpdateService scheduleUpdateService;
 
-    @MockBean
-    private ScheduleUpdateCommandFactory scheduleUpdateCommandFactory;
-
     private final String ACCESS_TOKEN = "Bearer accessToken";
 
     @Test
     @DisplayName("인증된 사용자의 일정 수정 요청 -> 성공")
     void scheduleUpdateDocTest() throws Exception {
-        mockingForLoginUserAnnotation();
-
-
         // given
-        mockingForLoginUserAnnotation();
+        long requestTripperId = 2L;
+        mockingForLoginUserAnnotation(requestTripperId);
 
         Long scheduleId = 1L;
-        String rawTitle = "수정 일정제목";
-        String rawContent = "수정 일정내용";
+        String rawScheduleTitle = "수정 일정제목";
+        String rawScheduleContent = "수정 일정내용";
         LocalTime startTime = LocalTime.of(13, 0);
         LocalTime endTime = LocalTime.of(13, 5);
 
-        ScheduleUpdateRequest request = new ScheduleUpdateRequest(rawTitle, rawContent, startTime, endTime);
-        ScheduleUpdateCommand command = new ScheduleUpdateCommand(ScheduleTitle.of(rawContent), ScheduleContent.of(rawContent), ScheduleTime.of(startTime, endTime));
+        var request = new ScheduleUpdateRequest(rawScheduleTitle, rawScheduleContent, startTime, endTime);
+        var command = ScheduleUpdateCommand.of(scheduleId, requestTripperId, rawScheduleTitle, rawScheduleContent, startTime, endTime);
 
-        given(scheduleUpdateCommandFactory.createCommand(eq(rawTitle), eq(rawContent), eq(startTime), eq(endTime))).willReturn(command);
-        given(scheduleUpdateService.updateSchedule(eq(scheduleId), any(), any(ScheduleUpdateCommand.class))).willReturn(1L);
+        // when
+        ResultActions resultActions = runTest(scheduleId, request);
 
-        // when & then
-        mockMvc.perform(put("/api/schedules/{scheduleId}", scheduleId)
-                        .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)
-                        .content(createJson(request))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .characterEncoding(StandardCharsets.UTF_8))
+        // then
+        resultActions
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.scheduleId").value(1L))
                 .andDo(print())
@@ -111,7 +98,14 @@ public class ScheduleUpdateControllerDocsTest extends RestDocsTestSupport {
                         )
                 ));
 
-        verify(scheduleUpdateCommandFactory).createCommand(eq(rawTitle), eq(rawContent), eq(startTime), eq(endTime));
-        verify(scheduleUpdateService).updateSchedule(eq(scheduleId), any(), any(ScheduleUpdateCommand.class));
+        verify(scheduleUpdateService, times(1)).updateSchedule(eq(command));
+    }
+
+    private ResultActions runTest(Long scheduleId, ScheduleUpdateRequest request) throws Exception {
+        return mockMvc.perform(put("/api/schedules/{scheduleId}", scheduleId)
+                .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)
+                .content(createJson(request))
+                .contentType(MediaType.APPLICATION_JSON)
+                .characterEncoding(StandardCharsets.UTF_8));
     }
 }

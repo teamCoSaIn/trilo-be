@@ -4,7 +4,6 @@ import com.cosain.trilo.auth.application.token.UserPayload;
 import com.cosain.trilo.auth.presentation.Login;
 import com.cosain.trilo.auth.presentation.LoginUser;
 import com.cosain.trilo.trip.application.schedule.service.schedule_update.ScheduleUpdateCommand;
-import com.cosain.trilo.trip.application.schedule.service.schedule_update.ScheduleUpdateCommandFactory;
 import com.cosain.trilo.trip.application.schedule.service.schedule_update.ScheduleUpdateService;
 import com.cosain.trilo.trip.presentation.schedule.dto.request.ScheduleUpdateRequest;
 import com.cosain.trilo.trip.presentation.schedule.dto.response.ScheduleUpdateResponse;
@@ -19,18 +18,20 @@ import org.springframework.web.bind.annotation.*;
 public class ScheduleUpdateController {
 
     private final ScheduleUpdateService scheduleUpdateService;
-    private final ScheduleUpdateCommandFactory scheduleUpdateCommandFactory;
 
     @PutMapping("/api/schedules/{scheduleId}")
     @ResponseStatus(HttpStatus.OK)
     @Login
     public ScheduleUpdateResponse updateSchedule(@LoginUser UserPayload userPayload, @PathVariable Long scheduleId, @RequestBody ScheduleUpdateRequest request) {
-        Long tripperId = userPayload.getId();
+        Long requestTripperId = userPayload.getId();
 
-        ScheduleUpdateCommand scheduleUpdateCommand = scheduleUpdateCommandFactory.createCommand(request.getTitle(),request.getContent(), request.getStartTime(), request.getEndTime());
-        Long updatedScheduleId = scheduleUpdateService.updateSchedule(scheduleId,tripperId, scheduleUpdateCommand);
+        var command = ScheduleUpdateCommand.of(
+                scheduleId, requestTripperId, request.getTitle(),
+                request.getContent(), request.getStartTime(), request.getEndTime()
+        );
 
-        return ScheduleUpdateResponse.from(updatedScheduleId);
+        scheduleUpdateService.updateSchedule(command);
+        return ScheduleUpdateResponse.from(scheduleId);
     }
 
 }
