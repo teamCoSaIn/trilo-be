@@ -1,6 +1,6 @@
 package com.cosain.trilo.unit.trip.domain.vo;
 
-import com.cosain.trilo.trip.domain.exception.InvalidTripTitleException;
+import com.cosain.trilo.common.exception.trip.InvalidTripTitleException;
 import com.cosain.trilo.trip.domain.vo.TripTitle;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

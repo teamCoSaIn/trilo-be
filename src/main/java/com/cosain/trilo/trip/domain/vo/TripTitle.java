@@ -1,6 +1,6 @@
 package com.cosain.trilo.trip.domain.vo;
 
-import com.cosain.trilo.trip.domain.exception.InvalidTripTitleException;
+import com.cosain.trilo.common.exception.trip.InvalidTripTitleException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.*;

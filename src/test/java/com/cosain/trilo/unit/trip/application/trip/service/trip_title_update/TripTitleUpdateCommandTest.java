@@ -3,7 +3,7 @@ package com.cosain.trilo.unit.trip.application.trip.service.trip_title_update;
 
 import com.cosain.trilo.common.exception.CustomValidationException;
 import com.cosain.trilo.trip.application.trip.service.trip_title_update.TripTitleUpdateCommand;
-import com.cosain.trilo.trip.domain.exception.InvalidTripTitleException;
+import com.cosain.trilo.common.exception.trip.InvalidTripTitleException;
 import com.cosain.trilo.trip.domain.vo.TripTitle;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
