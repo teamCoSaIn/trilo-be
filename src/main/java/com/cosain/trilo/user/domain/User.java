@@ -34,11 +34,14 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    @Column(name = "is_del")
+    private boolean isDel;
+
     @Embedded
     private MyPageImage myPageImage;
 
     @Builder(access = AccessLevel.PUBLIC)
-    private User(Long id, String nickName, String email, String profileImageUrl, AuthProvider authProvider, Role role, MyPageImage myPageImage) {
+    private User(Long id, String nickName, String email, String profileImageUrl, AuthProvider authProvider, Role role, MyPageImage myPageImage, boolean isDel) {
         this.id = id;
         this.nickName = nickName;
         this.email = email;
@@ -46,6 +49,7 @@ public class User {
         this.authProvider = authProvider;
         this.role = role;
         this.myPageImage = myPageImage == null ? MyPageImage.initializeMyPageImage() : myPageImage;
+        this.isDel = isDel;
     }
 
     public static User from(OAuthProfileDto oAuthProfileDto) {
@@ -55,12 +59,14 @@ public class User {
                 .profileImageUrl(oAuthProfileDto.getProfileImageUrl())
                 .role(Role.MEMBER)
                 .authProvider(oAuthProfileDto.getProvider())
+                .isDel(false)
                 .build();
     }
 
     public void updateUserByOauthProfile(OAuthProfileDto oAuthProfileDto) {
         this.nickName = oAuthProfileDto.getName();
         this.profileImageURL = oAuthProfileDto.getProfileImageUrl();
+        this.isDel = false;
     }
 
     public void update(UserUpdateRequest userUpdateRequest){
