@@ -69,6 +69,10 @@ public class User {
         this.isDel = false;
     }
 
+    public void updateIsDel(boolean flag){
+        this.isDel = flag;
+    }
+
     public void update(UserUpdateRequest userUpdateRequest){
         this.nickName = userUpdateRequest.getNickName();
     }

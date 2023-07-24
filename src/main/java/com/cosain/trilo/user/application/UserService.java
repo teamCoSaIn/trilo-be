@@ -79,7 +79,8 @@ public class UserService {
                 .orElseThrow(UserNotFoundException::new);
 
         eventPublisher.publishEvent(new UserDeleteEvent(findUser.getId())); // 비동기적으로 사용자 관련된 여행 정보 삭제
-        userRepository.deleteById(targetUserId);
+        findUser.updateIsDel(true);
+        userRepository.save(findUser);
     }
 
     private void validateUserDeleteAuthority(Long targetUserId, Long requestUserId){

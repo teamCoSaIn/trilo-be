@@ -20,6 +20,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationEventPublisher;
@@ -169,9 +170,9 @@ public class UserServiceTest {
             // when
             userService.delete(targetUserId, requestUserId);
             // then
-            verify(userRepository).findById(eq(targetUserId));
-            verify(eventPublisher).publishEvent(any(UserDeleteEvent.class));
-            verify(userRepository).deleteById(eq(targetUserId));
+            verify(userRepository, times(1)).findById(eq(targetUserId));
+            verify(eventPublisher, times(1)).publishEvent(any(UserDeleteEvent.class));
+            verify(userRepository, times(1)).save(any(User.class));
         }
 
         @Test
