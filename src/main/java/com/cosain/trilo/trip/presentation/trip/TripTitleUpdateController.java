@@ -4,7 +4,6 @@ import com.cosain.trilo.auth.application.token.UserPayload;
 import com.cosain.trilo.auth.presentation.Login;
 import com.cosain.trilo.auth.presentation.LoginUser;
 import com.cosain.trilo.trip.application.trip.service.trip_title_update.TripTitleUpdateCommand;
-import com.cosain.trilo.trip.application.trip.service.trip_title_update.TripTitleUpdateCommandFactory;
 import com.cosain.trilo.trip.application.trip.service.trip_title_update.TripTitleUpdateService;
 import com.cosain.trilo.trip.presentation.trip.dto.request.TripTitleUpdateRequest;
 import com.cosain.trilo.trip.presentation.trip.dto.request.TripTitleUpdateResponse;
@@ -19,16 +18,15 @@ import org.springframework.web.bind.annotation.*;
 public class TripTitleUpdateController {
 
     private final TripTitleUpdateService tripTitleUpdateService;
-    private final TripTitleUpdateCommandFactory tripTitleUpdateCommandFactory;
 
     @PutMapping("/api/trips/{tripId}/title")
     @ResponseStatus(HttpStatus.OK)
     @Login
     public TripTitleUpdateResponse updateTrip(@LoginUser UserPayload userPayload, @PathVariable Long tripId, @RequestBody TripTitleUpdateRequest request) {
-        Long tripperId = userPayload.getId();
+        Long requestTripperId = userPayload.getId();
 
-        TripTitleUpdateCommand updateCommand = tripTitleUpdateCommandFactory.createCommand(request.getTitle());
-        tripTitleUpdateService.updateTripTitle(tripId, tripperId, updateCommand);
+        var command = TripTitleUpdateCommand.of(tripId, requestTripperId, request.getTitle());
+        tripTitleUpdateService.updateTripTitle(command);
 
         return new TripTitleUpdateResponse(tripId);
     }

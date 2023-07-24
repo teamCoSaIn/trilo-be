@@ -2,9 +2,7 @@ package com.cosain.trilo.unit.trip.presentation.trip.docs;
 
 import com.cosain.trilo.support.RestDocsTestSupport;
 import com.cosain.trilo.trip.application.trip.service.trip_period_update.TripPeriodUpdateCommand;
-import com.cosain.trilo.trip.application.trip.service.trip_period_update.TripPeriodUpdateCommandFactory;
 import com.cosain.trilo.trip.application.trip.service.trip_period_update.TripPeriodUpdateService;
-import com.cosain.trilo.trip.domain.vo.TripPeriod;
 import com.cosain.trilo.trip.presentation.trip.TripPeriodUpdateController;
 import com.cosain.trilo.trip.presentation.trip.dto.request.TripPeriodUpdateRequest;
 import org.junit.jupiter.api.DisplayName;
@@ -17,9 +15,7 @@ import org.springframework.http.MediaType;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -43,26 +39,23 @@ public class TripPeriodUpdateControllerDocsTest extends RestDocsTestSupport {
     @MockBean
     private TripPeriodUpdateService tripPeriodUpdateService;
 
-    @MockBean
-    private TripPeriodUpdateCommandFactory tripPeriodUpdateCommandFactory;
-
     private final String ACCESS_TOKEN = "Bearer accessToken";
 
     @Test
     @DisplayName("인증된 사용자 요청 -> 성공")
     public void updateTripPeriod_with_authorizedUser() throws Exception {
         // given
-        mockingForLoginUserAnnotation();
+        long tripperId = 2L;
+        mockingForLoginUserAnnotation(tripperId);
 
         Long tripId = 1L;
         LocalDate startDate = LocalDate.of(2023, 4, 1);
         LocalDate endDate = LocalDate.of(2023, 4, 5);
 
         TripPeriodUpdateRequest request = new TripPeriodUpdateRequest(startDate, endDate);
-        TripPeriodUpdateCommand command = new TripPeriodUpdateCommand(TripPeriod.of(startDate, endDate));
+        TripPeriodUpdateCommand command = TripPeriodUpdateCommand.of(tripId, tripperId, startDate, endDate);
 
-        given(tripPeriodUpdateCommandFactory.createCommand(eq(startDate), eq(endDate))).willReturn(command);
-        willDoNothing().given(tripPeriodUpdateService).updateTripPeriod(eq(tripId), any(), any(TripPeriodUpdateCommand.class));
+        willDoNothing().given(tripPeriodUpdateService).updateTripPeriod(eq(command));
 
         mockMvc.perform(put("/api/trips/{tripId}/period", tripId)
                         .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)
@@ -101,7 +94,6 @@ public class TripPeriodUpdateControllerDocsTest extends RestDocsTestSupport {
                         )
                 ));
 
-        verify(tripPeriodUpdateService, times(1)).updateTripPeriod(eq(tripId), any(), any(TripPeriodUpdateCommand.class));
-        verify(tripPeriodUpdateCommandFactory, times(1)).createCommand(eq(startDate), eq(endDate));
+        verify(tripPeriodUpdateService, times(1)).updateTripPeriod(eq(command));
     }
 }

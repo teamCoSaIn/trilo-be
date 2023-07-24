@@ -1,13 +1,10 @@
-package com.cosain.trilo.unit.trip.application.trip.service.trip_title_update;
-
+package com.cosain.trilo.unit.trip.application.trip.service.trip_create;
 
 import com.cosain.trilo.common.exception.CustomValidationException;
-import com.cosain.trilo.trip.application.trip.service.trip_title_update.TripTitleUpdateCommand;
-import com.cosain.trilo.trip.application.trip.service.trip_title_update.TripTitleUpdateCommandFactory;
+import com.cosain.trilo.trip.application.trip.service.trip_create.TripCreateCommand;
 import com.cosain.trilo.trip.domain.exception.InvalidTripTitleException;
 import com.cosain.trilo.trip.domain.vo.TripTitle;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -15,39 +12,35 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowableOfType;
 
 @Slf4j
-@DisplayName("TripTitleUpdateCommandFactory 테스트")
-public class TripTitleUpdateCommandFactoryTest {
+@DisplayName("TripCreateCommand 테스트")
+public class TripCreateCommandTest {
 
-    private TripTitleUpdateCommandFactory tripTitleUpdateCommandFactory;
-
-    @BeforeEach
-    void setUp() {
-        this.tripTitleUpdateCommandFactory = new TripTitleUpdateCommandFactory();
-    }
-
-    @DisplayName("올바른 길이의 제목 -> 정상 생성")
+    @DisplayName("제목이 올바른 길이 -> 정상 생성")
     @Test
     public void createSuccessTest() {
         // given
-        String normalTitle = "제목";
+        long tripperId = 1L;
+        String rawTitle = "제목";
 
         // when
-        TripTitleUpdateCommand command = tripTitleUpdateCommandFactory.createCommand(normalTitle);
+        TripCreateCommand createCommand = TripCreateCommand.of(tripperId, rawTitle);
 
         // then
-        assertThat(command).isNotNull();
-        assertThat(command.getTripTitle()).isEqualTo(TripTitle.of(normalTitle));
+        assertThat(createCommand).isNotNull();
+        assertThat(createCommand.getTripperId()).isEqualTo(tripperId);
+        assertThat(createCommand.getTripTitle()).isEqualTo(TripTitle.of(rawTitle));
     }
 
+    @DisplayName("제목 null -> 검증예외 발생")
     @Test
-    @DisplayName("제목이 Null -> 검증에러 발생")
     public void testNullTitle() {
         // given
+        long tripperId = 1L;
         String nullTitle = null;
 
         // when
         CustomValidationException cve = catchThrowableOfType(
-                () -> tripTitleUpdateCommandFactory.createCommand(nullTitle),
+                () -> TripCreateCommand.of(tripperId, nullTitle),
                 CustomValidationException.class);
 
         // then
@@ -56,15 +49,16 @@ public class TripTitleUpdateCommandFactoryTest {
         assertThat(cve.getExceptions().get(0)).isInstanceOf(InvalidTripTitleException.class);
     }
 
-    @DisplayName("제목이 Null -> 검증에러 발생")
+    @DisplayName("제목 빈문자열 -> 검증예외 발생")
     @Test
     public void emptyTitle() {
         // given
+        long tripperId = 1L;
         String emptyTitle = "";
 
         // when
         CustomValidationException cve = catchThrowableOfType(
-                () -> tripTitleUpdateCommandFactory.createCommand(emptyTitle),
+                () -> TripCreateCommand.of(tripperId, emptyTitle),
                 CustomValidationException.class);
 
         // then
@@ -77,11 +71,12 @@ public class TripTitleUpdateCommandFactoryTest {
     @Test
     public void whiteSpaceTitle() {
         // given
-        String whiteSpaceTitle = "    ";
+        long tripperId = 1L;
+        String whiteSpaceTitle = "     ";
 
         // when
         CustomValidationException cve = catchThrowableOfType(
-                () -> tripTitleUpdateCommandFactory.createCommand(whiteSpaceTitle),
+                () -> TripCreateCommand.of(tripperId, whiteSpaceTitle),
                 CustomValidationException.class);
 
         // then
@@ -90,15 +85,16 @@ public class TripTitleUpdateCommandFactoryTest {
         assertThat(cve.getExceptions().get(0)).isInstanceOf(InvalidTripTitleException.class);
     }
 
-    @DisplayName("제한보다 긴 제목 -> 검증예외 발생")
+    @DisplayName("20자보다 긴 제목 -> 검증예외 발생")
     @Test
     public void tooLongTitle() {
         // given
-        String tooLongTitle = "가".repeat(TripTitle.MAX_LENGTH + 1);
+        long tripperId = 1L;
+        String tooLongTitle = "가".repeat(21);
 
         // when
         CustomValidationException cve = catchThrowableOfType(
-                () -> tripTitleUpdateCommandFactory.createCommand(tooLongTitle),
+                () -> TripCreateCommand.of(tripperId, tooLongTitle),
                 CustomValidationException.class);
 
         // then

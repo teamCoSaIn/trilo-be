@@ -21,33 +21,29 @@ public class ScheduleCreateService {
     private final TripRepository tripRepository;
 
     @Transactional
-    public Long createSchedule(Long tripperId, ScheduleCreateCommand createCommand) {
-        Long dayId = createCommand.getDayId();
-        Long tripId = createCommand.getTripId();
-
-        Day day = findDay(dayId);
-        Trip trip = findTrip(tripId);
-        validateCreateAuthority(trip, tripperId);
-        validateTripScheduleCount(tripId);
-        validateDayScheduleCount(dayId);
+    public Long createSchedule(ScheduleCreateCommand command) {
+        Day targetDay = findTargetDay(command.getTargetDayId());
+        Trip trip = findTrip(command.getTripId());
+        validateCreateAuthority(trip, command.getRequestTripperId());
+        validateTripScheduleCount(command.getTripId());
+        validateDayScheduleCount(command.getTargetDayId());
 
         Schedule schedule;
         try {
-            schedule = trip.createSchedule(day, createCommand.getScheduleTitle(), createCommand.getPlace());
+            schedule = trip.createSchedule(targetDay, command.getScheduleTitle(), command.getPlace());
         } catch (ScheduleIndexRangeException e) {
             // 기존 ScheduleIndex 뒤에 일정 생성을 시도했으나, 가능한 ScheduleIndex 범위를 벗어났으므로 전체 재정렬
-            scheduleRepository.relocateDaySchedules(tripId, dayId);
+            scheduleRepository.relocateDaySchedules(command.getTripId(), command.getTargetDayId());
 
             // 영속성 컨텍스트가 초기화 됐으므로 trip, day를 다시 가져오고 다시 작업
-            trip = findTrip(trip.getId());
-            day = findDay(dayId);
-            schedule =  trip.createSchedule(day, createCommand.getScheduleTitle(), createCommand.getPlace());
+            trip = findTrip(command.getTripId());
+            targetDay = findTargetDay(command.getTargetDayId());
+            schedule =  trip.createSchedule(targetDay, command.getScheduleTitle(), command.getPlace());
         }
         scheduleRepository.save(schedule);
         return schedule.getId();
     }
-
-    private Day findDay(Long dayId){
+    private Day findTargetDay(Long dayId){
         return (dayId == null)
                 ? null
                 : dayRepository.findByIdWithTrip(dayId).orElseThrow(() -> new DayNotFoundException("Schedule을 Day에 넣으려고 했는데, 해당하는 Day가 존재하지 않음."));

@@ -15,11 +15,11 @@ public class TripTitleUpdateService {
     private final TripRepository tripRepository;
 
     @Transactional
-    public void updateTripTitle(Long tripId, Long tripperId, TripTitleUpdateCommand updateCommand) {
-        Trip trip = findTrip(tripId);
-        validateTripUpdateAuthority(trip, tripperId);
+    public void updateTripTitle(TripTitleUpdateCommand command) {
+        Trip trip = findTrip(command.getTripId());
+        validateTripUpdateAuthority(trip, command.getRequestTripperId());
 
-        trip.changeTitle(updateCommand.getTripTitle());
+        trip.changeTitle(command.getTripTitle());
     }
 
     private Trip findTrip(Long tripId) {

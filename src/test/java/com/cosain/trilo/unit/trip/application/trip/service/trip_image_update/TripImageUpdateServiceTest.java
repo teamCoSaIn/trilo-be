@@ -4,6 +4,7 @@ import com.cosain.trilo.common.file.ImageFile;
 import com.cosain.trilo.fixture.TripFixture;
 import com.cosain.trilo.trip.application.exception.NoTripUpdateAuthorityException;
 import com.cosain.trilo.trip.application.exception.TripNotFoundException;
+import com.cosain.trilo.trip.application.trip.service.trip_image_update.TripImageUpdateCommand;
 import com.cosain.trilo.trip.application.trip.service.trip_image_update.TripImageUpdateService;
 import com.cosain.trilo.trip.domain.entity.Trip;
 import com.cosain.trilo.trip.domain.repository.TripRepository;
@@ -50,20 +51,19 @@ public class TripImageUpdateServiceTest {
         // given
         Long tripId = 1L;
         Long tripperId = 2L;
-
         ImageFile imageFile = imageFileFixture("test-jpeg-image.jpeg");
+        TripImageUpdateCommand command = new TripImageUpdateCommand(tripId, tripperId, imageFile);
 
         Trip trip = TripFixture.undecided_Id(tripId, tripperId);
         given(tripRepository.findById(eq(tripId))).willReturn(Optional.of(trip));
 
         willDoNothing().given(tripImageOutputAdapter).uploadImage(any(ImageFile.class), anyString());
 
-
         String fullPath = String.format("https://{여행 이미지 저장소}/trips/%d/{uuid 파일명}.jpeg", tripId);
         given(tripImageOutputAdapter.getFullTripImageURL(anyString())).willReturn(fullPath);
 
         // when
-        String returnFullPath = tripImageUpdateService.updateTripImage(tripId, tripperId, imageFile);
+        String returnFullPath = tripImageUpdateService.updateTripImage(command);
 
         // then
         assertThat(trip.getTripImage()).isNotEqualTo(TripImage.defaultImage());
@@ -79,13 +79,13 @@ public class TripImageUpdateServiceTest {
         // given
         Long tripId = 1L;
         Long tripperId = 2L;
-
         ImageFile imageFile = imageFileFixture("test-jpeg-image.jpeg");
+        TripImageUpdateCommand command = new TripImageUpdateCommand(tripId, tripperId, imageFile);
 
         given(tripRepository.findById(eq(tripId))).willReturn(Optional.empty());
 
         // when & then
-        assertThatThrownBy(() ->tripImageUpdateService.updateTripImage(tripId, tripperId, imageFile))
+        assertThatThrownBy(() ->tripImageUpdateService.updateTripImage(command))
                 .isInstanceOf(TripNotFoundException.class);
         verify(tripRepository, times(1)).findById(eq(tripId));
         verify(tripImageOutputAdapter, times(0)).uploadImage(any(ImageFile.class), anyString());
@@ -98,14 +98,15 @@ public class TripImageUpdateServiceTest {
         Long tripId = 1L;
         Long tripperId = 2L;
         Long invalidTripperId = 3L;
-
         ImageFile imageFile = imageFileFixture("test-jpeg-image.jpeg");
+
+        TripImageUpdateCommand command = new TripImageUpdateCommand(tripId, invalidTripperId, imageFile);
 
         Trip trip = TripFixture.undecided_Id(tripId, tripperId);
         given(tripRepository.findById(eq(tripId))).willReturn(Optional.of(trip));
 
         // when & then
-        assertThatThrownBy(() ->tripImageUpdateService.updateTripImage(tripId, invalidTripperId, imageFile))
+        assertThatThrownBy(() ->tripImageUpdateService.updateTripImage(command))
                 .isInstanceOf(NoTripUpdateAuthorityException.class);
         verify(tripRepository, times(1)).findById(eq(tripId));
         verify(tripImageOutputAdapter, times(0)).uploadImage(any(ImageFile.class), anyString());

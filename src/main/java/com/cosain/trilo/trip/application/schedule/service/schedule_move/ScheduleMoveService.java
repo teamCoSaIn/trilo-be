@@ -26,25 +26,26 @@ public class ScheduleMoveService {
     private final DayRepository dayRepository;
 
     @Transactional
-    public ScheduleMoveResult moveSchedule(Long scheduleId, Long moveTripperId, ScheduleMoveCommand moveCommand) {
-        Schedule schedule = findSchedule(scheduleId);
-        Day targetDay = findDay(moveCommand.getTargetDayId());
+    public ScheduleMoveResult moveSchedule(ScheduleMoveCommand command) {
+        Schedule schedule = findSchedule(command.getScheduleId());
+        Day targetDay = findTargetDay(command.getTargetDayId());
 
         Trip trip = schedule.getTrip();
 
-        validateScheduleMoveAuthority(trip, moveTripperId);
+        validateScheduleMoveAuthority(trip, command.getRequestTripperId());
         validateTargetDayScheduleCount(schedule, targetDay);
 
         ScheduleMoveDto moveDto;
         try {
-            moveDto = trip.moveSchedule(schedule, targetDay, moveCommand.getTargetOrder());
+            moveDto = trip.moveSchedule(schedule, targetDay, command.getTargetOrder());
         } catch (MidScheduleIndexConflictException | ScheduleIndexRangeException e) {
-            scheduleRepository.relocateDaySchedules(trip.getId(), moveCommand.getTargetDayId());
-            schedule = findSchedule(scheduleId);
-            targetDay = findDay(moveCommand.getTargetDayId());
+            // 일정 이동 과정에서 순서 충돌이 발생하거나, 범위를 벗어나면 재배치후 다시 가져옴
+            scheduleRepository.relocateDaySchedules(trip.getId(), command.getTargetDayId());
+            schedule = findSchedule(command.getScheduleId());
+            targetDay = findTargetDay(command.getTargetDayId());
 
             trip = schedule.getTrip();
-            moveDto = trip.moveSchedule(schedule, targetDay, moveCommand.getTargetOrder());
+            moveDto = trip.moveSchedule(schedule, targetDay, command.getTargetOrder()); // 다시 이동
         }
         return ScheduleMoveResult.from(moveDto);
     }
@@ -67,7 +68,7 @@ public class ScheduleMoveService {
                 .orElseThrow(() -> new ScheduleNotFoundException("일치하는 식별자의 일정을 찾을 수 없음"));
     }
 
-    private Day findDay(Long targetDayId) {
+    private Day findTargetDay(Long targetDayId) {
         if (targetDayId == null) {
             return null;
         }
@@ -75,8 +76,8 @@ public class ScheduleMoveService {
                 .orElseThrow(() -> new DayNotFoundException("일치하는 식별자의 Day를 찾을 수 없음"));
     }
 
-    private void validateScheduleMoveAuthority(Trip trip, Long moveTripperId) {
-        if (!trip.getTripperId().equals(moveTripperId)) {
+    private void validateScheduleMoveAuthority(Trip trip, Long requestTripperId) {
+        if (!trip.getTripperId().equals(requestTripperId)) {
             throw new NoScheduleMoveAuthorityException("권한 없는 사람이 일정을 이동하려 함");
         }
     }

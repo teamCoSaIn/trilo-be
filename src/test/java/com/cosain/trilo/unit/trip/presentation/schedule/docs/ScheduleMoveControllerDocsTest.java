@@ -2,7 +2,6 @@ package com.cosain.trilo.unit.trip.presentation.schedule.docs;
 
 import com.cosain.trilo.support.RestDocsTestSupport;
 import com.cosain.trilo.trip.application.schedule.service.schedule_move.ScheduleMoveCommand;
-import com.cosain.trilo.trip.application.schedule.service.schedule_move.ScheduleMoveCommandFactory;
 import com.cosain.trilo.trip.application.schedule.service.schedule_move.ScheduleMoveResult;
 import com.cosain.trilo.trip.application.schedule.service.schedule_move.ScheduleMoveService;
 import com.cosain.trilo.trip.presentation.schedule.ScheduleMoveController;
@@ -13,12 +12,13 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.ResultActions;
 
 import java.nio.charset.StandardCharsets;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
@@ -40,24 +40,21 @@ public class ScheduleMoveControllerDocsTest extends RestDocsTestSupport {
     @MockBean
     private ScheduleMoveService scheduleMoveSerivce;
 
-    @MockBean
-    private ScheduleMoveCommandFactory scheduleMoveCommandFactory;
-
     private static final String ACCESS_TOKEN = "Bearer accessToken";
-    private static final String ENDPOINT_URL_TEMPLATE = "/api/schedules/{scheduleId}/position";
 
     @Test
     @DisplayName("인증된 사용자의 일정 이동 요청 -> 성공")
     void scheduleMoveDocTest() throws Exception {
-        mockingForLoginUserAnnotation();
+        // given
+        long requestTripperId = 1L;
+        mockingForLoginUserAnnotation(requestTripperId);
 
-        // given & mocking
         Long scheduleId = 1L;
         Long targetDayId = 2L;
         int targetOrder = 3;
 
-        ScheduleMoveRequest request = new ScheduleMoveRequest(targetDayId, targetOrder);
-        ScheduleMoveCommand command = new ScheduleMoveCommand(targetDayId, targetOrder);
+        var request = new ScheduleMoveRequest(targetDayId, targetOrder);
+        var command = ScheduleMoveCommand.of(scheduleId, requestTripperId, targetDayId, targetOrder);
         ScheduleMoveResult moveResult = ScheduleMoveResult.builder()
                 .scheduleId(scheduleId)
                 .beforeDayId(1L)
@@ -65,18 +62,13 @@ public class ScheduleMoveControllerDocsTest extends RestDocsTestSupport {
                 .positionChanged(true)
                 .build();
 
-        given(scheduleMoveCommandFactory.createCommand(eq(targetDayId), eq(targetOrder)))
-                .willReturn(command);
-        given(scheduleMoveSerivce.moveSchedule(eq(scheduleId), any(), any(ScheduleMoveCommand.class)))
-                .willReturn(moveResult);
+        given(scheduleMoveSerivce.moveSchedule(eq(command))).willReturn(moveResult);
 
-        // when & then
-        mockMvc.perform(put(ENDPOINT_URL_TEMPLATE, scheduleId)
-                        .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)
-                        .content(createJson(request))
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .contentType(MediaType.APPLICATION_JSON)
-                )
+        // when
+        ResultActions resultActions = runTest(scheduleId, createJson(request));
+
+        // then
+        resultActions
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.scheduleId").value(scheduleId))
@@ -118,7 +110,15 @@ public class ScheduleMoveControllerDocsTest extends RestDocsTestSupport {
                         )
                 ));
 
-        verify(scheduleMoveCommandFactory).createCommand(eq(targetDayId), eq(targetOrder));
-        verify(scheduleMoveSerivce).moveSchedule(eq(scheduleId), any(), any(ScheduleMoveCommand.class));
+        verify(scheduleMoveSerivce, times(1)).moveSchedule(eq(command));
+    }
+
+    private ResultActions runTest(Object scheduleId, String content) throws Exception {
+        return mockMvc.perform(put("/api/schedules/{scheduleId}/position", scheduleId)
+                .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)
+                .content(content)
+                .characterEncoding(StandardCharsets.UTF_8)
+                .contentType(MediaType.APPLICATION_JSON)
+        );
     }
 }

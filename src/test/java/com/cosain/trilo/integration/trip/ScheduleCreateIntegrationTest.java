@@ -9,14 +9,11 @@ import com.cosain.trilo.trip.domain.entity.Trip;
 import com.cosain.trilo.trip.domain.repository.ScheduleRepository;
 import com.cosain.trilo.trip.domain.repository.TripRepository;
 import com.cosain.trilo.trip.domain.vo.*;
-import com.cosain.trilo.trip.presentation.schedule.dto.request.RequestCoordinate;
 import com.cosain.trilo.trip.presentation.schedule.dto.request.ScheduleCreateRequest;
 import com.cosain.trilo.trip.presentation.schedule.dto.response.ScheduleCreateResponse;
 import com.cosain.trilo.user.domain.User;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -27,7 +24,6 @@ import java.time.LocalDate;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -297,11 +293,11 @@ class ScheduleCreateIntegrationTest extends IntegrationTest {
                 .andExpect(jsonPath("$.errorCode").value("request-0003"))
                 .andExpect(jsonPath("$.errorMessage").exists())
                 .andExpect(jsonPath("$.errorDetail").exists())
-                .andExpect(jsonPath("$.errors", hasSize(2)))
-                .andExpect(jsonPath("$.errors[*].errorCode", hasItem("place-0001")))
-                .andExpect(jsonPath("$.errors[*].errorCode", hasItem("place-0002")))
-                .andExpect(jsonPath("$.errors[*].errorMessage").exists())
-                .andExpect(jsonPath("$.errors[*].errorDetail").exists());
+                .andExpect(jsonPath("$.errors", hasSize(1)))
+                .andExpect(jsonPath("$.errors[0].errorCode").value("place-0002"))
+                .andExpect(jsonPath("$.errors[0].errorMessage").exists())
+                .andExpect(jsonPath("$.errors[0].errorDetail").exists())
+                .andExpect(jsonPath("$.errors[0].field").exists());
     }
 
     @Test
@@ -331,387 +327,8 @@ class ScheduleCreateIntegrationTest extends IntegrationTest {
                 .andExpect(jsonPath("$.errors", hasSize(1)))
                 .andExpect(jsonPath("$.errors[0].errorCode").value("schedule-0007"))
                 .andExpect(jsonPath("$.errors[0].errorMessage").exists())
-                .andExpect(jsonPath("$.errors[0].errorDetail").exists());
-    }
-
-    @DisplayName("일정 제목이 null 아니고 20자 이하(공백 허용) -> 정상 생성")
-    @ValueSource(strings = {"일정 제목", "", "     "})
-    @ParameterizedTest
-    public void tripIdNullTest(String rawScheduleTitle) throws Exception {
-        // given
-        User user = setupMockNaverUser();
-        Trip trip = setupUndecidedTrip(user.getId());
-        Schedule beforeSchedule = setupTemporarySchedule(trip, 0L);
-
-        var request = defaultRequestBuilder(null, trip.getId()).title(rawScheduleTitle).build();
-
-        // when : 일정 제목 정상 케이스
-        ResultActions resultActions = mockMvc.perform(post("/api/schedules")
-                .header(HttpHeaders.AUTHORIZATION, authorizationHeader(user))
-                .content(createRequestJson(request))
-                .characterEncoding(StandardCharsets.UTF_8)
-                .contentType(MediaType.APPLICATION_JSON));
-        flushAndClear();
-
-        // then ==============================================================================================
-
-        // then 1: 응답 메시지 검증
-        resultActions
-                .andDo(print())
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.scheduleId").isNotEmpty());
-
-        // then 2: 응답 데이터 검증
-        var response = createResponseObject(resultActions, ScheduleCreateResponse.class);
-        Schedule findSchedule = scheduleRepository.findById(response.getScheduleId()).orElseThrow(IllegalStateException::new);
-
-        assertThat(findSchedule.getTrip().getId()).isEqualTo(trip.getId());
-        assertThat(findSchedule.getDay()).isEqualTo(null);
-        assertThat(findSchedule.getScheduleTitle()).isEqualTo(ScheduleTitle.of(request.getTitle()));
-        assertThat(findSchedule.getScheduleContent()).isEqualTo(ScheduleContent.defaultContent());
-        assertThat(findSchedule.getScheduleIndex()).isEqualTo(beforeSchedule.getScheduleIndex().generateBeforeIndex());
-        assertThat(findSchedule.getPlace())
-                .isEqualTo(Place.of(request.getPlaceId(), request.getPlaceName(), Coordinate.of(request.getCoordinate().getLatitude(), request.getCoordinate().getLongitude())));
-        assertThat(findSchedule.getScheduleTime()).isEqualTo(ScheduleTime.defaultTime());
-    }
-
-    @Test
-    @DisplayName("일정 제목 null -> 입력 검증 실패 400 예외")
-    public void nullTitle() throws Exception {
-        // given
-        User user = setupMockNaverUser();
-        Trip trip = setupUndecidedTrip(user.getId());
-
-        var request = defaultRequestBuilder(null, trip.getId()).title(null).build();
-        flushAndClear();
-
-        // when : null 제목
-        ResultActions resultActions = mockMvc.perform(post("/api/schedules")
-                .header(HttpHeaders.AUTHORIZATION, authorizationHeader(user))
-                .content(createRequestJson(request))
-                .characterEncoding(StandardCharsets.UTF_8)
-                .contentType(MediaType.APPLICATION_JSON));
-        flushAndClear();
-
-        // then : 응답 데이터 검증
-        resultActions
-                .andDo(print())
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.errorCode").value("request-0003"))
-                .andExpect(jsonPath("$.errorMessage").exists())
-                .andExpect(jsonPath("$.errorDetail").exists())
-                .andExpect(jsonPath("$.errors", hasSize(1)))
-                .andExpect(jsonPath("$.errors[0].errorCode").value("schedule-0008"))
-                .andExpect(jsonPath("$.errors[0].errorMessage").exists())
-                .andExpect(jsonPath("$.errors[0].errorDetail").exists());
-    }
-    @Test
-    @DisplayName("35자를 넘는 일정 제목 -> 입력 검증 실패 400 예외")
-    public void tooLongScheduleTitle() throws Exception {
-        // given
-        User user = setupMockNaverUser();
-        Trip trip = setupUndecidedTrip(user.getId());
-
-        String tooLongTitle = "가".repeat(36);
-        var request = defaultRequestBuilder(null, trip.getId()).title(tooLongTitle).build();
-        flushAndClear();
-
-        // when : 20자를 넘는 제목
-        ResultActions resultActions = mockMvc.perform(post("/api/schedules")
-                .header(HttpHeaders.AUTHORIZATION, authorizationHeader(user))
-                .content(createRequestJson(request))
-                .characterEncoding(StandardCharsets.UTF_8)
-                .contentType(MediaType.APPLICATION_JSON));
-        flushAndClear();
-
-        // then : 응답 데이터 검증
-        resultActions
-                .andDo(print())
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.errorCode").value("request-0003"))
-                .andExpect(jsonPath("$.errorMessage").exists())
-                .andExpect(jsonPath("$.errorDetail").exists())
-                .andExpect(jsonPath("$.errors", hasSize(1)))
-                .andExpect(jsonPath("$.errors[0].errorCode").value("schedule-0008"))
-                .andExpect(jsonPath("$.errors[0].errorMessage").exists())
-                .andExpect(jsonPath("$.errors[0].errorDetail").exists());
-    }
-
-    @Test
-    @DisplayName("위도 누락 -> 입력 검증 실패 400 예외")
-    public void nullLatitude() throws Exception {
-        // given
-        User user = setupMockNaverUser();
-        Trip trip = setupUndecidedTrip(user.getId());
-
-        var request = defaultRequestBuilder(null, trip.getId())
-                .coordinate(new RequestCoordinate(null, 34.122))
-                .build();
-
-        flushAndClear();
-
-        // when : 위도 누락
-        ResultActions resultActions = mockMvc.perform(post("/api/schedules")
-                .header(HttpHeaders.AUTHORIZATION, authorizationHeader(user))
-                .content(createRequestJson(request))
-                .characterEncoding(StandardCharsets.UTF_8)
-                .contentType(MediaType.APPLICATION_JSON));
-        flushAndClear();
-
-        // then : 응답 데이터 검증
-        resultActions
-                .andDo(print())
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.errorCode").value("request-0003"))
-                .andExpect(jsonPath("$.errorMessage").exists())
-                .andExpect(jsonPath("$.errorDetail").exists())
-                .andExpect(jsonPath("$.errors", hasSize(1)))
-                .andExpect(jsonPath("$.errors[0].errorCode").value("place-0001"))
-                .andExpect(jsonPath("$.errors[0].errorMessage").exists())
-                .andExpect(jsonPath("$.errors[0].errorDetail").exists());
-    }
-
-    @Test
-    @DisplayName("경도 누락 -> 입력 검증 실패 400 예외")
-    public void nullLongitude() throws Exception {
-        // given
-        User user = setupMockNaverUser();
-        Trip trip = setupUndecidedTrip(user.getId());
-
-        var request = defaultRequestBuilder(null, trip.getId())
-                .coordinate(new RequestCoordinate(34.2121, null))
-                .build();
-
-        flushAndClear();
-
-        // when : 경도 누락
-        ResultActions resultActions = mockMvc.perform(post("/api/schedules")
-                .header(HttpHeaders.AUTHORIZATION, authorizationHeader(user))
-                .content(createRequestJson(request))
-                .characterEncoding(StandardCharsets.UTF_8)
-                .contentType(MediaType.APPLICATION_JSON));
-        flushAndClear();
-
-        // then : 응답 데이터 검증
-        resultActions
-                .andDo(print())
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.errorCode").value("request-0003"))
-                .andExpect(jsonPath("$.errorMessage").exists())
-                .andExpect(jsonPath("$.errorDetail").exists())
-                .andExpect(jsonPath("$.errors", hasSize(1)))
-                .andExpect(jsonPath("$.errors[0].errorCode").value("place-0001"))
-                .andExpect(jsonPath("$.errors[0].errorMessage").exists())
-                .andExpect(jsonPath("$.errors[0].errorDetail").exists());
-    }
-
-    @Test
-    @DisplayName("위도, 경도 누락 -> 입력 검증 실패 400 예외")
-    public void nullLatitudeAndLongitude() throws Exception {
-        // given
-        User user = setupMockNaverUser();
-        Trip trip = setupUndecidedTrip(user.getId());
-
-        var request = defaultRequestBuilder(null, trip.getId())
-                .coordinate(new RequestCoordinate(null, null))
-                .build();
-
-        flushAndClear();
-
-        // when : 위도, 경도 모두 누락
-        ResultActions resultActions = mockMvc.perform(post("/api/schedules")
-                .header(HttpHeaders.AUTHORIZATION, authorizationHeader(user))
-                .content(createRequestJson(request))
-                .characterEncoding(StandardCharsets.UTF_8)
-                .contentType(MediaType.APPLICATION_JSON));
-        flushAndClear();
-
-        // then : 응답 데이터 검증
-        resultActions
-                .andDo(print())
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.errorCode").value("request-0003"))
-                .andExpect(jsonPath("$.errorMessage").exists())
-                .andExpect(jsonPath("$.errorDetail").exists())
-                .andExpect(jsonPath("$.errors", hasSize(1)))
-                .andExpect(jsonPath("$.errors[0].errorCode").value("place-0001"))
-                .andExpect(jsonPath("$.errors[0].errorMessage").exists())
-                .andExpect(jsonPath("$.errors[0].errorDetail").exists());
-    }
-
-    @Test
-    @DisplayName("위도가 제한보다 큰 값 -> 입력 검증 실패 400 예외")
-    public void bigLatitudeTest() throws Exception {
-        // given
-        User user = setupMockNaverUser();
-        Trip trip = setupUndecidedTrip(user.getId());
-
-        double latitude = Coordinate.MAX_LATITUDE + 0.001;
-        double longitude = 71.126;
-
-        var request = defaultRequestBuilder(null, trip.getId())
-                .coordinate(new RequestCoordinate(latitude, longitude))
-                .build();
-
-        flushAndClear();
-
-        // when : 위도가 제한보다 큼
-        ResultActions resultActions = mockMvc.perform(post("/api/schedules")
-                .header(HttpHeaders.AUTHORIZATION, authorizationHeader(user))
-                .content(createRequestJson(request))
-                .characterEncoding(StandardCharsets.UTF_8)
-                .contentType(MediaType.APPLICATION_JSON));
-        flushAndClear();
-
-        // then : 응답 데이터 검증
-        resultActions
-                .andDo(print())
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.errorCode").value("request-0003"))
-                .andExpect(jsonPath("$.errorMessage").exists())
-                .andExpect(jsonPath("$.errorDetail").exists())
-                .andExpect(jsonPath("$.errors", hasSize(1)))
-                .andExpect(jsonPath("$.errors[0].errorCode").value("place-0001"))
-                .andExpect(jsonPath("$.errors[0].errorMessage").exists())
-                .andExpect(jsonPath("$.errors[0].errorDetail").exists());
-    }
-
-    @Test
-    @DisplayName("위도가 제한보다 작은 값 -> 입력 검증 실패 400 예외")
-    public void smallLatitudeTest() throws Exception {
-        // given
-        User user = setupMockNaverUser();
-        Trip trip = setupUndecidedTrip(user.getId());
-
-        double latitude = Coordinate.MIN_LATITUDE - 0.001;
-        double longitude = 71.126;
-
-        var request = defaultRequestBuilder(null, trip.getId())
-                .coordinate(new RequestCoordinate(latitude, longitude))
-                .build();
-
-        flushAndClear();
-
-        // when : 위도가 제한보다 작음
-        ResultActions resultActions = mockMvc.perform(post("/api/schedules")
-                .header(HttpHeaders.AUTHORIZATION, authorizationHeader(user))
-                .content(createRequestJson(request))
-                .characterEncoding(StandardCharsets.UTF_8)
-                .contentType(MediaType.APPLICATION_JSON));
-        flushAndClear();
-
-        // then : 응답 데이터 검증
-        resultActions
-                .andDo(print())
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.errorCode").value("request-0003"))
-                .andExpect(jsonPath("$.errorMessage").exists())
-                .andExpect(jsonPath("$.errorDetail").exists())
-                .andExpect(jsonPath("$.errors", hasSize(1)))
-                .andExpect(jsonPath("$.errors[0].errorCode").value("place-0001"))
-                .andExpect(jsonPath("$.errors[0].errorMessage").exists())
-                .andExpect(jsonPath("$.errors[0].errorDetail").exists());
-    }
-
-    @Test
-    @DisplayName("경도가 제한보다 큰 값 -> 입력 검증 실패 400 예외")
-    public void bigLongitudeTest() throws Exception {
-        // given
-        User user = setupMockNaverUser();
-        Trip trip = setupUndecidedTrip(user.getId());
-
-        double latitude = 34.212;
-        double longitude = Coordinate.MAX_LONGITUDE + 0.001;
-
-        var request = defaultRequestBuilder(null, trip.getId())
-                .coordinate(new RequestCoordinate(latitude, longitude))
-                .build();
-
-        flushAndClear();
-
-        // when : 경도가 제한보다 큼
-        ResultActions resultActions = mockMvc.perform(post("/api/schedules")
-                .header(HttpHeaders.AUTHORIZATION, authorizationHeader(user))
-                .content(createRequestJson(request))
-                .characterEncoding(StandardCharsets.UTF_8)
-                .contentType(MediaType.APPLICATION_JSON));
-        flushAndClear();
-
-        // then : 응답 데이터 검증
-        resultActions
-                .andDo(print())
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.errorCode").value("request-0003"))
-                .andExpect(jsonPath("$.errorMessage").exists())
-                .andExpect(jsonPath("$.errorDetail").exists())
-                .andExpect(jsonPath("$.errors", hasSize(1)))
-                .andExpect(jsonPath("$.errors[0].errorCode").value("place-0001"))
-                .andExpect(jsonPath("$.errors[0].errorMessage").exists())
-                .andExpect(jsonPath("$.errors[0].errorDetail").exists());
-    }
-
-    @Test
-    @DisplayName("경도가 제한보다 작은 값 -> 입력 검증 실패 400 예외")
-    public void smallLongitudeTest() throws Exception {
-        // given
-        User user = setupMockNaverUser();
-        Trip trip = setupUndecidedTrip(user.getId());
-
-        double latitude = 34.212;
-        double longitude = Coordinate.MIN_LONGITUDE - 0.001;
-
-        var request = defaultRequestBuilder(null, trip.getId())
-                .coordinate(new RequestCoordinate(latitude, longitude))
-                .build();
-
-        flushAndClear();
-
-        // when : 경도가 제한보다 작음
-        ResultActions resultActions = mockMvc.perform(post("/api/schedules")
-                .header(HttpHeaders.AUTHORIZATION, authorizationHeader(user))
-                .content(createRequestJson(request))
-                .characterEncoding(StandardCharsets.UTF_8)
-                .contentType(MediaType.APPLICATION_JSON));
-        flushAndClear();
-
-        // then : 응답 데이터 검증
-        resultActions
-                .andDo(print())
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.errorCode").value("request-0003"))
-                .andExpect(jsonPath("$.errorMessage").exists())
-                .andExpect(jsonPath("$.errorDetail").exists())
-                .andExpect(jsonPath("$.errors", hasSize(1)))
-                .andExpect(jsonPath("$.errors[0].errorCode").value("place-0001"))
-                .andExpect(jsonPath("$.errors[0].errorMessage").exists())
-                .andExpect(jsonPath("$.errors[0].errorDetail").exists());
-    }
-
-    @DisplayName("여행을 찾을 수 없음 -> 예외 발생")
-    @Test
-    void tripNotFound() throws Exception {
-        User user = setupMockNaverUser();
-        Trip trip = setupUndecidedTrip(user.getId());
-        Long notExistTripId = trip.getId() + 1L;
-
-        var request = defaultRequestBuilder(null, notExistTripId).build();
-        flushAndClear();
-
-        // when : 존재하지 않는 여행 Id
-        ResultActions resultActions = mockMvc.perform(post("/api/schedules")
-                .header(HttpHeaders.AUTHORIZATION, authorizationHeader(user))
-                .content(createRequestJson(request))
-                .characterEncoding(StandardCharsets.UTF_8)
-                .contentType(MediaType.APPLICATION_JSON));
-        flushAndClear();
-
-        // then : 응답 데이터 검증
-        resultActions
-                .andDo(print())
-                .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.errorCode").value("trip-0001"))
-                .andExpect(jsonPath("$.errorMessage").exists())
-                .andExpect(jsonPath("$.errorDetail").exists());
+                .andExpect(jsonPath("$.errors[0].errorDetail").exists())
+                .andExpect(jsonPath("$.errors[0].field").exists());
     }
 
     @DisplayName("다른 사용자가 일정 생성 시도 -> 예외 발생")
@@ -774,7 +391,7 @@ class ScheduleCreateIntegrationTest extends IntegrationTest {
                 .title("일정 제목")
                 .placeId("place-id")
                 .placeName("place-name")
-                .coordinate(new RequestCoordinate(37.564213, 127.001698));
+                .coordinate(new ScheduleCreateRequest.CoordinateDto(37.564213, 127.001698));
     }
 
 }

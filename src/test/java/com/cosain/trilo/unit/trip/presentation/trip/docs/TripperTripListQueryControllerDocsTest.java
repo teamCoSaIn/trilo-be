@@ -1,17 +1,14 @@
 package com.cosain.trilo.unit.trip.presentation.trip.docs;
 
 import com.cosain.trilo.support.RestDocsTestSupport;
+import com.cosain.trilo.trip.application.trip.service.trip_list_search.TripListQueryParam;
+import com.cosain.trilo.trip.application.trip.service.trip_list_search.TripListSearchResult;
 import com.cosain.trilo.trip.application.trip.service.trip_list_search.TripListSearchService;
 import com.cosain.trilo.trip.domain.vo.TripStatus;
-import com.cosain.trilo.trip.application.trip.service.trip_list_search.TripSummary;
 import com.cosain.trilo.trip.presentation.trip.TripperTripListQueryController;
-import com.cosain.trilo.trip.presentation.trip.dto.request.TripPageCondition;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.SliceImpl;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
@@ -20,7 +17,6 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.List;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
@@ -47,13 +43,13 @@ public class TripperTripListQueryControllerDocsTest extends RestDocsTestSupport 
         Long tripperId = 1L;
         Long tripId = 5L;
         int size = 3;
-        TripSummary tripSummary1 = new TripSummary(4L, tripperId, "제목 1", TripStatus.DECIDED, LocalDate.of(2023, 3,4), LocalDate.of(2023, 4, 1), "image.jpg");
-        TripSummary tripSummary2 = new TripSummary(3L, tripperId, "제목 2", TripStatus.UNDECIDED, null, null, "image.jpg");
-        TripSummary tripSummary3 = new TripSummary(2L, tripperId, "제목 3", TripStatus.DECIDED, LocalDate.of(2023, 4,4), LocalDate.of(2023, 4, 5), "image.jpg");
-        Pageable pageable = PageRequest.ofSize(size);
-        SliceImpl<TripSummary> tripDetails = new SliceImpl<>(List.of(tripSummary1, tripSummary2, tripSummary3), pageable, true);
+        TripListSearchResult.TripSummary tripSummary1 = new TripListSearchResult.TripSummary(4L, tripperId, "제목 1", TripStatus.DECIDED, LocalDate.of(2023, 3,4), LocalDate.of(2023, 4, 1), "image.jpg");
+        TripListSearchResult.TripSummary tripSummary2 = new TripListSearchResult.TripSummary(3L, tripperId, "제목 2", TripStatus.UNDECIDED, null, null, "image.jpg");
+        TripListSearchResult.TripSummary tripSummary3 = new TripListSearchResult.TripSummary(2L, tripperId, "제목 3", TripStatus.DECIDED, LocalDate.of(2023, 4,4), LocalDate.of(2023, 4, 5), "image.jpg");
+        TripListQueryParam queryParam = TripListQueryParam.of(tripperId, tripId, size);
+        TripListSearchResult searchResult = TripListSearchResult.of(true, List.of(tripSummary1, tripSummary2, tripSummary3));
 
-        given(TripListSearchService.searchTripSummaries(any(TripPageCondition.class), eq(pageable))).willReturn(tripDetails);
+        given(TripListSearchService.searchTripList(eq(queryParam))).willReturn(searchResult);
 
         // when & then
         mockMvc.perform(RestDocumentationRequestBuilders.get(BASE_URL)
@@ -64,15 +60,29 @@ public class TripperTripListQueryControllerDocsTest extends RestDocsTestSupport 
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.hasNext").value(true))
+                .andExpect(jsonPath("$.hasNext").value(searchResult.isHasNext()))
                 .andExpect(jsonPath("$.trips").isNotEmpty())
-                .andExpect(jsonPath("$.trips.[*].tripId").exists())
-                .andExpect(jsonPath("$.trips.[*].tripperId").exists())
-                .andExpect(jsonPath("$.trips.[*].title").exists())
-                .andExpect(jsonPath("$.trips.[*].status").exists())
-                .andExpect(jsonPath("$.trips.[*].startDate").exists())
-                .andExpect(jsonPath("$.trips.[*].endDate").exists())
-                .andExpect(jsonPath("$.trips.[*].imageURL").exists())
+                .andExpect(jsonPath("$.trips.[0].tripId").value(tripSummary1.getTripId()))
+                .andExpect(jsonPath("$.trips.[1].tripId").value(tripSummary2.getTripId()))
+                .andExpect(jsonPath("$.trips.[2].tripId").value(tripSummary3.getTripId()))
+                .andExpect(jsonPath("$.trips.[0].tripperId").value(tripSummary1.getTripperId()))
+                .andExpect(jsonPath("$.trips.[1].tripperId").value(tripSummary2.getTripperId()))
+                .andExpect(jsonPath("$.trips.[2].tripperId").value(tripSummary3.getTripperId()))
+                .andExpect(jsonPath("$.trips.[0].title").value(tripSummary1.getTitle()))
+                .andExpect(jsonPath("$.trips.[1].title").value(tripSummary2.getTitle()))
+                .andExpect(jsonPath("$.trips.[2].title").value(tripSummary3.getTitle()))
+                .andExpect(jsonPath("$.trips.[0].status").value(tripSummary1.getStatus()))
+                .andExpect(jsonPath("$.trips.[1].status").value(tripSummary2.getStatus()))
+                .andExpect(jsonPath("$.trips.[2].status").value(tripSummary3.getStatus()))
+                .andExpect(jsonPath("$.trips.[0].startDate").value(tripSummary1.getStartDate().toString()))
+                .andExpect(jsonPath("$.trips.[1].startDate").doesNotExist())
+                .andExpect(jsonPath("$.trips.[2].startDate").value(tripSummary3.getStartDate().toString()))
+                .andExpect(jsonPath("$.trips.[0].endDate").value(tripSummary1.getEndDate().toString()))
+                .andExpect(jsonPath("$.trips.[1].endDate").doesNotExist())
+                .andExpect(jsonPath("$.trips.[2].endDate").value(tripSummary3.getEndDate().toString()))
+                .andExpect(jsonPath("$.trips.[0].imageURL").value(tripSummary1.getImageURL()))
+                .andExpect(jsonPath("$.trips.[1].imageURL").value(tripSummary2.getImageURL()))
+                .andExpect(jsonPath("$.trips.[2].imageURL").value(tripSummary3.getImageURL()))
                 .andDo(restDocs.document(
                         requestHeaders(
                                 headerWithName(HttpHeaders.AUTHORIZATION)

@@ -2,6 +2,7 @@ package com.cosain.trilo.unit.trip.presentation.trip.docs;
 
 import com.cosain.trilo.common.file.ImageFile;
 import com.cosain.trilo.support.RestDocsTestSupport;
+import com.cosain.trilo.trip.application.trip.service.trip_image_update.TripImageUpdateCommand;
 import com.cosain.trilo.trip.application.trip.service.trip_image_update.TripImageUpdateService;
 import com.cosain.trilo.trip.presentation.trip.TripImageUpdateController;
 import org.junit.jupiter.api.DisplayName;
@@ -16,7 +17,6 @@ import java.io.FileInputStream;
 import java.nio.charset.StandardCharsets;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -45,7 +45,8 @@ public class TripImageUpdateControllerDocsTest extends RestDocsTestSupport {
     @Test
     @DisplayName("jpeg -> 성공")
     public void tripImageUpdateApiDocsTest() throws Exception {
-        mockingForLoginUserAnnotation();
+        long tripperId= 2L;
+        mockingForLoginUserAnnotation(tripperId);
         Long tripId = 1L;
 
         String name = "image";
@@ -55,10 +56,10 @@ public class TripImageUpdateControllerDocsTest extends RestDocsTestSupport {
         String contentType = "image/jpeg";
 
         MockMultipartFile multipartFile = new MockMultipartFile(name, fileName, contentType, fileInputStream);
+        TripImageUpdateCommand command = new TripImageUpdateCommand(tripId, tripperId, ImageFile.from(multipartFile));
 
         String imageURL = String.format("https://{이미지 파일 저장소 주소}/trips/%s/{이미지 파일명}.jpeg", tripId);
-        given(tripImageUpdateService.updateTripImage(eq(tripId), any(), any(ImageFile.class)))
-                .willReturn(imageURL);
+        given(tripImageUpdateService.updateTripImage(any(TripImageUpdateCommand.class))).willReturn(imageURL);
 
         mockMvc.perform(multipart("/api/trips/{tripId}/image/update", tripId)
                         .file(multipartFile)
@@ -92,8 +93,7 @@ public class TripImageUpdateControllerDocsTest extends RestDocsTestSupport {
                         )
                 ));
 
-        verify(tripImageUpdateService, times(1)).updateTripImage(eq(tripId), any(), any(ImageFile.class));
+        verify(tripImageUpdateService, times(1)).updateTripImage(any(TripImageUpdateCommand.class));
     }
-
 
 }

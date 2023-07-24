@@ -5,7 +5,6 @@ import com.cosain.trilo.trip.application.trip.service.trip_create.TripCreateComm
 import com.cosain.trilo.trip.application.trip.service.trip_create.TripCreateService;
 import com.cosain.trilo.trip.domain.entity.Trip;
 import com.cosain.trilo.trip.domain.repository.TripRepository;
-import com.cosain.trilo.trip.domain.vo.TripTitle;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -37,14 +36,14 @@ public class TripCreateServiceTest {
         Long tripId = 1L;
         Long tripperId = 2L;
 
-        TripCreateCommand createCommand = new TripCreateCommand(TripTitle.of("제목"));
+        TripCreateCommand command = TripCreateCommand.of(tripperId, "제목");
 
         // mocking
         Trip trip = TripFixture.undecided_Id(tripId, tripperId);
         given(tripRepository.save(any(Trip.class))).willReturn(trip);
 
         // when
-        Long returnTripId = tripCreateService.createTrip(tripperId, createCommand);
+        Long returnTripId = tripCreateService.createTrip(command);
 
         // then
         verify(tripRepository).save(any(Trip.class));

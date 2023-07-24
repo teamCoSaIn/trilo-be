@@ -2,9 +2,7 @@ package com.cosain.trilo.unit.trip.presentation.trip.docs;
 
 import com.cosain.trilo.support.RestDocsTestSupport;
 import com.cosain.trilo.trip.application.trip.service.trip_create.TripCreateCommand;
-import com.cosain.trilo.trip.application.trip.service.trip_create.TripCreateCommandFactory;
 import com.cosain.trilo.trip.application.trip.service.trip_create.TripCreateService;
-import com.cosain.trilo.trip.domain.vo.TripTitle;
 import com.cosain.trilo.trip.presentation.trip.TripCreateController;
 import com.cosain.trilo.trip.presentation.trip.dto.request.TripCreateRequest;
 import org.junit.jupiter.api.DisplayName;
@@ -13,10 +11,10 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.ResultActions;
 
 import java.nio.charset.StandardCharsets;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
@@ -36,30 +34,34 @@ public class TripCreateControllerDocsTest extends RestDocsTestSupport {
     @MockBean
     private TripCreateService tripCreateService;
 
-    @MockBean
-    private TripCreateCommandFactory tripCreateCommandFactory;
-
     private final String BASE_URL = "/api/trips";
     private final String ACCESS_TOKEN = "Bearer accessToken";
 
     @Test
     @DisplayName("인증된 사용자의 여행 생성 요청 -> 성공")
     void successTest() throws Exception {
-        mockingForLoginUserAnnotation();
+        // given
+        Long tripperId= 1L;
+        mockingForLoginUserAnnotation(tripperId);
 
         String rawTitle = "제목";
-        Long tripId = 1L;
         TripCreateRequest request = new TripCreateRequest(rawTitle);
-        given(tripCreateCommandFactory.createCommand(eq(rawTitle))).willReturn(new TripCreateCommand(TripTitle.of(rawTitle)));
-        given(tripCreateService.createTrip(any(), any(TripCreateCommand.class))).willReturn(tripId);
 
-        mockMvc.perform(post(BASE_URL)
+        Long tripId = 1L;
+        TripCreateCommand command = TripCreateCommand.of(tripperId, rawTitle);
+        given(tripCreateService.createTrip(eq(command))).willReturn(tripId);
+
+        // when
+        ResultActions resultActions = mockMvc.perform(post(BASE_URL)
                         .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)
                         .content(createJson(request))
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.tripId").value(tripId))
+                .andExpect(jsonPath("$.tripId").value(tripId));
+
+        // then
+        resultActions
                 .andDo(restDocs.document(
                         requestHeaders(
                                 headerWithName(HttpHeaders.AUTHORIZATION)

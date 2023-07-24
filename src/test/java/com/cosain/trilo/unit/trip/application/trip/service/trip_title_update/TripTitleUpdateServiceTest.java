@@ -7,7 +7,6 @@ import com.cosain.trilo.trip.application.trip.service.trip_title_update.TripTitl
 import com.cosain.trilo.trip.application.trip.service.trip_title_update.TripTitleUpdateService;
 import com.cosain.trilo.trip.domain.entity.Trip;
 import com.cosain.trilo.trip.domain.repository.TripRepository;
-import com.cosain.trilo.trip.domain.vo.TripTitle;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -44,13 +43,14 @@ public class TripTitleUpdateServiceTest {
         String beforeTitle = "여행 제목";
         String requestTitle = "수정 여행 제목";
 
-        TripTitleUpdateCommand updateCommand = createCommand(requestTitle);
+        var command = TripTitleUpdateCommand.of(tripId, tripperId, requestTitle);
+
         Trip trip = TripFixture.undecided_Id_Title(tripId, tripperId, beforeTitle);
 
         given(tripRepository.findById(eq(tripId))).willReturn(Optional.of(trip));
 
         // when
-        tripTitleUpdateService.updateTripTitle(tripId, tripperId, updateCommand);
+        tripTitleUpdateService.updateTripTitle(command);
 
         // then
         verify(tripRepository, times(1)).findById(eq(tripId));
@@ -65,14 +65,13 @@ public class TripTitleUpdateServiceTest {
         Long tripperId = 2L;
 
         String requestTitle = "수정 여행 제목";
-
-        TripTitleUpdateCommand updateCommand = createCommand(requestTitle);
+        var command = TripTitleUpdateCommand.of(tripId, tripperId, requestTitle);
 
         // mock
         given(tripRepository.findById(eq(tripId))).willReturn(Optional.empty());
 
         // when & then
-        assertThatThrownBy(() -> tripTitleUpdateService.updateTripTitle(tripId, tripperId, updateCommand))
+        assertThatThrownBy(() -> tripTitleUpdateService.updateTripTitle(command))
                 .isInstanceOf(TripNotFoundException.class);
         verify(tripRepository, times(1)).findById(eq(tripId));
     }
@@ -88,20 +87,16 @@ public class TripTitleUpdateServiceTest {
         String beforeTitle = "여행 제목";
         String requestTitle = "수정 여행 제목";
 
-        TripTitleUpdateCommand updateCommand = createCommand(requestTitle);
+        var command = TripTitleUpdateCommand.of(tripId, noAuthorityTripperId, requestTitle);
         Trip trip = TripFixture.undecided_Id_Title(tripId, realTripOwnerId, beforeTitle);
 
         given(tripRepository.findById(eq(tripId))).willReturn(Optional.of(trip));
 
         // when & then
-        assertThatThrownBy(() -> tripTitleUpdateService.updateTripTitle(tripId, noAuthorityTripperId, updateCommand))
+        assertThatThrownBy(() -> tripTitleUpdateService.updateTripTitle(command))
                 .isInstanceOf(NoTripUpdateAuthorityException.class);
 
         verify(tripRepository, times(1)).findById(eq(tripId));
-    }
-
-    private TripTitleUpdateCommand createCommand(String rawTitle) {
-        return new TripTitleUpdateCommand(TripTitle.of(rawTitle));
     }
 
 }

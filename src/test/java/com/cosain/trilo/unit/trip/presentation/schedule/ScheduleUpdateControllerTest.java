@@ -2,11 +2,7 @@ package com.cosain.trilo.unit.trip.presentation.schedule;
 
 import com.cosain.trilo.support.RestControllerTest;
 import com.cosain.trilo.trip.application.schedule.service.schedule_update.ScheduleUpdateCommand;
-import com.cosain.trilo.trip.application.schedule.service.schedule_update.ScheduleUpdateCommandFactory;
 import com.cosain.trilo.trip.application.schedule.service.schedule_update.ScheduleUpdateService;
-import com.cosain.trilo.trip.domain.vo.ScheduleContent;
-import com.cosain.trilo.trip.domain.vo.ScheduleTime;
-import com.cosain.trilo.trip.domain.vo.ScheduleTitle;
 import com.cosain.trilo.trip.presentation.schedule.ScheduleUpdateController;
 import com.cosain.trilo.trip.presentation.schedule.dto.request.ScheduleUpdateRequest;
 import org.junit.jupiter.api.DisplayName;
@@ -15,13 +11,14 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.ResultActions;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalTime;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -35,92 +32,120 @@ class ScheduleUpdateControllerTest extends RestControllerTest {
     @MockBean
     private ScheduleUpdateService scheduleUpdateService;
 
-    @MockBean
-    private ScheduleUpdateCommandFactory scheduleUpdateCommandFactory;
-
     private final String ACCESS_TOKEN = "Bearer accessToken";
 
     @Test
     @DisplayName("인증된 사용자 올바른 요청 -> 일정 수정됨")
     public void updateSchedule_with_authorizedUser() throws Exception {
-
         // given
-        mockingForLoginUserAnnotation();
+        long requestTripperId = 1L;
+        mockingForLoginUserAnnotation(requestTripperId);
 
         Long scheduleId = 1L;
-        String rawTitle = "수정할 제목";
-        String rawContent = "수정할 내용";
+        String rawScheduleTitle = "수정할 제목";
+        String rawScheduleContent = "수정할 내용";
         LocalTime startTime = LocalTime.of(13,0);
         LocalTime endTime = LocalTime.of(13,5);
 
-        ScheduleUpdateRequest request = new ScheduleUpdateRequest(rawTitle, rawContent, startTime, endTime);
-        ScheduleUpdateCommand command = new ScheduleUpdateCommand(ScheduleTitle.of(rawContent), ScheduleContent.of(rawContent), ScheduleTime.of(startTime, endTime));
+        var request = new ScheduleUpdateRequest(rawScheduleTitle, rawScheduleContent, startTime, endTime);
+        var command = ScheduleUpdateCommand.of(scheduleId, requestTripperId, rawScheduleTitle, rawScheduleContent, startTime, endTime);
 
-        given(scheduleUpdateCommandFactory.createCommand(eq(rawTitle),eq(rawContent), eq(startTime), eq(endTime))).willReturn(command);
-        given(scheduleUpdateService.updateSchedule(eq(scheduleId),any(),any(ScheduleUpdateCommand.class))).willReturn(1L);
+        // when
+        ResultActions resultActions = runTest(scheduleId, createJson(request));
 
-        // when & then
-        mockMvc.perform(put("/api/schedules/" + scheduleId)
-                        .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)
-                        .content(createJson(request))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .characterEncoding(StandardCharsets.UTF_8))
+        // then
+        resultActions
+                .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.scheduleId").value(1L))
-                .andDo(print());
+                .andExpect(jsonPath("$.scheduleId").value(scheduleId));
 
-        verify(scheduleUpdateCommandFactory).createCommand(eq(rawTitle), eq(rawContent), eq(startTime), eq(endTime));
-        verify(scheduleUpdateService).updateSchedule(eq(scheduleId),any(),any(ScheduleUpdateCommand.class));
+        verify(scheduleUpdateService, times(1)).updateSchedule(eq(command));
     }
 
     @Test
     @DisplayName("미인증 사용자 요청 -> 인증 실패 401")
     public void updateSchedule_with_unauthorizedUser() throws Exception {
+        // given
         Long scheduleId = 1L;
-        String rawTitle = "수정할 제목";
-        String rawContent = "수정할 내용";
+        String rawScheduleTitle = "수정할 제목";
+        String rawScheduleContent = "수정할 내용";
         LocalTime startTime = LocalTime.of(13,0);
         LocalTime endTime = LocalTime.of(13,5);
 
-        ScheduleUpdateRequest request = new ScheduleUpdateRequest(rawTitle, rawContent, startTime, endTime);
+        ScheduleUpdateRequest request = new ScheduleUpdateRequest(rawScheduleTitle, rawScheduleContent, startTime, endTime);
 
-        mockMvc.perform(put("/api/schedules/"+scheduleId)
-                        .content(createJson(request))
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .contentType(MediaType.APPLICATION_JSON)
-                )
+        // when
+        ResultActions resultActions = runTestWithoutAuthority(scheduleId, createJson(request));
+
+        // then
+        resultActions
                 .andDo(print())
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.errorCode").exists())
                 .andExpect(jsonPath("$.errorMessage").exists())
                 .andExpect(jsonPath("$.errorDetail").exists());
+
+        verify(scheduleUpdateService, times(0)).updateSchedule(any(ScheduleUpdateCommand.class));
+    }
+
+    @Test
+    @DisplayName("scheduleId 가 숫자가 아님 -> 경로변수 오류 400 응답")
+    public void updateSchedule_with_invalidScheduleId() throws Exception {
+        long requestTripperId = 1L;
+        mockingForLoginUserAnnotation(requestTripperId);
+
+        String invalidScheduleId = "가가가";
+        String rawScheduleTitle = "수정할 제목";
+        String rawScheduleContent = "수정할 내용";
+        LocalTime startTime = LocalTime.of(13,0);
+        LocalTime endTime = LocalTime.of(13,5);
+
+        ScheduleUpdateRequest request = new ScheduleUpdateRequest(rawScheduleTitle, rawScheduleContent, startTime, endTime);
+
+        // given
+        ResultActions resultActions = runTest(invalidScheduleId, createJson(request));
+
+        // when
+        resultActions
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errorCode").value("request-0004"))
+                .andExpect(jsonPath("$.errorMessage").exists())
+                .andExpect(jsonPath("$.errorDetail").exists());
+
+        verify(scheduleUpdateService, times(0)).updateSchedule(any(ScheduleUpdateCommand.class));
     }
 
 
     @Test
     @DisplayName("비어있는 바디 -> 올바르지 않은 요청 데이터 형식으로 간주하고 400 예외")
     public void updateSchedule_with_emptyContent() throws Exception {
-        mockingForLoginUserAnnotation();
+        long requestTripperId = 1L;
+        mockingForLoginUserAnnotation(requestTripperId);
 
+        long scheduleId = 1L;
         String emptyContent = "";
 
-        mockMvc.perform(put("/api/schedules/1")
-                        .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)
-                        .content(emptyContent)
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .contentType(MediaType.APPLICATION_JSON)
-                )
+        // when
+        ResultActions resultActions = runTest(scheduleId, emptyContent);
+
+        // then
+        resultActions
                 .andDo(print())
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errorCode").value("request-0001"))
                 .andExpect(jsonPath("$.errorMessage").exists())
                 .andExpect(jsonPath("$.errorDetail").exists());
+
+        verify(scheduleUpdateService, times(0)).updateSchedule(any(ScheduleUpdateCommand.class));
     }
 
     @Test
     @DisplayName("형식이 올바르지 않은 바디 -> 올바르지 않은 요청 데이터 형식으로 간주하고 400 예외")
     public void updateSchedule_with_invalidContent() throws Exception {
-        mockingForLoginUserAnnotation();
+        long requestTripperId = 1L;
+        mockingForLoginUserAnnotation(requestTripperId);
+        long scheduleId = 2L;
         String invalidContent = """
                 {
                     "title": 따옴표로 감싸지 않은 제목,
@@ -130,16 +155,34 @@ class ScheduleUpdateControllerTest extends RestControllerTest {
                 }
                 """;
 
-        mockMvc.perform(put("/api/schedules/1")
-                        .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)
-                        .content(invalidContent)
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .contentType(MediaType.APPLICATION_JSON)
-                )
+        // when
+        ResultActions resultActions = runTest(scheduleId, invalidContent);
+
+        // then
+        resultActions
                 .andDo(print())
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errorCode").value("request-0001"))
                 .andExpect(jsonPath("$.errorMessage").exists())
                 .andExpect(jsonPath("$.errorDetail").exists());
+
+        verify(scheduleUpdateService, times(0)).updateSchedule(any(ScheduleUpdateCommand.class));
+    }
+
+    private ResultActions runTest(Object scheduleId, String content) throws Exception {
+        return mockMvc.perform(put("/api/schedules/{scheduleId}", scheduleId)
+                .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)
+                .content(content)
+                .characterEncoding(StandardCharsets.UTF_8)
+                .contentType(MediaType.APPLICATION_JSON)
+        );
+    }
+
+    private ResultActions runTestWithoutAuthority(Object scheduleId, String content) throws Exception {
+        return mockMvc.perform(put("/api/schedules/{scheduleId}", scheduleId)
+                .content(content)
+                .characterEncoding(StandardCharsets.UTF_8)
+                .contentType(MediaType.APPLICATION_JSON)
+        );
     }
 }
