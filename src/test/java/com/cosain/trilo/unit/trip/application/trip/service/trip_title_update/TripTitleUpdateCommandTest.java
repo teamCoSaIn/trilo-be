@@ -81,11 +81,11 @@ public class TripTitleUpdateCommandTest {
         assertThat(cve.getExceptions().get(0)).isInstanceOf(InvalidTripTitleException.class);
     }
 
-    @DisplayName("제한보다 긴 제목 -> 검증예외 발생")
+    @DisplayName("20자보다 긴 제목 -> 검증예외 발생")
     @Test
     public void tooLongTitle() {
         // given
-        String tooLongTitle = "가".repeat(TripTitle.MAX_LENGTH + 1);
+        String tooLongTitle = "가".repeat(21);
 
         // when
         CustomValidationException cve = catchThrowableOfType(

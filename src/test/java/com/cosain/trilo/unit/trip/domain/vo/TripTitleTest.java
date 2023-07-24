@@ -46,10 +46,10 @@ public class TripTitleTest {
     }
 
     @Test
-    @DisplayName("제한 길이보다 긴 제목 -> InvalidTripTitleException 발생")
+    @DisplayName("20자보다 긴 제목 -> InvalidTripTitleException 발생")
     void tooLongTripTitleTest() {
         // given
-        String tooLongTitle = "A".repeat(TripTitle.MAX_LENGTH + 1);
+        String tooLongTitle = "A".repeat(21);
 
         // when
         assertThatThrownBy(() -> TripTitle.of(tooLongTitle))

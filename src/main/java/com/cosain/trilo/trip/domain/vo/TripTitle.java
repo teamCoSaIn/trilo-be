@@ -12,8 +12,8 @@ import lombok.*;
 @Embeddable
 public class TripTitle {
 
-    public static final int MIN_LENGTH = 1;
-    public static final int MAX_LENGTH = 20;
+    private static final int MIN_LENGTH = 1;
+    private static final int MAX_LENGTH = 20;
 
     @Column(name = "trip_title")
     private String value;
