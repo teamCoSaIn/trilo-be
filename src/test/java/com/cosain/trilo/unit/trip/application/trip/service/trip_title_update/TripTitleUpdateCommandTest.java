@@ -3,7 +3,7 @@ package com.cosain.trilo.unit.trip.application.trip.service.trip_title_update;
 
 import com.cosain.trilo.common.exception.CustomValidationException;
 import com.cosain.trilo.trip.application.trip.service.trip_title_update.TripTitleUpdateCommand;
-import com.cosain.trilo.trip.domain.exception.InvalidTripTitleException;
+import com.cosain.trilo.common.exception.trip.InvalidTripTitleException;
 import com.cosain.trilo.trip.domain.vo.TripTitle;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
@@ -81,11 +81,11 @@ public class TripTitleUpdateCommandTest {
         assertThat(cve.getExceptions().get(0)).isInstanceOf(InvalidTripTitleException.class);
     }
 
-    @DisplayName("제한보다 긴 제목 -> 검증예외 발생")
+    @DisplayName("20자보다 긴 제목 -> 검증예외 발생")
     @Test
     public void tooLongTitle() {
         // given
-        String tooLongTitle = "가".repeat(TripTitle.MAX_LENGTH + 1);
+        String tooLongTitle = "가".repeat(21);
 
         // when
         CustomValidationException cve = catchThrowableOfType(

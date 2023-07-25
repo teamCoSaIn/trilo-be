@@ -17,6 +17,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
+/**
+ * 여행의 도메인 엔티티(Entity)입니다.
+ */
 @Getter
 @Slf4j
 @ToString(of = {"id", "tripperId", "tripTitle", "status", "tripPeriod", "tripImage"})
@@ -25,43 +28,87 @@ import java.util.Random;
 @Entity
 public class Trip {
 
+    /**
+     * 하나의 여행이 가질 수 있는 일정의 최대 갯수
+     */
     public static final int MAX_TRIP_SCHEDULE_COUNT = 110;
 
+    /**
+     * 여행의 식별자(id)
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "trip_id")
     private Long id;
 
+    /**
+     * 여행을 소유한 여행자(사용자)의 식별자(id)
+     */
     @Column(name = "tripper_id")
     private Long tripperId;
 
+    /**
+     * 여행의 제목
+     * @see TripTitle
+     */
     @Embedded
     private TripTitle tripTitle;
 
+    /**
+     * 여행의 상태
+     * @see TripStatus
+     */
     @Enumerated(EnumType.STRING)
     @Column(name = "trip_status")
     private TripStatus status;
 
+    /**
+     * 여행의 기간
+     * @see TripPeriod
+     */
     @Embedded
     private TripPeriod tripPeriod;
 
+    /**
+     * 여행에 소속된 Day들의 컬렉션
+     * @see Day
+     */
     @OneToMany(mappedBy = "trip")
     private final List<Day> days = new ArrayList<>();
 
+    /**
+     * 여행의 이미지
+     * @see TripImage
+     */
     @Embedded
     private TripImage tripImage;
 
+    /**
+     * <p>여행의 임시보관함에 소속된 일정({@link Schedule})들의 컬렉션입니다. 어떤 {@link Day}에도 속해있지 않은 일정들이 여기에 보관됩니다.</p>
+     * <p>일정들은 {@link ScheduleIndex} 기준 오름차순으로 정렬되어 있습니다.</p>
+     * @see Schedule
+     * @see ScheduleIndex
+     */
     @OneToMany(mappedBy = "trip")
     @Where(clause = "day_id is NULL")
     @OrderBy("scheduleIndex.value asc")
     private final List<Schedule> temporaryStorage = new ArrayList<>();
 
     /**
-     * 여행(Trip)을 최초로 생성합니다. 최초 생성된 Trip은 UNDECIDED 상태입니다.
-     *
+     * <p>여행(Trip)을 최초로 생성합니다.</p>
+     * <p>명시적으로 전달된 파라미터 외의 필드들은 다음과 같이 초기화됩니다.</p>
+     * <ul>
+     *     <li>id : null (리포지토리에 저장 후 발급받아서 초기화해야합니다.)</li>
+     *     <li>status : {@link TripStatus#UNDECIDED}</li>
+     *     <li>period : {@link TripPeriod#empty()}</li>
+     *     <li>image : {@link TripImage#defaultImage()}</li>
+     * </ul>
      * @param tripTitle:    여행의 제목
      * @param tripperId : 여행자의 식별자
-     * @return 생성된 Trip
+     * @return 생성된 여행(Trip)
+     * @see TripStatus
+     * @see TripPeriod
+     * @see TripImage
      */
     public static Trip create(TripTitle tripTitle, Long tripperId) {
         return Trip.builder()
