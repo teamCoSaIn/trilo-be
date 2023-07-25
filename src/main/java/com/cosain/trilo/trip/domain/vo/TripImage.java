@@ -2,15 +2,13 @@ package com.cosain.trilo.trip.domain.vo;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 /**
  * 여행이미지 VO(값 객체)입니다.
  */
 @Getter
+@EqualsAndHashCode(of = {"fileName"})
 @ToString(of = {"fileName"})
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Embeddable
