@@ -3,6 +3,9 @@ package com.cosain.trilo.common.exception.trip;
 import com.cosain.trilo.common.exception.CustomException;
 import org.springframework.http.HttpStatus;
 
+/**
+ * 여행 삭제 권한이 없을 때 발생하는 예외입니다.
+ */
 public class NoTripDeleteAuthorityException extends CustomException {
 
     private static final String ERROR_CODE = "trip-0007";
