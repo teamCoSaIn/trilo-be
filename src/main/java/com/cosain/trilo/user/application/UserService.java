@@ -42,11 +42,17 @@ public class UserService {
         this.s3ImageBaseURL = bucketPath;
     }
 
+    /**
+     * 최초 회원 : 생성
+     * 기존 회원 : 업데이트
+     * 탈퇴 예정 회원 : 업데이트 & 복구
+     */
     public Long createOrUpdate(OAuthProfileDto oAuthProfileDto){
         Optional<User> userOptional = userRepository.findByEmail(oAuthProfileDto.getEmail());
 
         User user = userOptional.map(existingUser -> {
             existingUser.updateUserByOauthProfile(oAuthProfileDto);
+            if(existingUser.isDeleted()) existingUser.cancelWithdrawal();
             return existingUser;
         }).orElse(User.from(oAuthProfileDto));
 
@@ -79,7 +85,7 @@ public class UserService {
                 .orElseThrow(UserNotFoundException::new);
 
         eventPublisher.publishEvent(new UserDeleteEvent(findUser.getId())); // 비동기적으로 사용자 관련된 여행 정보 삭제
-        findUser.updateIsDel(true);
+        findUser.proceedWithdrawal();
         userRepository.save(findUser);
     }
 

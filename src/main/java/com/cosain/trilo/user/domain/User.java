@@ -66,11 +66,14 @@ public class User {
     public void updateUserByOauthProfile(OAuthProfileDto oAuthProfileDto) {
         this.nickName = oAuthProfileDto.getName();
         this.profileImageURL = oAuthProfileDto.getProfileImageUrl();
-        this.isDeleted = false;
     }
 
-    public void updateIsDel(boolean flag){
-        this.isDeleted = flag;
+    public void proceedWithdrawal(){
+        this.isDeleted = true;
+    }
+
+    public void cancelWithdrawal(){
+        this.isDeleted = false;
     }
 
     public void update(UserUpdateRequest userUpdateRequest){

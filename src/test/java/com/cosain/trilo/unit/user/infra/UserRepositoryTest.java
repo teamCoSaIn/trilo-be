@@ -60,9 +60,8 @@ class UserRepositoryTest {
         User userB = UserFixture.kakaoUser_NullId();
         User userC = UserFixture.kakaoUser_NullId();
 
-        userA.updateIsDel(true);
-        userB.updateIsDel(true);
-        userC.updateIsDel(false);
+        userA.proceedWithdrawal();
+        userB.proceedWithdrawal();
 
         User findUserA = userRepository.save(userA);
         User findUserB = userRepository.save(userB);
