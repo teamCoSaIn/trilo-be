@@ -93,13 +93,14 @@ public class UserIntegrationTest extends IntegrationTest {
             log.info("User = {}", user);
 
             flushAndClear();
-            // when & then
+            // when
             mockMvc.perform(RestDocumentationRequestBuilders.delete(BASE_URL + "/{userId}", user.getId())
                     .header(HttpHeaders.AUTHORIZATION, authorizationHeader(user)))
                     .andExpect(status().isNoContent());
 
-            User findUser = userRepository.findById(user.getId()).orElse(null);
-            assertThat(findUser).isNull();
+            // then
+            User findUser = userRepository.findById(user.getId()).orElseThrow();
+            assertThat(findUser.isDeleted()).isTrue();
         }
 
         @Test
