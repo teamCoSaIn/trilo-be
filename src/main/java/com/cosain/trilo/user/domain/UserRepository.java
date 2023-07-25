@@ -13,6 +13,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByEmail(String email);
 
     @Modifying
-    @Query("delete from User u where u.isDel = true")
+    @Query("delete from User u where u.isDeleted = true")
     void deleteAllWhereIsDelTrue();
 }

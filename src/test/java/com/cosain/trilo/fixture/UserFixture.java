@@ -40,7 +40,7 @@ public class UserFixture {
                 .authProvider(authProvider)
                 .role(Role.MEMBER)
                 .myPageImage(MyPageImage.initializeMyPageImage())
-                .isDel(false)
+                .isDeleted(false)
                 .build();
     }
 }

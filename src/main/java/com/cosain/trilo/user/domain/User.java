@@ -34,14 +34,14 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    @Column(name = "is_del")
-    private boolean isDel;
+    @Column(name = "is_deleted")
+    private boolean isDeleted;
 
     @Embedded
     private MyPageImage myPageImage;
 
     @Builder(access = AccessLevel.PUBLIC)
-    private User(Long id, String nickName, String email, String profileImageUrl, AuthProvider authProvider, Role role, MyPageImage myPageImage, boolean isDel) {
+    private User(Long id, String nickName, String email, String profileImageUrl, AuthProvider authProvider, Role role, MyPageImage myPageImage, boolean isDeleted) {
         this.id = id;
         this.nickName = nickName;
         this.email = email;
@@ -49,7 +49,7 @@ public class User {
         this.authProvider = authProvider;
         this.role = role;
         this.myPageImage = myPageImage == null ? MyPageImage.initializeMyPageImage() : myPageImage;
-        this.isDel = isDel;
+        this.isDeleted = isDeleted;
     }
 
     public static User from(OAuthProfileDto oAuthProfileDto) {
@@ -59,18 +59,18 @@ public class User {
                 .profileImageUrl(oAuthProfileDto.getProfileImageUrl())
                 .role(Role.MEMBER)
                 .authProvider(oAuthProfileDto.getProvider())
-                .isDel(false)
+                .isDeleted(false)
                 .build();
     }
 
     public void updateUserByOauthProfile(OAuthProfileDto oAuthProfileDto) {
         this.nickName = oAuthProfileDto.getName();
         this.profileImageURL = oAuthProfileDto.getProfileImageUrl();
-        this.isDel = false;
+        this.isDeleted = false;
     }
 
     public void updateIsDel(boolean flag){
-        this.isDel = flag;
+        this.isDeleted = flag;
     }
 
     public void update(UserUpdateRequest userUpdateRequest){

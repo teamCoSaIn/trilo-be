@@ -100,7 +100,7 @@ public class UserIntegrationTest extends IntegrationTest {
 
             // then
             User findUser = userRepository.findById(user.getId()).orElseThrow();
-            assertThat(findUser.isDel()).isTrue();
+            assertThat(findUser.isDeleted()).isTrue();
         }
 
         @Test

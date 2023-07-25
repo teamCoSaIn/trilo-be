@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS `trilo_db`.`users` (
     auth_provider           VARCHAR(20)  NOT NULL,
     user_role               VARCHAR(255) NOT NULL,
     my_page_image_file_name VARCHAR(255) NOT NULL,
-    is_del                  BOOLEAN      NOT NULL,
+    is_deleted              BOOLEAN      NOT NULL,
     INDEX idx_email (email),
     PRIMARY KEY (user_id)
 );
