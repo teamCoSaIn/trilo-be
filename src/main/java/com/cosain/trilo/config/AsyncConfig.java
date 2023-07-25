@@ -10,10 +10,10 @@ import java.util.concurrent.Executor;
 @Configuration
 @EnableAsync
 public class AsyncConfig {
-    private static int CORE_POOL_SIZE = 15; // 동시에 실행시킬 쓰레드의 개수 ( default : 1 )
-    private static int MAX_POOL_SIZE = 25; // 쓰레드 풀의 최대 사이즈를 지정 ( default : Integer.MAX_VALUE )
-    private static int QUEUE_CAPACITY = 10; // 큐의 사이즈 ( default : Integer.MAX_VALUE )
-    private static String THREAD_NAME_PREFIX = "async-task"; // Thread name prefix
+    private static final int CORE_POOL_SIZE = 15; // 동시에 실행시킬 쓰레드의 개수 ( default : 1 )
+    private static final int MAX_POOL_SIZE = 25; // 쓰레드 풀의 최대 사이즈를 지정 ( default : Integer.MAX_VALUE )
+    private static final int QUEUE_CAPACITY = 10; // 큐의 사이즈 ( default : Integer.MAX_VALUE )
+    private static final String THREAD_NAME_PREFIX = "async-task"; // Thread name prefix
 
     @Bean(name = "threadPoolTaskExecutor")
     public Executor asyncTaskExecutor() {
