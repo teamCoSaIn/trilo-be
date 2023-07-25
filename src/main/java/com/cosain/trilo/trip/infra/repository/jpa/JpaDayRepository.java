@@ -9,6 +9,9 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Day 엔티티를 관리하는 Spring Data JPA Repository
+ */
 public interface JpaDayRepository extends JpaRepository<Day, Long> {
 
     @Query("SELECT d " +
@@ -20,6 +23,10 @@ public interface JpaDayRepository extends JpaRepository<Day, Long> {
     @Query("DELETE FROM Day d WHERE d in :dayIds")
     int deleteAllByIds(@Param("dayIds") List<Long> dayIds);
 
+    /**
+     * 전달받은 식별자의 여행(Trip)에 속해있는 Day 엔티티들을 모두 제거합니다.
+     * @param tripId 여행의 식별자(id)
+     */
     @Modifying
     @Query("DELETE FROM Day as d WHERE d.trip.id = :tripId")
     void deleteAllByTripId(@Param("tripId") Long tripId);

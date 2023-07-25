@@ -48,6 +48,10 @@ public class TripRepositoryImpl implements TripRepository {
         return jpaTripRepository.findAllByTripperId(tripperId);
     }
 
+    /**
+     * 인자로 전달받은 여행을 삭제합니다.
+     * @param trip 삭제할 여행
+     */
     @Override
     public void delete(Trip trip) {
         jpaTripRepository.delete(trip);
