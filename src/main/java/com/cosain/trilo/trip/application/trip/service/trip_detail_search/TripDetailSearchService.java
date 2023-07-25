@@ -1,6 +1,6 @@
 package com.cosain.trilo.trip.application.trip.service.trip_detail_search;
 
-import com.cosain.trilo.trip.application.exception.TripNotFoundException;
+import com.cosain.trilo.common.exception.trip.TripNotFoundException;
 import com.cosain.trilo.trip.application.dao.TripQueryDAO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

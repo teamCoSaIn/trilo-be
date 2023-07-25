@@ -1,6 +1,6 @@
 package com.cosain.trilo.unit.trip.application.trip.service.trip_detail_search;
 
-import com.cosain.trilo.trip.application.exception.TripNotFoundException;
+import com.cosain.trilo.common.exception.trip.TripNotFoundException;
 import com.cosain.trilo.trip.application.trip.service.trip_detail_search.TripDetailSearchService;
 import com.cosain.trilo.trip.domain.vo.TripStatus;
 import com.cosain.trilo.trip.application.trip.service.trip_detail_search.TripDetail;

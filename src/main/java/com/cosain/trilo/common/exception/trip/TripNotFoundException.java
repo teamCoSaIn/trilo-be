@@ -1,4 +1,4 @@
-package com.cosain.trilo.trip.application.exception;
+package com.cosain.trilo.common.exception.trip;
 
 import com.cosain.trilo.common.exception.CustomException;
 import org.springframework.http.HttpStatus;

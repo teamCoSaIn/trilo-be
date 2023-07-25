@@ -1,8 +1,8 @@
 package com.cosain.trilo.unit.trip.application.trip.service.trip_delete;
 
 import com.cosain.trilo.fixture.TripFixture;
-import com.cosain.trilo.trip.application.exception.NoTripDeleteAuthorityException;
-import com.cosain.trilo.trip.application.exception.TripNotFoundException;
+import com.cosain.trilo.common.exception.trip.NoTripDeleteAuthorityException;
+import com.cosain.trilo.common.exception.trip.TripNotFoundException;
 import com.cosain.trilo.trip.application.trip.service.trip_delete.TripDeleteService;
 import com.cosain.trilo.trip.domain.entity.Trip;
 import com.cosain.trilo.trip.domain.repository.DayRepository;

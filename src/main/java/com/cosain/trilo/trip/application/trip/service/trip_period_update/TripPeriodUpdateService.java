@@ -1,7 +1,7 @@
 package com.cosain.trilo.trip.application.trip.service.trip_period_update;
 
 import com.cosain.trilo.trip.application.exception.NoTripUpdateAuthorityException;
-import com.cosain.trilo.trip.application.exception.TripNotFoundException;
+import com.cosain.trilo.common.exception.trip.TripNotFoundException;
 import com.cosain.trilo.trip.domain.entity.Day;
 import com.cosain.trilo.trip.domain.entity.Trip;
 import com.cosain.trilo.trip.domain.repository.DayRepository;

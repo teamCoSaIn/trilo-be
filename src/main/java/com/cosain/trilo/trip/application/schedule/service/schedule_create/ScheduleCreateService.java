@@ -1,5 +1,6 @@
 package com.cosain.trilo.trip.application.schedule.service.schedule_create;
 
+import com.cosain.trilo.common.exception.trip.TripNotFoundException;
 import com.cosain.trilo.trip.application.exception.*;
 import com.cosain.trilo.trip.domain.entity.Day;
 import com.cosain.trilo.trip.domain.entity.Schedule;

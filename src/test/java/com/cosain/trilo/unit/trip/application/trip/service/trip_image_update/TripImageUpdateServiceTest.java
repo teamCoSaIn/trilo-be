@@ -3,7 +3,7 @@ package com.cosain.trilo.unit.trip.application.trip.service.trip_image_update;
 import com.cosain.trilo.common.file.ImageFile;
 import com.cosain.trilo.fixture.TripFixture;
 import com.cosain.trilo.trip.application.exception.NoTripUpdateAuthorityException;
-import com.cosain.trilo.trip.application.exception.TripNotFoundException;
+import com.cosain.trilo.common.exception.trip.TripNotFoundException;
 import com.cosain.trilo.trip.application.trip.service.trip_image_update.TripImageUpdateCommand;
 import com.cosain.trilo.trip.application.trip.service.trip_image_update.TripImageUpdateService;
 import com.cosain.trilo.trip.domain.entity.Trip;
