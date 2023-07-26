@@ -41,7 +41,7 @@ public class TripCreateIntegrationTest extends IntegrationTest {
 
 
     /**
-     * <p>여행 생성 요청을 했을 때, 여행생성 기능이 잘 동작하는 지 검증하고, 해당 API를 문서화합니다.</p>
+     * <p>여행 생성 요청을 했을 때, 여행생성 기능이 잘 동작하는 지 검증합니다.</p>
      * <ul>
      *     <li>생성이 성공됐다는 응답이 와야합니다. (201 Created, 생성된 사용자 식별자)</li>
      *     <li>생성된 사용자가 실제 잘 저장되어 있는 지 검증해야합니다.</li>
