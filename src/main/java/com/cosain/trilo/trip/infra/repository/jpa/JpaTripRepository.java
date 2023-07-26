@@ -9,6 +9,9 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Trip 엔티티를 조회해오는 Spring Data JPA Repository
+ */
 public interface JpaTripRepository extends JpaRepository<Trip, Long> {
 
     @Query("SELECT t" +

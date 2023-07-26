@@ -1,7 +1,7 @@
 package com.cosain.trilo.trip.application.trip.service.trip_title_update;
 
 import com.cosain.trilo.trip.application.exception.NoTripUpdateAuthorityException;
-import com.cosain.trilo.trip.application.exception.TripNotFoundException;
+import com.cosain.trilo.common.exception.trip.TripNotFoundException;
 import com.cosain.trilo.trip.domain.entity.Trip;
 import com.cosain.trilo.trip.domain.repository.TripRepository;
 import jakarta.transaction.Transactional;

@@ -10,10 +10,17 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * 일정 엔티티 또는 일정 엔티티에 관한 정보를 조회해오거나 등록/수정/삭제하는 리포지토리 구현체입니다.
+ * @see ScheduleRepository
+ */
 @Component
 @RequiredArgsConstructor
 public class ScheduleRepositoryImpl implements ScheduleRepository {
 
+    /**
+     * Schedule 엔티티를 관리하는 Spring Data JPA Repository
+     */
     private final JpaScheduleRepository jpaScheduleRepository;
 
     @Override
@@ -56,6 +63,10 @@ public class ScheduleRepositoryImpl implements ScheduleRepository {
         jpaScheduleRepository.delete(schedule);
     }
 
+    /**
+     * 전달받은 식별자의 여행(Trip)에 속해있는 일정들을 모두 제거합니다.
+     * @param tripId 여행의 식별자(id)
+     */
     @Override
     public void deleteAllByTripId(@Param("tripId") Long tripId) {
         jpaScheduleRepository.deleteAllByTripId(tripId);

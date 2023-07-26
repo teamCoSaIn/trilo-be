@@ -18,12 +18,22 @@ public interface TripRepository {
      */
     Trip save(Trip trip);
 
+    /**
+     * 인자로 전달받은 식별자의 여행을 담은 Optional 을 조회하여 반환받습니다.
+     * @param tripId 조회할 여행의 식별자(id)
+     * @return 조회해온 여행을 담은 Optional(null 가능성 있음)
+     * @see Optional
+     */
     Optional<Trip> findById(Long tripId);
 
     Optional<Trip> findByIdWithDays(@Param("id") Long tripId);
 
     List<Trip> findAllByTripperId(@Param("tripperId") Long tripperId);
 
+    /**
+     * 인자로 전달받은 여행을 삭제합니다.
+     * @param trip 삭제할 여행
+     */
     void delete(Trip trip);
 
     void deleteAllByTripperId(@Param("tripperId") Long tripperId);

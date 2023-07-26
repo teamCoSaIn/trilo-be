@@ -14,8 +14,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
-@RepositoryTest
-class UserRepositoryTest {
+class UserRepositoryTest extends RepositoryTest {
 
     @Autowired
     private UserRepository userRepository;

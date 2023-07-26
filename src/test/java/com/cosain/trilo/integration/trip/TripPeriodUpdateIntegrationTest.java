@@ -1,7 +1,5 @@
 package com.cosain.trilo.integration.trip;
 
-import com.cosain.trilo.fixture.ScheduleFixture;
-import com.cosain.trilo.fixture.TripFixture;
 import com.cosain.trilo.support.IntegrationTest;
 import com.cosain.trilo.trip.domain.entity.Day;
 import com.cosain.trilo.trip.domain.entity.Schedule;
@@ -591,31 +589,6 @@ public class TripPeriodUpdateIntegrationTest extends IntegrationTest {
         assertThat(findDays.size()).isEqualTo(2);
         assertThat(findDays).map(Day::getTripDate).containsExactly(beforeStartDate, beforeEndDate);
         assertThat(findSchedules).isEmpty();
-    }
-
-    private Trip setupUndecidedTrip(Long tripperId) {
-        Trip trip = TripFixture.undecided_nullId(tripperId);
-        em.persist(trip);
-        return trip;
-    }
-
-    private Trip setupDecidedTrip(Long tripperId, LocalDate startDate, LocalDate endDate) {
-        Trip trip = TripFixture.decided_nullId(tripperId, startDate, endDate);
-        em.persist(trip);
-        trip.getDays().forEach(em::persist);
-        return trip;
-    }
-
-    private Schedule setupTemporarySchedule(Trip trip, long scheduleIndexValue) {
-        Schedule schedule = ScheduleFixture.temporaryStorage_NullId(trip, scheduleIndexValue);
-        em.persist(schedule);
-        return schedule;
-    }
-
-    private Schedule setupDaySchedule(Trip trip, Day day, long scheduleIndexValue) {
-        Schedule schedule = ScheduleFixture.day_NullId(trip, day, scheduleIndexValue);
-        em.persist(schedule);
-        return schedule;
     }
 
     private Day findDayById(Long dayId) {

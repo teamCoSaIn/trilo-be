@@ -9,6 +9,9 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Schedule 엔티티를 관리하는 Spring Data JPA Repository
+ */
 public interface JpaScheduleRepository extends JpaRepository<Schedule, Long> {
 
     @Query("SELECT s" +
@@ -77,6 +80,10 @@ public interface JpaScheduleRepository extends JpaRepository<Schedule, Long> {
             """)
     int findDayScheduleCount(@Param("dayId") Long dayId);
 
+    /**
+     * 전달받은 식별자의 여행(Trip)에 속해있는 일정 엔티티들을 모두 제거합니다.
+     * @param tripId 여행의 식별자(id)
+     */
     @Modifying
     @Query("DELETE FROM Schedule as s where s.trip.id = :tripId")
     void deleteAllByTripId(@Param("tripId") Long tripId);
