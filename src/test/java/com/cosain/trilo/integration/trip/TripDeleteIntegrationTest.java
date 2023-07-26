@@ -1,15 +1,11 @@
 package com.cosain.trilo.integration.trip;
 
-import com.cosain.trilo.fixture.ScheduleFixture;
-import com.cosain.trilo.fixture.TripFixture;
 import com.cosain.trilo.support.IntegrationTest;
 import com.cosain.trilo.trip.domain.entity.Day;
 import com.cosain.trilo.trip.domain.entity.Schedule;
 import com.cosain.trilo.trip.domain.entity.Trip;
 import com.cosain.trilo.trip.domain.repository.ScheduleRepository;
 import com.cosain.trilo.trip.domain.repository.TripRepository;
-import com.cosain.trilo.trip.domain.vo.ScheduleIndex;
-import com.cosain.trilo.trip.domain.vo.TripStatus;
 import com.cosain.trilo.user.domain.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -297,44 +293,6 @@ class TripDeleteIntegrationTest extends IntegrationTest {
                         """, Schedule.class)
                 .setParameter("scheduleIds", scheduleIds)
                 .getResultList();
-    }
-
-    /**
-     * {@link TripStatus#DECIDED} 상태의 여행 및 여행에 소속된 Day들을 생성하고, 저장소에 저장하여 셋팅합니다.
-     * @param tripperId 사용자(여행자)의 id
-     * @param startDate 시작일
-     * @param endDate 종료일
-     * @return 여행
-     */
-    private Trip setupDecidedTrip(Long tripperId, LocalDate startDate, LocalDate endDate) {
-        Trip trip = TripFixture.decided_nullId(tripperId, startDate, endDate);
-        em.persist(trip);
-        trip.getDays().forEach(em::persist);
-        return trip;
-    }
-
-    /**
-     * 임시보관함 일정을 생성 및 저장하여 셋팅하고 그 일정을 반환합니다.
-     * @param trip 일정이 소속된 여행
-     * @param scheduleIndexValue 일정의 순서값({@link ScheduleIndex})의 원시값({@link Long})
-     * @return 일정
-     */
-    private Schedule setupTemporarySchedule(Trip trip, long scheduleIndexValue) {
-        Schedule schedule = ScheduleFixture.temporaryStorage_NullId(trip, scheduleIndexValue);
-        em.persist(schedule);
-        return schedule;
-    }
-
-    /**
-     * 임시보관함 일정을 생성 및 저장하여 셋팅하고 그 일정을 반환합니다.
-     * @param trip 일정이 소속된 여행
-     * @param scheduleIndexValue 일정의 순서값({@link ScheduleIndex})의 원시값({@link Long})
-     * @return 일정
-     */
-    private Schedule setupDaySchedule(Trip trip, Day day, long scheduleIndexValue) {
-        Schedule schedule = ScheduleFixture.day_NullId(trip, day, scheduleIndexValue);
-        em.persist(schedule);
-        return schedule;
     }
 
     /**
