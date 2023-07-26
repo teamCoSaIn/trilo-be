@@ -17,10 +17,17 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+/**
+ * Day 리포지토리 구현체({@link DayRepositoryImpl}의 테스트 클래스입니다.
+ * @see DayRepositoryImpl
+ */
 @Slf4j
 @DisplayName("DayRepositoryImpl 테스트")
 public class DayRepositoryImplTest extends RepositoryTest {
 
+    /**
+     * 테스트할 Day 리포지토리 구현체
+     */
     @Autowired
     private DayRepositoryImpl dayRepository;
 
@@ -81,6 +88,11 @@ public class DayRepositoryImplTest extends RepositoryTest {
         assertThat(remainingDays).map(Day::getId).containsExactlyInAnyOrder(day3.getId(), day4.getId());
     }
 
+    /**
+     * {@link DayRepositoryImpl#deleteAllByTripId(Long)} 메서드 실행 시
+     * 여행의 ID에 해당하는 Day를 모두 삭제할 수 있는 지 테스트합니다.
+     * @see DayRepositoryImpl#deleteAllByTripId(Long)
+     */
     @Test
     @DirtiesContext
     @DisplayName("deleteAllByTripId로 Day를 삭제하면, 해당 여행의 모든 Day들이 삭제된다.")
@@ -89,26 +101,21 @@ public class DayRepositoryImplTest extends RepositoryTest {
         Long tripperId = setupTripperId();
         LocalDate startDate = LocalDate.of(2023, 3, 1);
         LocalDate endDate = LocalDate.of(2023, 3, 3);
-        Trip trip = TripFixture.decided_nullId(tripperId, startDate, endDate);
-        em.persist(trip);
 
-        em.persist(trip);
+        Trip trip = setupDecidedTrip(tripperId, startDate, endDate); // 여행 생성, Day 생성, 영속화
 
         Day day1 = trip.getDays().get(0);
         Day day2 = trip.getDays().get(1);
         Day day3 = trip.getDays().get(2);
-
-        em.persist(day1);
-        em.persist(day2);
-        em.persist(day3);
+        flushAndClear();
 
         // when
-        dayRepository.deleteAllByTripId(trip.getId());
-        em.clear();
+        dayRepository.deleteAllByTripId(trip.getId()); // 모든 Day 삭제
+        flushAndClear();
 
         // then
         List<Day> findDays = findAllDayByIds(List.of(day1.getId(), day2.getId(), day3.getId()));
-        assertThat(findDays).isEmpty();
+        assertThat(findDays).isEmpty(); // 조회 했을 때 Day 없음 검증
     }
 
     @Nested
@@ -146,6 +153,11 @@ public class DayRepositoryImplTest extends RepositoryTest {
         }
     }
 
+    /**
+     * 전달받은 id들에 해당하는 Day들을 모두 조회합니다.
+     * @param dayIds Day의 id들
+     * @return 조회된 Day들
+     */
     private List<Day> findAllDayByIds(List<Long> dayIds) {
         return em.createQuery("""
                                 SELECT d

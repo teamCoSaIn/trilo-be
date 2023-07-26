@@ -45,8 +45,7 @@ public class TripRepositoryImplTest extends RepositoryTest {
 
         // when
         tripRepositoryImpl.save(trip);
-        em.flush();
-        em.clear();
+        flushAndClear();
 
         // then
         Trip findTrip = tripRepositoryImpl.findById(trip.getId()).orElseThrow(IllegalStateException::new); // 같은 id로 조회해 옴
@@ -76,8 +75,7 @@ public class TripRepositoryImplTest extends RepositoryTest {
         setupTemporarySchedule(trip, 30_000_000L);
         setupTemporarySchedule(trip, 50_000_000L);
         setupTemporarySchedule(trip, -10_000_000L);
-        em.flush();
-        em.clear();
+        flushAndClear();
 
         // when
         Trip findTrip = tripRepositoryImpl.findById(trip.getId()).orElseThrow(IllegalStateException::new); // 같은 id로 조회해옴
@@ -101,9 +99,7 @@ public class TripRepositoryImplTest extends RepositoryTest {
         Trip trip = setupDecidedTrip(tripperId, startDate, endDate);
         Day day1 = trip.getDays().get(0);
         Day day2 = trip.getDays().get(1);
-
-        em.flush();
-        em.clear();
+        flushAndClear();
 
         // when
         Trip findTrip = tripRepositoryImpl.findByIdWithDays(trip.getId()).get();
@@ -115,6 +111,11 @@ public class TripRepositoryImplTest extends RepositoryTest {
         assertThat(findTrip.getDays()).map(Day::getTripDate).containsExactly(day1.getTripDate(), day2.getTripDate());
     }
 
+    /**
+     * 여행을 삭제 후, 같은 id로 조회했을 때 같은 여행이 찾아지는 지 검증
+     * @see TripRepositoryImpl#delete(Trip)
+     * @see TripRepositoryImpl#findById(Long)
+     */
     @Test
     @DirtiesContext
     @DisplayName("delete 테스트")
@@ -124,13 +125,11 @@ public class TripRepositoryImplTest extends RepositoryTest {
         Trip trip = setupUndecidedTrip(tripperId);
 
         // when
-        tripRepositoryImpl.delete(trip);
-        em.flush();
-        em.clear();
+        tripRepositoryImpl.delete(trip); // 여행 삭제
+        flushAndClear();
 
         // then
-        Trip findTrip = tripRepositoryImpl.findById(trip.getId()).orElse(null);
-        assertThat(findTrip).isNull();
+        assertThat(tripRepositoryImpl.findById(trip.getId())).isEmpty(); // 같은 id로 찾았을 때 여행 없음
     }
 
     @Nested
@@ -143,19 +142,15 @@ public class TripRepositoryImplTest extends RepositoryTest {
             Trip trip2 = setupUndecidedTrip(tripperId);
             Trip trip3 = setupUndecidedTrip(tripperId);
             Trip trip4 = setupUndecidedTrip(tripperId);
-
-            em.flush();
-            em.clear();
+            flushAndClear();
 
             // when
             tripRepositoryImpl.deleteAllByTripperId(tripperId);
-            em.flush();
-            em.clear();
+            flushAndClear();
 
             // then
             List<Trip> trips = tripRepositoryImpl.findAllByTripperId(tripperId);
             assertThat(trips).isEmpty();
         }
     }
-
 }

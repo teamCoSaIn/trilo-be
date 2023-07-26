@@ -7,7 +7,6 @@ import com.cosain.trilo.trip.domain.entity.Schedule;
 import com.cosain.trilo.trip.domain.entity.Trip;
 import com.cosain.trilo.trip.domain.vo.ScheduleIndex;
 import com.cosain.trilo.trip.infra.repository.ScheduleRepositoryImpl;
-import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceException;
 import jakarta.persistence.Query;
 import org.junit.jupiter.api.DisplayName;
@@ -24,15 +23,18 @@ import static com.cosain.trilo.trip.domain.vo.ScheduleIndex.DEFAULT_SEQUENCE_GAP
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+/**
+ * 일정 리포지토리 구현체({@link ScheduleRepositoryImpl}의 테스트 클래스입니다.
+ * @see ScheduleRepositoryImpl
+ */
 @DisplayName("ScheduleRepositoryImpl 테스트")
 public class ScheduleRepositoryImplTest extends RepositoryTest {
 
+    /**
+     * 테스트할 일정 리포지토리 구현체
+     */
     @Autowired
     private ScheduleRepositoryImpl scheduleRepositoryImpl;
-
-    @Autowired
-    private EntityManager em;
-
 
     @Test
     @DisplayName("Schedule을 저장하고 같은 식별자로 찾으면 같은 Schedule이 찾아진다.")
@@ -48,8 +50,7 @@ public class ScheduleRepositoryImplTest extends RepositoryTest {
 
         // when
         scheduleRepositoryImpl.save(schedule);
-        em.flush();
-        em.clear();
+        flushAndClear();
 
         // then
         Schedule findSchedule = scheduleRepositoryImpl.findById(schedule.getId()).get();
@@ -113,7 +114,11 @@ public class ScheduleRepositoryImplTest extends RepositoryTest {
         assertThat(findSchedule).isNull();
     }
 
-
+    /**
+     * {@link ScheduleRepositoryImpl#deleteAllByTripId(Long)} 메서드 실행 시
+     * 여행의 ID에 해당하는 일정을 모두 삭제할 수 있는 지 테스트합니다.
+     * @see ScheduleRepositoryImpl#deleteAllByTripId(Long)
+     */
     @Test
     @DisplayName("deleteAllByTripId로 일정을 삭제하면, 해당 여행의 모든 일정들이 삭제된다.")
     void deleteAllByTripIdTest() {
@@ -131,14 +136,15 @@ public class ScheduleRepositoryImplTest extends RepositoryTest {
         Schedule schedule2 = setupDaySchedule(trip, day2, 0L);
         Schedule schedule3 = setupDaySchedule(trip, day3, 0L);
         Schedule schedule4 = setupTemporarySchedule(trip, 0L);
+        flushAndClear(); // 여행, Day, 일정 생성
 
         // when
-        scheduleRepositoryImpl.deleteAllByTripId(trip.getId());
-        em.clear();
+        scheduleRepositoryImpl.deleteAllByTripId(trip.getId()); // Trip Id에 속한 모든 일정 삭제
+        flushAndClear();
 
         // then
         List<Schedule> findSchedules = findAllScheduleByIds(List.of(schedule1.getId(), schedule2.getId(), schedule3.getId(), schedule4.getId()));
-        assertThat(findSchedules).isEmpty();
+        assertThat(findSchedules).isEmpty(); // 조회 시 일정들 모두 삭제됨 확인
     }
 
 
@@ -156,9 +162,7 @@ public class ScheduleRepositoryImplTest extends RepositoryTest {
         Schedule schedule1 = setupDaySchedule(trip, day, 0L);
         Schedule schedule2 = setupDaySchedule(trip, day, 100L);
         Schedule schedule3 = setupDaySchedule(trip, day, 200L);
-
-        em.flush();
-        em.clear();
+        flushAndClear();
 
         // when
         Schedule findSchedule = scheduleRepositoryImpl.findByIdWithTrip(schedule2.getId()).get();
@@ -382,8 +386,7 @@ public class ScheduleRepositoryImplTest extends RepositoryTest {
 
             Schedule schedule1 = setupTemporarySchedule(trip, 0L);
             Schedule schedule2 = setupTemporarySchedule(trip, 100L);
-            em.flush();
-            em.clear();
+            flushAndClear();
 
             int scheduleTripCount = scheduleRepositoryImpl.findTripScheduleCount(trip.getId());
             assertThat(scheduleTripCount).isEqualTo(2);
@@ -402,9 +405,7 @@ public class ScheduleRepositoryImplTest extends RepositoryTest {
             Schedule schedule1 = setupDaySchedule(trip, day, 0L);
             Schedule schedule2 = setupDaySchedule(trip, day, 100L);
             Schedule schedule3 = setupDaySchedule(trip, day, 200L);
-
-            em.flush();
-            em.clear();
+            flushAndClear();
 
             int scheduleTripCount = scheduleRepositoryImpl.findTripScheduleCount(trip.getId());
             assertThat(scheduleTripCount).isEqualTo(3);
@@ -426,8 +427,7 @@ public class ScheduleRepositoryImplTest extends RepositoryTest {
             Schedule schedule2 = setupDaySchedule(trip, day2, 100L);
             Schedule schedule3 = setupDaySchedule(trip, day3, 200L);
             Schedule schedule4 = setupTemporarySchedule(trip, 0L);
-            em.flush();
-            em.clear();
+            flushAndClear();
 
             int scheduleTripCount = scheduleRepositoryImpl.findTripScheduleCount(trip.getId());
             assertThat(scheduleTripCount).isEqualTo(4);
@@ -448,8 +448,7 @@ public class ScheduleRepositoryImplTest extends RepositoryTest {
 
             Trip trip = setupDecidedTrip(tripperId, startDate, endDate);
             Day day = trip.getDays().get(0);
-            em.flush();
-            em.clear();
+            flushAndClear();
 
             int scheduleTripCount = scheduleRepositoryImpl.findDayScheduleCount(day.getId());
             assertThat(scheduleTripCount).isEqualTo(0);
@@ -471,8 +470,7 @@ public class ScheduleRepositoryImplTest extends RepositoryTest {
             Schedule schedule3 = setupDaySchedule(trip, day1, 200L);
             Schedule schedule4 = setupDaySchedule(trip, day2, 0L);
             Schedule schedule5 = setupDaySchedule(trip, day2, 100L);
-            em.flush();
-            em.clear();
+            flushAndClear();
 
             int dayScheduleCount = scheduleRepositoryImpl.findDayScheduleCount(day1.getId());
             assertThat(dayScheduleCount).isEqualTo(3);
