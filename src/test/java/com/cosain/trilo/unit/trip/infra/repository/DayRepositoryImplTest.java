@@ -1,13 +1,10 @@
 package com.cosain.trilo.unit.trip.infra.repository;
 
 import com.cosain.trilo.fixture.TripFixture;
-import com.cosain.trilo.fixture.UserFixture;
 import com.cosain.trilo.support.RepositoryTest;
 import com.cosain.trilo.trip.domain.entity.Day;
 import com.cosain.trilo.trip.domain.entity.Trip;
 import com.cosain.trilo.trip.infra.repository.DayRepositoryImpl;
-import com.cosain.trilo.user.domain.User;
-import jakarta.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -21,15 +18,11 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
-@RepositoryTest
 @DisplayName("DayRepositoryImpl 테스트")
-public class DayRepositoryImplTest {
+public class DayRepositoryImplTest extends RepositoryTest {
 
     @Autowired
     private DayRepositoryImpl dayRepository;
-
-    @Autowired
-    private EntityManager em;
 
     @Test
     @DisplayName("findBYWithTripTest - 같이 가져온 Trip이 실제 Trip 클래스인지 함께 검증")
@@ -151,12 +144,6 @@ public class DayRepositoryImplTest {
             assertThat(days).isEmpty();
 
         }
-    }
-
-    private Long setupTripperId() {
-        User user = UserFixture.googleUser_NullId();
-        em.persist(user);
-        return user.getId();
     }
 
     private List<Day> findAllDayByIds(List<Long> dayIds) {

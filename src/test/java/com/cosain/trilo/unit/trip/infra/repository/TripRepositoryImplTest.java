@@ -1,22 +1,16 @@
 package com.cosain.trilo.unit.trip.infra.repository;
 
-import com.cosain.trilo.fixture.ScheduleFixture;
-import com.cosain.trilo.fixture.TripFixture;
-import com.cosain.trilo.fixture.UserFixture;
 import com.cosain.trilo.support.RepositoryTest;
 import com.cosain.trilo.trip.domain.entity.Day;
 import com.cosain.trilo.trip.domain.entity.Schedule;
 import com.cosain.trilo.trip.domain.entity.Trip;
 import com.cosain.trilo.trip.domain.vo.ScheduleIndex;
 import com.cosain.trilo.trip.domain.vo.TripTitle;
-import com.cosain.trilo.trip.domain.vo.TripStatus;
 import com.cosain.trilo.trip.infra.repository.TripRepositoryImpl;
-import com.cosain.trilo.user.domain.User;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.annotation.DirtiesContext;
 
 import java.time.LocalDate;
@@ -28,21 +22,14 @@ import static org.assertj.core.api.Assertions.assertThat;
  * 여행 리포지토리 구현체({@link TripRepositoryImpl}의 테스트 클래스입니다.
  * @see TripRepositoryImpl
  */
-@RepositoryTest
 @DisplayName("TripRepositoryImpl 테스트")
-public class TripRepositoryImplTest {
+public class TripRepositoryImplTest extends RepositoryTest {
 
     /**
      * 테스트할 여행 리포지토리 구현체
      */
     @Autowired
     private TripRepositoryImpl tripRepositoryImpl;
-
-    /**
-     * 영속성 컨텍스트
-     */
-    @Autowired
-    private TestEntityManager em;
 
     /**
      * 여행을 저장 후 같은 id로 조회했을 때, 같은 여행이 찾아지는 지 검증
@@ -84,11 +71,11 @@ public class TripRepositoryImplTest {
     void testTemporaryStorageLazyLoading() {
         // given
         Long tripperId = setupTripperId();
-        Trip trip = setupUndecidedTripAndPersist(tripperId);
+        Trip trip = setupUndecidedTrip(tripperId);
 
-        setupTemporaryScheduleAndPersist(trip, 30_000_000L);
-        setupTemporaryScheduleAndPersist(trip, 50_000_000L);
-        setupTemporaryScheduleAndPersist(trip, -10_000_000L);
+        setupTemporarySchedule(trip, 30_000_000L);
+        setupTemporarySchedule(trip, 50_000_000L);
+        setupTemporarySchedule(trip, -10_000_000L);
         em.flush();
         em.clear();
 
@@ -111,7 +98,7 @@ public class TripRepositoryImplTest {
         LocalDate startDate = LocalDate.of(2023,5,2);
         LocalDate endDate = LocalDate.of(2023,5,3);
 
-        Trip trip = setupDecidedTripAndPersist(tripperId, startDate, endDate);
+        Trip trip = setupDecidedTrip(tripperId, startDate, endDate);
         Day day1 = trip.getDays().get(0);
         Day day2 = trip.getDays().get(1);
 
@@ -134,7 +121,7 @@ public class TripRepositoryImplTest {
     public void deleteTest() {
         // given
         Long tripperId = setupTripperId();
-        Trip trip = setupUndecidedTripAndPersist(tripperId);
+        Trip trip = setupUndecidedTrip(tripperId);
 
         // when
         tripRepositoryImpl.delete(trip);
@@ -152,10 +139,10 @@ public class TripRepositoryImplTest {
         void tripperId_에_해당하는_모든_trip이_제거된다(){
             // given
             Long tripperId = setupTripperId();
-            Trip trip1 = setupUndecidedTripAndPersist(tripperId);
-            Trip trip2 = setupUndecidedTripAndPersist(tripperId);
-            Trip trip3 = setupUndecidedTripAndPersist(tripperId);
-            Trip trip4 = setupUndecidedTripAndPersist(tripperId);
+            Trip trip1 = setupUndecidedTrip(tripperId);
+            Trip trip2 = setupUndecidedTrip(tripperId);
+            Trip trip3 = setupUndecidedTrip(tripperId);
+            Trip trip4 = setupUndecidedTrip(tripperId);
 
             em.flush();
             em.clear();
@@ -171,48 +158,4 @@ public class TripRepositoryImplTest {
         }
     }
 
-    /**
-     * 저장소에 사용자를 저장하여 셋팅하고, 해당 사용자의 id를 발급받아 옵니다.
-     * @return 새로 저장된 사용자의 id
-     */
-    private Long setupTripperId() {
-        User user = UserFixture.googleUser_NullId();
-        em.persist(user);
-        return user.getId();
-    }
-
-    /**
-     * {@link TripStatus#UNDECIDED} 상태의 여행을 생성하고, 저장소에 저장하여 셋팅합니다.
-     * @param tripperId 사용자(여행자)의 id
-     * @return 여행
-     */
-    private Trip setupUndecidedTripAndPersist(Long tripperId) {
-        Trip trip = TripFixture.undecided_nullId(tripperId);
-        em.persist(trip);
-        return trip;
-    }
-
-    /**
-     * {@link TripStatus#DECIDED} 상태의 여행 및 여행에 소속된 Day들을 생성하고, 저장소에 저장하여 셋팅합니다.
-     * @param tripperId 사용자(여행자)의 id
-     * @return 여행
-     */
-    private Trip setupDecidedTripAndPersist(Long tripperId, LocalDate startDate, LocalDate endDate) {
-        Trip trip = TripFixture.decided_nullId(tripperId, startDate, endDate);
-        em.persist(trip);
-        trip.getDays().forEach(em::persist);
-        return trip;
-    }
-
-    /**
-     * 임시보관함 일정을 생성 및 저장하여 셋팅하고 그 일정을 반환합니다.
-     * @param trip 일정이 소속된 여행
-     * @param scheduleIndexValue 일정의 순서값({@link ScheduleIndex})의 원시값({@link Long})
-     * @return 일정
-     */
-    private Schedule setupTemporaryScheduleAndPersist(Trip trip, long scheduleIndexValue) {
-        Schedule schedule = ScheduleFixture.temporaryStorage_NullId(trip, scheduleIndexValue);
-        em.persist(schedule);
-        return schedule;
-    }
 }

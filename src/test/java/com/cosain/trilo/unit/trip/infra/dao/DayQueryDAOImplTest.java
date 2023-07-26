@@ -2,7 +2,6 @@ package com.cosain.trilo.unit.trip.infra.dao;
 
 import com.cosain.trilo.fixture.ScheduleFixture;
 import com.cosain.trilo.fixture.TripFixture;
-import com.cosain.trilo.fixture.UserFixture;
 import com.cosain.trilo.support.RepositoryTest;
 import com.cosain.trilo.trip.application.day.service.day_search.DayScheduleDetail;
 import com.cosain.trilo.trip.application.day.service.day_search.ScheduleSummary;
@@ -10,8 +9,6 @@ import com.cosain.trilo.trip.domain.entity.Day;
 import com.cosain.trilo.trip.domain.entity.Schedule;
 import com.cosain.trilo.trip.domain.entity.Trip;
 import com.cosain.trilo.trip.infra.dao.DayQueryDAOImpl;
-import com.cosain.trilo.user.domain.User;
-import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -23,15 +20,11 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@RepositoryTest
 @DisplayName("DayQueryDAOImpl 테스트")
-public class DayQueryDAOImplTest {
+public class DayQueryDAOImplTest extends RepositoryTest {
 
     @Autowired
     private DayQueryDAOImpl dayQueryDAOImpl;
-
-    @Autowired
-    private EntityManager em;
 
     @Test
     @DisplayName("findDayWithSchedulesByDayId -> Day 및 소속 Schedule 요약정보 목록(순서 오름차순) 함께 조회됨")
@@ -41,14 +34,14 @@ public class DayQueryDAOImplTest {
         LocalDate startDate = LocalDate.of(2023, 5, 1);
         LocalDate endDate = LocalDate.of(2023, 5, 2);
 
-        Trip trip = setupDecidedTripAndPersist(tripperId, startDate, endDate);
+        Trip trip = setupDecidedTrip(tripperId, startDate, endDate);
         Day day1 = trip.getDays().get(0);
         Day day2 = trip.getDays().get(1);
 
-        Schedule schedule1 = setupDayScheduleAndPersist(trip, day1, 10000L);
-        Schedule schedule2 = setupDayScheduleAndPersist(trip, day1, 20000L);
-        Schedule schedule3 = setupDayScheduleAndPersist(trip, day1, 30000L);
-        Schedule schedule4 = setupDayScheduleAndPersist(trip, day2, 10000L);
+        Schedule schedule1 = setupDaySchedule(trip, day1, 10000L);
+        Schedule schedule2 = setupDaySchedule(trip, day1, 20000L);
+        Schedule schedule3 = setupDaySchedule(trip, day1, 30000L);
+        Schedule schedule4 = setupDaySchedule(trip, day2, 10000L);
 
         em.flush();
         em.clear();
@@ -79,14 +72,14 @@ public class DayQueryDAOImplTest {
             LocalDate startDate = LocalDate.of(2023, 5, 10);
             LocalDate endDate = LocalDate.of(2023, 5, 11);
 
-            Trip trip = setupDecidedTripAndPersist(tripperId, startDate, endDate);
+            Trip trip = setupDecidedTrip(tripperId, startDate, endDate);
             Day day1 = trip.getDays().get(0);
             Day day2 = trip.getDays().get(1);
 
-            Schedule schedule1 = setupDayScheduleAndPersist(trip, day1, 10000L);
-            Schedule schedule2 = setupDayScheduleAndPersist(trip, day1, 20000L);
-            Schedule schedule3 = setupDayScheduleAndPersist(trip, day1, 30000L);
-            Schedule schedule4 = setupDayScheduleAndPersist(trip, day2, 10000L);
+            Schedule schedule1 = setupDaySchedule(trip, day1, 10000L);
+            Schedule schedule2 = setupDaySchedule(trip, day1, 20000L);
+            Schedule schedule3 = setupDaySchedule(trip, day1, 30000L);
+            Schedule schedule4 = setupDaySchedule(trip, day2, 10000L);
             em.flush();
             em.clear();
 
@@ -113,7 +106,7 @@ public class DayQueryDAOImplTest {
             LocalDate startDate = LocalDate.of(2023, 5, 10);
             LocalDate endDate = LocalDate.of(2023, 5, 11);
 
-            Trip trip = setupDecidedTripAndPersist(tripperId, startDate, endDate);
+            Trip trip = setupDecidedTrip(tripperId, startDate, endDate);
 
             em.flush();
             em.clear();
@@ -164,25 +157,6 @@ public class DayQueryDAOImplTest {
             assertThat(findSchedules.get(2).getScheduleId()).isEqualTo(schedule3.getId());
 
         }
-    }
-
-    private Long setupTripperId() {
-        User user = UserFixture.googleUser_NullId();
-        em.persist(user);
-        return user.getId();
-    }
-
-    private Trip setupDecidedTripAndPersist(Long tripperId, LocalDate startDate, LocalDate endDate) {
-        Trip trip = TripFixture.decided_nullId(tripperId, startDate, endDate);
-        em.persist(trip);
-        trip.getDays().forEach(em::persist);
-        return trip;
-    }
-
-    private Schedule setupDayScheduleAndPersist(Trip trip, Day day, long scheduleIndexValue) {
-        Schedule schedule = ScheduleFixture.day_NullId(trip, day, scheduleIndexValue);
-        em.persist(schedule);
-        return schedule;
     }
 
 }

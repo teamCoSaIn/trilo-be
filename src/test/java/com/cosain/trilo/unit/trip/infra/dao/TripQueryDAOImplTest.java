@@ -2,7 +2,6 @@
 package com.cosain.trilo.unit.trip.infra.dao;
 
 import com.cosain.trilo.fixture.TripFixture;
-import com.cosain.trilo.fixture.UserFixture;
 import com.cosain.trilo.support.RepositoryTest;
 import com.cosain.trilo.trip.application.trip.service.trip_detail_search.TripDetail;
 import com.cosain.trilo.trip.application.trip.service.trip_list_search.TripListQueryParam;
@@ -10,7 +9,6 @@ import com.cosain.trilo.trip.application.trip.service.trip_list_search.TripListS
 import com.cosain.trilo.trip.domain.entity.Trip;
 import com.cosain.trilo.trip.infra.dao.TripQueryDAOImpl;
 import com.cosain.trilo.trip.infra.dto.TripStatistics;
-import com.cosain.trilo.user.domain.User;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -22,9 +20,8 @@ import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@RepositoryTest
 @DisplayName("TripQueryDAOImpl 테스트")
-public class TripQueryDAOImplTest {
+public class TripQueryDAOImplTest extends RepositoryTest {
 
     @Autowired
     private TripQueryDAOImpl tripQueryDAOImpl;
@@ -161,12 +158,6 @@ public class TripQueryDAOImplTest {
             assertThat(tripStatistics.getTerminatedTripCnt()).isEqualTo(3);
             assertThat(tripStatistics.getTotalTripCnt()).isEqualTo(5);
         }
-    }
-
-    private Long setupTripperId() {
-        User user = UserFixture.googleUser_NullId();
-        em.persist(user);
-        return user.getId();
     }
 
 }
