@@ -12,10 +12,7 @@ import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.annotations.Where;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 /**
  * 여행의 도메인 엔티티(Entity)입니다.
@@ -153,12 +150,12 @@ public class Trip {
     }
 
     /**
-     * 기간을 변경합니다. 이에 따라 삭제되는 날짜와, 생성되는 날짜들을 각각 리스트로 반환합니다.
-     *
-     * @param newPeriod
-     * @return ChangeTripPeriodResult
+     * 기간을 변경합니다. 여행 기간 수정 결과를 반환합니다.
+     * @param newPeriod 새로운 기간
+     * @return 여행기간 수정 결과(생성되는 기간의 Day들, 삭제해야할 Day들 ...)
+     * @throws EmptyPeriodUpdateException 기간이 정해져 있는데 빈 기간으로 수정하려 할 때
      */
-    public ChangeTripPeriodResult changePeriod(TripPeriod newPeriod) {
+    public ChangeTripPeriodResult changePeriod(TripPeriod newPeriod) throws EmptyPeriodUpdateException {
         TripPeriod oldPeriod = this.tripPeriod;
 
         // 기존이랑 기간이 같으면 변경 안 하고 반환
@@ -177,28 +174,40 @@ public class Trip {
         }
         this.tripPeriod = newPeriod;
 
-        List<Day> deletedDays = deleteUnnecessaryDays(oldPeriod, newPeriod);
-        List<Day> createdDays = addNewDays(oldPeriod, newPeriod);
+        List<Day> deletedDays = deleteUnnecessaryDays(oldPeriod, newPeriod); // 삭제된 Day들
+        List<Day> createdDays = addNewDays(oldPeriod, newPeriod); // 새로 생성된 Day들
         return ChangeTripPeriodResult.of(deletedDays, createdDays);
     }
 
+    /**
+     * 새로운 기간에 속하지 않는 Day들을 컬렉션에서 제거한뒤, 이들을 모아서 반환합니다.
+     * @param oldPeriod 기존의 기간
+     * @param newPeriod 새로운 기간
+     * @return 새로운 기간에 속하지 않는 Day들
+     */
     private List<Day> deleteUnnecessaryDays(TripPeriod oldPeriod, TripPeriod newPeriod) {
-        TripPeriod overlappedPeriod = oldPeriod.intersection(newPeriod);
+        TripPeriod overlappedPeriod = oldPeriod.intersection(newPeriod); // 겹치는 기간 구하기
         List<Day> deleteDays = days.stream()
-                .filter(day -> !day.isIn(overlappedPeriod))
+                .filter(day -> !day.isIn(overlappedPeriod)) // 겹치는 기간에 속하지 않는 날짜들만 수집 -> 삭제 대상
                 .toList();
-        this.days.removeAll(deleteDays);
+        this.days.removeAll(deleteDays); // 삭제 대상을 컬렉션에서 제거
         return deleteDays;
     }
 
+    /**
+     * 새로운 여행 기간 중, 기존 기간에 속하지 않은 날짜들에 해당하는 Day들을 만듭니다.
+     * @param oldPeriod 기존 기간
+     * @param newPeriod 새로운 기간
+     * @return 기간 변경으로 인해 새로 생성되는 Day들
+     */
     private List<Day> addNewDays(TripPeriod oldPeriod, TripPeriod newPeriod) {
-        Random random = new Random();
+        Random random = new Random(); // Day 색상값을 랜덤으로 지정하여 생성하기 위한 random
 
         List<Day> newDays = newPeriod.dateStream()
-                .filter(date -> !oldPeriod.contains(date))
-                .map(date -> Day.of(date, this, random))
+                .filter(date -> !oldPeriod.contains(date)) // 기존 기간에 속하지 않는 날짜들을 구함
+                .map(date -> Day.of(date, this, random)) // 날짜 정보를 기반으로 Day 생성
                 .toList();
-        this.days.addAll(newDays);
+        this.days.addAll(newDays); // 새로운 Day들을 컬렉션에 추가
         return newDays;
     }
 
