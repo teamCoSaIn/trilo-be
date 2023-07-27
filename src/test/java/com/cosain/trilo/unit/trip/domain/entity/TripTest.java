@@ -1,5 +1,6 @@
 package com.cosain.trilo.unit.trip.domain.entity;
 
+import com.cosain.trilo.common.exception.trip.EmptyPeriodUpdateException;
 import com.cosain.trilo.fixture.ScheduleFixture;
 import com.cosain.trilo.fixture.TripFixture;
 import com.cosain.trilo.trip.domain.dto.ScheduleMoveDto;

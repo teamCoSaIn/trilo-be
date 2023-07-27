@@ -1,7 +1,7 @@
 package com.cosain.trilo.unit.trip.application.trip.service.trip_period_update;
 
 import com.cosain.trilo.fixture.TripFixture;
-import com.cosain.trilo.trip.application.exception.NoTripUpdateAuthorityException;
+import com.cosain.trilo.common.exception.trip.NoTripUpdateAuthorityException;
 import com.cosain.trilo.common.exception.trip.TripNotFoundException;
 import com.cosain.trilo.trip.application.trip.service.trip_period_update.TripPeriodUpdateCommand;
 import com.cosain.trilo.trip.application.trip.service.trip_period_update.TripPeriodUpdateService;

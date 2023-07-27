@@ -2,7 +2,7 @@ package com.cosain.trilo.trip.domain.entity;
 
 import com.cosain.trilo.trip.domain.dto.ChangeTripPeriodResult;
 import com.cosain.trilo.trip.domain.dto.ScheduleMoveDto;
-import com.cosain.trilo.trip.domain.exception.EmptyPeriodUpdateException;
+import com.cosain.trilo.common.exception.trip.EmptyPeriodUpdateException;
 import com.cosain.trilo.trip.domain.exception.InvalidScheduleMoveTargetOrderException;
 import com.cosain.trilo.trip.domain.exception.InvalidTripDayException;
 import com.cosain.trilo.trip.domain.exception.MidScheduleIndexConflictException;
