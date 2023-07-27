@@ -32,7 +32,7 @@ public class TripPeriodUpdateCommandTest {
 
         // then
         assertThat(command).isNotNull();
-        assertThat(command.getTripId()).isEqualTo(tripId);
+        assertThat(command.getTargetTripId()).isEqualTo(tripId);
         assertThat(command.getRequestTripperId()).isEqualTo(tripperId);
         assertThat(command.getTripPeriod()).isEqualTo(TripPeriod.of(startDate, endDate));
     }
@@ -52,7 +52,7 @@ public class TripPeriodUpdateCommandTest {
 
         // then
         assertThat(command).isNotNull();
-        assertThat(command.getTripId()).isEqualTo(tripId);
+        assertThat(command.getTargetTripId()).isEqualTo(tripId);
         assertThat(command.getRequestTripperId()).isEqualTo(tripperId);
         assertThat(command.getTripPeriod()).isEqualTo(TripPeriod.of(startDate, endDate));
     }
