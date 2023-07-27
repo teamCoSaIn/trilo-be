@@ -21,6 +21,10 @@ public class DayRepositoryImpl implements DayRepository {
      */
     private final JpaDayRepository jpaDayRepository;
 
+    /**
+     * 전달받은 Day들을 모두 저장합니다.
+     * @param days 저장할 Day들
+     */
     @Override
     public void saveAll(List<Day> days) {
         jpaDayRepository.saveAll(days);
@@ -31,6 +35,11 @@ public class DayRepositoryImpl implements DayRepository {
         return jpaDayRepository.findByIdWithTrip(dayId);
     }
 
+    /**
+     * 전달받은 Id들에 해당하는 Day들을 모두 삭제합니다.
+     * @param dayIds 삭제할 Day의 id들
+     * @return 삭제된 Day의 갯수
+     */
     @Override
     public int deleteAllByIds(List<Long> dayIds) {
         return jpaDayRepository.deleteAllByIds(dayIds);

@@ -19,6 +19,11 @@ public interface JpaDayRepository extends JpaRepository<Day, Long> {
             "WHERE d.id = :dayId")
     Optional<Day> findByIdWithTrip(@Param("dayId") Long dayId);
 
+    /**
+     * 전달받은 Id들에 해당하는 Day들을 모두 삭제합니다.
+     * @param dayIds 삭제할 Day의 id들
+     * @return 삭제된 Day의 갯수
+     */
     @Modifying(clearAutomatically = true)
     @Query("DELETE FROM Day d WHERE d in :dayIds")
     int deleteAllByIds(@Param("dayIds") List<Long> dayIds);

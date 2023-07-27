@@ -33,11 +33,23 @@ public class TripRepositoryImpl implements TripRepository {
         return jpaTripRepository.save(trip);
     }
 
+    /**
+     * 인자로 전달받은 식별자의 여행을 담은 Optional 을 조회하여 반환받습니다.
+     * @param tripId 조회할 여행의 식별자(id)
+     * @return 조회해온 여행을 담은 Optional(null 가능성 있음)
+     * @see Optional
+     */
     @Override
     public Optional<Trip> findById(Long tripId) {
         return jpaTripRepository.findById(tripId);
     }
 
+    /**
+     * 인자로 전달받은 식별자의 여행(Day들 포함)을 담은 Optional 을 조회하여 반환받습니다.
+     * @param tripId 조회할 여행의 식별자(id)
+     * @return 조회해온 여행(Day들 포함)을 담은 Optional(null 가능성 있음)
+     * @see Optional
+     */
     @Override
     public Optional<Trip> findByIdWithDays(Long tripId) {
         return jpaTripRepository.findByIdWithDays(tripId);
