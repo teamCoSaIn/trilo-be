@@ -1,7 +1,6 @@
 package com.cosain.trilo.trip.domain.repository;
 
 import com.cosain.trilo.trip.domain.entity.Trip;
-import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
@@ -26,9 +25,15 @@ public interface TripRepository {
      */
     Optional<Trip> findById(Long tripId);
 
-    Optional<Trip> findByIdWithDays(@Param("id") Long tripId);
+    /**
+     * 인자로 전달받은 식별자의 여행(Day들 포함)을 담은 Optional 을 조회하여 반환받습니다.
+     * @param tripId 조회할 여행의 식별자(id)
+     * @return 조회해온 여행(Day들 포함)을 담은 Optional(null 가능성 있음)
+     * @see Optional
+     */
+    Optional<Trip> findByIdWithDays(Long tripId);
 
-    List<Trip> findAllByTripperId(@Param("tripperId") Long tripperId);
+    List<Trip> findAllByTripperId(Long tripperId);
 
     /**
      * 인자로 전달받은 여행을 삭제합니다.
@@ -36,5 +41,5 @@ public interface TripRepository {
      */
     void delete(Trip trip);
 
-    void deleteAllByTripperId(@Param("tripperId") Long tripperId);
+    void deleteAllByTripperId(Long tripperId);
 }
