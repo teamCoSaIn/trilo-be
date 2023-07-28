@@ -7,9 +7,11 @@ import com.cosain.trilo.trip.domain.dto.ScheduleMoveDto;
 import com.cosain.trilo.trip.domain.entity.Day;
 import com.cosain.trilo.trip.domain.entity.Schedule;
 import com.cosain.trilo.trip.domain.entity.Trip;
-import com.cosain.trilo.trip.domain.exception.*;
+import com.cosain.trilo.trip.domain.exception.InvalidScheduleMoveTargetOrderException;
+import com.cosain.trilo.trip.domain.exception.InvalidTripDayException;
+import com.cosain.trilo.trip.domain.exception.MidScheduleIndexConflictException;
+import com.cosain.trilo.trip.domain.exception.ScheduleIndexRangeException;
 import com.cosain.trilo.trip.domain.vo.*;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -22,605 +24,383 @@ import static com.cosain.trilo.trip.domain.vo.ScheduleIndex.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+/**
+ * 여행 도메인의 테스트 코드입니다.
+ */
 @DisplayName("Trip(여행) 도메인 테스트")
 public class TripTest {
 
-    @Nested
-    @DisplayName("여행을 create로 생성하면")
-    class When_Create {
 
+    /**
+     * 여행을 생성할 때의 테스트입니다.
+     */
+    @Test
+    @DisplayName("여행 생성 -> 성공")
+    void createTest() {
         // given
-        private final TripTitle title = TripTitle.of("제목");
-        private final Long tripperId = 1L;
+        TripTitle tripTitle = TripTitle.of("제목");
+        Long tripperId = 1L;
 
-        @Test
-        @DisplayName("지정한 이름을 가진 여행이 생성된다.")
-        public void createdTrip_has_same_title() {
-            // when
-            Trip trip = Trip.create(title, tripperId);
+        // when
+        Trip trip = Trip.create(tripTitle, tripperId);
 
-            // then
-            assertThat(trip.getTripTitle().getValue()).isEqualTo("제목");
-        }
+        // then
 
-        @Test
-        @DisplayName("UNDECIEDE 상태를 가진 여행이 생성된다.")
-        public void createdTrip_status_is_undecided() {
-            // when
-            Trip trip = Trip.create(title, tripperId);
+        // 생성 시 주입한 값이 잘 주입됐는 지 테스트
+        assertThat(trip.getTripperId()).isEqualTo(tripperId);
+        assertThat(trip.getTripTitle()).isEqualTo(tripTitle);
 
-            // then
-            assertThat(trip.getStatus()).isSameAs(TripStatus.UNDECIDED);
-        }
+        // 기본으로 초기화되는 필드들 테스트
+        assertThat(trip.getStatus()).isSameAs(TripStatus.UNDECIDED);
+        assertThat(trip.getTripPeriod()).isEqualTo(TripPeriod.empty());
+        assertThat(trip.getTripImage()).isEqualTo(TripImage.defaultImage());
     }
 
-    @Nested
-    @DisplayName("여행의 제목을 changeTitle로 변경하면")
-    class When_ChangeTitle {
+    /**
+     * 여행 제목 수정 기능 테스트입니다.
+     */
+    @Test
+    @DisplayName("여행 제목 수정 -> 성공")
+    void testTripTitleChange() {
+        // given
+        TripTitle beforeTitle = TripTitle.of("변경 전 제목");
+        Long tripperId = 1L;
+        Trip trip = Trip.create(beforeTitle, tripperId);
 
-        @Test
-        @DisplayName("새로운 title이 변경되어 적용된다.")
-        public void trip_has_changed_title() {
-            // given
-            TripTitle beforeTitle = TripTitle.of("변경 전 제목");
-            Long tripperId = 1L;
-            Trip trip = Trip.create(beforeTitle, tripperId);
+        // when
+        TripTitle newTitle = TripTitle.of("변경 후 제목");
+        trip.changeTitle(newTitle);
 
-            // when
-            TripTitle newTitle = TripTitle.of("변경 후 제목");
-            trip.changeTitle(newTitle);
+        // then
 
-            // then
-            assertThat(trip.getTripTitle()).isEqualTo(newTitle);
-        }
-
+        // 제목 수정됨
+        assertThat(trip.getTripTitle()).isNotEqualTo(beforeTitle);
+        assertThat(trip.getTripTitle()).isEqualTo(newTitle);
     }
 
+    /**
+     * 여행 기간 수정 기능 테스트들입니다.
+     */
     @Nested
     @DisplayName("ChangePeriod 테스트")
     class ChangePeriodTest {
 
-        @Nested
-        @DisplayName("UNDECIDED 상태 여행을 수정할 때")
-        class Case_Change_UNDECIDED_Trip {
+        /**
+         * 기간이 정해져있지 않은 여행의 기간을 비어있는 기간으로 변경하는 상황을 테스트합니다.
+         */
+        @Test
+        @DisplayName("UNDECIDED 상태의 여행을 비어있는 기간으로 수정 -> 변경 없음")
+        void testUndecidedTrip_to_EmptyPeriod() {
+            long tripId = 1L;
+            long tripperId = 2L;
+            Trip undecidedTrip = TripFixture.undecided_Id(tripId, tripperId);
+            TripPeriod emptyPeriod = TripPeriod.empty();
 
-            // common given
-            private Long tripId = 1L;
-            private Long tripperId = 2L;
-            private Trip undecidedTrip = TripFixture.undecided_Id(tripId, tripperId);
+            // when
+            var changePeriodResult = undecidedTrip.changePeriod(emptyPeriod); // 비어있는 기간으로 변경
 
-            @Nested
-            @DisplayName("비어있는 기간으로 변경하면")
-            class If_Change_To_EmptyPeriod {
-                // given
-                TripPeriod emptyPeriod = TripPeriod.empty();
+            // then
+            // 여행의 상태, 기간 변경 없음
+            assertThat(undecidedTrip.getStatus()).isSameAs(TripStatus.UNDECIDED);
+            assertThat(undecidedTrip.getTripPeriod()).isEqualTo(TripPeriod.empty());
 
-                @Test
-                @DisplayName("삭제된 날짜가 없다. (원래 Day가 없었고, 변경이 없었으므로)")
-                public void there_are_no_deletedDays() {
-                    // when
-                    var changePeriodResult = undecidedTrip.changePeriod(emptyPeriod);
+            // 여행이 가진 Day도 변화 없음
+            assertThat(undecidedTrip.getDays()).isEmpty();
 
-                    // then
-                    List<Long> deletedDayIds = changePeriodResult.getDeletedDayIds();
-                    assertThat(deletedDayIds).isEmpty();
-                }
+            // 삭제된 Day 없음
+            List<Long> deletedDayIds = changePeriodResult.getDeletedDayIds();
+            assertThat(deletedDayIds).isEmpty();
 
-                @Test
-                @DisplayName("생성된 날짜가 없다.")
-                public void there_are_no_createdDays() {
-                    // when
-                    var changePeriodResult = undecidedTrip.changePeriod(emptyPeriod);
-
-                    // then
-                    List<Day> createdDays = changePeriodResult.getCreatedDays();
-                    assertThat(createdDays).isEmpty();
-                }
-
-                @Test
-                @DisplayName("Trip이 가진 Days는 여전히 비어있다.")
-                public void trip_still_has_noDays() {
-                    // when
-                    undecidedTrip.changePeriod(emptyPeriod);
-
-                    // then
-                    assertThat(undecidedTrip.getDays()).isEmpty();
-                }
-
-                @Test
-                @DisplayName("Trip은 여전히 Undecided 상태이다.")
-                public void trip_status_is_still_undecided() {
-                    // when
-                    undecidedTrip.changePeriod(emptyPeriod);
-
-                    // then
-                    assertThat(undecidedTrip.getStatus()).isSameAs(TripStatus.UNDECIDED);
-                }
-
-                @Test
-                @DisplayName("Trip의 기간은 여전히 비어있는 기간이다.")
-                public void trip_period_is_still_emptyPeriod() {
-                    // when
-                    undecidedTrip.changePeriod(emptyPeriod);
-
-                    // then
-                    assertThat(undecidedTrip.getTripPeriod()).isEqualTo(TripPeriod.empty());
-                }
-            }
-
-            @Nested
-            @DisplayName("비어있지 않은 기간으로 변경하면")
-            class If_Change_To_NotEmptyPeriod {
-                // given
-                TripPeriod newPeriod = TripPeriod.of(LocalDate.of(2023, 1, 1), LocalDate.of(2023, 1, 3));
-
-                @Test
-                @DisplayName("삭제된 날짜가 없다. (원래 Day가 없었으므로)")
-                public void there_are_no_deletedDays() {
-                    // when
-                    var changePeriodResult = undecidedTrip.changePeriod(newPeriod);
-
-                    // then
-                    List<Long> deletedDayIds = changePeriodResult.getDeletedDayIds();
-                    assertThat(deletedDayIds).isEmpty();
-                }
-
-                @Test
-                @DisplayName("새로 Day들이 생성된다")
-                public void then_newDays_created() {
-                    // when
-                    var changePeriodResult = undecidedTrip.changePeriod(newPeriod);
-
-                    // then
-                    List<Day> createdDays = changePeriodResult.getCreatedDays();
-                    assertThat(createdDays).map(Day::getTripDate).containsExactly(LocalDate.of(2023, 1, 1), LocalDate.of(2023, 1, 2), LocalDate.of(2023, 1, 3));
-                }
-
-                @Test
-                @DisplayName("모든 생성된 Day들은 색상을 가진다.")
-                public void all_createdDays_have_color() {
-                    // when
-                    var changePeriodResult = undecidedTrip.changePeriod(newPeriod);
-
-                    // then
-                    List<Day> createdDays = changePeriodResult.getCreatedDays();
-                    assertThat(createdDays).map(Day::getDayColor).allMatch(Objects::nonNull);
-                }
-
-                @Test
-                @DisplayName("Trip은 새로 생긴 날짜들을 가진다.")
-                public void trip_still_has_newDays() {
-                    // when
-                    undecidedTrip.changePeriod(newPeriod);
-
-
-                    // then
-                    assertThat(undecidedTrip.getDays()).map(Day::getTripDate).containsExactly(LocalDate.of(2023, 1, 1), LocalDate.of(2023, 1, 2), LocalDate.of(2023, 1, 3));
-                }
-
-                @Test
-                @DisplayName("Trip은 decided 상태로 변경된다.")
-                public void trip_status_is_changed_to_decided() {
-                    // when
-                    undecidedTrip.changePeriod(newPeriod);
-
-                    // then
-                    assertThat(undecidedTrip.getStatus()).isSameAs(TripStatus.DECIDED);
-                }
-
-                @Test
-                @DisplayName("Trip의 기간은 새로운 기간으로 변경된 상태다.")
-                public void trip_period_is_equalTo_newPeriod() {
-                    // when
-                    undecidedTrip.changePeriod(newPeriod);
-
-                    // then
-                    assertThat(undecidedTrip.getTripPeriod()).isEqualTo(newPeriod);
-                }
-            }
+            // 생성된 Day 없음
+            List<Day> createdDays = changePeriodResult.getCreatedDays();
+            assertThat(createdDays).isEmpty();
         }
 
-        @Nested
-        @DisplayName("DECIDED 상태 여행을 수정할 때")
-        class Case_Change_DECIDED_Trip {
-
-            // common given
-            Trip decidedTrip;
-            Day day1, day2, day3, day4, day5;
-            TripPeriod notOverlappedPeriod = TripPeriod.of(LocalDate.of(2023, 3, 6), LocalDate.of(2023, 3, 10));
-
-            @BeforeEach
-            void setUp() {
-                Long tripId = 1L;
-                Long tripperId = 2L;
-
-                decidedTrip = TripFixture.decided_Id(tripId, tripperId, LocalDate.of(2023,3,1), LocalDate.of(2023,3,5), 1L);
-                day1 = decidedTrip.getDays().get(0);
-                day2 = decidedTrip.getDays().get(1);
-                day3 = decidedTrip.getDays().get(2);
-                day4 = decidedTrip.getDays().get(3);
-                day5 = decidedTrip.getDays().get(4);
-            }
-
-            @Test
-            @DisplayName("빈 기간으로 수정하면 EmptyPeriodUpdateException이 발생한다.")
-            public void if_change_to_emptyPeriod_then_it_throws_EmptyPeriodUpdateException() {
-                // given
-                TripPeriod emptyPeriod = TripPeriod.empty();
-
-                // when & then
-                assertThatThrownBy(() -> decidedTrip.changePeriod(emptyPeriod)).isInstanceOf(EmptyPeriodUpdateException.class);
-            }
-
-            @Nested
-            @DisplayName("겹치지 않는 기간으로 수정하면")
-            class If_Change_To_NotOverlappedPeriod {
-
-                @Test
-                @DisplayName("기존 기간의 Day들이 삭제된다")
-                public void previous_days_is_deleted() {
-                    // when
-                    var changePeriodResult = decidedTrip.changePeriod(notOverlappedPeriod);
-
-                    // then
-                    List<Long> deletedDayIds = changePeriodResult.getDeletedDayIds();
-                    assertThat(deletedDayIds.size()).isEqualTo(5);
-                    assertThat(deletedDayIds).containsExactly(
-                            day1.getId(), day2.getId(), day3.getId(),
-                            day4.getId(), day5.getId()
-                    );
-                }
-
-                @Test
-                @DisplayName("새로운 기간의 Day들이 모두 생성된다.")
-                public void newPeriod_days_are_all_created() {
-                    // when
-                    var changePeriodResult = decidedTrip.changePeriod(notOverlappedPeriod);
-
-                    // then
-                    List<Day> createdDays = changePeriodResult.getCreatedDays();
-                    assertThat(createdDays).map(Day::getTripDate).containsExactly(
-                            LocalDate.of(2023, 3, 6), LocalDate.of(2023, 3, 7),
-                            LocalDate.of(2023, 3, 8), LocalDate.of(2023, 3, 9),
-                            LocalDate.of(2023, 3, 10));
-                }
-
-                @Test
-                @DisplayName("생성된 Day들은 모두 색상을 가진다.")
-                public void all_createdPeriod_days_have_color() {
-                    // when
-                    var changePeriodResult = decidedTrip.changePeriod(notOverlappedPeriod);
-
-                    // then
-                    List<Day> createdDays = changePeriodResult.getCreatedDays();
-                    assertThat(createdDays).map(Day::getDayColor).allMatch(Objects::nonNull);
-                }
-
-                @Test
-                @DisplayName("Trip은 새로운 기간의 Day들만 가진다")
-                public void trip_has_new_Days_only() {
-                    // when
-                    decidedTrip.changePeriod(notOverlappedPeriod);
-
-                    // then
-                    assertThat(decidedTrip.getDays()).map(Day::getTripDate).containsExactly(
-                            LocalDate.of(2023, 3, 6), LocalDate.of(2023, 3, 7),
-                            LocalDate.of(2023, 3, 8), LocalDate.of(2023, 3, 9),
-                            LocalDate.of(2023, 3, 10));
-                }
-
-
-                @Test
-                @DisplayName("Trip은 여전히 decided 상태이다.")
-                public void trip_status_is_still_decided() {
-                    // when
-                    decidedTrip.changePeriod(notOverlappedPeriod);
-
-                    // then
-                    assertThat(decidedTrip.getStatus()).isSameAs(TripStatus.DECIDED);
-                }
-
-                @Test
-                @DisplayName("Trip의 기간은 새로 지정한 기간으로 변한다")
-                public void trip_period_is_changed_to_newPeriod() {
-                    // when
-                    decidedTrip.changePeriod(notOverlappedPeriod);
-
-                    // then
-                    assertThat(decidedTrip.getTripPeriod()).isEqualTo(notOverlappedPeriod);
-                }
-            }
-
-            @Nested
-            @DisplayName("겹치는 기간으로 변경 테스트")
-            class OverlappedPeriodChangeTest {
-
-                @Nested
-                @DisplayName("뒤에서 겹치는 기간으로 수정하면")
-                class If_Change_to_back_overlapped_period {
-
-                    // given
-                    TripPeriod backOverlappedPeriod = TripPeriod.of(LocalDate.of(2023, 3, 4), LocalDate.of(2023, 3, 7));
-
-                    @Test
-                    @DisplayName("앞의 겹치지 않는 Day들이 삭제된다")
-                    public void not_Overlapped_days_are_deleted() {
-                        var changePeriodResult = decidedTrip.changePeriod(backOverlappedPeriod);
-
-                        // then
-                        List<Long> deletedDayIds = changePeriodResult.getDeletedDayIds();
-                        assertThat(deletedDayIds).containsExactly(
-                                day1.getId(), day2.getId(), day3.getId()
-                        );
-                    }
-
-                    @Test
-                    @DisplayName("새로 추가된 날짜의 Day들이 생성된다.")
-                    public void new_added_days_are_all_created() {
-                        // when
-                        var changePeriodResult = decidedTrip.changePeriod(backOverlappedPeriod);
-
-                        // then
-                        List<Day> createdDays = changePeriodResult.getCreatedDays();
-                        assertThat(createdDays).map(Day::getTripDate).containsExactly(LocalDate.of(2023, 3, 6), LocalDate.of(2023, 3, 7));
-                    }
-
-                    @Test
-                    @DisplayName("새로 생성된 Day들은 모두 색상을 가진다")
-                    public void all_createdDays_have_color() {
-                        // when
-                        var changePeriodResult = decidedTrip.changePeriod(backOverlappedPeriod);
-
-                        // then
-                        List<Day> createdDays = changePeriodResult.getCreatedDays();
-                        assertThat(createdDays).map(Day::getDayColor).allMatch(Objects::nonNull);
-                    }
-
-                    @Test
-                    @DisplayName("Trip은 새로 변경된 기간의 Day들만 가진다.")
-                    public void trip_has_newPeriod_Days_only() {
-                        // when
-                        decidedTrip.changePeriod(backOverlappedPeriod);
-
-                        // then
-                        assertThat(decidedTrip.getDays()).map(Day::getTripDate).containsExactly(
-                                LocalDate.of(2023, 3, 4), LocalDate.of(2023, 3, 5),
-                                LocalDate.of(2023, 3, 6), LocalDate.of(2023, 3, 7));
-                    }
-
-                    @Test
-                    @DisplayName("Trip은 여전히 decided 상태이다.")
-                    public void trip_status_is_still_decided() {
-                        // when
-                        decidedTrip.changePeriod(backOverlappedPeriod);
-
-                        // then
-                        assertThat(decidedTrip.getStatus()).isSameAs(TripStatus.DECIDED);
-                    }
-
-                    @Test
-                    @DisplayName("Trip의 기간은 새로 지정한 기간으로 변한다")
-                    public void trip_period_is_changed_to_newPeriod() {
-                        // when
-                        decidedTrip.changePeriod(backOverlappedPeriod);
-
-                        // then
-                        assertThat(decidedTrip.getTripPeriod()).isEqualTo(backOverlappedPeriod);
-                    }
-
-                }
-
-                @Nested
-                @DisplayName("앞에서 겹치는 기간으로 수정하면")
-                class If_Change_to_front_overlapped_period {
-                    // given
-                    TripPeriod frontOverlappedPeriod = TripPeriod.of(LocalDate.of(2023, 2, 27), LocalDate.of(2023, 3, 3));
-
-                    @Test
-                    @DisplayName("뒤의 겹치지 않는 Day들이 삭제된다")
-                    public void not_Overlapped_days_are_deleted() {
-                        var changePeriodResult = decidedTrip.changePeriod(frontOverlappedPeriod);
-
-                        // then
-                        List<Long> deletedDayIds = changePeriodResult.getDeletedDayIds();
-                        assertThat(deletedDayIds).containsExactly(day4.getId(), day5.getId());
-                    }
-
-                    @Test
-                    @DisplayName("새로 추가된 날짜의 Day들이 생성된다.")
-                    public void new_added_days_are_all_created() {
-                        // when
-                        var changePeriodResult = decidedTrip.changePeriod(frontOverlappedPeriod);
-
-                        // then
-                        List<Day> createdDays = changePeriodResult.getCreatedDays();
-                        assertThat(createdDays).map(Day::getTripDate).containsExactly(
-                                LocalDate.of(2023, 2, 27), LocalDate.of(2023, 2, 28));
-                        assertThat(createdDays).map(Day::getDayColor).allMatch(Objects::nonNull);
-                    }
-
-                    @Test
-                    @DisplayName("새로 생성된 Day들은 모두 색상을 가진다.")
-                    public void all_CreatedDays_have_color() {
-                        // when
-                        var changePeriodResult = decidedTrip.changePeriod(frontOverlappedPeriod);
-
-                        // then
-                        List<Day> createdDays = changePeriodResult.getCreatedDays();
-                        assertThat(createdDays).map(Day::getDayColor).allMatch(Objects::nonNull);
-                    }
-
-                    @Test
-                    @DisplayName("Trip은 새로 변경된 기간의 Day들만 가진다.")
-                    public void trip_has_newPeriod_Days_only() {
-                        // when
-                        decidedTrip.changePeriod(frontOverlappedPeriod);
-
-                        // then
-                        assertThat(decidedTrip.getDays()).map(Day::getTripDate).containsExactlyInAnyOrder(
-                                LocalDate.of(2023, 2, 27), LocalDate.of(2023, 2, 28),
-                                LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 2),
-                                LocalDate.of(2023, 3, 3));
-                    }
-
-                    @Test
-                    @DisplayName("Trip은 여전히 decided 상태이다.")
-                    public void trip_status_is_still_decided() {
-                        // when
-                        decidedTrip.changePeriod(frontOverlappedPeriod);
-
-                        // then
-                        assertThat(decidedTrip.getStatus()).isSameAs(TripStatus.DECIDED);
-                    }
-
-                    @Test
-                    @DisplayName("Trip의 기간은 새로 지정한 기간으로 변한다")
-                    public void trip_period_is_changed_to_newPeriod() {
-                        // when
-                        decidedTrip.changePeriod(frontOverlappedPeriod);
-
-                        // then
-                        assertThat(decidedTrip.getTripPeriod()).isEqualTo(frontOverlappedPeriod);
-                    }
-                }
-
-                @Nested
-                @DisplayName("내부에 포함된 기간으로 수정하면")
-                class If_Change_to_inner_overlapped_period {
-                    // given
-                    TripPeriod innerOverlappedPeriod = TripPeriod.of(LocalDate.of(2023, 3, 2), LocalDate.of(2023, 3, 4));
-
-                    @Test
-                    @DisplayName("겹치지 않는 Day들이 삭제된다")
-                    public void not_Overlapped_days_are_deleted() {
-                        var changePeriodResult = decidedTrip.changePeriod(innerOverlappedPeriod);
-
-                        // then
-                        List<Long> deletedDayIds = changePeriodResult.getDeletedDayIds();
-                        assertThat(deletedDayIds).containsExactlyInAnyOrder(day1.getId(), day5.getId());
-                    }
-
-                    @Test
-                    @DisplayName("새로 추가된 날짜가 없다.(내부에 포함된 작은 기간으로 줄였으므로)")
-                    public void no_day_created() {
-                        // when
-                        var changePeriodResult = decidedTrip.changePeriod(innerOverlappedPeriod);
-
-                        // then
-                        List<Day> createdDays = changePeriodResult.getCreatedDays();
-                        assertThat(createdDays).isEmpty();
-                    }
-
-                    @Test
-                    @DisplayName("Trip은 새로 변경된 기간의 Day들만 가진다.")
-                    public void trip_has_newPeriod_Days_only() {
-                        // when
-                        decidedTrip.changePeriod(innerOverlappedPeriod);
-
-                        // then
-                        assertThat(decidedTrip.getDays()).map(Day::getTripDate).containsExactlyInAnyOrder(
-                                LocalDate.of(2023, 3, 2), LocalDate.of(2023, 3, 3),
-                                LocalDate.of(2023, 3, 4));
-                    }
-
-                    @Test
-                    @DisplayName("Trip은 여전히 decided 상태이다.")
-                    public void trip_status_is_still_decided() {
-                        // when
-                        decidedTrip.changePeriod(innerOverlappedPeriod);
-
-                        // then
-                        assertThat(decidedTrip.getStatus()).isSameAs(TripStatus.DECIDED);
-                    }
-
-                    @Test
-                    @DisplayName("Trip의 기간은 새로 지정한 기간으로 변한다")
-                    public void trip_period_is_changed_to_newPeriod() {
-                        // when
-                        decidedTrip.changePeriod(innerOverlappedPeriod);
-
-                        // then
-                        assertThat(decidedTrip.getTripPeriod()).isEqualTo(innerOverlappedPeriod);
-                    }
-                }
-
-                @Nested
-                @DisplayName("기존 기간을 포함한 외부의 더 큰 기간으로 수정하면")
-                class If_Change_to_outer_overlapped_period {
-                    // given
-                    TripPeriod outerOverlappedPeriod = TripPeriod.of(LocalDate.of(2023, 2, 27), LocalDate.of(2023, 3, 7));
-
-                    @Test
-                    @DisplayName("삭제되는 Day가 없다.(더 기존의 Day를 포함한 큰 기간으로 변경하므로)")
-                    public void no_day_created() {
-                        var changePeriodResult = decidedTrip.changePeriod(outerOverlappedPeriod);
-
-                        // then
-                        List<Long> deletedDayIds = changePeriodResult.getDeletedDayIds();
-                        assertThat(deletedDayIds).isEmpty();
-                    }
-
-                    @Test
-                    @DisplayName("새로 추가되는 날짜에 해당되는 Day들이 추가된다.")
-                    public void new_added_days_are_all_created() {
-                        // when
-                        var changePeriodResult = decidedTrip.changePeriod(outerOverlappedPeriod);
-
-                        // then
-                        List<Day> createdDays = changePeriodResult.getCreatedDays();
-                        assertThat(createdDays).map(Day::getTripDate)
-                                .containsExactly(
-                                        LocalDate.of(2023, 2, 27), LocalDate.of(2023, 2, 28),
-                                        LocalDate.of(2023, 3, 6), LocalDate.of(2023, 3, 7));
-                    }
-
-                    @Test
-                    @DisplayName("새로 생성된 Day들은 모두 Color를 가진다")
-                    public void all_CreatedDays_have_color() {
-                        // when
-                        var changePeriodResult = decidedTrip.changePeriod(outerOverlappedPeriod);
-
-                        // then
-                        List<Day> createdDays = changePeriodResult.getCreatedDays();
-                        assertThat(createdDays).map(Day::getDayColor).allMatch(Objects::nonNull);
-                    }
-
-                    @Test
-                    @DisplayName("Trip은 기존의 것을 포함하여 새로운 기간의 모든 Day들을 가진다.")
-                    public void trip_has_newPeriod_All() {
-                        // when
-                        decidedTrip.changePeriod(outerOverlappedPeriod);
-
-                        // then
-                        assertThat(decidedTrip.getDays()).map(Day::getTripDate).containsExactlyInAnyOrder(
-                                LocalDate.of(2023, 2, 27), LocalDate.of(2023, 2, 28),
-                                LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 2),
-                                LocalDate.of(2023, 3, 3), LocalDate.of(2023, 3, 4),
-                                LocalDate.of(2023, 3, 5), LocalDate.of(2023, 3, 6),
-                                LocalDate.of(2023, 3, 7));
-                    }
-
-                    @Test
-                    @DisplayName("Trip은 여전히 decided 상태이다.")
-                    public void trip_status_is_still_decided() {
-                        // when
-                        decidedTrip.changePeriod(outerOverlappedPeriod);
-
-                        // then
-                        assertThat(decidedTrip.getStatus()).isSameAs(TripStatus.DECIDED);
-                    }
-
-                    @Test
-                    @DisplayName("Trip의 기간은 새로 지정한 기간으로 변한다")
-                    public void trip_period_is_changed_to_newPeriod() {
-                        // when
-                        decidedTrip.changePeriod(outerOverlappedPeriod);
-
-                        // then
-                        assertThat(decidedTrip.getTripPeriod()).isEqualTo(outerOverlappedPeriod);
-                    }
-                }
-            }
+        /**
+         * 기간이 정해져 있지 않은 여행을 비어있지 않은 기간으로 변경하는 상황을 테스트합니다.
+         */
+        @Test
+        @DisplayName("UNDECIDED 상태의 여행의 기간을 비어있지 않은 기간으로 변경(초기화)할 때")
+        void emptyPeriod_to_NotEmptyPeriod() {
+            // given
+            long tripId = 1L;
+            long tripperId = 2L;
+            Trip undecidedTrip = TripFixture.undecided_Id(tripId, tripperId);
+            TripPeriod newPeriod = TripPeriod.of(LocalDate.of(2023, 1, 1), LocalDate.of(2023, 1, 3));
+
+            // when
+            var changePeriodResult = undecidedTrip.changePeriod(newPeriod);
+
+            // then
+
+            // 여행의 상태/기간 변경됨
+            assertThat(undecidedTrip.getStatus()).isSameAs(TripStatus.DECIDED);
+            assertThat(undecidedTrip.getTripPeriod()).isEqualTo(newPeriod);
+
+            // 여행이 새로 생성된 Day들을 가짐
+            assertThat(undecidedTrip.getDays()).map(Day::getTripDate).containsExactly(
+                    LocalDate.of(2023, 1, 1), LocalDate.of(2023, 1, 2),
+                    LocalDate.of(2023, 1, 3));
+
+            // 삭제되는 Day 없음
+            List<Long> deletedDayIds = changePeriodResult.getDeletedDayIds();
+            assertThat(deletedDayIds).isEmpty();
+
+            // Day들이 생성됨
+            List<Day> createdDays = changePeriodResult.getCreatedDays();
+            assertThat(createdDays).map(Day::getTripDate).containsExactly(
+                    LocalDate.of(2023, 1, 1), LocalDate.of(2023, 1, 2),
+                    LocalDate.of(2023, 1, 3));
+            assertThat(createdDays).map(Day::getDayColor).allMatch(Objects::nonNull); // 색상을 가짐
+        }
+
+        /**
+         * 기간이 정해진 여행을 비어있는 기간으로 변경하려 할 때 예외가 발생함을 검증합니다.
+         */
+        @Test
+        @DisplayName("기간이 정해진(DECIDED) 여행을 비어있는 기간으로 수정 -> 예외 발생")
+        void decidedTrip_To_EmptyPeriod() {
+            Long tripId = 1L;
+            Long tripperId = 2L;
+
+            Trip decidedTrip = TripFixture.decided_Id(tripId, tripperId, LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 5), 1L);
+            TripPeriod emptyPeriod = TripPeriod.empty();
+
+            // when & then
+
+            // 기간 정해진 여행을 빈 기간으로 수정 -> 예외 발생
+            assertThatThrownBy(() -> decidedTrip.changePeriod(emptyPeriod))
+                    .isInstanceOf(EmptyPeriodUpdateException.class);
+        }
+
+        /**
+         * 기간이 정해진 여행을 겹치는 여행을 겹치지 않는 다른 기간으로 수정하는 상황을 테스트합니다.
+         */
+        @Test
+        @DisplayName("기간이 정해진(DECIDED) 여행을 겹치지 않는 다른 기간으로 수정 -> 성공")
+        void decidedTrip_Period_To_NonOverlappedPeriod() {
+            // given
+            Long tripId = 1L;
+            Long tripperId = 2L;
+
+            LocalDate beforeStartDate = LocalDate.of(2023, 3, 1);
+            LocalDate beforeEndDate = LocalDate.of(2023, 3, 2);
+
+            LocalDate afterStartDate = LocalDate.of(2023, 3, 3);
+            LocalDate afterEndDate = LocalDate.of(2023, 3, 4);
+
+            Trip decidedTrip = TripFixture.decided_Id(tripId, tripperId, beforeStartDate, beforeEndDate, 1L);
+            Day day1 = decidedTrip.getDays().get(0);
+            Day day2 = decidedTrip.getDays().get(1);
+
+            TripPeriod notOverlappedPeriod = TripPeriod.of(afterStartDate, afterEndDate);
+
+            // when
+            var changePeriodResult = decidedTrip.changePeriod(notOverlappedPeriod); // 겹치지 않는 기간으로 수정
+
+            // then
+
+            // 여행의 상태/기간 검증
+            assertThat(decidedTrip.getStatus()).isSameAs(TripStatus.DECIDED);
+            assertThat(decidedTrip.getTripPeriod()).isEqualTo(notOverlappedPeriod);
+
+            // 여행은 새로 수정된 기간의 Day만을 가짐
+            assertThat(decidedTrip.getDays())
+                    .map(Day::getTripDate)
+                    .containsExactly(afterStartDate, afterEndDate);
+
+            // 새로운 기간에 속하지 않는 기존 기간들이 삭제됨
+            List<Long> deletedDayIds = changePeriodResult.getDeletedDayIds();
+            assertThat(deletedDayIds.size()).isEqualTo(2);
+            assertThat(deletedDayIds).containsExactly(day1.getId(), day2.getId());
+
+            // 기존 기간에 속해있지 않았던, 새로운 기간에 속하는 Day들이 생성됨
+            List<Day> createdDays = changePeriodResult.getCreatedDays();
+            assertThat(createdDays).map(Day::getDayColor).allMatch(Objects::nonNull); // 색상을 가짐
+            assertThat(createdDays).map(Day::getTripDate).containsExactly(afterStartDate, afterEndDate);
+        }
+
+        /**
+         * 기간이 정해진 여행을 뒤에서 겹치는 기간으로 수정하는 상황을 테스트합니다.
+         */
+        @Test
+        @DisplayName("기간이 정해진 여행을 뒤에서 겹치는 기간으로 수정 -> 성공")
+        void decidedTrip_To_back_overlapped_Period() {
+            // given
+            Long tripId = 1L;
+            Long tripperId = 2L;
+
+            LocalDate beforeStartDate = LocalDate.of(2023, 3, 1);
+            LocalDate beforeEndDate = LocalDate.of(2023, 3, 2);
+
+            LocalDate afterStartDate = LocalDate.of(2023, 3, 2);
+            LocalDate afterEndDate = LocalDate.of(2023, 3, 3);
+
+            Trip decidedTrip = TripFixture.decided_Id(tripId, tripperId, beforeStartDate, beforeEndDate, 1L);
+            Day day1 = decidedTrip.getDays().get(0);
+            Day day2 = decidedTrip.getDays().get(1);
+
+            TripPeriod backOverlappedPeriod = TripPeriod.of(afterStartDate, afterEndDate);
+
+            // when
+            var changePeriodResult = decidedTrip.changePeriod(backOverlappedPeriod); // 기존 기간과 뒤에서 겹치는 기간으로 수정
+
+            // then
+            // 여행의 상태/기간 검증
+            assertThat(decidedTrip.getStatus()).isSameAs(TripStatus.DECIDED);
+            assertThat(decidedTrip.getTripPeriod()).isEqualTo(backOverlappedPeriod);
+
+            // 여행은 변경된 기간에 해당하는 Day들만 가지고 있음
+            assertThat(decidedTrip.getDays()).map(Day::getTripDate).containsExactly(
+                    LocalDate.of(2023, 3, 2), LocalDate.of(2023, 3, 3));
+
+
+            // 새로운 기간에 속하지 않는 기존 기간들이 삭제됨
+            List<Long> deletedDayIds = changePeriodResult.getDeletedDayIds();
+            assertThat(deletedDayIds).containsExactly(day1.getId());
+
+            // 기존 기간에 속해있지 않았던, 새로운 기간에 속하는 Day들이 생성됨
+            List<Day> createdDays = changePeriodResult.getCreatedDays();
+            assertThat(createdDays).map(Day::getDayColor).allMatch(Objects::nonNull); // 색상을 가짐
+            assertThat(createdDays).map(Day::getTripDate).containsExactly(LocalDate.of(2023, 3, 3));
+        }
+
+        /**
+         * 기간이 정해진 여행을 앞에서 겹치는 기간으로 수정하는 경우를 테스트합니다.
+         */
+        @Test
+        @DisplayName("기간이 정해진(DECIDED) 여행을 앞에서 겹치는 기간으로 수정 -> 성공")
+        void decidedTrip_To_front_overlapped_Period() {
+            // given
+            Long tripId = 1L;
+            Long tripperId = 2L;
+
+            LocalDate beforeStartDate = LocalDate.of(2023, 3, 2);
+            LocalDate beforeEndDate = LocalDate.of(2023, 3, 3); // 새로운 기간에 속하지 않으므로 제거됨
+
+            LocalDate afterStartDate = LocalDate.of(2023, 3, 1); // 새로 생성됨
+            LocalDate afterEndDate = LocalDate.of(2023, 3, 2); // 중복됨
+
+            Trip decidedTrip = TripFixture.decided_Id(tripId, tripperId, beforeStartDate, beforeEndDate, 1L);
+            Day day1 = decidedTrip.getDays().get(0);
+            Day day2 = decidedTrip.getDays().get(1);
+
+            TripPeriod frontOverlappedPeriod = TripPeriod.of(afterStartDate, afterEndDate);
+
+            // when
+            var changePeriodResult = decidedTrip.changePeriod(frontOverlappedPeriod);
+
+            // then
+
+            // 여행의 상태/기간 검증
+            assertThat(decidedTrip.getStatus()).isSameAs(TripStatus.DECIDED);
+            assertThat(decidedTrip.getTripPeriod()).isEqualTo(frontOverlappedPeriod);
+
+            // 여행은 변경된 기간에 해당하는 Day들만 가지고 있음
+            assertThat(decidedTrip.getDays()).map(Day::getTripDate).containsExactlyInAnyOrder(
+                    LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 2));
+
+            // 새로운 기간에 속하지 않는 기존 기간들이 삭제됨
+            List<Long> deletedDayIds = changePeriodResult.getDeletedDayIds();
+            assertThat(deletedDayIds).containsExactly(day2.getId());
+
+            // 기존 기간에 속해있지 않았던, 새로운 기간에 속하는 Day들이 생성됨
+            List<Day> createdDays = changePeriodResult.getCreatedDays();
+            assertThat(createdDays).map(Day::getDayColor).allMatch(Objects::nonNull); // 색상을 가짐
+            assertThat(createdDays).map(Day::getTripDate).containsExactly(LocalDate.of(2023, 3, 1));
+        }
+
+        /**
+         * 기간이 정해진 여행을 내부에 포함된 기간으로 수정하는 경우를 테스트합니다.
+         */
+        @Test
+        @DisplayName("기간이 정해진(DECIDED) 여행을 내부에 포함된 기간으로 수정 -> 성공")
+        void decidedTrip_To_inner_overlapped_Period() {
+            // given
+            Long tripId = 1L;
+            Long tripperId = 2L;
+
+            LocalDate beforeStartDate = LocalDate.of(2023, 3, 1);
+            LocalDate beforeEndDate = LocalDate.of(2023, 3, 3);
+
+            LocalDate afterStartDate = LocalDate.of(2023, 3, 2);
+            LocalDate afterEndDate = LocalDate.of(2023, 3, 2);
+
+            Trip decidedTrip = TripFixture.decided_Id(tripId, tripperId, beforeStartDate, beforeEndDate, 1L);
+            Day day1 = decidedTrip.getDays().get(0);
+            Day day2 = decidedTrip.getDays().get(1);
+            Day day3 = decidedTrip.getDays().get(2);
+
+            TripPeriod innerOverlappedPeriod = TripPeriod.of(afterStartDate, afterEndDate);
+
+            // then
+            var changePeriodResult = decidedTrip.changePeriod(innerOverlappedPeriod);
+
+            // then
+
+            // 여행의 상태/기간 검증
+            assertThat(decidedTrip.getStatus()).isSameAs(TripStatus.DECIDED);
+            assertThat(decidedTrip.getTripPeriod()).isEqualTo(innerOverlappedPeriod);
+
+            // 여행은 변경된 기간에 해당하는 Day들만 가지고 있음
+            assertThat(decidedTrip.getDays()).map(Day::getTripDate).containsExactlyInAnyOrder(
+                    LocalDate.of(2023, 3, 2));
+
+            // 새로운 기간에 속하지 않는 기존 기간들이 삭제됨
+            List<Long> deletedDayIds = changePeriodResult.getDeletedDayIds();
+            assertThat(deletedDayIds).containsExactlyInAnyOrder(day1.getId(), day3.getId());
+
+            // 새로 생기는 Day 없음
+            List<Day> createdDays = changePeriodResult.getCreatedDays();
+            assertThat(createdDays).isEmpty();
+        }
+
+        /**
+         * 기간이 정해진 여행을 기존 기간을 포함하는 더 큰 기간으로 수정하는 경우를 테스트합니다.
+         */
+        @Test
+        @DisplayName("기간이 정해진(DECIDED) 여행을, 기존 기간을 포함하는 더 큰 기간으로 수정 -> 성공")
+        void decidedTrip_To_outer_overlapped_Period() {
+            // given
+            Long tripId = 1L;
+            Long tripperId = 2L;
+
+
+            LocalDate beforeStartDate = LocalDate.of(2023, 3, 2);
+            LocalDate beforeEndDate = LocalDate.of(2023, 3, 2);
+
+            LocalDate afterStartDate = LocalDate.of(2023, 3, 1);
+            LocalDate afterEndDate = LocalDate.of(2023, 3, 3);
+
+
+            Trip decidedTrip = TripFixture.decided_Id(tripId, tripperId, beforeStartDate, beforeEndDate, 1L);
+            Day day1 = decidedTrip.getDays().get(0);
+
+            TripPeriod outerOverlappedPeriod = TripPeriod.of(afterStartDate, afterEndDate);
+
+            // when
+            var changePeriodResult = decidedTrip.changePeriod(outerOverlappedPeriod);
+
+            // then
+
+            // 여행의 상태/기간 검증
+            assertThat(decidedTrip.getStatus()).isSameAs(TripStatus.DECIDED);
+            assertThat(decidedTrip.getTripPeriod()).isEqualTo(outerOverlappedPeriod);
+
+            // 여행은 변경된 기간에 해당하는 Day들만 가지고 있음
+            assertThat(decidedTrip.getDays()).map(Day::getTripDate).containsExactlyInAnyOrder(
+                    LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 2),
+                    LocalDate.of(2023, 3, 3));
+
+            // 삭제된 Day 없음
+            List<Long> deletedDayIds = changePeriodResult.getDeletedDayIds();
+            assertThat(deletedDayIds).isEmpty();
+
+            // 기존 기간에 속해있지 않았던, 새로운 기간에 속하는 Day들이 생성됨
+            List<Day> createdDays = changePeriodResult.getCreatedDays();
+            assertThat(createdDays).map(Day::getDayColor).allMatch(Objects::nonNull); // 색상을 가짐
+            assertThat(createdDays).map(Day::getTripDate)
+                    .containsExactly(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 3));
         }
     }
 
@@ -675,10 +455,10 @@ public class TripTest {
             @Test
             public void when_trip_not_contains_day_then_it_throws_InvalidTripDayException() {
                 // given
-                Trip trip = TripFixture.decided_Id(1L, 1L, LocalDate.of(2023,3,1), LocalDate.of(2023,3,1), 1L);
+                Trip trip = TripFixture.decided_Id(1L, 1L, LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 1), 1L);
                 Day validDay = trip.getDays().get(0);
 
-                Trip otherTrip = TripFixture.decided_Id(2L, 2L, LocalDate.of(2023,3,1), LocalDate.of(2023,3,1), 2L);
+                Trip otherTrip = TripFixture.decided_Id(2L, 2L, LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 1), 2L);
                 Day otherTripDay = otherTrip.getDays().get(0);
 
                 // when & then
@@ -689,7 +469,7 @@ public class TripTest {
             @DisplayName("인덱스가 최대 범위를 벗어나면, ScheduleIndexRangeException 발생")
             @Test
             public void when_new_index_range_is_over_max_index_value_then_it_throws_ScheduleIndexRangeException() {
-                Trip trip = TripFixture.decided_Id(1L, 1L, LocalDate.of(2023,3,1), LocalDate.of(2023,3,1), 1L);
+                Trip trip = TripFixture.decided_Id(1L, 1L, LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 1), 1L);
                 Day day = trip.getDays().get(0);
                 Schedule schedule1 = ScheduleFixture.day_Id(1L, trip, day, MAX_INDEX_VALUE);
 
@@ -701,7 +481,7 @@ public class TripTest {
             @DisplayName("인덱스가 최대 범위를 벗어나지 않으면, 정상적으로 다음 순서의 Schedule 생성됨")
             @Test
             public void successTest() {
-                Trip trip = TripFixture.decided_Id(1L, 1L, LocalDate.of(2023,3,1), LocalDate.of(2023,3,1), 1L);
+                Trip trip = TripFixture.decided_Id(1L, 1L, LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 1), 1L);
                 Day day = trip.getDays().get(0);
 
                 Schedule schedule1 = trip.createSchedule(day, scheduleTitle, place);
@@ -734,7 +514,7 @@ public class TripTest {
             public void when_targetOrder_is_under_zero_then_it_throws_InvalidScheduleMoveTargetOrderException() {
                 // given
                 Trip trip = TripFixture.undecided_nullId(1L);
-                Schedule schedule = ScheduleFixture.temporaryStorage_NullId(trip,  0L);
+                Schedule schedule = ScheduleFixture.temporaryStorage_NullId(trip, 0L);
 
                 // when & then
                 assertThatThrownBy(() -> trip.moveSchedule(schedule, null, -1))
@@ -746,7 +526,7 @@ public class TripTest {
             public void when_targetOrder_is_over_temporary_storage_max_size_then_it_throws_InvalidScheduleMoveTargetOrderException() {
                 Long tripId = 1L;
                 Long tripperId = 2L;
-                Trip trip = TripFixture.undecided_Id(tripId,tripperId);
+                Trip trip = TripFixture.undecided_Id(tripId, tripperId);
                 Day targetDay = null;
 
                 Schedule schedule1 = ScheduleFixture.temporaryStorage_Id(1L, trip, 0L);
@@ -951,8 +731,8 @@ public class TripTest {
                 Trip trip = TripFixture.undecided_Id(tripId, tripperId);
                 Schedule schedule = ScheduleFixture.temporaryStorage_Id(1L, trip, 0L);
 
-                LocalDate startDate = LocalDate.of(2023,4,1);
-                LocalDate endDate = LocalDate.of(2023,4,1);
+                LocalDate startDate = LocalDate.of(2023, 4, 1);
+                LocalDate endDate = LocalDate.of(2023, 4, 1);
                 Trip otherTrip = TripFixture.decided_Id(otherTripId, tripperId, startDate, endDate, 1L);
                 Day targetDay = otherTrip.getDays().get(0);
 
@@ -967,8 +747,8 @@ public class TripTest {
                 // given
                 Long tripId = 1L;
                 Long tripperId = 2L;
-                LocalDate startDate = LocalDate.of(2023,3,1);
-                LocalDate endDate = LocalDate.of(2023,3,1);
+                LocalDate startDate = LocalDate.of(2023, 3, 1);
+                LocalDate endDate = LocalDate.of(2023, 3, 1);
 
                 Trip trip = TripFixture.decided_Id(tripId, tripperId, startDate, endDate, 1L);
                 Day targetDay = trip.getDays().get(0);
@@ -984,8 +764,8 @@ public class TripTest {
             public void when_targetOrder_is_over_day_schedules_max_size_then_it_throws_InvalidScheduleMoveTargetOrderException() {
                 Long tripId = 1L;
                 Long tripperId = 2L;
-                LocalDate startDate = LocalDate.of(2023,3,1);
-                LocalDate endDate = LocalDate.of(2023,3,1);
+                LocalDate startDate = LocalDate.of(2023, 3, 1);
+                LocalDate endDate = LocalDate.of(2023, 3, 1);
 
                 Trip trip = TripFixture.decided_Id(tripId, tripperId, startDate, endDate, 1L);
                 Day targetDay = trip.getDays().get(0);
@@ -1005,8 +785,8 @@ public class TripTest {
                 // given
                 Long tripId = 1L;
                 Long tripperId = 2L;
-                LocalDate startDate = LocalDate.of(2023,3,1);
-                LocalDate endDate = LocalDate.of(2023,3,1);
+                LocalDate startDate = LocalDate.of(2023, 3, 1);
+                LocalDate endDate = LocalDate.of(2023, 3, 1);
 
                 Trip trip = TripFixture.decided_Id(tripId, tripperId, startDate, endDate, 1L);
                 Day targetDay = trip.getDays().get(0);
@@ -1036,8 +816,8 @@ public class TripTest {
                 // given
                 Long tripId = 1L;
                 Long tripperId = 2L;
-                LocalDate startDate = LocalDate.of(2023,3,1);
-                LocalDate endDate = LocalDate.of(2023,3,1);
+                LocalDate startDate = LocalDate.of(2023, 3, 1);
+                LocalDate endDate = LocalDate.of(2023, 3, 1);
 
                 Trip trip = TripFixture.decided_Id(tripId, tripperId, startDate, endDate, 1L);
                 Day targetDay = trip.getDays().get(0);
@@ -1055,8 +835,8 @@ public class TripTest {
                 // given
                 Long tripId = 1L;
                 Long tripperId = 2L;
-                LocalDate startDate = LocalDate.of(2023,3,1);
-                LocalDate endDate = LocalDate.of(2023,3,1);
+                LocalDate startDate = LocalDate.of(2023, 3, 1);
+                LocalDate endDate = LocalDate.of(2023, 3, 1);
 
                 Trip trip = TripFixture.decided_Id(tripId, tripperId, startDate, endDate, 1L);
                 Day targetDay = trip.getDays().get(0);
@@ -1086,8 +866,8 @@ public class TripTest {
                 // given
                 Long tripId = 1L;
                 Long tripperId = 2L;
-                LocalDate startDate = LocalDate.of(2023,3,1);
-                LocalDate endDate = LocalDate.of(2023,3,1);
+                LocalDate startDate = LocalDate.of(2023, 3, 1);
+                LocalDate endDate = LocalDate.of(2023, 3, 1);
 
                 Trip trip = TripFixture.decided_Id(tripId, tripperId, startDate, endDate, 1L);
                 Day targetDay = trip.getDays().get(0);
@@ -1105,8 +885,8 @@ public class TripTest {
                 // given
                 Long tripId = 1L;
                 Long tripperId = 2L;
-                LocalDate startDate = LocalDate.of(2023,3,1);
-                LocalDate endDate = LocalDate.of(2023,3,1);
+                LocalDate startDate = LocalDate.of(2023, 3, 1);
+                LocalDate endDate = LocalDate.of(2023, 3, 1);
 
                 Trip trip = TripFixture.decided_Id(tripId, tripperId, startDate, endDate, 1L);
                 Day targetDay = trip.getDays().get(0);
@@ -1137,8 +917,8 @@ public class TripTest {
                 // given
                 Long tripId = 1L;
                 Long tripperId = 2L;
-                LocalDate startDate = LocalDate.of(2023,3,1);
-                LocalDate endDate = LocalDate.of(2023,3,1);
+                LocalDate startDate = LocalDate.of(2023, 3, 1);
+                LocalDate endDate = LocalDate.of(2023, 3, 1);
 
                 Trip trip = TripFixture.decided_Id(tripId, tripperId, startDate, endDate, 1L);
                 Day targetDay = trip.getDays().get(0);
@@ -1164,8 +944,8 @@ public class TripTest {
                 Long tripId = 1L;
                 Long otherTripId = 2L;
                 Long tripperId = 3L;
-                LocalDate startDate = LocalDate.of(2023,3,1);
-                LocalDate endDate = LocalDate.of(2023,3,2);
+                LocalDate startDate = LocalDate.of(2023, 3, 1);
+                LocalDate endDate = LocalDate.of(2023, 3, 2);
 
                 Trip trip = TripFixture.decided_Id(tripId, tripperId, startDate, endDate, 1L);
                 Day beforeDay = trip.getDays().get(0);
@@ -1184,8 +964,8 @@ public class TripTest {
                 // given
                 Long tripId = 1L;
                 Long tripperId = 2L;
-                LocalDate startDate = LocalDate.of(2023,3,1);
-                LocalDate endDate = LocalDate.of(2023,3,2);
+                LocalDate startDate = LocalDate.of(2023, 3, 1);
+                LocalDate endDate = LocalDate.of(2023, 3, 2);
 
                 Trip trip = TripFixture.decided_Id(tripId, tripperId, startDate, endDate, 1L);
                 Day beforeDay = trip.getDays().get(0);
@@ -1203,8 +983,8 @@ public class TripTest {
             public void when_targetOrder_is_over_day_schedules_max_size_then_it_throws_InvalidScheduleMoveTargetOrderException() {
                 Long tripId = 1L;
                 Long tripperId = 2L;
-                LocalDate startDate = LocalDate.of(2023,3,1);
-                LocalDate endDate = LocalDate.of(2023,3,2);
+                LocalDate startDate = LocalDate.of(2023, 3, 1);
+                LocalDate endDate = LocalDate.of(2023, 3, 2);
 
                 Trip trip = TripFixture.decided_Id(tripId, tripperId, startDate, endDate, 1L);
                 Day beforeDay = trip.getDays().get(0);
@@ -1223,8 +1003,8 @@ public class TripTest {
             public void when_move_to_same_day_and_same_position_then_nothing_changed() {
                 Long tripId = 1L;
                 Long tripperId = 2L;
-                LocalDate startDate = LocalDate.of(2023,3,1);
-                LocalDate endDate = LocalDate.of(2023,3,2);
+                LocalDate startDate = LocalDate.of(2023, 3, 1);
+                LocalDate endDate = LocalDate.of(2023, 3, 2);
 
                 Trip trip = TripFixture.decided_Id(tripId, tripperId, startDate, endDate, 1L);
                 Day day = trip.getDays().get(0);
@@ -1256,8 +1036,8 @@ public class TripTest {
             public void when_move_to_same_day_and_after_currentOrder_then_nothing_changed() {
                 Long tripId = 1L;
                 Long tripperId = 2L;
-                LocalDate startDate = LocalDate.of(2023,3,1);
-                LocalDate endDate = LocalDate.of(2023,3,1);
+                LocalDate startDate = LocalDate.of(2023, 3, 1);
+                LocalDate endDate = LocalDate.of(2023, 3, 1);
 
                 Trip trip = TripFixture.decided_Id(tripId, tripperId, startDate, endDate, 1L);
                 Day day = trip.getDays().get(0);
@@ -1289,8 +1069,8 @@ public class TripTest {
             public void when_targetOrder_isEqualTo_SchedulesSize_and_tail_scheduleIndex_isSafe_schedule_move_to_Tail() {
                 Long tripId = 1L;
                 Long tripperId = 2L;
-                LocalDate startDate = LocalDate.of(2023,3,1);
-                LocalDate endDate = LocalDate.of(2023,3,2);
+                LocalDate startDate = LocalDate.of(2023, 3, 1);
+                LocalDate endDate = LocalDate.of(2023, 3, 2);
 
                 Trip trip = TripFixture.decided_Id(tripId, tripperId, startDate, endDate, 1L);
                 Day beforeDay = trip.getDays().get(0);
@@ -1320,14 +1100,14 @@ public class TripTest {
             public void when_targetOrder_isEqualTo_SchedulesSize_and_tail_scheduleIndex_is_unSafe_it_throws_ScheduleIndexRangeException() {
                 Long tripId = 1L;
                 Long tripperId = 2L;
-                LocalDate startDate = LocalDate.of(2023,3,1);
-                LocalDate endDate = LocalDate.of(2023,3,2);
+                LocalDate startDate = LocalDate.of(2023, 3, 1);
+                LocalDate endDate = LocalDate.of(2023, 3, 2);
 
                 Trip trip = TripFixture.decided_Id(tripId, tripperId, startDate, endDate, 1L);
                 Day beforeDay = trip.getDays().get(0);
                 Day targetDay = trip.getDays().get(1);
 
-                Schedule schedule1 = ScheduleFixture.day_Id(    1L, trip, beforeDay, 0L);
+                Schedule schedule1 = ScheduleFixture.day_Id(1L, trip, beforeDay, 0L);
                 Schedule schedule2 = ScheduleFixture.day_Id(2L, trip, targetDay, MAX_INDEX_VALUE);
 
                 // when & then
@@ -1340,8 +1120,8 @@ public class TripTest {
             public void when_targetOrder_isEqualTo_Zero_and_head_scheduleIndex_isSafe_schedule_move_to_Head() {
                 Long tripId = 1L;
                 Long tripperId = 2L;
-                LocalDate startDate = LocalDate.of(2023,3,1);
-                LocalDate endDate = LocalDate.of(2023,3,2);
+                LocalDate startDate = LocalDate.of(2023, 3, 1);
+                LocalDate endDate = LocalDate.of(2023, 3, 2);
 
                 Trip trip = TripFixture.decided_Id(tripId, tripperId, startDate, endDate, 1L);
                 Day beforeDay = trip.getDays().get(0);
@@ -1371,8 +1151,8 @@ public class TripTest {
             public void when_targetOrder_isEqualTo_Zero_and_head_scheduleIndex_is_unSafe_it_throws_ScheduleIndexRangeException() {
                 Long tripId = 1L;
                 Long tripperId = 2L;
-                LocalDate startDate = LocalDate.of(2023,3,1);
-                LocalDate endDate = LocalDate.of(2023,3,2);
+                LocalDate startDate = LocalDate.of(2023, 3, 1);
+                LocalDate endDate = LocalDate.of(2023, 3, 2);
 
                 Trip trip = TripFixture.decided_Id(tripId, tripperId, startDate, endDate, 1L);
                 Day beforeDay = trip.getDays().get(0);
@@ -1391,8 +1171,8 @@ public class TripTest {
             public void testMiddleInsert_Success() {
                 Long tripId = 1L;
                 Long tripperId = 2L;
-                LocalDate startDate = LocalDate.of(2023,3,1);
-                LocalDate endDate = LocalDate.of(2023,3,2);
+                LocalDate startDate = LocalDate.of(2023, 3, 1);
+                LocalDate endDate = LocalDate.of(2023, 3, 2);
 
                 Trip trip = TripFixture.decided_Id(tripId, tripperId, startDate, endDate, 1L);
                 Day beforeDay = trip.getDays().get(0);
@@ -1423,8 +1203,8 @@ public class TripTest {
             public void testMiddleInsert_Failure() {
                 Long tripId = 1L;
                 Long tripperId = 2L;
-                LocalDate startDate = LocalDate.of(2023,3,1);
-                LocalDate endDate = LocalDate.of(2023,3,2);
+                LocalDate startDate = LocalDate.of(2023, 3, 1);
+                LocalDate endDate = LocalDate.of(2023, 3, 2);
 
                 Trip trip = TripFixture.decided_Id(tripId, tripperId, startDate, endDate, 1L);
                 Day beforeDay = trip.getDays().get(0);
@@ -1450,8 +1230,8 @@ public class TripTest {
                 // given
                 Long tripId = 1L;
                 Long tripperId = 2L;
-                LocalDate startDate = LocalDate.of(2023,3,1);
-                LocalDate endDate = LocalDate.of(2023,3,1);
+                LocalDate startDate = LocalDate.of(2023, 3, 1);
+                LocalDate endDate = LocalDate.of(2023, 3, 1);
 
                 Trip trip = TripFixture.decided_Id(tripId, tripperId, startDate, endDate, 1L);
                 Day beforeDay = trip.getDays().get(0);
@@ -1469,8 +1249,8 @@ public class TripTest {
             public void when_targetOrder_is_over_temporary_storage_max_size_then_it_throws_InvalidScheduleMoveTargetOrderException() {
                 Long tripId = 1L;
                 Long tripperId = 2L;
-                LocalDate startDate = LocalDate.of(2023,3,1);
-                LocalDate endDate = LocalDate.of(2023,3,1);
+                LocalDate startDate = LocalDate.of(2023, 3, 1);
+                LocalDate endDate = LocalDate.of(2023, 3, 1);
 
                 Trip trip = TripFixture.decided_Id(tripId, tripperId, startDate, endDate, 1L);
                 Day beforeDay = trip.getDays().get(0);
@@ -1490,8 +1270,8 @@ public class TripTest {
             public void when_targetOrder_isEqualTo_temporaryStorageSize_and_tail_scheduleIndex_isSafe_schedule_move_to_Tail() {
                 Long tripId = 1L;
                 Long tripperId = 2L;
-                LocalDate startDate = LocalDate.of(2023,3,1);
-                LocalDate endDate = LocalDate.of(2023,3,2);
+                LocalDate startDate = LocalDate.of(2023, 3, 1);
+                LocalDate endDate = LocalDate.of(2023, 3, 2);
 
                 Trip trip = TripFixture.decided_Id(tripId, tripperId, startDate, endDate, 1L);
                 Day beforeDay = trip.getDays().get(0);
@@ -1521,8 +1301,8 @@ public class TripTest {
             public void when_targetOrder_isEqualTo_temporaryStorageSize_and_tail_scheduleIndex_is_unSafe_it_throws_ScheduleIndexRangeException() {
                 Long tripId = 1L;
                 Long tripperId = 2L;
-                LocalDate startDate = LocalDate.of(2023,3,1);
-                LocalDate endDate = LocalDate.of(2023,3,1);
+                LocalDate startDate = LocalDate.of(2023, 3, 1);
+                LocalDate endDate = LocalDate.of(2023, 3, 1);
 
                 Trip trip = TripFixture.decided_Id(tripId, tripperId, startDate, endDate, 1L);
                 Day beforeDay = trip.getDays().get(0);
@@ -1542,8 +1322,8 @@ public class TripTest {
             public void when_targetOrder_isEqualTo_Zero_and_Head_scheduleIndex_isSafe_schedule_move_to_Head() {
                 Long tripId = 1L;
                 Long tripperId = 2L;
-                LocalDate startDate = LocalDate.of(2023,3,1);
-                LocalDate endDate = LocalDate.of(2023,3,1);
+                LocalDate startDate = LocalDate.of(2023, 3, 1);
+                LocalDate endDate = LocalDate.of(2023, 3, 1);
 
                 Trip trip = TripFixture.decided_Id(tripId, tripperId, startDate, endDate, 1L);
                 Day beforeDay = trip.getDays().get(0);
@@ -1573,8 +1353,8 @@ public class TripTest {
             public void when_targetOrder_isEqualTo_Zero_and_Head_scheduleIndex_is_unSafe_it_throws_ScheduleIndexRangeException() {
                 Long tripId = 1L;
                 Long tripperId = 2L;
-                LocalDate startDate = LocalDate.of(2023,3,1);
-                LocalDate endDate = LocalDate.of(2023,3,1);
+                LocalDate startDate = LocalDate.of(2023, 3, 1);
+                LocalDate endDate = LocalDate.of(2023, 3, 1);
 
                 Trip trip = TripFixture.decided_Id(tripId, tripperId, startDate, endDate, 1L);
                 Day beforeDay = trip.getDays().get(0);
@@ -1593,8 +1373,8 @@ public class TripTest {
             public void testMiddleInsert_Success() {
                 Long tripId = 1L;
                 Long tripperId = 2L;
-                LocalDate startDate = LocalDate.of(2023,3,1);
-                LocalDate endDate = LocalDate.of(2023,3,1);
+                LocalDate startDate = LocalDate.of(2023, 3, 1);
+                LocalDate endDate = LocalDate.of(2023, 3, 1);
 
                 Trip trip = TripFixture.decided_Id(tripId, tripperId, startDate, endDate, 1L);
                 Day beforeDay = trip.getDays().get(0);
@@ -1625,8 +1405,8 @@ public class TripTest {
             public void testMiddleInsert_Failure() {
                 Long tripId = 1L;
                 Long tripperId = 2L;
-                LocalDate startDate = LocalDate.of(2023,3,1);
-                LocalDate endDate = LocalDate.of(2023,3,1);
+                LocalDate startDate = LocalDate.of(2023, 3, 1);
+                LocalDate endDate = LocalDate.of(2023, 3, 1);
 
                 Trip trip = TripFixture.decided_Id(tripId, tripperId, startDate, endDate, 1L);
                 Day beforeDay = trip.getDays().get(0);
