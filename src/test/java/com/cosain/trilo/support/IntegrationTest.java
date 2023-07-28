@@ -128,6 +128,13 @@ public class IntegrationTest {
         return trip;
     }
 
+    protected Trip setupDecidedTrip(Long tripperId, LocalDate startDate, LocalDate endDate, String rawTitle) {
+        Trip trip = TripFixture.decided_nullId_Title(tripperId, rawTitle, startDate, endDate);
+        em.persist(trip);
+        trip.getDays().forEach(em::persist);
+        return trip;
+    }
+
     /**
      * 임시보관함 일정을 생성 및 저장하여 셋팅하고 그 일정을 반환합니다.
      * @param trip 일정이 소속된 여행

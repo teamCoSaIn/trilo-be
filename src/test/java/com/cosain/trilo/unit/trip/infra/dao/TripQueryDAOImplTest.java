@@ -3,12 +3,14 @@ package com.cosain.trilo.unit.trip.infra.dao;
 
 import com.cosain.trilo.fixture.TripFixture;
 import com.cosain.trilo.support.RepositoryTest;
+import com.cosain.trilo.trip.application.trip.service.trip_condition_search.TripSearchResponse;
 import com.cosain.trilo.trip.application.trip.service.trip_detail_search.TripDetail;
 import com.cosain.trilo.trip.application.trip.service.trip_list_search.TripListQueryParam;
 import com.cosain.trilo.trip.application.trip.service.trip_list_search.TripListSearchResult;
 import com.cosain.trilo.trip.domain.entity.Trip;
 import com.cosain.trilo.trip.infra.dao.TripQueryDAOImpl;
 import com.cosain.trilo.trip.infra.dto.TripStatistics;
+import com.cosain.trilo.trip.presentation.trip.dto.request.TripSearchRequest;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -17,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -157,6 +160,41 @@ public class TripQueryDAOImplTest extends RepositoryTest {
             // then
             assertThat(tripStatistics.getTerminatedTripCnt()).isEqualTo(3);
             assertThat(tripStatistics.getTotalTripCnt()).isEqualTo(5);
+        }
+    }
+
+    @Nested
+    class 여행_조건_조회{
+        @Test
+        void 기본_또는_최신순_조회(){
+            // given
+            TripSearchRequest tripSearchRequest = new TripSearchRequest("제주", "RECENT", 5, null);
+            Long tripperId = setupTripperId();
+            Long tripperId2 = setupTripperId();
+            LocalDate startDate = LocalDate.of(2023, 5, 1);
+            LocalDate endDate = LocalDate.of(2023, 5, 10);
+            Trip trip1 = TripFixture.decided_nullId_Title(tripperId,"제주도 여행",startDate, endDate);
+            Trip trip2 = TripFixture.decided_nullId_Title(tripperId2,"재미있는 제주 1박 2일!",startDate, endDate);
+            Trip trip3 = TripFixture.decided_nullId_Title(tripperId,"여행을 가보자",startDate, endDate);
+            Trip trip4 = TripFixture.decided_nullId_Title(tripperId,"제 주 도",startDate, endDate);
+            Trip trip5 = TripFixture.decided_nullId_Title(tripperId,"제 주 도 가자",startDate, endDate);
+            Trip trip6 = TripFixture.decided_nullId_Title(tripperId2,"밤샘 여행",startDate, endDate);
+            Trip trip7 = TripFixture.decided_nullId_Title(tripperId2,"제조여행",startDate, endDate);
+
+            em.persist(trip1);
+            em.persist(trip2);
+            em.persist(trip3);
+            em.persist(trip4);
+            em.persist(trip5);
+            em.persist(trip6);
+            em.persist(trip7);
+
+            // when
+            TripSearchResponse response = tripQueryDAOImpl.findWithSearchConditions(tripSearchRequest);
+
+            // then
+            List<TripSearchResponse.TripSummary> trips = response.getTrips();
+            assertThat(trips.size()).isEqualTo(2);
         }
     }
 

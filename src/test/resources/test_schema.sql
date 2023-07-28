@@ -24,6 +24,8 @@ CREATE TABLE IF NOT EXISTS `trilo_db_test`.`trip` (
     start_date DATE,
     end_date DATE,
     trip_image_file_name VARCHAR(255),
+    INDEX idx_title (trip_title),
+    INDEX idx_status (trip_status),
     PRIMARY KEY (trip_id)
 );
 
