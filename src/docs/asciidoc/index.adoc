@@ -397,12 +397,14 @@ include::{snippets}/single-trip-query-controller-docs-test/여행_단건_조회/
 ==== 기본 정보
 
 - 메서드 : GET
-- URL : `/api/trips`
+- URL : `/api/tripper/{tripperId}/trips`
 - 인증 방식 : 엑세스 토큰
 
 ==== 요청
 ===== 헤더
 include::{snippets}/tripper-trip-list-query-controller-docs-test/사용자_여행_목록_조회/request-headers.adoc[]
+===== 경로 변수
+include::{snippets}/tripper-trip-list-query-controller-docs-test/사용자_여행_목록_조회/path-parameters.adoc[]
 ===== 쿼리 변수
 include::{snippets}/tripper-trip-list-query-controller-docs-test/사용자_여행_목록_조회/query-parameters.adoc[]
 

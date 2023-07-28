@@ -7,10 +7,7 @@ import com.cosain.trilo.trip.presentation.trip.dto.request.TripListSearchRequest
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
@@ -18,10 +15,10 @@ import org.springframework.web.bind.annotation.RestController;
 public class TripperTripListQueryController {
 
     private final TripListSearchService tripListSearchService;
-    @GetMapping("/api/trips")
+    @GetMapping("/api/tripper/{tripperId}/trips")
     @ResponseStatus(HttpStatus.OK)
-    public TripListSearchResult findTripperTripList(@ModelAttribute TripListSearchRequest request) {
-        var queryParam = TripListQueryParam.of(request.getTripperId(), request.getTripId(), request.getSize());
+    public TripListSearchResult findTripperTripList(@ModelAttribute TripListSearchRequest request, @PathVariable Long tripperId) {
+        var queryParam = TripListQueryParam.of(tripperId, request.getTripId(), request.getSize());
         return tripListSearchService.searchTripList(queryParam);
     }
 }

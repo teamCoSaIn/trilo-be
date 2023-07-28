@@ -53,8 +53,7 @@ class TripperTripListQueryControllerTest extends RestControllerTest {
         given(tripListSearchService.searchTripList(eq(queryParam))).willReturn(searchResult);
 
         // when & then
-        mockMvc.perform(get("/api/trips")
-                        .param("tripperId", String.valueOf(tripperId))
+        mockMvc.perform(get("/api/tripper/{tripperId}/trips", tripperId)
                         .param("size", String.valueOf(size))
                         .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)
                         .characterEncoding(StandardCharsets.UTF_8)
@@ -66,9 +65,6 @@ class TripperTripListQueryControllerTest extends RestControllerTest {
                 .andExpect(jsonPath("$.trips.[0].tripId").value(tripSummary3.getTripId()))
                 .andExpect(jsonPath("$.trips.[1].tripId").value(tripSummary2.getTripId()))
                 .andExpect(jsonPath("$.trips.[2].tripId").value(tripSummary1.getTripId()))
-                .andExpect(jsonPath("$.trips.[0].tripperId").value(tripSummary3.getTripperId()))
-                .andExpect(jsonPath("$.trips.[1].tripperId").value(tripSummary2.getTripperId()))
-                .andExpect(jsonPath("$.trips.[2].tripperId").value(tripSummary1.getTripperId()))
                 .andExpect(jsonPath("$.trips.[0].title").value(tripSummary3.getTitle()))
                 .andExpect(jsonPath("$.trips.[1].title").value(tripSummary2.getTitle()))
                 .andExpect(jsonPath("$.trips.[2].title").value(tripSummary1.getTitle()))
@@ -103,8 +99,7 @@ class TripperTripListQueryControllerTest extends RestControllerTest {
         given(tripListSearchService.searchTripList(eq(queryParam))).willReturn(searchResult);
 
         // when & then
-        mockMvc.perform(get("/api/trips")
-                        .param("tripperId", String.valueOf(tripperId))
+        mockMvc.perform(get("/api/tripper/{tripperId}/trips", tripperId)
                         .param("size", String.valueOf(size))
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON))
@@ -115,9 +110,6 @@ class TripperTripListQueryControllerTest extends RestControllerTest {
                 .andExpect(jsonPath("$.trips.[0].tripId").value(tripSummary3.getTripId()))
                 .andExpect(jsonPath("$.trips.[1].tripId").value(tripSummary2.getTripId()))
                 .andExpect(jsonPath("$.trips.[2].tripId").value(tripSummary1.getTripId()))
-                .andExpect(jsonPath("$.trips.[0].tripperId").value(tripSummary3.getTripperId()))
-                .andExpect(jsonPath("$.trips.[1].tripperId").value(tripSummary2.getTripperId()))
-                .andExpect(jsonPath("$.trips.[2].tripperId").value(tripSummary1.getTripperId()))
                 .andExpect(jsonPath("$.trips.[0].title").value(tripSummary3.getTitle()))
                 .andExpect(jsonPath("$.trips.[1].title").value(tripSummary2.getTitle()))
                 .andExpect(jsonPath("$.trips.[2].title").value(tripSummary1.getTitle()))
