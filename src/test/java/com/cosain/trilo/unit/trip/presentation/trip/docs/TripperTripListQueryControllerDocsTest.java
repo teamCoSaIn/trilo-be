@@ -23,8 +23,7 @@ import static org.springframework.restdocs.headers.HeaderDocumentation.headerWit
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.payload.JsonFieldType.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
-import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
-import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
+import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -33,7 +32,6 @@ public class TripperTripListQueryControllerDocsTest extends RestDocsTestSupport 
 
     @MockBean
     private TripListSearchService TripListSearchService;
-    private final String BASE_URL = "/api/trips";
     private final String ACCESS_TOKEN = "Bearer accessToken";
 
     @Test
@@ -52,8 +50,7 @@ public class TripperTripListQueryControllerDocsTest extends RestDocsTestSupport 
         given(TripListSearchService.searchTripList(eq(queryParam))).willReturn(searchResult);
 
         // when & then
-        mockMvc.perform(RestDocumentationRequestBuilders.get(BASE_URL)
-                        .param("tripperId", String.valueOf(tripperId))
+        mockMvc.perform(RestDocumentationRequestBuilders.get("/api/trippers/{tripperId}/trips", tripperId)
                         .param("tripId", String.valueOf(tripId))
                         .param("size", String.valueOf(size))
                         .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)
@@ -65,9 +62,6 @@ public class TripperTripListQueryControllerDocsTest extends RestDocsTestSupport 
                 .andExpect(jsonPath("$.trips.[0].tripId").value(tripSummary1.getTripId()))
                 .andExpect(jsonPath("$.trips.[1].tripId").value(tripSummary2.getTripId()))
                 .andExpect(jsonPath("$.trips.[2].tripId").value(tripSummary3.getTripId()))
-                .andExpect(jsonPath("$.trips.[0].tripperId").value(tripSummary1.getTripperId()))
-                .andExpect(jsonPath("$.trips.[1].tripperId").value(tripSummary2.getTripperId()))
-                .andExpect(jsonPath("$.trips.[2].tripperId").value(tripSummary3.getTripperId()))
                 .andExpect(jsonPath("$.trips.[0].title").value(tripSummary1.getTitle()))
                 .andExpect(jsonPath("$.trips.[1].title").value(tripSummary2.getTitle()))
                 .andExpect(jsonPath("$.trips.[2].title").value(tripSummary3.getTitle()))
@@ -88,8 +82,10 @@ public class TripperTripListQueryControllerDocsTest extends RestDocsTestSupport 
                                 headerWithName(HttpHeaders.AUTHORIZATION)
                                         .description("Bearer 타입 AccessToken")
                         ),
+                        pathParameters(
+                                parameterWithName("tripperId").description("여행자 ID")
+                        ),
                         queryParameters(
-                                parameterWithName("tripperId").description("여행자 ID"),
                                 parameterWithName("tripId").optional().description("기준이 되는 여행 ID (하단 설명 참고)"),
                                 parameterWithName("size").description("가져올 데이터의 개수")
                         ),
