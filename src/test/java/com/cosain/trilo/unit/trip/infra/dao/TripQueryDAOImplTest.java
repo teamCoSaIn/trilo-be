@@ -168,7 +168,7 @@ public class TripQueryDAOImplTest extends RepositoryTest {
         @Test
         void 기본_또는_최신순_조회(){
             // given
-            TripSearchRequest tripSearchRequest = new TripSearchRequest("제주", TripSearchRequest.SortType.RECENT, 5, null);
+            TripSearchRequest tripSearchRequest = new TripSearchRequest("제주", "RECENT", 5, null);
             Long tripperId = setupTripperId();
             Long tripperId2 = setupTripperId();
             LocalDate startDate = LocalDate.of(2023, 5, 1);

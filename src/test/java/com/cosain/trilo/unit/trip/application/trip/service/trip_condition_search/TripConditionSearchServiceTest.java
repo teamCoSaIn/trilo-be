@@ -34,7 +34,7 @@ public class TripConditionSearchServiceTest {
         // given
         String imageName = "image.jpg";
         String imageURL = "https://.../image.jpg";
-        TripSearchRequest tripSearchRequest = new TripSearchRequest("제주", TripSearchRequest.SortType.RECENT, 3, 1L);
+        TripSearchRequest tripSearchRequest = new TripSearchRequest("제주", "RECENT", 3, 1L);
         TripSearchResponse.TripSummary tripSummary1 = new TripSearchResponse.TripSummary(2L, 1L, LocalDate.of(2023, 4, 4), LocalDate.of(2023, 4, 10), "제주도 여행", imageName);
         TripSearchResponse.TripSummary tripSummary2 = new TripSearchResponse.TripSummary(1L, 1L, LocalDate.of(2023, 4, 4), LocalDate.of(2023, 4, 10), "제주 가보자", imageName);
         TripSearchResponse tripSearchResponse = new TripSearchResponse(true, List.of(tripSummary1, tripSummary2));
