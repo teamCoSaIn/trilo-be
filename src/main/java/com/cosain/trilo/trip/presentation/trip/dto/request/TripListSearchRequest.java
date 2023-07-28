@@ -5,12 +5,10 @@ import lombok.Getter;
 @Getter
 public class TripListSearchRequest {
 
-    private final Long tripperId;
     private final Long tripId;
     private final Integer size;
 
-    public TripListSearchRequest(Long tripperId, Long tripId, Integer size) {
-        this.tripperId = tripperId;
+    public TripListSearchRequest(Long tripId, Integer size) {
         this.tripId = tripId;
         this.size = size;
     }
