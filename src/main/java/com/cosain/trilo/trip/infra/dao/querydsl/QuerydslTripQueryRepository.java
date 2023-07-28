@@ -120,22 +120,19 @@ public class QuerydslTripQueryRepository {
      * TODO : 좋아요 많은 순
      */
     private OrderSpecifier<?> makeOrderSpecifiers(TripSearchRequest.SortType sortType){
-        switch(sortType){
-            case RECENT:
-                return new OrderSpecifier<>(Order.DESC, trip.id);
-            default:
-                return new OrderSpecifier<>(Order.DESC, trip.id );
-        }
+        return switch (sortType) {
+            case RECENT -> new OrderSpecifier<>(Order.DESC, trip.id);
+            default -> new OrderSpecifier<>(Order.DESC, trip.id);
+        };
     }
 
-    private BooleanExpression cursor(TripSearchRequest.SortType sortType, Long tripId){
-        switch (sortType){
-            case RECENT:
-                return ltTripId(tripId);
-            default:
-                return ltTripId(tripId);
-        }
+    private BooleanExpression cursor(TripSearchRequest.SortType sortType, Long tripId) {
+        return switch (sortType) {
+            case RECENT -> ltTripId(tripId);
+            default -> ltTripId(tripId);
+        };
     }
+
 
     private BooleanExpression decideOrFinished(){
         return trip.status.in(TripStatus.DECIDED, TripStatus.FINISHED);
