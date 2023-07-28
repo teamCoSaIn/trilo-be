@@ -13,6 +13,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 
+/**
+ * 여행 기간의 특정 하루를 나타내는 도메인 엔티티입니다.
+ */
 @Getter
 @ToString(of = {"id", "tripDate"})
 @Entity
@@ -20,24 +23,45 @@ import java.util.Random;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Day {
 
+    /**
+     * Day가 가질 수 있는 일정의 최대 갯수
+     */
     public static final int MAX_DAY_SCHEDULE_COUNT = 10;
 
+    /**
+     * Day의 식별자(id)
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "day_id")
     private Long id;
 
+    /**
+     * Day의 날짜
+     */
     @Column(name = "trip_date")
     private LocalDate tripDate;
 
+    /**
+     * Day가 속한 여행(Trip)
+     */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "trip_id")
     private Trip trip;
 
+    /**
+     * Day의 색상
+     */
     @Enumerated(EnumType.STRING)
     @Column(name = "day_color")
     private DayColor dayColor;
 
+    /**
+     * <p>Day에 소속된 일정({@link Schedule})들의 컬렉션입니다.
+     * <p>일정들은 {@link ScheduleIndex} 기준 오름차순으로 정렬되어 있습니다.</p>
+     * @see Schedule
+     * @see ScheduleIndex
+     */
     @OneToMany(mappedBy = "day")
     @OrderBy("scheduleIndex.value asc")
     private final List<Schedule> schedules = new ArrayList<>();

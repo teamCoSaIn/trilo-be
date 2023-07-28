@@ -1,7 +1,7 @@
 package com.cosain.trilo.unit.trip.domain.vo;
 
-import com.cosain.trilo.trip.domain.exception.InvalidPeriodException;
-import com.cosain.trilo.trip.domain.exception.TooLongPeriodException;
+import com.cosain.trilo.common.exception.trip.InvalidPeriodException;
+import com.cosain.trilo.common.exception.trip.TooLongPeriodException;
 import com.cosain.trilo.trip.domain.vo.TripPeriod;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -16,184 +16,148 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+/**
+ * 여행 기간 VO(값 객체)의 테스트코드 입니다.
+ */
 @DisplayName("[TripCommand] TripPeriod 테스트")
 public class TripPeriodTest {
 
+    /**
+     * 여행기간 생성에 대한 테스트들입니다.
+     */
     @Nested
     @DisplayName("TripPeriod를 'of' 메서드로 생성할 때")
-    class When_Create_With_of {
+    class TripPeriod_Create_Test {
 
-        @Nested
-        @DisplayName("startDate, endDate 모두 null 이면")
-        class If_StartDate_and_EndDate_are_null {
+        @Test
+        @DisplayName("시작일, 종료일 모두 Null -> 성공(비어있는 기간)")
+        void emptyPeriod() {
+            // given
+            LocalDate startDate = null;
+            LocalDate endDate = null;
 
-            @Test
-            @DisplayName("빈 기간에 해당하는 날짜가 반환된다.")
-            public void it_returns_empty_period() {
-                // given
-                LocalDate startDate = null;
-                LocalDate endDate = null;
+            // when
+            TripPeriod period = TripPeriod.of(startDate, endDate);
 
-                // when
-                TripPeriod period = TripPeriod.of(startDate, endDate);
-
-                // then
-                assertThat(period).isEqualTo(TripPeriod.empty());
-            }
+            // then
+            assertThat(period).isEqualTo(TripPeriod.empty());
+            assertThat(period.getStartDate()).isNull();
+            assertThat(period.getEndDate()).isNull();
         }
 
-        @Nested
-        @DisplayName("startDate가 null, endDate가 null이 아니면")
-        class If_StartDate_is_null_and_EndDate_is_not_null {
+        @Test
+        @DisplayName("startDate와 endDate가 같을 때 -> 성공")
+        void same_startDate_endDate() {
+            // given
+            LocalDate startDate = LocalDate.of(2023, 4, 19);
+            LocalDate endDate = LocalDate.of(2023, 4, 19);
 
-            @Test
-            @DisplayName("InvalidPeriodException 예외가 발생한다")
-            public void it_throws_InvalidPeriodException() {
-                // given
-                LocalDate startDate = null;
-                LocalDate endDate = LocalDate.of(2023, 4, 20);
+            // when
+            TripPeriod period = TripPeriod.of(startDate, endDate);
 
-                // when & then
-                assertThatThrownBy(() -> TripPeriod.of(startDate, endDate)).isInstanceOf(InvalidPeriodException.class);
-            }
+            // then
+            assertThat(period.getStartDate()).isEqualTo(startDate);
+            assertThat(period.getEndDate()).isEqualTo(endDate);
         }
 
-        @Nested
-        @DisplayName("startDate가 null이 아니고, endDate가 null 이면")
-        class If_StartDate_is_not_null_and_EndDate_is_null {
+        @Test
+        @DisplayName("시작일보다 늦은 종료일이고, 일수가 10일보다 작음 -> 성공")
+        void startDate_after_endDate() {
+            // given
+            LocalDate startDate = LocalDate.of(2023, 4, 19);
+            LocalDate endDate = LocalDate.of(2023, 4, 20);
 
-            @Test
-            @DisplayName("InvalidPeriodException 예외가 발생한다")
-            public void it_throws_InvalidPeriodException() {
-                // given
-                LocalDate startDate = LocalDate.of(2023, 4, 20);
-                LocalDate endDate = null;
+            // when
+            TripPeriod period = TripPeriod.of(startDate, endDate);
 
-                // when & then
-                assertThatThrownBy(() -> TripPeriod.of(startDate, endDate)).isInstanceOf(InvalidPeriodException.class);
-            }
+            // then
+            assertThat(period.getStartDate()).isEqualTo(startDate);
+            assertThat(period.getEndDate()).isEqualTo(endDate);
         }
 
-        @Nested
-        @DisplayName("endDate가 startDate보다 앞서면")
-        class If_endDate_is_before_startDate {
+        @Test
+        @DisplayName("시작일보다 늦은 종료일이고, 일수가 10일 -> 성공")
+        void startDate_after_endDate_10Day() {
+            // given
+            LocalDate startDate = LocalDate.of(2023, 3, 1);
+            LocalDate endDate = LocalDate.of(2023, 3, 10);
 
-            @Test
-            @DisplayName("InvalidPeriodException 예외가 발생한다")
-            public void it_throws_InvalidPeriodException() {
-                // given
-                LocalDate startDate = LocalDate.of(2023, 4, 20);
-                LocalDate endDate = LocalDate.of(2023, 4, 19);
+            // when
+            TripPeriod period = TripPeriod.of(startDate, endDate);
 
-                // when & then
-                assertThatThrownBy(() -> TripPeriod.of(startDate, endDate)).isInstanceOf(InvalidPeriodException.class);
-            }
+            // then
+            assertThat(period.getStartDate()).isEqualTo(startDate);
+            assertThat(period.getEndDate()).isEqualTo(endDate);
         }
 
-        @Nested
-        @DisplayName("endDate가 startDate보다 뒤에 오면")
-        class If_endDate_is_after_startDate {
+        @Test
+        @DisplayName("시작일만 null -> 예외 발생")
+        void startDateNull() {
+            // given
+            LocalDate startDate = null;
+            LocalDate endDate = LocalDate.of(2023, 4, 20);
 
-            @Test
-            @DisplayName("정상적으로 TripPeriod가 생성된다.")
-            public void it_returns_TripPeriod_successfully() {
-                // given
-                LocalDate startDate = LocalDate.of(2023, 4, 19);
-                LocalDate endDate = LocalDate.of(2023, 4, 20);
-
-                // when
-                TripPeriod period = TripPeriod.of(startDate, endDate);
-
-                // then
-                assertThat(period.getStartDate()).isEqualTo(startDate);
-                assertThat(period.getEndDate()).isEqualTo(endDate);
-            }
+            // when & then
+            assertThatThrownBy(() -> TripPeriod.of(startDate, endDate)).isInstanceOf(InvalidPeriodException.class);
         }
 
-        @Nested
-        @DisplayName("startDate와 endDate가 같으면")
-        class If_startDate_is_same_as_endDate {
+        @Test
+        @DisplayName("종료일만 null -> 예외 발생")
+        void endDate_Null() {
+            // given
+            LocalDate startDate = LocalDate.of(2023, 4, 20);
+            LocalDate endDate = null;
 
-            @Test
-            @DisplayName("정상적으로 TripPeriod가 생성된다.")
-            public void it_returns_TripPeriod_successfully() {
-                // given
-                LocalDate startDate = LocalDate.of(2023, 4, 19);
-                LocalDate endDate = LocalDate.of(2023, 4, 19);
-
-                // when
-                TripPeriod period = TripPeriod.of(startDate, endDate);
-
-                // then
-                assertThat(period.getStartDate()).isEqualTo(startDate);
-                assertThat(period.getEndDate()).isEqualTo(endDate);
-            }
+            // when & then
+            assertThatThrownBy(() -> TripPeriod.of(startDate, endDate)).isInstanceOf(InvalidPeriodException.class);
         }
 
-        @Nested
-        @DisplayName("일수가 10일일 경우")
-        class If_numberOfDays_is_10 {
+        @Test
+        @DisplayName("시작일보다 앞서는 종료일 -> 예외 발생")
+        void endDate_is_Before_StartDate() {
+            // given
+            LocalDate startDate = LocalDate.of(2023, 4, 20);
+            LocalDate endDate = LocalDate.of(2023, 4, 19);
 
-            @Test
-            @DisplayName("정상적으로 TripPeriod가 생성된다.")
-            public void it_returns_TripPeriod_successfully() {
-                // given
-                LocalDate startDate = LocalDate.of(2023, 5, 1);
-                LocalDate endDate = LocalDate.of(2023, 5, 10);
-
-                // when
-                TripPeriod period = TripPeriod.of(startDate, endDate);
-
-                // then
-                assertThat(period.getStartDate()).isEqualTo(startDate);
-                assertThat(period.getEndDate()).isEqualTo(endDate);
-            }
+            // when & then
+            assertThatThrownBy(() -> TripPeriod.of(startDate, endDate)).isInstanceOf(InvalidPeriodException.class);
         }
 
-        @Nested
-        @DisplayName("일수가 10일을 넘을 경우")
-        class If_numberOfDays_is_over_10 {
+        @Test
+        @DisplayName("여행 기간이 10일 초과 -> 예외 발생")
+        public void tooLongPeriod() {
+            // given
+            LocalDate startDate = LocalDate.of(2023, 5, 1);
+            LocalDate endDate = LocalDate.of(2023, 5, 11);
 
-            @Test
-            @DisplayName("TooLongPeriodException이 발생한다.")
-            public void it_throws_TooLongPeriodException() {
-                // given
-                LocalDate startDate = LocalDate.of(2023, 5, 1);
-                LocalDate endDate = LocalDate.of(2023, 5, 11);
-
-                // when & then
-                assertThatThrownBy(() -> TripPeriod.of(startDate, endDate))
-                        .isInstanceOf(TooLongPeriodException.class);
-            }
+            // when & then
+            assertThatThrownBy(() -> TripPeriod.of(startDate, endDate))
+                    .isInstanceOf(TooLongPeriodException.class);
         }
     }
 
-    @Nested
-    @DisplayName("TripPeriod.empty() 를 통해 반환 된 TripPeriod는")
-    class EmptyTripPeriodTest {
-
-        // given
+    /**
+     * {@link TripPeriod#empty()} 를 통해 생성된 여행은 시작일/종료일이 null임을 테스트합니다.
+     */
+    @Test
+    @DisplayName("TripPeriod.empty() 로 생성된 여행은 시작일, 종료일이 null이다.")
+    void emptyTripPeriodTest() {
         TripPeriod emptyPeriod = TripPeriod.empty();
 
-        @Test
-        @DisplayName("시작일이 null이다.")
-        public void emptyTripPeriodStartDate() {
-            // when & then
-            assertThat(emptyPeriod.getStartDate()).isNull();
-        }
-
-        @Test
-        @DisplayName("종료일이 null이다.")
-        public void emptyPeriodEndDate() {
-            // when & then
-            assertThat(emptyPeriod.getEndDate()).isNull();
-        }
+        assertThat(emptyPeriod.getStartDate()).isNull();
+        assertThat(emptyPeriod.getEndDate()).isNull();
     }
 
+    /**
+     * 어떤 여행 기간과, 다른 여행 기간 사이의 겹치는 기간을 구하는 기능을 테스트합니다.
+     */
     @Nested
     @DisplayName("Intersection 테스트")
     class IntersectionTest {
 
+        /**
+         * 서로 겹치지 않는 기간 사이의 겹치지 않는 기간을 구하는 기능을 테스트합니다. 비어있는 기간이 나와야합니다.
+         */
         @Nested
         @DisplayName("겹치지 않는 기간 테스트")
         class NotOverlappedPeriod {
@@ -268,6 +232,9 @@ public class TripPeriodTest {
             }
         }
 
+        /**
+         * 서로 중복되는 기간이 있는 기간들끼리, 겹치는 기간을 구하는 기능을 테스트합니다.
+         */
         @Nested
         @DisplayName("겹치는 기간 테스트")
         class OverlappedPeriod {
@@ -397,10 +364,16 @@ public class TripPeriodTest {
         }
     }
 
+    /**
+     * TripPeriod를 통해 날짜들의 Stream을 얻어오는 기능을 테스트합니다.
+     */
     @Nested
     @DisplayName("DateStreamTest")
     class DateStreamTest {
 
+        /**
+         * 비어있는 TripPeriod를 통해 날짜들의 Stream을 얻어올 때 빈 Stream이 얻어짐을 테스트합니다.
+         */
         @Test
         @DisplayName("EmptyPeriod의 dateStream은 빈 Stream이다.")
         public void emptyPeriod_create_emptyStream() {
@@ -415,11 +388,14 @@ public class TripPeriodTest {
             assertThat(dates).isEmpty();
         }
 
+        /**
+         * 비어있지 않은 TripPeriod를 통해 날짜들의 Stream을 얻어올 때 연속된 날짜들의 Stream이 얻어짐을 테스트합니다.
+         */
         @Test
         @DisplayName("비어있지 않은 기간의 dateStream은 시작일부터 종료일까지 날짜들의 Stream이다.")
         public void notEmptyPeriod_create_dateStream() {
             // given
-            TripPeriod tripPeriod = TripPeriod.of(LocalDate.of(2023,1,1), LocalDate.of(2023,1,5));
+            TripPeriod tripPeriod = TripPeriod.of(LocalDate.of(2023, 1, 1), LocalDate.of(2023, 1, 5));
 
             // when
             Stream<LocalDate> dateStream = tripPeriod.dateStream();
@@ -427,9 +403,9 @@ public class TripPeriodTest {
             // then
             List<LocalDate> dates = dateStream.toList();
             assertThat(dates).containsExactly(
-                    LocalDate.of(2023,1,1), LocalDate.of(2023,1,2),
-                    LocalDate.of(2023,1,3), LocalDate.of(2023,1,4),
-                    LocalDate.of(2023,1,5));
+                    LocalDate.of(2023, 1, 1), LocalDate.of(2023, 1, 2),
+                    LocalDate.of(2023, 1, 3), LocalDate.of(2023, 1, 4),
+                    LocalDate.of(2023, 1, 5));
         }
     }
 }

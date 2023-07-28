@@ -87,9 +87,13 @@ public class TripRepositoryImplTest extends RepositoryTest {
     }
 
 
+    /**
+     * 여행과 여행의 Day들을 함께 가져올 때 잘 가져와지는 지 테스트합니다.
+     * @see TripRepositoryImpl#findByIdWithDays(Long)
+     */
     @Test
     @DirtiesContext
-    @DisplayName("findByIdWithDays -> Trip이 Day들을 가진 채 조회된다.")
+    @DisplayName("findByIdWithDays 테스트")
     void testFindByIdWithDays(){
         // given
         Long tripperId = setupTripperId();
@@ -99,15 +103,15 @@ public class TripRepositoryImplTest extends RepositoryTest {
         Trip trip = setupDecidedTrip(tripperId, startDate, endDate);
         Day day1 = trip.getDays().get(0);
         Day day2 = trip.getDays().get(1);
-        flushAndClear();
+        flushAndClear(); // trip 및 day들 저장
 
         // when
-        Trip findTrip = tripRepositoryImpl.findByIdWithDays(trip.getId()).get();
+        Trip findTrip = tripRepositoryImpl.findByIdWithDays(trip.getId()).orElseThrow(IllegalStateException::new);
 
         // then
         assertThat(findTrip.getTripTitle()).isEqualTo(trip.getTripTitle());
         assertThat(findTrip.getId()).isEqualTo(trip.getId());
-        assertThat(findTrip.getDays().size()).isEqualTo(2);
+        assertThat(findTrip.getDays().size()).isEqualTo(2); // Day들도 같이 잘 가져와짐
         assertThat(findTrip.getDays()).map(Day::getTripDate).containsExactly(day1.getTripDate(), day2.getTripDate());
     }
 

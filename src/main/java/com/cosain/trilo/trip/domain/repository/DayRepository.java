@@ -1,7 +1,6 @@
 package com.cosain.trilo.trip.domain.repository;
 
 import com.cosain.trilo.trip.domain.entity.Day;
-import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
@@ -11,17 +10,26 @@ import java.util.Optional;
  */
 public interface DayRepository {
 
+    /**
+     * 전달받은 Day들을 모두 저장합니다.
+     * @param days 저장할 Day들
+     */
     void saveAll(List<Day> days);
 
-    Optional<Day> findByIdWithTrip(@Param("dayId") Long dayId);
+    Optional<Day> findByIdWithTrip(Long dayId);
 
-    int deleteAllByIds(@Param("dayIds") List<Long> dayIds);
+    /**
+     * 전달받은 Id들에 해당하는 Day들을 모두 삭제합니다.
+     * @param dayIds 삭제할 Day의 id들
+     * @return 삭제된 Day의 갯수
+     */
+    int deleteAllByIds(List<Long> dayIds);
 
     /**
      * 전달받은 식별자의 여행(Trip)에 속해있는 Day들을 모두 제거합니다.
      * @param tripId 여행의 식별자(id)
      */
-    void deleteAllByTripId(@Param("tripId") Long tripId);
+    void deleteAllByTripId(Long tripId);
 
-    void deleteAllByTripIds(@Param("tripIds") List<Long> tripIds);
+    void deleteAllByTripIds(List<Long> tripIds);
 }

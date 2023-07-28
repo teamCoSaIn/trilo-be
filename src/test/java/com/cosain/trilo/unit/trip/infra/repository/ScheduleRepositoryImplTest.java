@@ -174,10 +174,21 @@ public class ScheduleRepositoryImplTest extends RepositoryTest {
     }
 
 
+    /**
+     * 일정 재배치 기능을 테스트합니다.
+     */
     @Nested
     @DisplayName("relocateSchedules 테스트")
     class RelocateSchedulesTest {
 
+        /**
+         * 임시보관함 일정 재갱신 기능을 테스트합니다.
+         * <ul>
+         *     <li>임시보관함의 일정들이 {@link ScheduleIndex} 기준 오름차순으로 정렬됩니다.</li>
+         *     <li>0,1000만, ... 와 같이 균등하게 배치되어야합니다.</li>
+         *     <li>Day의 일정들은 무관합니다.</li>
+         * </ul>
+         */
         @DisplayName("임시보관함의 일정 재갱신 -> 임시보관함만 재갱신됨")
         @Test
         void relocateTemporaryStorage() {
@@ -190,9 +201,9 @@ public class ScheduleRepositoryImplTest extends RepositoryTest {
             Day day1 = trip.getDays().get(0);
             Day day2 = trip.getDays().get(1);
 
-            Schedule schedule1 = setupTemporarySchedule(trip, 7L);
-            Schedule schedule2 = setupTemporarySchedule(trip, -1L);
-            Schedule schedule3 = setupTemporarySchedule(trip, 5L);
+            Schedule schedule1 = setupTemporarySchedule(trip, 7L); // 세번째
+            Schedule schedule2 = setupTemporarySchedule(trip, -1L); // 제일 앞섬
+            Schedule schedule3 = setupTemporarySchedule(trip, 5L); // 두번째
             Schedule schedule4 = setupDaySchedule(trip, day1, 7L);
             Schedule schedule5 = setupDaySchedule(trip, day1, -1L);
             Schedule schedule6 = setupDaySchedule(trip, day1, 5L);
@@ -209,6 +220,7 @@ public class ScheduleRepositoryImplTest extends RepositoryTest {
                             schedule4.getId(), schedule5.getId(), schedule6.getId(),
                             schedule7.getId(), schedule8.getId(), schedule9.getId()));
 
+            // Day의 일정들은 재배치되지 않고 임시보관함의 요소들은 재배치됨
             assertThat(affectedRowCount).isEqualTo(3);
             assertThat(schedules).map(schedule -> schedule.getScheduleIndex().getValue())
                     .containsExactly(
@@ -217,6 +229,15 @@ public class ScheduleRepositoryImplTest extends RepositoryTest {
                             7L, -1L, 5L);
         }
 
+
+        /**
+         * 특정 Day의 일정 재갱신 기능을 테스트합니다.
+         * <ul>
+         *     <li>지정한 Day의 일정들이 {@link ScheduleIndex} 기준 오름차순으로 정렬됩니다.</li>
+         *     <li>0,1000만, ... 와 같이 균등하게 배치되어야합니다.</li>
+         *     <li>임시보관함 혹은 다른 Day의 일정들은 무관합니다.</li>
+         * </ul>
+         */
         @DisplayName("day의 일정 재갱신 -> 해당 day만 재갱신됨")
         @Test
         void relocateDaySchedules() {
@@ -232,9 +253,9 @@ public class ScheduleRepositoryImplTest extends RepositoryTest {
             Schedule schedule1 = setupTemporarySchedule(trip, 7L);
             Schedule schedule2 = setupTemporarySchedule(trip, -1L);
             Schedule schedule3 = setupTemporarySchedule(trip, 5L);
-            Schedule schedule4 = setupDaySchedule(trip, day1, 7L);
-            Schedule schedule5 = setupDaySchedule(trip, day1, -1L);
-            Schedule schedule6 = setupDaySchedule(trip, day1, 5L);
+            Schedule schedule4 = setupDaySchedule(trip, day1, 7L); // 세번째
+            Schedule schedule5 = setupDaySchedule(trip, day1, -1L); // 첫번째
+            Schedule schedule6 = setupDaySchedule(trip, day1, 5L); // 두번째
             Schedule schedule7 = setupDaySchedule(trip, day2, 7L);
             Schedule schedule8 = setupDaySchedule(trip, day2, -1L);
             Schedule schedule9 = setupDaySchedule(trip, day2, 5L);
@@ -248,6 +269,7 @@ public class ScheduleRepositoryImplTest extends RepositoryTest {
                             schedule4.getId(), schedule5.getId(), schedule6.getId(),
                             schedule7.getId(), schedule8.getId(), schedule9.getId()));
 
+            // 다른 Day의 일정들은 재배치되지 않고 해당 Day의 요소들은 재배치됨
             assertThat(affectedRowCount).isEqualTo(3);
             assertThat(schedules).map(schedule -> schedule.getScheduleIndex().getValue())
                     .containsExactly(
@@ -258,11 +280,21 @@ public class ScheduleRepositoryImplTest extends RepositoryTest {
 
     }
 
-
+    /**
+     * 전달받은 식별자들에 대응되는 Day의 일정들을 모두 임시보관함 맨뒤로 이동시키는 기능을 테스트합니다.
+     */
     @Nested
     @DisplayName("moveSchedulesToTemporaryStorage (day들 일괄 임시보관함 이동)")
     class MoveScheduleToTemporaryStorage {
 
+        /**
+         * <p>전달받은 식별자들에 대응되는 Day의 일정들을 모두 일정이 이미 있는 임시보관함 맨 뒤로 이동시키는 기능을 테스트합니다.</p>
+         * <ul>
+         *     <li>이미 임시보관함에 일정이 있으므로, 그 뒤의 순서값({@link ScheduleIndex}을 차례로 부여받습니다.</li>
+         *     <li>Day의 날짜가 빠를 수록 먼저 붙고, 날짜가 같을 경우 {@link ScheduleIndex} 기 작을 수록 먼저 붙습니다.</li>
+         * </ul>
+         *
+         */
         @Test
         @DisplayName("임시보관함에 다른 일정이 있으면, 맨 뒤 순서값 뒤에 day들의 일정들이 date, 순서값 순으로 오름차순으로 옮겨짐")
         public void test_When_TemporaryStorage_not_empty() {
@@ -276,14 +308,15 @@ public class ScheduleRepositoryImplTest extends RepositoryTest {
             Day day2 = trip.getDays().get(1);
             Day day3 = trip.getDays().get(2);
 
-            Schedule schedule1 = setupTemporarySchedule(trip, 0);
-            Schedule schedule2 = setupTemporarySchedule(trip, DEFAULT_SEQUENCE_GAP);
-            Schedule schedule3 = setupDaySchedule(trip, day2, 2);
+            Schedule schedule1 = setupTemporarySchedule(trip, 0); // 임시보관함 1번째
+            Schedule schedule2 = setupTemporarySchedule(trip, DEFAULT_SEQUENCE_GAP); // 임시보관함 2번째
+            Schedule schedule3 = setupDaySchedule(trip, day2, 2); // 늦은 Day, 제일 늦은 순서이므로 임시보관함 마지막 붙을 예정
             Schedule schedule4 = setupDaySchedule(trip, day2, 1);
             Schedule schedule5 = setupDaySchedule(trip, day1, 2);
-            Schedule schedule6 = setupDaySchedule(trip, day1, 1);
-            Schedule schedule7 = setupDaySchedule(trip, day3, 2);
+            Schedule schedule6 = setupDaySchedule(trip, day1, 1); // 제일 빠른 Day, 제일 빠른 순서이므로 임시보관함 3번째에 붙을 예정
+            Schedule schedule7 = setupDaySchedule(trip, day3, 2); // day3은 대상이 아님
             Schedule schedule8 = setupDaySchedule(trip, day3, 1);
+            flushAndClear();
 
             // when
             int affectedRowCount = scheduleRepositoryImpl.moveSchedulesToTemporaryStorage(trip.getId(), List.of(day1.getId(), day2.getId()));
@@ -298,25 +331,40 @@ public class ScheduleRepositoryImplTest extends RepositoryTest {
             Schedule findSchedule7 = em.find(Schedule.class, schedule7.getId());
             Schedule findSchedule8 = em.find(Schedule.class, schedule8.getId());
 
+            // 일정 4개(day1일정, day2 일정)가 영향받았음
             assertThat(affectedRowCount).isEqualTo(4);
+
+            // 일정1~일정6 이 임시보관함에 있음
             assertThat(findSchedule1.getDay()).isEqualTo(null);
             assertThat(findSchedule2.getDay()).isEqualTo(null);
             assertThat(findSchedule3.getDay()).isEqualTo(null);
             assertThat(findSchedule4.getDay()).isEqualTo(null);
             assertThat(findSchedule5.getDay()).isEqualTo(null);
             assertThat(findSchedule6.getDay()).isEqualTo(null);
+
+            // 임시보관함 일정들의 순서값 확인
             assertThat(findSchedule1.getScheduleIndex()).isEqualTo(ScheduleIndex.of(0));
             assertThat(findSchedule2.getScheduleIndex()).isEqualTo(ScheduleIndex.of(DEFAULT_SEQUENCE_GAP));
             assertThat(findSchedule3.getScheduleIndex()).isEqualTo(ScheduleIndex.of(DEFAULT_SEQUENCE_GAP * 5));
             assertThat(findSchedule4.getScheduleIndex()).isEqualTo(ScheduleIndex.of(DEFAULT_SEQUENCE_GAP * 4));
             assertThat(findSchedule5.getScheduleIndex()).isEqualTo(ScheduleIndex.of(DEFAULT_SEQUENCE_GAP * 3));
             assertThat(findSchedule6.getScheduleIndex()).isEqualTo(ScheduleIndex.of(DEFAULT_SEQUENCE_GAP * 2));
+
+            // Day3의 일정은 이동되지 않음
             assertThat(findSchedule7.getDay().getId()).isEqualTo(day3.getId());
             assertThat(findSchedule8.getDay().getId()).isEqualTo(day3.getId());
             assertThat(findSchedule7.getScheduleIndex()).isEqualTo(ScheduleIndex.of(2));
             assertThat(findSchedule8.getScheduleIndex()).isEqualTo(ScheduleIndex.of(1));
         }
 
+        /**
+         * <p>전달받은 식별자들에 대응되는 Day의 일정들을 모두 일정이 하나도 없는 임시보관함 맨 뒤로 이동시키는 기능을 테스트합니다.</p>
+         * <ul>
+         *     <li>이미 임시보관함에 일정이 있으므로, 그 뒤의 순서값({@link ScheduleIndex}을 차례로 부여받습니다.</li>
+         *     <li>Day의 날짜가 빠를 수록 먼저 붙고, 날짜가 같을 경우 {@link ScheduleIndex} 기 작을 수록 먼저 붙습니다.</li>
+         * </ul>
+         *
+         */
         @Test
         @DisplayName("임시보관함이 비어있으면, day들의 일정들이 date, 순서값 순으로 오름차순으로 0번 순서부터 지정되어 옮겨짐")
         public void test_When_TemporaryStorage_empty() {
@@ -330,11 +378,11 @@ public class ScheduleRepositoryImplTest extends RepositoryTest {
             Day day2 = trip.getDays().get(1);
             Day day3 = trip.getDays().get(2);
 
-            Schedule schedule1 = setupDaySchedule(trip, day2, 2);
+            Schedule schedule1 = setupDaySchedule(trip, day2, 2); // 늦은 day, 늦은 순서이므로 제일 뒤에 붙음
             Schedule schedule2 = setupDaySchedule(trip, day2, 1);
             Schedule schedule3 = setupDaySchedule(trip, day1, 2);
-            Schedule schedule4 = setupDaySchedule(trip, day1, 1);
-            Schedule schedule5 = setupDaySchedule(trip, day3, 2);
+            Schedule schedule4 = setupDaySchedule(trip, day1, 1); // 빠른 day, 빠른 순서이므로 제일 앞에 붙음
+            Schedule schedule5 = setupDaySchedule(trip, day3, 2); // day3의 일정들은 이동되지 않음
             Schedule schedule6 = setupDaySchedule(trip, day3, 1);
 
             // when
@@ -348,15 +396,22 @@ public class ScheduleRepositoryImplTest extends RepositoryTest {
             Schedule findSchedule5 = em.find(Schedule.class, schedule5.getId());
             Schedule findSchedule6 = em.find(Schedule.class, schedule6.getId());
 
+            // 일정 4개(day1일정, day2 일정)가 영향받았음
             assertThat(affectedRowCount).isEqualTo(4);
+
+            // 일정1~일정4 가 임시보관함에 있음
             assertThat(findSchedule1.getDay()).isEqualTo(null);
             assertThat(findSchedule2.getDay()).isEqualTo(null);
             assertThat(findSchedule3.getDay()).isEqualTo(null);
             assertThat(findSchedule4.getDay()).isEqualTo(null);
+
+            // 임시보관함 일정들의 순서값 검증
             assertThat(findSchedule1.getScheduleIndex()).isEqualTo(ScheduleIndex.of(DEFAULT_SEQUENCE_GAP * 3));
             assertThat(findSchedule2.getScheduleIndex()).isEqualTo(ScheduleIndex.of(DEFAULT_SEQUENCE_GAP * 2));
             assertThat(findSchedule3.getScheduleIndex()).isEqualTo(ScheduleIndex.of(DEFAULT_SEQUENCE_GAP));
             assertThat(findSchedule4.getScheduleIndex()).isEqualTo(ScheduleIndex.of(0));
+
+            // Day3의 일정들은 영향받지 않음
             assertThat(findSchedule5.getDay().getId()).isEqualTo(day3.getId());
             assertThat(findSchedule6.getDay().getId()).isEqualTo(day3.getId());
             assertThat(findSchedule5.getScheduleIndex()).isEqualTo(ScheduleIndex.of(2));

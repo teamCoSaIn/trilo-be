@@ -2,8 +2,8 @@ package com.cosain.trilo.unit.trip.application.trip.service.trip_period_update;
 
 import com.cosain.trilo.common.exception.CustomValidationException;
 import com.cosain.trilo.trip.application.trip.service.trip_period_update.TripPeriodUpdateCommand;
-import com.cosain.trilo.trip.domain.exception.InvalidPeriodException;
-import com.cosain.trilo.trip.domain.exception.TooLongPeriodException;
+import com.cosain.trilo.common.exception.trip.InvalidPeriodException;
+import com.cosain.trilo.common.exception.trip.TooLongPeriodException;
 import com.cosain.trilo.trip.domain.vo.TripPeriod;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
@@ -32,7 +32,7 @@ public class TripPeriodUpdateCommandTest {
 
         // then
         assertThat(command).isNotNull();
-        assertThat(command.getTripId()).isEqualTo(tripId);
+        assertThat(command.getTargetTripId()).isEqualTo(tripId);
         assertThat(command.getRequestTripperId()).isEqualTo(tripperId);
         assertThat(command.getTripPeriod()).isEqualTo(TripPeriod.of(startDate, endDate));
     }
@@ -52,7 +52,7 @@ public class TripPeriodUpdateCommandTest {
 
         // then
         assertThat(command).isNotNull();
-        assertThat(command.getTripId()).isEqualTo(tripId);
+        assertThat(command.getTargetTripId()).isEqualTo(tripId);
         assertThat(command.getRequestTripperId()).isEqualTo(tripperId);
         assertThat(command.getTripPeriod()).isEqualTo(TripPeriod.of(startDate, endDate));
     }

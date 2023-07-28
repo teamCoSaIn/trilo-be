@@ -1,25 +1,25 @@
-package com.cosain.trilo.trip.domain.exception;
+package com.cosain.trilo.common.exception.trip;
 
 import com.cosain.trilo.common.exception.CustomException;
 import org.springframework.http.HttpStatus;
 
-public class TooLongPeriodException extends CustomException {
+public class EmptyPeriodUpdateException extends CustomException {
 
-    private static final String ERROR_CODE = "trip-0009";
+    private static final String ERROR_CODE = "trip-0006";
     private static final HttpStatus HTTP_STATUS = HttpStatus.BAD_REQUEST;
 
-    public TooLongPeriodException() {
+    public EmptyPeriodUpdateException() {
     }
 
-    public TooLongPeriodException(String debugMessage) {
+    public EmptyPeriodUpdateException(String debugMessage) {
         super(debugMessage);
     }
 
-    public TooLongPeriodException(Throwable cause) {
+    public EmptyPeriodUpdateException(Throwable cause) {
         super(cause);
     }
 
-    public TooLongPeriodException(String debugMessage, Throwable cause) {
+    public EmptyPeriodUpdateException(String debugMessage, Throwable cause) {
         super(debugMessage, cause);
     }
 

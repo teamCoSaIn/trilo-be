@@ -14,6 +14,12 @@ import java.util.Optional;
  */
 public interface JpaTripRepository extends JpaRepository<Trip, Long> {
 
+    /**
+     * 인자로 전달받은 식별자의 여행(Day들 포함)을 담은 Optional 을 조회하여 반환받습니다.
+     * @param tripId 조회할 여행의 식별자(id)
+     * @return 조회해온 여행(Day들 포함)을 담은 Optional(null 가능성 있음)
+     * @see Optional
+     */
     @Query("SELECT t" +
             " FROM Trip as t LEFT JOIN FETCH t.days" +
             " WHERE t.id = :id")
