@@ -917,3 +917,25 @@ include::{snippets}/user-rest-controller-docs-test/회원_정보_수정/request-
 include::{snippets}/user-rest-controller-docs-test/회원_정보_수정/http-request.adoc[]
 ===== 응답
 include::{snippets}/user-rest-controller-docs-test/회원_정보_수정/http-response.adoc[]
+
+=== 여행 목록 조회
+
+==== 기본 정보
+
+- 메서드 : GET
+- URL : `/api/trips`
+
+==== 요청
+===== 쿼리 변수
+include::{snippets}/trip-condition-search-controller-docs-test/여행_목록_조회/query-parameters.adoc[]
+==== 응답
+===== 본문
+include::{snippets}/trip-condition-search-controller-docs-test/여행_목록_조회/response-fields.adoc[]
+==== 예제
+===== 요청
+include::{snippets}/trip-condition-search-controller-docs-test/여행_목록_조회/http-request.adoc[]
+===== Trips
+include::{snippets}/trip-condition-search-controller-docs-test/여행_목록_조회/response-fields-trips.adoc[]
+===== 응답
+include::{snippets}/trip-condition-search-controller-docs-test/여행_목록_조회/http-response.adoc[]
+

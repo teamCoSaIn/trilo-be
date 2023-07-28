@@ -57,10 +57,10 @@ public class TripConditionSearchControllerDocsTest extends RestDocsTestSupport {
                 .andExpect(status().isOk())
                 .andDo(restDocs.document(
                         queryParameters(
-                                parameterWithName("tripId").optional().description("기준이 되는 여행 ID (하단 설명 참고)"),
-                                parameterWithName("size").description("가져올 데이터의 개수"),
-                                parameterWithName("sortType").description("정렬 기준 ex) 최신순 (RECENT), 좋아요 많은 순 (LIKE)"),
-                                parameterWithName("query").description("검색어")
+                                parameterWithName("tripId").optional().description("최신순 조회 시 기준이 되는 여행 ID"),
+                                parameterWithName("size").optional().description("가져올 데이터의 개수, 기본값 : 8"),
+                                parameterWithName("sortType").optional().description("정렬 기준 RECENT(기본값), LIKE"),
+                                parameterWithName("query").optional().description("검색어")
                         ),
                         responseFields(
                                 fieldWithPath("hasNext").type(BOOLEAN).description("다음 페이지 존재 여부"),
