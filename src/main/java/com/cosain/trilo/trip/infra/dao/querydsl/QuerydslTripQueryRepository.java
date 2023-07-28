@@ -1,21 +1,23 @@
 package com.cosain.trilo.trip.infra.dao.querydsl;
 
+import com.cosain.trilo.trip.application.trip.service.trip_condition_search.QTripSearchResponse_TripSummary;
+import com.cosain.trilo.trip.application.trip.service.trip_condition_search.TripSearchResponse;
 import com.cosain.trilo.trip.application.trip.service.trip_detail_search.QTripDetail;
 import com.cosain.trilo.trip.application.trip.service.trip_detail_search.TripDetail;
 import com.cosain.trilo.trip.application.trip.service.trip_list_search.QTripListSearchResult_TripSummary;
 import com.cosain.trilo.trip.application.trip.service.trip_list_search.TripListQueryParam;
 import com.cosain.trilo.trip.application.trip.service.trip_list_search.TripListSearchResult;
+import com.cosain.trilo.trip.domain.vo.TripStatus;
 import com.cosain.trilo.trip.infra.dto.QTripStatistics;
 import com.cosain.trilo.trip.infra.dto.TripStatistics;
+import com.cosain.trilo.trip.presentation.trip.dto.request.TripSearchRequest;
+import com.querydsl.core.types.Order;
+import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -56,32 +58,21 @@ public class QuerydslTripQueryRepository {
                 .limit(queryParam.getPageSize() + 1)
                 .fetch();
 
-        Pageable pageable = PageRequest.ofSize(queryParam.getPageSize());
-        boolean hasNext = isHasNext(result, pageable);
-        Slice<TripListSearchResult.TripSummary> slice = new SliceImpl<>(result, pageable, hasNext);
-        return TripListSearchResult.of(slice.hasNext(), result);
+        boolean hasNext = isHasNext(result, queryParam.getPageSize());
+        return TripListSearchResult.of(hasNext, result);
     }
 
-    /**
-     * @param result
-     * @param pageable 다음 요청값이 있는지 없는지를 반환해주는 메서드입니다. 메서드를 호출하기 전에 실제 요청 size + 1 만큼 조회 쿼리를 날린 다음
-     *                 실제 size + 1 만큼의 데이터를 결과(result)로 가져온다면 결국 다음 요청할 데이터가 존재한다는 것이므로 hasNext 를 true로
-     *                 설정한다음 반환하게 됩니다. 동시에 실제 요청 크기(pageable.getPageSize())보다 +1 만큼 조회했으므로
-     *                 remove() 메서드를 통해 리스트에 담긴 중에서 마지막 데이터를 제거합니다.
-     */
-    private boolean isHasNext(List<?> result, Pageable pageable) {
+    private boolean isHasNext(List<?> result, int pageSize) {
         boolean hasNext = false;
-        if (result.size() > pageable.getPageSize()) {
+        if (result.size() > pageSize) {
             hasNext = true;
-            result.remove(pageable.getPageSize());
+            result.remove(pageSize);
         }
         return hasNext;
     }
 
     private BooleanExpression ltTripId(Long tripId) {
-        return tripId == null
-                ? null
-                : trip.id.lt(tripId);
+        return tripId == null ? null : trip.id.lt(tripId);
     }
 
     public boolean existById(Long tripId) {
@@ -104,5 +95,53 @@ public class QuerydslTripQueryRepository {
                 .fetchOne();
 
         return tripStatistics;
+    }
+
+    public TripSearchResponse findTripWithSearchCondition(TripSearchRequest request){
+
+        List<TripSearchResponse.TripSummary> result = query.select(new QTripSearchResponse_TripSummary(trip.id, trip.tripperId, trip.tripPeriod.startDate, trip.tripPeriod.endDate, trip.tripTitle.value, trip.tripImage.fileName))
+                .from(trip)
+                .where(
+                        decideOrFinished(),
+                        containsQuery(request.getQuery()),
+                        cursor(request.getSortType(), request.getTripId())
+                )
+                .orderBy(makeOrderSpecifiers(request.getSortType()))
+                .limit(request.getSize() + 1)
+                .fetch();
+
+        boolean hasNext = isHasNext(result, request.getSize());
+        return TripSearchResponse.of(hasNext, result);
+    }
+
+    /**
+     * 동적 정렬
+     * 최신순 : default
+     * TODO : 좋아요 많은 순
+     */
+    private OrderSpecifier<?> makeOrderSpecifiers(TripSearchRequest.SortType sortType){
+        switch(sortType){
+            case RECENT:
+                return new OrderSpecifier<>(Order.DESC, trip.id);
+            default:
+                return new OrderSpecifier<>(Order.DESC, trip.id );
+        }
+    }
+
+    private BooleanExpression cursor(TripSearchRequest.SortType sortType, Long tripId){
+        switch (sortType){
+            case RECENT:
+                return ltTripId(tripId);
+            default:
+                return ltTripId(tripId);
+        }
+    }
+
+    private BooleanExpression decideOrFinished(){
+        return trip.status.in(TripStatus.DECIDED, TripStatus.FINISHED);
+    }
+
+    private BooleanExpression containsQuery(String query){
+        return query == null ? null : trip.tripTitle.value.contains(query);
     }
 }

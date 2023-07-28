@@ -1,11 +1,13 @@
 package com.cosain.trilo.trip.infra.dao;
 
 import com.cosain.trilo.trip.application.dao.TripQueryDAO;
+import com.cosain.trilo.trip.application.trip.service.trip_condition_search.TripSearchResponse;
 import com.cosain.trilo.trip.application.trip.service.trip_detail_search.TripDetail;
 import com.cosain.trilo.trip.application.trip.service.trip_list_search.TripListQueryParam;
 import com.cosain.trilo.trip.application.trip.service.trip_list_search.TripListSearchResult;
 import com.cosain.trilo.trip.infra.dao.querydsl.QuerydslTripQueryRepository;
 import com.cosain.trilo.trip.infra.dto.TripStatistics;
+import com.cosain.trilo.trip.presentation.trip.dto.request.TripSearchRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -35,5 +37,9 @@ public class TripQueryDAOImpl implements TripQueryDAO {
     @Override
     public TripStatistics findTripStaticsByTripperId(Long tripperId, LocalDate today) {
         return querydslTripQueryRepository.findTripStaticsByTripperId(tripperId, today);
+    }
+    @Override
+    public TripSearchResponse findWithSearchConditions(TripSearchRequest request) {
+        return querydslTripQueryRepository.findTripWithSearchCondition(request);
     }
 }

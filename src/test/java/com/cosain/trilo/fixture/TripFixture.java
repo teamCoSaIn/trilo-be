@@ -120,6 +120,16 @@ public class TripFixture {
         return trip;
     }
 
+    public static Trip decided_nullId_Title(Long tripperId, String rawTitle, LocalDate startDate, LocalDate endDate){
+        TripPeriod tripPeriod = TripPeriod.of(startDate, endDate);
+        Trip trip = createMockTrip(null, tripperId, rawTitle, TripStatus.DECIDED, tripPeriod);
+        List<Day> tripDays = tripPeriod.dateStream()
+                .map(date -> createMockDay(null, date, trip, DayColor.BLACK))
+                .toList();
+        trip.getDays().addAll(tripDays);
+        return trip;
+    }
+
     private static Trip createMockTrip(Long tripId, Long tripperId, String rawTitle, TripStatus tripStatus, TripPeriod tripPeriod) {
         return Trip.builder()
                 .id(tripId)
