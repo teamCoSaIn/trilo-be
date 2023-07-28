@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 public class TripperTripListQueryController {
 
     private final TripListSearchService tripListSearchService;
-    @GetMapping("/api/tripper/{tripperId}/trips")
+    @GetMapping("/api/trippers/{tripperId}/trips")
     @ResponseStatus(HttpStatus.OK)
     public TripListSearchResult findTripperTripList(@ModelAttribute TripListSearchRequest request, @PathVariable Long tripperId) {
         var queryParam = TripListQueryParam.of(tripperId, request.getTripId(), request.getSize());

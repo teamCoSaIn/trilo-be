@@ -50,7 +50,7 @@ public class TripperTripListQueryControllerDocsTest extends RestDocsTestSupport 
         given(TripListSearchService.searchTripList(eq(queryParam))).willReturn(searchResult);
 
         // when & then
-        mockMvc.perform(RestDocumentationRequestBuilders.get("/api/tripper/{tripperId}/trips", tripperId)
+        mockMvc.perform(RestDocumentationRequestBuilders.get("/api/trippers/{tripperId}/trips", tripperId)
                         .param("tripId", String.valueOf(tripId))
                         .param("size", String.valueOf(size))
                         .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)

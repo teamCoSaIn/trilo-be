@@ -53,7 +53,7 @@ class TripperTripListQueryControllerTest extends RestControllerTest {
         given(tripListSearchService.searchTripList(eq(queryParam))).willReturn(searchResult);
 
         // when & then
-        mockMvc.perform(get("/api/tripper/{tripperId}/trips", tripperId)
+        mockMvc.perform(get("/api/trippers/{tripperId}/trips", tripperId)
                         .param("size", String.valueOf(size))
                         .header(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN)
                         .characterEncoding(StandardCharsets.UTF_8)
@@ -99,7 +99,7 @@ class TripperTripListQueryControllerTest extends RestControllerTest {
         given(tripListSearchService.searchTripList(eq(queryParam))).willReturn(searchResult);
 
         // when & then
-        mockMvc.perform(get("/api/tripper/{tripperId}/trips", tripperId)
+        mockMvc.perform(get("/api/trippers/{tripperId}/trips", tripperId)
                         .param("size", String.valueOf(size))
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON))
