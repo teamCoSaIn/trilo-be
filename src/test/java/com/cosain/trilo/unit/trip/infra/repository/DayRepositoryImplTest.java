@@ -59,33 +59,33 @@ public class DayRepositoryImplTest extends RepositoryTest {
         assertThat(findDayTrip.getClass()).isSameAs(Trip.class);
     }
 
+    /**
+     * {@link DayRepositoryImpl#deleteAllByIds(List)} 실행 시
+     * 전달받은 id의 Day들이 모두 삭제되는 지 테스트합니다.
+     */
     @Test
-    @DisplayName("deleteAllByIds- 전달받은 Id 목록의 Day들을 삭제")
+    @DisplayName("deleteAllByIds 전달받은 Id 목록의 Day들을 삭제")
     void deleteAllByIdsTest() {
         // given
         Long tripperId = setupTripperId();
         LocalDate startDate = LocalDate.of(2023, 5, 1);
         LocalDate endDate = LocalDate.of(2023, 5, 4);
-        Trip trip = TripFixture.decided_nullId(tripperId, startDate, endDate);
-        em.persist(trip);
+        Trip trip = setupDecidedTrip(tripperId, startDate, endDate); // 여행 및 Day들 생성
 
         Day day1 = trip.getDays().get(0);
         Day day2 = trip.getDays().get(1);
         Day day3 = trip.getDays().get(2);
         Day day4 = trip.getDays().get(3);
-
-        em.persist(day1);
-        em.persist(day2);
-        em.persist(day3);
-        em.persist(day4);
+        flushAndClear();
 
         // when
-        dayRepository.deleteAllByIds(List.of(day1.getId(), day2.getId()));
+        dayRepository.deleteAllByIds(List.of(day1.getId(), day2.getId())); // day1, day2 삭제
 
         // then
         List<Day> remainingDays = findAllDayByIds(List.of(day1.getId(), day2.getId(), day3.getId(), day4.getId()));
+
         assertThat(remainingDays.size()).isEqualTo(2);
-        assertThat(remainingDays).map(Day::getId).containsExactlyInAnyOrder(day3.getId(), day4.getId());
+        assertThat(remainingDays).map(Day::getId).containsExactlyInAnyOrder(day3.getId(), day4.getId()); // day3, day4만 남음
     }
 
     /**
