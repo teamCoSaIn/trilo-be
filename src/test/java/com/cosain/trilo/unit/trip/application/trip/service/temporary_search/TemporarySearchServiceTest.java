@@ -1,10 +1,10 @@
 package com.cosain.trilo.unit.trip.application.trip.service.temporary_search;
 
+import com.cosain.trilo.common.exception.schedule.ScheduleNotFoundException;
+import com.cosain.trilo.common.exception.trip.TripNotFoundException;
 import com.cosain.trilo.trip.application.dao.ScheduleQueryDAO;
 import com.cosain.trilo.trip.application.dao.TripQueryDAO;
 import com.cosain.trilo.trip.application.day.service.day_search.ScheduleSummary;
-import com.cosain.trilo.trip.application.exception.ScheduleNotFoundException;
-import com.cosain.trilo.common.exception.trip.TripNotFoundException;
 import com.cosain.trilo.trip.application.trip.service.temporary_search.TempScheduleListQueryParam;
 import com.cosain.trilo.trip.application.trip.service.temporary_search.TempScheduleListSearchResult;
 import com.cosain.trilo.trip.application.trip.service.temporary_search.TemporarySearchService;

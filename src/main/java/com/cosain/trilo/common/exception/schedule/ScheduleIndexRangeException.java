@@ -1,4 +1,4 @@
-package com.cosain.trilo.trip.domain.exception;
+package com.cosain.trilo.common.exception.schedule;
 
 public class ScheduleIndexRangeException extends RuntimeException {
 

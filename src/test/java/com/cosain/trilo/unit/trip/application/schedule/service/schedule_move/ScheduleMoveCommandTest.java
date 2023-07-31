@@ -1,8 +1,8 @@
 package com.cosain.trilo.unit.trip.application.schedule.service.schedule_move;
 
 import com.cosain.trilo.common.exception.CustomValidationException;
+import com.cosain.trilo.common.exception.schedule.InvalidScheduleMoveTargetOrderException;
 import com.cosain.trilo.trip.application.schedule.service.schedule_move.ScheduleMoveCommand;
-import com.cosain.trilo.trip.domain.exception.InvalidScheduleMoveTargetOrderException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

@@ -1,6 +1,6 @@
 package com.cosain.trilo.trip.domain.vo;
 
-import com.cosain.trilo.trip.domain.exception.ScheduleIndexRangeException;
+import com.cosain.trilo.common.exception.schedule.ScheduleIndexRangeException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.*;

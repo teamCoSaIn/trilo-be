@@ -1,11 +1,11 @@
 package com.cosain.trilo.unit.trip.application.day.service.day_search;
 
-import com.cosain.trilo.trip.application.day.service.day_search.DaySearchService;
-import com.cosain.trilo.trip.application.exception.DayNotFoundException;
-import com.cosain.trilo.trip.domain.vo.DayColor;
-import com.cosain.trilo.trip.application.day.service.day_search.DayScheduleDetail;
-import com.cosain.trilo.trip.application.day.service.day_search.ScheduleSummary;
+import com.cosain.trilo.common.exception.day.DayNotFoundException;
 import com.cosain.trilo.trip.application.dao.DayQueryDAO;
+import com.cosain.trilo.trip.application.day.service.day_search.DayScheduleDetail;
+import com.cosain.trilo.trip.application.day.service.day_search.DaySearchService;
+import com.cosain.trilo.trip.application.day.service.day_search.ScheduleSummary;
+import com.cosain.trilo.trip.domain.vo.DayColor;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

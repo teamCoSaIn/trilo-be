@@ -1,15 +1,11 @@
 package com.cosain.trilo.trip.application.schedule.service.schedule_move;
 
-import com.cosain.trilo.trip.application.exception.DayNotFoundException;
-import com.cosain.trilo.trip.application.exception.NoScheduleMoveAuthorityException;
-import com.cosain.trilo.trip.application.exception.ScheduleNotFoundException;
-import com.cosain.trilo.trip.application.exception.TooManyDayScheduleException;
+import com.cosain.trilo.common.exception.day.DayNotFoundException;
+import com.cosain.trilo.common.exception.schedule.*;
 import com.cosain.trilo.trip.domain.dto.ScheduleMoveDto;
 import com.cosain.trilo.trip.domain.entity.Day;
 import com.cosain.trilo.trip.domain.entity.Schedule;
 import com.cosain.trilo.trip.domain.entity.Trip;
-import com.cosain.trilo.trip.domain.exception.MidScheduleIndexConflictException;
-import com.cosain.trilo.trip.domain.exception.ScheduleIndexRangeException;
 import com.cosain.trilo.trip.domain.repository.DayRepository;
 import com.cosain.trilo.trip.domain.repository.ScheduleRepository;
 import lombok.RequiredArgsConstructor;

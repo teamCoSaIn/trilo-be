@@ -2,7 +2,7 @@ package com.cosain.trilo.trip.application.schedule.service.schedule_move;
 
 import com.cosain.trilo.common.exception.CustomException;
 import com.cosain.trilo.common.exception.CustomValidationException;
-import com.cosain.trilo.trip.domain.exception.InvalidScheduleMoveTargetOrderException;
+import com.cosain.trilo.common.exception.schedule.InvalidScheduleMoveTargetOrderException;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 

@@ -1,11 +1,14 @@
 package com.cosain.trilo.trip.application.schedule.service.schedule_create;
 
+import com.cosain.trilo.common.exception.day.DayNotFoundException;
+import com.cosain.trilo.common.exception.schedule.ScheduleIndexRangeException;
+import com.cosain.trilo.common.exception.schedule.TooManyDayScheduleException;
 import com.cosain.trilo.common.exception.trip.TripNotFoundException;
-import com.cosain.trilo.trip.application.exception.*;
+import com.cosain.trilo.trip.application.exception.NoScheduleCreateAuthorityException;
+import com.cosain.trilo.trip.application.exception.TooManyTripScheduleException;
 import com.cosain.trilo.trip.domain.entity.Day;
 import com.cosain.trilo.trip.domain.entity.Schedule;
 import com.cosain.trilo.trip.domain.entity.Trip;
-import com.cosain.trilo.trip.domain.exception.ScheduleIndexRangeException;
 import com.cosain.trilo.trip.domain.repository.DayRepository;
 import com.cosain.trilo.trip.domain.repository.ScheduleRepository;
 import com.cosain.trilo.trip.domain.repository.TripRepository;

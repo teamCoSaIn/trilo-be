@@ -1,6 +1,6 @@
 package com.cosain.trilo.trip.application.day.service.day_search;
 
-import com.cosain.trilo.trip.application.exception.DayNotFoundException;
+import com.cosain.trilo.common.exception.day.DayNotFoundException;
 import com.cosain.trilo.trip.application.dao.DayQueryDAO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

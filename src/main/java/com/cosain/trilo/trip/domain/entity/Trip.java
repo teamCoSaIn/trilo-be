@@ -1,18 +1,21 @@
 package com.cosain.trilo.trip.domain.entity;
 
+import com.cosain.trilo.common.exception.day.InvalidTripDayException;
+import com.cosain.trilo.common.exception.schedule.InvalidScheduleMoveTargetOrderException;
+import com.cosain.trilo.common.exception.schedule.MidScheduleIndexConflictException;
+import com.cosain.trilo.common.exception.trip.EmptyPeriodUpdateException;
 import com.cosain.trilo.trip.domain.dto.ChangeTripPeriodResult;
 import com.cosain.trilo.trip.domain.dto.ScheduleMoveDto;
-import com.cosain.trilo.common.exception.trip.EmptyPeriodUpdateException;
-import com.cosain.trilo.trip.domain.exception.InvalidScheduleMoveTargetOrderException;
-import com.cosain.trilo.trip.domain.exception.InvalidTripDayException;
-import com.cosain.trilo.trip.domain.exception.MidScheduleIndexConflictException;
 import com.cosain.trilo.trip.domain.vo.*;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.annotations.Where;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Random;
 
 /**
  * 여행의 도메인 엔티티(Entity)입니다.

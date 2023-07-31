@@ -1,5 +1,9 @@
 package com.cosain.trilo.unit.trip.domain.entity;
 
+import com.cosain.trilo.common.exception.day.InvalidTripDayException;
+import com.cosain.trilo.common.exception.schedule.InvalidScheduleMoveTargetOrderException;
+import com.cosain.trilo.common.exception.schedule.MidScheduleIndexConflictException;
+import com.cosain.trilo.common.exception.schedule.ScheduleIndexRangeException;
 import com.cosain.trilo.common.exception.trip.EmptyPeriodUpdateException;
 import com.cosain.trilo.fixture.ScheduleFixture;
 import com.cosain.trilo.fixture.TripFixture;
@@ -7,10 +11,6 @@ import com.cosain.trilo.trip.domain.dto.ScheduleMoveDto;
 import com.cosain.trilo.trip.domain.entity.Day;
 import com.cosain.trilo.trip.domain.entity.Schedule;
 import com.cosain.trilo.trip.domain.entity.Trip;
-import com.cosain.trilo.trip.domain.exception.InvalidScheduleMoveTargetOrderException;
-import com.cosain.trilo.trip.domain.exception.InvalidTripDayException;
-import com.cosain.trilo.trip.domain.exception.MidScheduleIndexConflictException;
-import com.cosain.trilo.trip.domain.exception.ScheduleIndexRangeException;
 import com.cosain.trilo.trip.domain.vo.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
