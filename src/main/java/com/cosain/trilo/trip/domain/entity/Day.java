@@ -2,6 +2,7 @@ package com.cosain.trilo.trip.domain.entity;
 
 import com.cosain.trilo.common.exception.schedule.InvalidScheduleMoveTargetOrderException;
 import com.cosain.trilo.common.exception.schedule.MidScheduleIndexConflictException;
+import com.cosain.trilo.common.exception.schedule.ScheduleIndexRangeException;
 import com.cosain.trilo.trip.domain.dto.ScheduleMoveDto;
 import com.cosain.trilo.trip.domain.vo.*;
 import jakarta.persistence.*;
@@ -106,20 +107,26 @@ public class Day {
     }
 
     Schedule createSchedule(ScheduleTitle scheduleTitle, Place place) {
-        Schedule schedule = Schedule.create(this, trip, scheduleTitle, place, generateNextScheduleIndex());
+        Schedule schedule = Schedule.create(this, trip, scheduleTitle, place, generateSchedulesTailIndex());
         schedules.add(schedule);
         return schedule;
     }
 
-    private ScheduleIndex generateNextScheduleIndex() {
+    /**
+     * Day의 제일 맨 뒤 ScheduleIndex보다 한 단계 더 뒤의 ScheduleIndex를 만듭니다.
+     * @return 새로운 맨 뒤 ScheduleIndex
+     * @throws ScheduleIndexRangeException 새로 생성되는 ScheduleIndex가 범위를 벗어날 때
+     */
+    private ScheduleIndex generateSchedulesTailIndex() {
         return (schedules.isEmpty())
                 ? ScheduleIndex.ZERO_INDEX
                 : schedules.get(schedules.size() - 1).getScheduleIndex().generateNextIndex();
     }
 
     /**
-     * Schdeules의 제일 앞 index를 새로 만듭니다.
-     * @return 제일 앞 인덱스(기존 일정이 없으면 0번 인덱스, 있으면 제일 앞보다 한단계 낮은 인덱스)
+     * Day의 제일 맨 앞 ScheduleIndex보다 한 단계 더 앞의 ScheduleIndex를 만듭니다.
+     * @return 새로운 맨 뒤 ScheduleIndex
+     * @throws ScheduleIndexRangeException 새로 생성되는 ScheduleIndex가 범위를 벗어날 때
      */
     private ScheduleIndex generateSchedulesHeadIndex() {
         return (schedules.isEmpty())
@@ -128,28 +135,39 @@ public class Day {
     }
 
     /**
-     * 일정을 지정 위치로 옮깁니다.
-     * @param schedule
-     * @param targetOrder
+     * 일정을 Day의 지정 순서로 옮깁니다.
+     * @param schedule 옮길 일정
+     * @param targetOrder Day에서 몇 번째 순서로 옮길 지
+     * @throws InvalidScheduleMoveTargetOrderException 대상 순서가 0보다 작거나, 허용하는 순서보다 큰 경우
+     * @throws ScheduleIndexRangeException 새로 생성되는 ScheduleIndex가 범위를 벗어날 때(정상흐름 변경 가능)
+     * @throws MidScheduleIndexConflictException 중간 삽입 과정에서 충돌이 발생했을 때(정상흐름 변경 가능)
      */
-    ScheduleMoveDto moveSchedule(Schedule schedule, int targetOrder) {
+    ScheduleMoveDto moveSchedule(Schedule schedule, int targetOrder)
+            throws InvalidScheduleMoveTargetOrderException, ScheduleIndexRangeException, MidScheduleIndexConflictException {
         // 일단 앞에서 Schedule이 Trip과 관련된 Schedule이라는 것은 검증 됨
-        // TODO: 임시보관함과 Day에서 동일한 로직이 중복됨 -> 리팩터링을 해야할 것인가
+
         if (targetOrder < 0 || targetOrder > this.schedules.size()) {
+            // Day 내에서, 0번째 순서 아래 이전으로 이동시키려 하거나, 제일 큰 순서보다 큰 순서로 이동하면 예외 발생
             throw new InvalidScheduleMoveTargetOrderException("일정을 지정 위치로 옮기려 시도했으나, 유효한 순서 범위를 벗어남");
         }
-        Day beforeDay = schedule.getDay();
+
+        Day beforeDay = schedule.getDay(); // 옮기기 이전 소속한 Day
+
         if (isSamePositionMove(schedule, targetOrder)) {
+            // 같은 위치에서 이동
             return ScheduleMoveDto.ofNotPositionChanged(schedule.getId(), beforeDay);
         }
         if (targetOrder == this.schedules.size()) {
+            // 끝으로 이동
             moveScheduleToTail(schedule);
             return ScheduleMoveDto.ofPositionChanged(schedule.getId(), beforeDay, this);
         }
         if (targetOrder == 0) {
+            // 맨 앞 이동
             moveScheduleToHead(schedule);
             return ScheduleMoveDto.ofPositionChanged(schedule.getId(), beforeDay, this);
         }
+        // 중간 삽입
         moveScheduleToMiddle(schedule, targetOrder);
         return ScheduleMoveDto.ofPositionChanged(schedule.getId(), beforeDay, this);
     }
@@ -157,9 +175,9 @@ public class Day {
     /**
      * 스케쥴을 옮길 때 대상이 되는 순서로 옮길 경우, 기존과 상대적 순서가 똑같은 지 여부를 확인합니다. 예를 들어 Day의 Schedules 상에서 1번 위치에 있던 일정을
      * 1번 위치에 옮기거나, 2번 위치로 옮기는 경우는 결국 기존과 상대적 순서가 같습니다.
-     * @param schedule
-     * @param targetOrder
-     * @return
+     * @param schedule 옮길 일정
+     * @param targetOrder 대상 순서
+     * @return 기존과 같은 위치이면 true, 다른 위치면 false
      */
     private boolean isSamePositionMove(Schedule schedule, int targetOrder) {
         return (schedule.getDay() != null)
@@ -169,43 +187,46 @@ public class Day {
 
     /**
      * 일정을 Schedules의 맨 앞으로 옮깁니다.
-     * @param schedule
+     * @param schedule 옮길 일정
+     * @throws ScheduleIndexRangeException 새로 생성되는 ScheduleIndex가 범위를 벗어날 때(정상흐름 변경 가능)
      */
-    private void moveScheduleToHead(Schedule schedule) {
+    private void moveScheduleToHead(Schedule schedule) throws ScheduleIndexRangeException {
         ScheduleIndex newScheduleIndex = generateSchedulesHeadIndex();
 
         schedule.changePosition(this, newScheduleIndex);
-        schedules.add(schedule);
     }
 
     /**
      * 일정을 Schedules의 맨 뒤로 옮깁니다.
-     * @param schedule
+     * @param schedule 옮길 일정
+     * @throws ScheduleIndexRangeException 새로 생성되는 ScheduleIndex가 범위를 벗어날 때(정상흐름 변경 가능)
      */
-    private void moveScheduleToTail(Schedule schedule) {
-        ScheduleIndex newScheduleIndex = generateNextScheduleIndex();
-
+    private void moveScheduleToTail(Schedule schedule) throws ScheduleIndexRangeException {
+        ScheduleIndex newScheduleIndex = generateSchedulesTailIndex();
         schedule.changePosition(this, newScheduleIndex);
-        schedules.add(schedule);
     }
 
     /**
      * 지정 Schedule을 지정한 순서에 놓음
-     * @param schedule
-     * @param targetOrder
+     * @param schedule 옮길 일정
+     * @param targetOrder 대상 순서
+     * @throws MidScheduleIndexConflictException 중간 삽입 과정에서 충돌이 발생했을 때(정상흐름 변경 가능)
      */
-    private void moveScheduleToMiddle(Schedule schedule, int targetOrder) {
-        ScheduleIndex destinationOrderScheduleIndex = schedules.get(targetOrder).getScheduleIndex();
+    private void moveScheduleToMiddle(Schedule schedule, int targetOrder) throws MidScheduleIndexConflictException {
+        // 도착지의 대상 순서에 위치하는 일정과 그 앞에 위치한 일정의 순서값을 얻어옴
+        ScheduleIndex targetOrderScheduleIndex = schedules.get(targetOrder).getScheduleIndex();
         ScheduleIndex previousOrderScheduleIndex = schedules.get(targetOrder - 1).getScheduleIndex();
 
-        ScheduleIndex newScheduleIndex = destinationOrderScheduleIndex.mid(previousOrderScheduleIndex);
+        // 중간 삽입 될 위치의 ScheduleIndex를 계산하여 생성
+        ScheduleIndex newScheduleIndex = targetOrderScheduleIndex.mid(previousOrderScheduleIndex);
 
-        if (newScheduleIndex.equals(destinationOrderScheduleIndex) || newScheduleIndex.equals(previousOrderScheduleIndex)) {
+        // 중간 삽입 시 기존 순서값들과 충돌이 발생하면 예외 발생 -> 외부 계층에서 잡아서 처리해야함
+        if (newScheduleIndex.equals(targetOrderScheduleIndex) || newScheduleIndex.equals(previousOrderScheduleIndex)) {
             throw new MidScheduleIndexConflictException("중간 삽입 인덱스 충돌 발생 -> 인덱스 재정렬 필요");
         }
 
+        // 일정을 이동
         schedule.changePosition(this, newScheduleIndex);
-        schedules.add(schedule);
     }
 
     /**
@@ -218,10 +239,18 @@ public class Day {
 
     /**
      * Day가 지정 Trip에 속해 있는 지 여부를 반환
-     * @param trip
-     * @return
+     * @param trip 여행
+     * @return 여행에 속해 있으면 true, 속해있지 않으면 false
      */
     boolean isBelongTo(Trip trip) {
         return this.trip.equals(trip);
+    }
+
+    /**
+     * 일정을 컬렉션에 추가합니다.
+     * @param schedule 일정
+     */
+    void attachSchedule(Schedule schedule) {
+        this.schedules.add(schedule);
     }
 }

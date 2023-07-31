@@ -3,6 +3,7 @@ package com.cosain.trilo.trip.domain.entity;
 import com.cosain.trilo.common.exception.day.InvalidTripDayException;
 import com.cosain.trilo.common.exception.schedule.InvalidScheduleMoveTargetOrderException;
 import com.cosain.trilo.common.exception.schedule.MidScheduleIndexConflictException;
+import com.cosain.trilo.common.exception.schedule.ScheduleIndexRangeException;
 import com.cosain.trilo.common.exception.trip.EmptyPeriodUpdateException;
 import com.cosain.trilo.trip.domain.dto.ChangeTripPeriodResult;
 import com.cosain.trilo.trip.domain.dto.ScheduleMoveDto;
@@ -49,6 +50,7 @@ public class Trip {
 
     /**
      * 여행의 제목
+     *
      * @see TripTitle
      */
     @Embedded
@@ -56,6 +58,7 @@ public class Trip {
 
     /**
      * 여행의 상태
+     *
      * @see TripStatus
      */
     @Enumerated(EnumType.STRING)
@@ -64,6 +67,7 @@ public class Trip {
 
     /**
      * 여행의 기간
+     *
      * @see TripPeriod
      */
     @Embedded
@@ -71,6 +75,7 @@ public class Trip {
 
     /**
      * 여행에 소속된 Day들의 컬렉션
+     *
      * @see Day
      */
     @OneToMany(mappedBy = "trip")
@@ -78,6 +83,7 @@ public class Trip {
 
     /**
      * 여행의 이미지
+     *
      * @see TripImage
      */
     @Embedded
@@ -86,6 +92,7 @@ public class Trip {
     /**
      * <p>여행의 임시보관함에 소속된 일정({@link Schedule})들의 컬렉션입니다. 어떤 {@link Day}에도 속해있지 않은 일정들이 여기에 보관됩니다.</p>
      * <p>일정들은 {@link ScheduleIndex} 기준 오름차순으로 정렬되어 있습니다.</p>
+     *
      * @see Schedule
      * @see ScheduleIndex
      */
@@ -103,8 +110,9 @@ public class Trip {
      *     <li>period : {@link TripPeriod#empty()}</li>
      *     <li>image : {@link TripImage#defaultImage()}</li>
      * </ul>
-     * @param tripTitle:    여행의 제목
-     * @param tripperId : 여행자의 식별자
+     *
+     * @param tripTitle: 여행의 제목
+     * @param tripperId  : 여행자의 식별자
      * @return 생성된 여행(Trip)
      * @see TripStatus
      * @see TripPeriod
@@ -154,6 +162,7 @@ public class Trip {
 
     /**
      * 기간을 변경합니다. 여행 기간 수정 결과를 반환합니다.
+     *
      * @param newPeriod 새로운 기간
      * @return 여행기간 수정 결과(생성되는 기간의 Day들, 삭제해야할 Day들 ...)
      * @throws EmptyPeriodUpdateException 기간이 정해져 있는데 빈 기간으로 수정하려 할 때
@@ -184,6 +193,7 @@ public class Trip {
 
     /**
      * 새로운 기간에 속하지 않는 Day들을 컬렉션에서 제거한뒤, 이들을 모아서 반환합니다.
+     *
      * @param oldPeriod 기존의 기간
      * @param newPeriod 새로운 기간
      * @return 새로운 기간에 속하지 않는 Day들
@@ -199,6 +209,7 @@ public class Trip {
 
     /**
      * 새로운 여행 기간 중, 기존 기간에 속하지 않은 날짜들에 해당하는 Day들을 만듭니다.
+     *
      * @param oldPeriod 기존 기간
      * @param newPeriod 새로운 기간
      * @return 기간 변경으로 인해 새로 생성되는 Day들
@@ -224,8 +235,9 @@ public class Trip {
     /**
      * Trip에 Day가 속해있는 지 검증합니다.
      * @param day
+     * @throws InvalidTripDayException Day가 이 Trip의 여행이 아닐 때
      */
-    private void validateTripDayRelationShip(Day day) {
+    private void validateTripDayRelationShip(Day day) throws InvalidTripDayException {
         if (day == null) {
             return;
         }
@@ -235,130 +247,167 @@ public class Trip {
     }
 
     private Schedule makeTemporaryStorageSchedule(ScheduleTitle scheduleTitle, Place place) {
-        Schedule schedule = Schedule.create(null, this, scheduleTitle, place, generateFirstTemporaryStorageScheduleIndex());
+        Schedule schedule = Schedule.create(null, this, scheduleTitle, place, generateTemporaryStorageHeadIndex());
         temporaryStorage.add(0, schedule);
         return schedule;
     }
 
-    private ScheduleIndex generateNextTemporaryStorageScheduleIndex() {
-        return (temporaryStorage.isEmpty())
-                ? ScheduleIndex.ZERO_INDEX
-                : temporaryStorage.get(temporaryStorage.size() - 1).getScheduleIndex().generateNextIndex();
-    }
-
-    private ScheduleIndex generateFirstTemporaryStorageScheduleIndex() {
-        return (temporaryStorage.isEmpty())
-                ? ScheduleIndex.ZERO_INDEX
-                : temporaryStorage.get(0).getScheduleIndex().generateBeforeIndex();
-    }
-
     /**
-     * Schedule을 지정한 Day의 지정한 순서로 이동합니다. 이때, 지정한 Day가 null이면 임시보관함으로 이동합니다. 같은 Day를 지정하면
-     * 같은 곳 안에서 순서 변경이 일어납니다.
-     * @param schedule
-     * @param targetDay
-     * @param targetOrder
-     */
-    public ScheduleMoveDto moveSchedule(Schedule schedule, Day targetDay, int targetOrder) {
-        validateTripDayRelationShip(targetDay);
-        return (targetDay == null)
-                ? moveScheduleToTemporaryStorage(schedule, targetOrder)
-                : targetDay.moveSchedule(schedule, targetOrder);
-    }
-
-    /**
-     * Schedule을 임시보관함의 지정 순서로 이동시킵니다.
+     * <p>일정을 지정한 Day(null 일 경우 임시보관함)의 지정한 순서로 이동합니다.</p>
+     * <p>지정한 Day가 null이면 임시보관함으로 이동합니다.</p>
      *
-     * @param schedule
-     * @param targetOrder
+     * @param schedule    옮길 일정
+     * @param targetDay   도착지 Day (null 일 경우 임시보관함)
+     * @param targetOrder 해당 Day 또는 임시보관함에서 몇 번째로 옮길 지
+     * @throws InvalidTripDayException Day가 이 Trip의 여행이 아닐 때
+     * @throws InvalidScheduleMoveTargetOrderException 요청한 대상 순서가 0보다 작거나, 허용하는 순서보다 큰 경우
+     * @throws ScheduleIndexRangeException 새로 생성되는 ScheduleIndex가 범위를 벗어날 때(정상흐름 변경 가능)
+     * @throws MidScheduleIndexConflictException 중간 삽입 과정에서 충돌이 발생했을 때(정상흐름 변경 가능)
      */
-    private ScheduleMoveDto moveScheduleToTemporaryStorage(Schedule schedule, int targetOrder) {
+    public ScheduleMoveDto moveSchedule(Schedule schedule, Day targetDay, int targetOrder)
+            throws InvalidTripDayException, InvalidScheduleMoveTargetOrderException, ScheduleIndexRangeException, MidScheduleIndexConflictException  {
+
+        // Day가 이 여행의 Day인지 검증 -> 여행의 Day가 아니면 예외 발생
+        validateTripDayRelationShip(targetDay);
+
+        return (targetDay == null)
+                ? moveScheduleToTemporaryStorage(schedule, targetOrder) // day가 null이면 임시보관함으로 일정 이동
+                : targetDay.moveSchedule(schedule, targetOrder); // day가 null 이 아니면 해당 day로 일정 이동 (Day에게 위임)
+    }
+
+    /**
+     * 일정을 임시보관함의 지정 순서로 이동시킵니다.
+     * @param schedule    이동시킬 일정
+     * @param targetOrder 임시보관함에서 몇 번째로 옮길 지
+     * @throws InvalidScheduleMoveTargetOrderException 대상 순서가 0보다 작거나, 허용하는 순서보다 큰 경우
+     * @throws ScheduleIndexRangeException 새로 생성되는 ScheduleIndex가 범위를 벗어날 때(정상흐름 변경 가능)
+     * @throws MidScheduleIndexConflictException 중간 삽입 과정에서 충돌이 발생했을 때(정상흐름 변경 가능)
+     */
+    private ScheduleMoveDto moveScheduleToTemporaryStorage(Schedule schedule, int targetOrder)
+            throws InvalidScheduleMoveTargetOrderException, ScheduleIndexRangeException, MidScheduleIndexConflictException {
+
         if (targetOrder < 0 || targetOrder > this.temporaryStorage.size()) {
+            // 임시보관함 내에서, 0번째 순서 아래 이전으로 이동시키려 하거나, 제일 큰 순서보다 큰 순서로 이동하면 예외 발생
             throw new InvalidScheduleMoveTargetOrderException("일정을 지정 위치로 옮기려 시도했으나, 유효한 순서 범위를 벗어남");
         }
-        Day beforeDay = schedule.getDay();
+
+        Day beforeDay = schedule.getDay(); // 옮기기 이전 소속한 Day
+
         if (isSamePositionMove(schedule, targetOrder)) {
+            // 같은 위치에서 이동
             return ScheduleMoveDto.ofNotPositionChanged(schedule.getId(), beforeDay);
         }
         if (targetOrder == this.temporaryStorage.size()) {
+            // 끝으로 이동
             moveScheduleToTemporaryStorageTail(schedule);
             return ScheduleMoveDto.ofPositionChanged(schedule.getId(), beforeDay, null);
         }
         if (targetOrder == 0) {
+            // 맨 앞 이동
             moveScheduleToTemporaryStorageHead(schedule);
             return ScheduleMoveDto.ofPositionChanged(schedule.getId(), beforeDay, null);
         }
+        // 중간 삽입
         moveScheduleToTemporaryStorageMiddle(schedule, targetOrder);
         return ScheduleMoveDto.ofPositionChanged(schedule.getId(), beforeDay, null);
     }
 
     /**
-     * 스케쥴을 옮길 때 대상이 되는 순서로 옮길 경우, 기존과 상대적 순서가 똑같은 지 여부를 확인합니다. 예를 들어 임시보관함 1번 위치에 있던 일정을
-     * 1번 위치에 옮기거나, 2번 위치로 옮기는 경우는 결국 기존과 상대적 순서가 같습니다.
-     * @param schedule
-     * @param targetOrder
-     * @return
+     * <p>스케쥴을 옮길 때 대상이 되는 순서로 옮길 경우, 기존과 상대적 순서가 똑같은 지 여부를 확인합니다.</p>
+     * <p>예를 들어 임시보관함 1번 위치에 있던 일정을, 1번 위치에 옮기거나, 2번 위치로 옮기는 경우는 결국 기존과 상대적 순서가 같습니다.</p>
+     *
+     * @param schedule    옮기고자 하는 일정
+     * @param targetOrder 임시보관함에서 몇 번째로 옮길 지
+     * @return 결과적으로 같은 위치로 이동하면 true, 아니면 false
      */
     private boolean isSamePositionMove(Schedule schedule, int targetOrder) {
         return schedule.getDay() == null && (targetOrder == temporaryStorage.indexOf(schedule) || targetOrder == temporaryStorage.indexOf(schedule) + 1);
     }
 
     /**
-     * 지정 Schedule을 임시보관함의 제일 앞에 둡니다.
-     * @param schedule
+     * 지정 일정을 임시보관함의 제일 앞에 둡니다.
+     * @param schedule 옮길 일정
+     * @throws ScheduleIndexRangeException 새로 생성되는 ScheduleIndex가 범위를 벗어날 때
      */
-    private void moveScheduleToTemporaryStorageHead(Schedule schedule) {
+    private void moveScheduleToTemporaryStorageHead(Schedule schedule) throws ScheduleIndexRangeException {
+        // 맨 앞에 둘 때 부여할 ScheduleIndex을 생성합니다.
         ScheduleIndex newScheduleIndex = generateTemporaryStorageHeadIndex();
 
+        // 일정을 임시보관함으로 이동합니다.
         schedule.changePosition(null, newScheduleIndex);
-        this.temporaryStorage.add(schedule);
     }
 
     /**
      * 지정 Schedule을 임시보관함의 제일 뒤에 둡니다.
-     * @param schedule
+     * @param schedule 옮길 일정
+     * @throws ScheduleIndexRangeException 새로 생성되는 ScheduleIndex가 범위를 벗어날 때
      */
-    private void moveScheduleToTemporaryStorageTail(Schedule schedule) {
-        ScheduleIndex newScheduleIndex = generateNextTemporaryStorageScheduleIndex();
+    private void moveScheduleToTemporaryStorageTail(Schedule schedule) throws ScheduleIndexRangeException {
+        // 맨 뒤에 둘 때 부여할 ScheduleIndex을 생성합니다.
+        ScheduleIndex newScheduleIndex = generateTemporaryStorageTailIndex();
 
+        // 일정을 이동합니다.
         schedule.changePosition(null, newScheduleIndex);
-        this.temporaryStorage.add(schedule);
     }
 
     /**
      * 지정 Schedule을 임시보관함의 지정 순서에 중간삽입합니다. 그 순서에 있던 일정은 뒤로 밀려납니다.
-     * @param schedule
-     * @param targetOrder
+     * @param schedule 옮길 일정
+     * @param targetOrder 대상 순서
+     * @throws MidScheduleIndexConflictException 중간삽입 과정에서 ScheduleIndex 값 충돌이 발생했을 때
      */
-    private void moveScheduleToTemporaryStorageMiddle(Schedule schedule, int targetOrder) {
-        ScheduleIndex destinationOrderScheduleIndex = temporaryStorage.get(targetOrder).getScheduleIndex();
+    private void moveScheduleToTemporaryStorageMiddle(Schedule schedule, int targetOrder) throws MidScheduleIndexConflictException {
+        // 도착지의 대상 순서에 위치하는 일정과 그 앞에 위치한 일정의 순서값을 얻어옴
+        ScheduleIndex targetOrderScheduleIndex = temporaryStorage.get(targetOrder).getScheduleIndex();
         ScheduleIndex previousOrderScheduleIndex = temporaryStorage.get(targetOrder - 1).getScheduleIndex();
 
-        ScheduleIndex newScheduleIndex = destinationOrderScheduleIndex.mid(previousOrderScheduleIndex);
+        // 중간 삽입 될 위치의 ScheduleIndex를 계산하여 생성
+        ScheduleIndex newScheduleIndex = targetOrderScheduleIndex.mid(previousOrderScheduleIndex);
 
-        if (newScheduleIndex.equals(destinationOrderScheduleIndex) || newScheduleIndex.equals(previousOrderScheduleIndex)) {
+        // 중간 삽입 시 기존 순서값들과 충돌이 발생하면 예외 발생 -> 외부 계층에서 잡아서 처리해야함
+        if (newScheduleIndex.equals(targetOrderScheduleIndex) || newScheduleIndex.equals(previousOrderScheduleIndex)) {
             throw new MidScheduleIndexConflictException("중간 삽입 인덱스 충돌 발생 -> 인덱스 재정렬 필요");
         }
 
+        // 일정을 이동
         schedule.changePosition(null, newScheduleIndex);
-        this.temporaryStorage.add(schedule);
     }
 
     /**
      * 임시보관함의 제일 앞 인덱스보다 한 단계 더 앞선 인덱스를 만듭니다.
-     * @return
+     * @return 새로운 맨 앞 ScheduleIndex
+     * @throws ScheduleIndexRangeException 새로 생성되는 ScheduleIndex가 범위를 벗어날 때
      */
-    private ScheduleIndex generateTemporaryStorageHeadIndex() {
+    private ScheduleIndex generateTemporaryStorageHeadIndex() throws ScheduleIndexRangeException{
         return (temporaryStorage.isEmpty())
                 ? ScheduleIndex.ZERO_INDEX
                 : temporaryStorage.get(0).getScheduleIndex().generateBeforeIndex();
     }
 
     /**
-     * 지정 Schedule을 임시보관함 컬렉션에서 분리합니다.
-     * @param schedule
+     * 임시보관함의 제일 맨 뒤 인덱스보다 한 단계 더 뒤의 인덱스를 만듭니다.
+     * @return 새로운 맨 뒤 ScheduleIndex
+     * @throws ScheduleIndexRangeException 새로 생성되는 ScheduleIndex가 범위를 벗어날 때
+     */
+    private ScheduleIndex generateTemporaryStorageTailIndex() throws ScheduleIndexRangeException {
+        return (temporaryStorage.isEmpty())
+                ? ScheduleIndex.ZERO_INDEX
+                : temporaryStorage.get(temporaryStorage.size() - 1).getScheduleIndex().generateNextIndex();
+    }
+
+    /**
+     * 지정 일정을 임시보관함 컬렉션에서 분리합니다.
+     * @param schedule 분리할 일정
      */
     void detachScheduleFromTemporaryStorage(Schedule schedule) {
         this.temporaryStorage.remove(schedule);
+    }
+
+    /**
+     * 지정 일정을 임시보관함 컬렉션에 추가합니다.
+     * @param schedule 추가할 일정
+     */
+    void attachScheduleToTemporaryStorage(Schedule schedule) {
+        this.temporaryStorage.add(schedule);
     }
 }
