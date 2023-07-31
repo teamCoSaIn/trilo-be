@@ -14,6 +14,12 @@ import java.util.Optional;
  */
 public interface JpaScheduleRepository extends JpaRepository<Schedule, Long> {
 
+    /**
+     * 인자로 전달받은 식별자의 일정(속한 여행 포함)을 담은 Optional을 조회하여 반환받습니다.
+     * @param scheduleId 일정의 id(식별자)
+     * @return 조회해온 일정(속한 여행 포함)을 담은 Optional(null 가능성 있음)
+     * @see Optional
+     */
     @Query("""
             SELECT s
             FROM Schedule as s JOIN FETCH s.trip
@@ -110,6 +116,11 @@ public interface JpaScheduleRepository extends JpaRepository<Schedule, Long> {
             """)
     int findTripScheduleCount(@Param("tripId") Long tripId);
 
+    /**
+     * 전달받은 식별자의 Day가 가진 일정의 갯수를 반환받습니다.
+     * @param dayId Day의 id
+     * @return Day가 가진 일정의 갯수
+     */
     @Query("""
             SELECT COUNT(s)
             FROM Schedule as s
