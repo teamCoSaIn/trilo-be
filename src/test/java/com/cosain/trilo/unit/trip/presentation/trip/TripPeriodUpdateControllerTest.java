@@ -132,7 +132,7 @@ class TripPeriodUpdateControllerTest extends RestControllerTest {
         var request = new TripPeriodUpdateRequest(startDate, endDate);
 
         // when
-        ResultActions resultActions = runTest(notNumberTripId, createJson(request)); // 숫자가 아닌 여행 식별자로 여행 이동 요청
+        ResultActions resultActions = runTest(notNumberTripId, createJson(request)); // 숫자가 아닌 여행 식별자로 여행 기간 수정 요청
 
         // then
         resultActions
@@ -206,7 +206,7 @@ class TripPeriodUpdateControllerTest extends RestControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errorCode").value("request-0001"))
                 .andExpect(jsonPath("$.errorMessage").exists())
-                .andExpect(jsonPath("$.errorDetail").exists()); // 응답 메시지 검
+                .andExpect(jsonPath("$.errorDetail").exists()); // 응답 메시지 검증
 
         verify(tripPeriodUpdateService, times(0)).updateTripPeriod(any(TripPeriodUpdateCommand.class)); // 서비스가 호출되지 않음을 검증
     }
@@ -249,6 +249,7 @@ class TripPeriodUpdateControllerTest extends RestControllerTest {
 
     /**
      * 인증된 사용자의 요청을 mocking하여 수행하고, 그 결과를 객체로 얻어옵니다.
+     * @param tripId : 여행 식별자(id)
      * @param content : 요청 본문(body)
      * @return 실제 요청 실행 결과
      */
@@ -263,6 +264,7 @@ class TripPeriodUpdateControllerTest extends RestControllerTest {
 
     /**
      * 토큰이 없는(미인증) 사용자의 요청을 mocking하여 수행하고, 그 결과를 객체로 얻어옵니다.
+     * @param tripId : 여행 식별자(id)
      * @param content : 요청 본문(body)
      * @return 실제 요청 실행 결과
      */

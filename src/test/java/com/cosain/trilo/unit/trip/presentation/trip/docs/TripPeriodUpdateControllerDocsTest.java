@@ -121,7 +121,8 @@ public class TripPeriodUpdateControllerDocsTest extends RestDocsTestSupport {
 
     /**
      * 인증된 사용자의 요청을 mocking하여 수행하고, 그 결과를 객체로 얻어옵니다.
-     * @param content : 요청 본문(body)
+     * @param tripId 여행 식별자(id)
+     * @param content 요청 본문(body)
      * @return 실제 요청 실행 결과
      */
     private ResultActions runTest(Object tripId, String content) throws Exception {
