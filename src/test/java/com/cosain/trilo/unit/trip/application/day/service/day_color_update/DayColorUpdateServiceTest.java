@@ -1,9 +1,9 @@
 package com.cosain.trilo.unit.trip.application.day.service.day_color_update;
 
+import com.cosain.trilo.common.exception.day.DayNotFoundException;
 import com.cosain.trilo.fixture.TripFixture;
 import com.cosain.trilo.trip.application.day.service.day_color_update.DayColorUpdateCommand;
 import com.cosain.trilo.trip.application.day.service.day_color_update.DayColorUpdateService;
-import com.cosain.trilo.trip.application.exception.DayNotFoundException;
 import com.cosain.trilo.trip.application.exception.NoDayUpdateAuthorityException;
 import com.cosain.trilo.trip.domain.entity.Day;
 import com.cosain.trilo.trip.domain.entity.Trip;

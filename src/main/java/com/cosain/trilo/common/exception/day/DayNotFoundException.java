@@ -1,25 +1,25 @@
-package com.cosain.trilo.trip.application.exception;
+package com.cosain.trilo.common.exception.day;
 
 import com.cosain.trilo.common.exception.CustomException;
 import org.springframework.http.HttpStatus;
 
-public class ScheduleNotFoundException extends CustomException {
+public class DayNotFoundException extends CustomException {
 
-    private static final String ERROR_CODE = "schedule-0001";
+    private static final String ERROR_CODE = "day-0001";
     private static final HttpStatus HTTP_STATUS = HttpStatus.NOT_FOUND;
 
-    public ScheduleNotFoundException() {
+    public DayNotFoundException() {
     }
 
-    public ScheduleNotFoundException(String debugMessage) {
+    public DayNotFoundException(String debugMessage) {
         super(debugMessage);
     }
 
-    public ScheduleNotFoundException(Throwable cause) {
+    public DayNotFoundException(Throwable cause) {
         super(cause);
     }
 
-    public ScheduleNotFoundException(String debugMessage, Throwable cause) {
+    public DayNotFoundException(String debugMessage, Throwable cause) {
         super(debugMessage, cause);
     }
 

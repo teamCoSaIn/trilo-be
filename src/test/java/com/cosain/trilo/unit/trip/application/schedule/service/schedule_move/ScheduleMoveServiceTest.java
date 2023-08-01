@@ -1,11 +1,11 @@
 package com.cosain.trilo.unit.trip.application.schedule.service.schedule_move;
 
+import com.cosain.trilo.common.exception.day.DayNotFoundException;
+import com.cosain.trilo.common.exception.schedule.NoScheduleMoveAuthorityException;
+import com.cosain.trilo.common.exception.schedule.ScheduleNotFoundException;
+import com.cosain.trilo.common.exception.schedule.TooManyDayScheduleException;
 import com.cosain.trilo.fixture.ScheduleFixture;
 import com.cosain.trilo.fixture.TripFixture;
-import com.cosain.trilo.trip.application.exception.DayNotFoundException;
-import com.cosain.trilo.trip.application.exception.NoScheduleMoveAuthorityException;
-import com.cosain.trilo.trip.application.exception.ScheduleNotFoundException;
-import com.cosain.trilo.trip.application.exception.TooManyDayScheduleException;
 import com.cosain.trilo.trip.application.schedule.service.schedule_move.ScheduleMoveCommand;
 import com.cosain.trilo.trip.application.schedule.service.schedule_move.ScheduleMoveResult;
 import com.cosain.trilo.trip.application.schedule.service.schedule_move.ScheduleMoveService;
@@ -32,96 +32,36 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 
+/**
+ * 일정 이동 서비스({@link ScheduleMoveService})의 테스트 클래스입니다.
+ * @see ScheduleMoveService
+ */
 @Slf4j
 @ExtendWith(MockitoExtension.class)
 @DisplayName("[TripCommand] ScheduleMoveService 테스트")
 public class ScheduleMoveServiceTest {
 
+    /**
+     * 테스트의 대상이 되는 일정 이동 서비스입니다.
+     */
     @InjectMocks
     private ScheduleMoveService scheduleMoveService;
 
+    /**
+     * ScheduleService의 의존성
+     */
     @Mock
     private ScheduleRepository scheduleRepository;
 
+    /**
+     * ScheduleMoveService의 의존
+     */
     @Mock
     private DayRepository dayRepository;
 
-    @DisplayName("존재하지 않는 일정을 이동시키려고 하면 ScheduleNotFoundException 발생")
-    @Test
-    public void testNotExistScheduleMove() {
-        // given
-        Long notExistScheduleId = 3L;
-        long requestTripperId = 1L;
-        Long targetDayId = 2L;
-        int targetOrder = 3;
-        var command = ScheduleMoveCommand.of(notExistScheduleId, requestTripperId, targetDayId, targetOrder);
-
-        // mock: scheduleId 조회 -> 해당 일정 존재 안 함
-        given(scheduleRepository.findByIdWithTrip(eq(notExistScheduleId))).willReturn(Optional.empty());
-
-        // when & then : 발생 예외 및 리포지토리 호출 횟수 검증
-        assertThatThrownBy(() -> scheduleMoveService.moveSchedule(command))
-                .isInstanceOf(ScheduleNotFoundException.class);
-        verify(scheduleRepository).findByIdWithTrip(eq(notExistScheduleId));
-    }
-
-    @DisplayName("존재하지 않는 Day로 이동시키려고 하면, DayNotFoundException 발생")
-    @Test
-    public void testNotExistTargetDayMove() {
-        // given
-        long tripId = 1L;
-        long requestTripperId = 2L;
-        Long targetDayId = 3L;
-        Long scheduleId = 4L;
-        int targetOrder = 3;
-        var command = ScheduleMoveCommand.of(scheduleId, requestTripperId, targetDayId, targetOrder);
-
-        Trip trip = TripFixture.undecided_Id(tripId, requestTripperId);
-        Schedule schedule = ScheduleFixture.temporaryStorage_Id(scheduleId, trip, 0);
-        given(scheduleRepository.findByIdWithTrip(eq(scheduleId))).willReturn(Optional.of(schedule));
-
-        // targetDayId에 해당하는 Day가 없음
-        given(dayRepository.findByIdWithTrip(eq(targetDayId))).willReturn(Optional.empty());
-
-        // when & then : 발생 예외 및 리포지토리 호출횟수 검증
-        assertThatThrownBy(() -> scheduleMoveService.moveSchedule(command))
-                .isInstanceOf(DayNotFoundException.class);
-        verify(scheduleRepository).findByIdWithTrip(eq(scheduleId));
-        verify(dayRepository).findByIdWithTrip(eq(targetDayId));
-        verify(scheduleRepository, times(0)).findDayScheduleCount(eq(targetDayId));
-    }
-
-    @DisplayName("권한이 없는 사람이 이동을 시도하면 NoScheduleMoveAuthorityException 발생")
-    @Test
-    public void noTripMoveMoveAuthorityTripperTest() {
-        // given
-        long tripId = 1L;
-        Long scheduleId = 2L;
-        Long targetDayId = 3L;
-        long tripOwnerId = 4L;
-        long noAuthorityTripperId = 5L;
-        int targetOrder = 0;
-        var command = ScheduleMoveCommand.of(scheduleId, noAuthorityTripperId, targetDayId, targetOrder);
-
-        // mock : 삭제하고자 하는 Schedule 설정
-        LocalDate startDate = LocalDate.of(2023,3,1);
-        LocalDate endDate = LocalDate.of(2023,3,1);
-        Trip trip = TripFixture.decided_Id(tripId, tripOwnerId, startDate, endDate, targetDayId);
-        Day day = trip.getDays().get(0);
-        Schedule schedule = ScheduleFixture.day_Id(scheduleId, trip, day, 0);
-        given(scheduleRepository.findByIdWithTrip(eq(scheduleId))).willReturn(Optional.of(schedule));
-
-        // mock : targetDayId로 조회시 찾아와지는 Day
-        given(dayRepository.findByIdWithTrip(eq(targetDayId))).willReturn(Optional.of(day));
-
-        // when & then : 권한 없는 사용자의 요청 -> 발생 예외 및 리포지토리 호출 횟수 검증
-        assertThatThrownBy(() -> scheduleMoveService.moveSchedule(command))
-                .isInstanceOf(NoScheduleMoveAuthorityException.class);
-        verify(scheduleRepository).findByIdWithTrip(eq(scheduleId));
-        verify(dayRepository).findByIdWithTrip(eq(targetDayId));
-        verify(scheduleRepository, times(0)).findDayScheduleCount(eq(targetDayId));
-    }
-
+    /**
+     * 임시보관함에서 Day로 이동하는 경우의 성공테스트입니다.
+     */
     @DisplayName("임시보관함 -> Day 성공 테스트")
     @Test
     public void test_temporaryStorage_to_day_success() {
@@ -160,6 +100,9 @@ public class ScheduleMoveServiceTest {
         assertThat(scheduleMoveResult.isPositionChanged()).isEqualTo(true);
     }
 
+    /**
+     * 임시보관함에서 임시보관함으로 이동하는 경우의 성공테스트입니다.
+     */
     @DisplayName("임시보관함 -> 임시보관함 성공 테스트")
     @Test
     public void test_temporaryStorage_to_temporaryStorage_success() {
@@ -192,6 +135,9 @@ public class ScheduleMoveServiceTest {
         verify(scheduleRepository, times(0)).relocateDaySchedules(eq(tripId), eq(targetDayId));
     }
 
+    /**
+     * Day에서 임시보관함으로 이동하는 경우의 성공 테스트입니다.
+     */
     @DisplayName("Day -> 임시보관함 성공 테스트")
     @Test
     public void test_day_to_temporaryStorage_success() {
@@ -230,7 +176,9 @@ public class ScheduleMoveServiceTest {
         verify(scheduleRepository, times(0)).relocateDaySchedules(eq(tripId), eq(targetDayId));
     }
 
-
+    /**
+     * Day에서 같은 Day로 이동할 때의 성공 테스트입니다.
+     */
     @DisplayName("Day -> 같은 Day 성공 테스트")
     @Test
     public void test_sameDay_success() {
@@ -269,6 +217,9 @@ public class ScheduleMoveServiceTest {
         verify(scheduleRepository, times(0)).relocateDaySchedules(eq(tripId), eq(targetDayId));
     }
 
+    /**
+     * Day에서 다른 Day로 이동할 때의 성공 테스트입니다.
+     */
     @DisplayName("Day -> 다른 Day 성공 테스트")
     @Test
     public void test_day_to_other_day_success() {
@@ -315,6 +266,9 @@ public class ScheduleMoveServiceTest {
         verify(scheduleRepository, times(0)).relocateDaySchedules(eq(tripId), eq(targetDayId));
     }
 
+    /**
+     * 어떤 일정을 대상 Day의 맨 마지막으로 이동을 시동했는데 최대 범위를 벗어날 경우, 재배치가 일어남을 검증합니다.
+     */
     @DisplayName("맨 뒤에 이동 시 인덱스 범위 벗어나면 재배치 후 리포지토리 호출이 추가적으로 발생")
     @Test
     public void testRelocate_whenMoveToTail() {
@@ -367,6 +321,9 @@ public class ScheduleMoveServiceTest {
         verify(scheduleRepository, times(1)).relocateDaySchedules(eq(tripId), eq(targetDayId));
     }
 
+    /**
+     * 어떤 일정을 대상 Day의 맨 앞으로 이동을 시동했는데 최소 범위를 벗어날 경우, 재배치가 일어남을 검증합니다.
+     */
     @DisplayName("맨 앞에 이동 시 인덱스 범위 벗어나면 재배치 후 리포지토리 호출이 추가적으로 발생")
     @Test
     public void testRelocate_whenMoveToHead() {
@@ -419,6 +376,9 @@ public class ScheduleMoveServiceTest {
         verify(scheduleRepository, times(1)).relocateDaySchedules(eq(tripId), eq(targetDayId));
     }
 
+    /**
+     * 일정을 중간 위치로 이동할 때, ScheduleIndex 충돌이 발생하면 재배치가 일어남을 검증합니다.
+     */
     @DisplayName("중간 이동 시 충돌나면 재배치 후 리포지토리 호출이 추가적으로 발생")
     @Test
     public void testRelocate_whenMoveToMiddle() {
@@ -471,6 +431,94 @@ public class ScheduleMoveServiceTest {
         verify(scheduleRepository, times(1)).relocateDaySchedules(eq(tripId), eq(targetDayId));
     }
 
+    /**
+     * 옮기고자 하는 일정이 없으면 예외가 발생함을 검증합니다.
+     */
+    @DisplayName("옮길 일정 조회 실패 -> ScheduleNotFoundException 발생")
+    @Test
+    public void testNotExistScheduleMove() {
+        // given
+        Long notExistScheduleId = 3L;
+        long requestTripperId = 1L;
+        Long targetDayId = 2L;
+        int targetOrder = 3;
+        var command = ScheduleMoveCommand.of(notExistScheduleId, requestTripperId, targetDayId, targetOrder);
+
+        // mock: scheduleId 조회 -> 해당 일정 존재 안 함
+        given(scheduleRepository.findByIdWithTrip(eq(notExistScheduleId))).willReturn(Optional.empty());
+
+        // when & then : 발생 예외 및 리포지토리 호출 횟수 검증
+        assertThatThrownBy(() -> scheduleMoveService.moveSchedule(command))
+                .isInstanceOf(ScheduleNotFoundException.class);
+        verify(scheduleRepository).findByIdWithTrip(eq(notExistScheduleId));
+    }
+
+    /**
+     * 대상이 되는 targetDay의 조회가 실패될 경우 예외가 발생함을 검증합니다.
+     */
+    @DisplayName("targetDay 조회 실패 -> DayNotFoundException 발생")
+    @Test
+    public void testNotExistTargetDayMove() {
+        // given
+        long tripId = 1L;
+        long requestTripperId = 2L;
+        Long targetDayId = 3L;
+        Long scheduleId = 4L;
+        int targetOrder = 3;
+        var command = ScheduleMoveCommand.of(scheduleId, requestTripperId, targetDayId, targetOrder);
+
+        Trip trip = TripFixture.undecided_Id(tripId, requestTripperId);
+        Schedule schedule = ScheduleFixture.temporaryStorage_Id(scheduleId, trip, 0);
+        given(scheduleRepository.findByIdWithTrip(eq(scheduleId))).willReturn(Optional.of(schedule));
+
+        // targetDayId에 해당하는 Day가 없음
+        given(dayRepository.findByIdWithTrip(eq(targetDayId))).willReturn(Optional.empty());
+
+        // when & then : 발생 예외 및 리포지토리 호출횟수 검증
+        assertThatThrownBy(() -> scheduleMoveService.moveSchedule(command))
+                .isInstanceOf(DayNotFoundException.class);
+        verify(scheduleRepository).findByIdWithTrip(eq(scheduleId));
+        verify(dayRepository).findByIdWithTrip(eq(targetDayId));
+        verify(scheduleRepository, times(0)).findDayScheduleCount(eq(targetDayId));
+    }
+
+    /**
+     * 권한이 없는 사용자가 요청하면 예외가 발생함을 검증합니다.
+     */
+    @DisplayName("권한이 없는 사용자 -> NoScheduleMoveAuthorityException 발생")
+    @Test
+    public void noTripMoveMoveAuthorityTripperTest() {
+        // given
+        long tripId = 1L;
+        Long scheduleId = 2L;
+        Long targetDayId = 3L;
+        long tripOwnerId = 4L;
+        long noAuthorityTripperId = 5L;
+        int targetOrder = 0;
+        var command = ScheduleMoveCommand.of(scheduleId, noAuthorityTripperId, targetDayId, targetOrder);
+
+        // mock : 삭제하고자 하는 Schedule 설정
+        LocalDate startDate = LocalDate.of(2023,3,1);
+        LocalDate endDate = LocalDate.of(2023,3,1);
+        Trip trip = TripFixture.decided_Id(tripId, tripOwnerId, startDate, endDate, targetDayId);
+        Day day = trip.getDays().get(0);
+        Schedule schedule = ScheduleFixture.day_Id(scheduleId, trip, day, 0);
+        given(scheduleRepository.findByIdWithTrip(eq(scheduleId))).willReturn(Optional.of(schedule));
+
+        // mock : targetDayId로 조회시 찾아와지는 Day
+        given(dayRepository.findByIdWithTrip(eq(targetDayId))).willReturn(Optional.of(day));
+
+        // when & then : 권한 없는 사용자의 요청 -> 발생 예외 및 리포지토리 호출 횟수 검증
+        assertThatThrownBy(() -> scheduleMoveService.moveSchedule(command))
+                .isInstanceOf(NoScheduleMoveAuthorityException.class);
+        verify(scheduleRepository).findByIdWithTrip(eq(scheduleId));
+        verify(dayRepository).findByIdWithTrip(eq(targetDayId));
+        verify(scheduleRepository, times(0)).findDayScheduleCount(eq(targetDayId));
+    }
+
+    /**
+     * 기존과 다른 day로 이동하는데, 일정이 가득차있으면 예외가 발생함을 검증합니다.
+     */
     @DisplayName("기존과 다른 Day로 이동 -> 일정이 가득차 있으면 예외 발생")
     @Test
     public void testOtherTargetDay_is_Full_Schedule() {

@@ -7,6 +7,7 @@ import com.cosain.trilo.trip.domain.entity.Schedule;
 import com.cosain.trilo.trip.domain.entity.Trip;
 import com.cosain.trilo.trip.domain.vo.ScheduleIndex;
 import com.cosain.trilo.trip.infra.repository.ScheduleRepositoryImpl;
+import com.cosain.trilo.trip.infra.repository.TripRepositoryImpl;
 import jakarta.persistence.PersistenceException;
 import jakarta.persistence.Query;
 import org.junit.jupiter.api.DisplayName;
@@ -147,7 +148,11 @@ public class ScheduleRepositoryImplTest extends RepositoryTest {
         assertThat(findSchedules).isEmpty(); // 조회 시 일정들 모두 삭제됨 확인
     }
 
-
+    /**
+     * 일정과 일정이 속한 여행을 함께 가져올 때 잘 가져와지는 지 테스트합니다.
+     * @see TripRepositoryImpl#save(Trip
+     * @see TripRepositoryImpl#findById(Long)
+     */
     @Test
     @DisplayName("findByIdWithTrip으로 일정을 조회하면 해당 일정만 조회된다.(여행도 같이 묶여서 조회됨)")
     void findByIdWithTripTest() {
@@ -165,11 +170,11 @@ public class ScheduleRepositoryImplTest extends RepositoryTest {
         flushAndClear();
 
         // when
-        Schedule findSchedule = scheduleRepositoryImpl.findByIdWithTrip(schedule2.getId()).get();
+        Schedule findSchedule = scheduleRepositoryImpl.findByIdWithTrip(schedule2.getId()).orElseThrow(IllegalStateException::new);
 
         // then
         assertThat(findSchedule.getId()).isEqualTo(schedule2.getId());
-        assertThat(findSchedule.getTrip().getClass()).isEqualTo(Trip.class);
+        assertThat(findSchedule.getTrip().getClass()).isEqualTo(Trip.class); // 프록시 아님
         assertThat(findSchedule.getTrip().getId()).isEqualTo(trip.getId());
     }
 
@@ -490,6 +495,10 @@ public class ScheduleRepositoryImplTest extends RepositoryTest {
 
     }
 
+    /**
+     * Day가 가진 일정의 갯수를 가져오는 기능 테스트
+     * @see ScheduleRepositoryImpl#findDayScheduleCount(Long)
+     */
     @Nested
     @DisplayName("findDayScheduleCount : Day에 속한 일정의 갯수를 가져온다.")
     class FindDayScheduleCountTest {
@@ -497,6 +506,7 @@ public class ScheduleRepositoryImplTest extends RepositoryTest {
         @DisplayName("Day에 아무 일정도 없음 -> 0 반환")
         @Test
         void noDayScheduleTest() {
+            // given
             Long tripperId = setupTripperId();
             LocalDate startDate = LocalDate.of(2023, 3, 1);
             LocalDate endDate = LocalDate.of(2023, 3, 1);
@@ -505,13 +515,17 @@ public class ScheduleRepositoryImplTest extends RepositoryTest {
             Day day = trip.getDays().get(0);
             flushAndClear();
 
+            // when
             int scheduleTripCount = scheduleRepositoryImpl.findDayScheduleCount(day.getId());
+
+            // then
             assertThat(scheduleTripCount).isEqualTo(0);
         }
 
         @DisplayName("Day에 일정 3개 -> 3 반환")
         @Test
         void threeDayScheduleTest() {
+            // given
             Long tripperId = setupTripperId();
             LocalDate startDate = LocalDate.of(2023, 3, 1);
             LocalDate endDate = LocalDate.of(2023, 3, 2);
@@ -520,14 +534,19 @@ public class ScheduleRepositoryImplTest extends RepositoryTest {
             Day day1 = trip.getDays().get(0);
             Day day2 = trip.getDays().get(1);
 
+            // day1에 일정 3개
             Schedule schedule1 = setupDaySchedule(trip, day1, 0L);
             Schedule schedule2 = setupDaySchedule(trip, day1, 100L);
             Schedule schedule3 = setupDaySchedule(trip, day1, 200L);
+
             Schedule schedule4 = setupDaySchedule(trip, day2, 0L);
             Schedule schedule5 = setupDaySchedule(trip, day2, 100L);
             flushAndClear();
 
+            // when
             int dayScheduleCount = scheduleRepositoryImpl.findDayScheduleCount(day1.getId());
+
+            // then
             assertThat(dayScheduleCount).isEqualTo(3);
         }
     }

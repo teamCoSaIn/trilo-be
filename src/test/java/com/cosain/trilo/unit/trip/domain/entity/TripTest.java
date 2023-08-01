@@ -1,5 +1,9 @@
 package com.cosain.trilo.unit.trip.domain.entity;
 
+import com.cosain.trilo.common.exception.day.InvalidTripDayException;
+import com.cosain.trilo.common.exception.schedule.InvalidScheduleMoveTargetOrderException;
+import com.cosain.trilo.common.exception.schedule.MidScheduleIndexConflictException;
+import com.cosain.trilo.common.exception.schedule.ScheduleIndexRangeException;
 import com.cosain.trilo.common.exception.trip.EmptyPeriodUpdateException;
 import com.cosain.trilo.fixture.ScheduleFixture;
 import com.cosain.trilo.fixture.TripFixture;
@@ -7,10 +11,6 @@ import com.cosain.trilo.trip.domain.dto.ScheduleMoveDto;
 import com.cosain.trilo.trip.domain.entity.Day;
 import com.cosain.trilo.trip.domain.entity.Schedule;
 import com.cosain.trilo.trip.domain.entity.Trip;
-import com.cosain.trilo.trip.domain.exception.InvalidScheduleMoveTargetOrderException;
-import com.cosain.trilo.trip.domain.exception.InvalidTripDayException;
-import com.cosain.trilo.trip.domain.exception.MidScheduleIndexConflictException;
-import com.cosain.trilo.trip.domain.exception.ScheduleIndexRangeException;
 import com.cosain.trilo.trip.domain.vo.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -501,6 +501,9 @@ public class TripTest {
         }
     }
 
+    /**
+     * 일정 이동 기능을 테스트합니다.
+     */
     @Nested
     @DisplayName("MoveSchedule 테스트")
     class MoveScheduleTest {
@@ -509,19 +512,21 @@ public class TripTest {
         @DisplayName("임시보관함에서 임시보관함으로 옮길 떄")
         class Case_From_TemporaryStorage_To_TemporaryStorage {
 
-            @DisplayName("targetOrder가 0보다 작으면 InvalidScheduleMoveTargetOrderException 발생")
+            @DisplayName("targetOrder가 0보다 작음 -> InvalidScheduleMoveTargetOrderException 발생")
             @Test
             public void when_targetOrder_is_under_zero_then_it_throws_InvalidScheduleMoveTargetOrderException() {
                 // given
-                Trip trip = TripFixture.undecided_nullId(1L);
+                long tripperId = 1L;
+                Trip trip = TripFixture.undecided_nullId(tripperId);
                 Schedule schedule = ScheduleFixture.temporaryStorage_NullId(trip, 0L);
 
                 // when & then
+                // -1번 순서로 이동
                 assertThatThrownBy(() -> trip.moveSchedule(schedule, null, -1))
                         .isInstanceOf(InvalidScheduleMoveTargetOrderException.class);
             }
 
-            @DisplayName("targetOrder가 임시보관함 크기를 넘어가는 경우 InvalidScheduleMoveTargetOrderException 발생")
+            @DisplayName("targetOrder가 임시보관함 크기를 넘어감 -> InvalidScheduleMoveTargetOrderException 발생")
             @Test
             public void when_targetOrder_is_over_temporary_storage_max_size_then_it_throws_InvalidScheduleMoveTargetOrderException() {
                 Long tripId = 1L;
@@ -537,7 +542,7 @@ public class TripTest {
                         .isInstanceOf(InvalidScheduleMoveTargetOrderException.class);
             }
 
-            @DisplayName("자신의 기존 순서로 이동할 경우, 아무런 변화도 일어나지 않는다.")
+            @DisplayName("자신의 기존 순서로 이동 -> 변화 없음")
             @Test
             public void when_move_to_same_position_then_nothing_changed() {
                 Long tripId = 1L;
@@ -565,7 +570,7 @@ public class TripTest {
                 assertThat(scheduleMoveDto.isPositionChanged()).isEqualTo(false);
             }
 
-            @DisplayName("자신의 순서값 다음 값으로 이동시키려 할 경우, 아무런 변화도 일어나지 않는다.")
+            @DisplayName("자신이 위치한 순서 다음 순서로 이동 -> 변화 없음")
             @Test
             public void when_move_to_after_currentOrder_then_nothing_changed() {
                 Long tripId = 1L;
@@ -593,7 +598,7 @@ public class TripTest {
                 assertThat(scheduleMoveDto.isPositionChanged()).isEqualTo(false);
             }
 
-            @DisplayName("targetOrder가 임시보관함 크기와 똑같은 값이고, 끝 ScheduleIndex 범위가 안전하면 맨 뒤로 이동한다.")
+            @DisplayName("targetOrder가 임시보관함 크기와 똑같은 값이고, 끝 ScheduleIndex 범위가 안전 -> 맨 뒤로 이동")
             @Test
             public void when_targetOrder_isEqualTo_TemporaryStorageSize_and_tail_scheduleIndex_isSafe_schedule_move_to_Tail() {
                 Long tripId = 1L;
@@ -618,7 +623,7 @@ public class TripTest {
                 assertThat(scheduleMoveDto.isPositionChanged()).isEqualTo(true);
             }
 
-            @DisplayName("targetOrder가 임시보관함 크기와 똑같은 값이고, 끝 ScheduleIndex 범위가 안전하지 않으면 ScheduleIndexRangeException 발생")
+            @DisplayName("targetOrder가 임시보관함 크기 같고, 끝 ScheduleIndex 범위가 안전하지 않음 -> ScheduleIndexRangeException 발생")
             @Test
             public void when_targetOrder_isEqualTo_TemporaryStorageSize_and_tail_scheduleIndex_is_unSafe_it_throws_ScheduleIndexRangeException() {
                 Long tripId = 1L;
@@ -634,7 +639,7 @@ public class TripTest {
                         .isInstanceOf(ScheduleIndexRangeException.class);
             }
 
-            @DisplayName("targetOrder가 0이고, 맨 앞 ScheduleIndex 범위가 안전하면 맨 앞으로 이동한다.")
+            @DisplayName("targetOrder가 0이고 맨 앞 ScheduleIndex 범위가 안전 -> 맨 앞으로 이동")
             @Test
             public void when_targetOrder_isEqualTo_Zero_and_head_scheduleIndex_is_Safe_then_schedule_move_to_Head() {
                 Long tripId = 1L;
@@ -658,7 +663,7 @@ public class TripTest {
                 assertThat(scheduleMoveDto.isPositionChanged()).isEqualTo(true);
             }
 
-            @DisplayName("targetOrder가 0이고, 맨 앞 ScheduleIndex 범위가 안전하지 않으면 ScheduleIndexRangeException 발생")
+            @DisplayName("targetOrder가 0이고 맨 앞 ScheduleIndex 범위가 안전하지 않음 -> ScheduleIndexRangeException 발생")
             @Test
             public void when_targetOrder_isEqualTo_Zero_and_head_scheduleIndex_is_unSafe_it_throws_ScheduleIndexRangeException() {
                 Long tripId = 1L;
@@ -674,7 +679,7 @@ public class TripTest {
                         .isInstanceOf(ScheduleIndexRangeException.class);
             }
 
-            @DisplayName("targetOrder가 유효한 순서이고, 해당 순서 앞과 간격이 충분하면 중간 인덱스가 부여된다.")
+            @DisplayName("targetOrder가 시작, 끝 사잇값이고, 해당 순서 앞과 간격이 충분 -> 중간 삽입")
             @Test
             public void testMiddleInsert_Success() {
                 Long tripId = 1L;
@@ -698,7 +703,7 @@ public class TripTest {
                 assertThat(scheduleMoveDto.isPositionChanged()).isEqualTo(true);
             }
 
-            @DisplayName("targetOrder가 다른 일정의 순서이고, 해당 순서 앞과 간격이 충분하지 않으면 MidScheduleIndexConflictException 발생")
+            @DisplayName("targetOrder가 다른 일정의 순서이고, 해당 순서 앞과 간격이 충분하지 않음 -> MidScheduleIndexConflictException 발생")
             @Test
             public void testMiddleInsert_Failure() {
                 Long tripId = 1L;
@@ -721,7 +726,7 @@ public class TripTest {
         class Case_From_TemporaryStorage_To_Day {
 
             @Test
-            @DisplayName("targetDay가 Trip의 Day가 아니면, InvalidTripDayException 발생")
+            @DisplayName("targetDay가 Trip의 Day가 아님 -> InvalidTripDayException 발생")
             public void when_targetDay_is_not_in_trip_then_it_throws_InvalidTripDayException() {
                 // given
                 Long tripId = 1L;
@@ -741,7 +746,7 @@ public class TripTest {
                         .isInstanceOf(InvalidTripDayException.class);
             }
 
-            @DisplayName("targetOrder가 0보다 작으면 InvalidScheduleMoveTargetOrderException 발생")
+            @DisplayName("targetOrder가 0보다 작음 -> InvalidScheduleMoveTargetOrderException 발생")
             @Test
             public void when_targetOrder_is_under_zero_then_it_throws_InvalidScheduleMoveTargetOrderException() {
                 // given
@@ -759,7 +764,7 @@ public class TripTest {
                         .isInstanceOf(InvalidScheduleMoveTargetOrderException.class);
             }
 
-            @DisplayName("targetOrder가 Schedules 크기를 넘어가는 경우 InvalidScheduleMoveTargetOrderException 발생")
+            @DisplayName("targetOrder가 Schedules 크기를 넘어감 -> InvalidScheduleMoveTargetOrderException 발생")
             @Test
             public void when_targetOrder_is_over_day_schedules_max_size_then_it_throws_InvalidScheduleMoveTargetOrderException() {
                 Long tripId = 1L;
@@ -779,7 +784,7 @@ public class TripTest {
             }
 
 
-            @DisplayName("targetOrder가 Schedules 크기와 똑같은 값이고, 끝 ScheduleIndex 범위가 안전하면 맨 뒤로 이동한다.")
+            @DisplayName("targetOrder가 Schedules 크기와 똑같은 값이고, 끝 ScheduleIndex 범위가 안전 -> 맨 뒤로 이동")
             @Test
             public void when_targetOrder_isEqualTo_SchedulesSize_and_tail_scheduleIndex_isSafe_schedule_move_to_Tail() {
                 // given
@@ -810,7 +815,7 @@ public class TripTest {
                 assertThat(scheduleMoveDto.isPositionChanged()).isEqualTo(true);
             }
 
-            @DisplayName("targetOrder가 Schedules 크기와 똑같은 값이고, 끝 ScheduleIndex 범위가 안전하지 않으면 ScheduleIndexRangeException 발생")
+            @DisplayName("targetOrder가 Schedules 크기와 똑같은 값이고, 끝 ScheduleIndex 범위가 안전하지 않음 -> ScheduleIndexRangeException 발생")
             @Test
             public void when_targetOrder_isEqualTo_SchedulesSize_and_tail_scheduleIndex_is_unSafe_it_throws_ScheduleIndexRangeException() {
                 // given
@@ -829,7 +834,7 @@ public class TripTest {
                         .isInstanceOf(ScheduleIndexRangeException.class);
             }
 
-            @DisplayName("targetOrder가 0이고, 맨 앞 ScheduleIndex 범위가 안전하면 맨 앞로 이동한다.")
+            @DisplayName("targetOrder가 0이고, 맨 앞 ScheduleIndex 범위가 안전 -> 맨 앞로 이동")
             @Test
             public void when_targetOrder_isEqualTo_Zero_and_head_scheduleIndex_isSafe_schedule_move_to_Head() {
                 // given
@@ -860,7 +865,7 @@ public class TripTest {
                 assertThat(scheduleMoveDto.isPositionChanged()).isEqualTo(true);
             }
 
-            @DisplayName("targetOrder가 0이고, 맨 앞 ScheduleIndex 범위가 안전하지 않으면 ScheduleIndexRangeException 발생")
+            @DisplayName("targetOrder가 0이고, 맨 앞 ScheduleIndex 범위가 안전하지 않음 -> ScheduleIndexRangeException 발생")
             @Test
             public void when_targetOrder_isEqualTo_Zero_and_head_scheduleIndex_is_unSafe_it_throws_ScheduleIndexRangeException() {
                 // given
@@ -879,7 +884,7 @@ public class TripTest {
                         .isInstanceOf(ScheduleIndexRangeException.class);
             }
 
-            @DisplayName("targetOrder가 다른 일정의 순서이고, 해당 순서 앞과 간격이 충분하면 중간 인덱스가 부여된다.")
+            @DisplayName("targetOrder가 최소-최대 사이의 순서이고, 해당 순서 앞과 간격이 충분 -> 중간 삽입")
             @Test
             public void testMiddleInsert_Success() {
                 // given
@@ -911,7 +916,7 @@ public class TripTest {
                 assertThat(scheduleMoveDto.isPositionChanged()).isEqualTo(true);
             }
 
-            @DisplayName("targetOrder가 다른 일정의 순서이고, 해당 순서 앞과 간격이 충분하지 않으면 MidScheduleIndexConflictException 발생")
+            @DisplayName("targetOrder가 최소-최대 사이의 순서이고, 해당 순서 앞과 간격이 충분하지 않음 -> MidScheduleIndexConflictException 발생")
             @Test
             public void testMiddleInsert_Failure() {
                 // given
@@ -958,7 +963,7 @@ public class TripTest {
                         .isInstanceOf(InvalidTripDayException.class);
             }
 
-            @DisplayName("targetOrder가 0보다 작으면 InvalidScheduleMoveTargetOrderException 발생")
+            @DisplayName("targetOrder가 0보다 작음 -> InvalidScheduleMoveTargetOrderException 발생")
             @Test
             public void when_targetOrder_is_under_zero_then_it_throws_InvalidScheduleMoveTargetOrderException() {
                 // given
@@ -978,7 +983,7 @@ public class TripTest {
                         .isInstanceOf(InvalidScheduleMoveTargetOrderException.class);
             }
 
-            @DisplayName("targetOrder가 Schedules 크기를 넘어가는 경우 InvalidScheduleMoveTargetOrderException 발생")
+            @DisplayName("targetOrder가 Schedules 크기를 넘어감 -> InvalidScheduleMoveTargetOrderException 발생")
             @Test
             public void when_targetOrder_is_over_day_schedules_max_size_then_it_throws_InvalidScheduleMoveTargetOrderException() {
                 Long tripId = 1L;
@@ -998,7 +1003,7 @@ public class TripTest {
                         .isInstanceOf(InvalidScheduleMoveTargetOrderException.class);
             }
 
-            @DisplayName("같은 Day의 기존의 순서로 이동할 경우, 아무런 변화도 일어나지 않는다.")
+            @DisplayName("같은 Day의 자기 자신의 순서로 이동 -> 변화 없음")
             @Test
             public void when_move_to_same_day_and_same_position_then_nothing_changed() {
                 Long tripId = 1L;
@@ -1011,7 +1016,6 @@ public class TripTest {
 
                 Schedule schedule1 = ScheduleFixture.day_Id(1L, trip, day, 0L);
                 Schedule schedule2 = ScheduleFixture.day_Id(2L, trip, day, 100L);
-
 
                 // when
                 ScheduleMoveDto scheduleMoveDto = trip.moveSchedule(schedule2, day, 1);
@@ -1031,7 +1035,7 @@ public class TripTest {
                 assertThat(scheduleMoveDto.isPositionChanged()).isEqualTo(false);
             }
 
-            @DisplayName("같은 Day의 기존의 순서 다음으로 이동시키려 할 경우, 아무런 변화도 일어나지 않는다.")
+            @DisplayName("같은 Day의 자기 순서 다음으로 이동 -> 변화 없음")
             @Test
             public void when_move_to_same_day_and_after_currentOrder_then_nothing_changed() {
                 Long tripId = 1L;
@@ -1064,7 +1068,7 @@ public class TripTest {
             }
 
 
-            @DisplayName("targetOrder가 Schedules 크기와 똑같은 값이고, 끝 ScheduleIndex 범위가 안전하면 맨 뒤로 이동한다.")
+            @DisplayName("targetOrder가 Schedules 크기와 똑같은 값이고, 끝 ScheduleIndex 범위가 안전 -> 맨 뒤로 이동")
             @Test
             public void when_targetOrder_isEqualTo_SchedulesSize_and_tail_scheduleIndex_isSafe_schedule_move_to_Tail() {
                 Long tripId = 1L;
@@ -1095,7 +1099,7 @@ public class TripTest {
                 assertThat(scheduleMoveDto.isPositionChanged()).isEqualTo(true);
             }
 
-            @DisplayName("targetOrder가 Schedules 크기와 똑같은 값이고, 끝 ScheduleIndex 범위가 안전하지 않으면 ScheduleIndexRangeException 발생")
+            @DisplayName("targetOrder가 Schedules 크기와 똑같은 값이고, 끝 ScheduleIndex 범위가 안전하지 않음 -> ScheduleIndexRangeException 발생")
             @Test
             public void when_targetOrder_isEqualTo_SchedulesSize_and_tail_scheduleIndex_is_unSafe_it_throws_ScheduleIndexRangeException() {
                 Long tripId = 1L;
@@ -1115,7 +1119,7 @@ public class TripTest {
                         .isInstanceOf(ScheduleIndexRangeException.class);
             }
 
-            @DisplayName("targetOrder가 0이고, 맨 앞 ScheduleIndex 범위가 안전하면 맨 앞으로 이동한다.")
+            @DisplayName("targetOrder가 0이고, 맨 앞 ScheduleIndex 범위가 안전 -> 맨 앞으로 이동한다.")
             @Test
             public void when_targetOrder_isEqualTo_Zero_and_head_scheduleIndex_isSafe_schedule_move_to_Head() {
                 Long tripId = 1L;
@@ -1146,7 +1150,7 @@ public class TripTest {
                 assertThat(scheduleMoveDto.isPositionChanged()).isEqualTo(true);
             }
 
-            @DisplayName("targetOrder가 0이고, 맨 앞 ScheduleIndex 범위가 안전하지 않으면 ScheduleIndexRangeException 발생")
+            @DisplayName("targetOrder가 0이고, 맨 앞 ScheduleIndex 범위가 안전하지 않음 -> ScheduleIndexRangeException 발생")
             @Test
             public void when_targetOrder_isEqualTo_Zero_and_head_scheduleIndex_is_unSafe_it_throws_ScheduleIndexRangeException() {
                 Long tripId = 1L;
@@ -1166,7 +1170,7 @@ public class TripTest {
                         .isInstanceOf(ScheduleIndexRangeException.class);
             }
 
-            @DisplayName("targetOrder가 다른 일정의 순서이고, 해당 순서 앞과 간격이 충분하면 중간 인덱스가 부여된다.")
+            @DisplayName("targetOrder가 다른 일정의 최대-최소 사이 순서이고, 해당 순서 앞과 간격이 충분 -> 중간 삽입")
             @Test
             public void testMiddleInsert_Success() {
                 Long tripId = 1L;
@@ -1198,7 +1202,7 @@ public class TripTest {
                 assertThat(scheduleMoveDto.isPositionChanged()).isEqualTo(true);
             }
 
-            @DisplayName("targetOrder가 다른 일정의 순서이고, 해당 순서 앞과 간격이 충분하지 않으면 MidScheduleIndexConflictException 발생")
+            @DisplayName("targetOrder가 다른 일정의 최대-최소 순서이고, 해당 순서 앞과 간격이 충분하지 않음 -> MidScheduleIndexConflictException 발생")
             @Test
             public void testMiddleInsert_Failure() {
                 Long tripId = 1L;
@@ -1224,7 +1228,7 @@ public class TripTest {
         @DisplayName("Day에서 임시보관함으로 옮길 때")
         class Case_From_Day_To_TemporaryStorage {
 
-            @DisplayName("targetOrder가 0보다 작으면 InvalidScheduleMoveTargetOrderException 발생")
+            @DisplayName("targetOrder가 0보다 작음 -> InvalidScheduleMoveTargetOrderException 발생")
             @Test
             public void when_targetOrder_is_under_zero_then_it_throws_InvalidScheduleMoveTargetOrderException() {
                 // given
@@ -1244,7 +1248,7 @@ public class TripTest {
                         .isInstanceOf(InvalidScheduleMoveTargetOrderException.class);
             }
 
-            @DisplayName("targetOrder가 임시보관함 크기를 넘어가는 경우 InvalidScheduleMoveTargetOrderException 발생")
+            @DisplayName("targetOrder가 임시보관함 크기를 넘어감 -> InvalidScheduleMoveTargetOrderException 발생")
             @Test
             public void when_targetOrder_is_over_temporary_storage_max_size_then_it_throws_InvalidScheduleMoveTargetOrderException() {
                 Long tripId = 1L;
@@ -1265,7 +1269,7 @@ public class TripTest {
             }
 
 
-            @DisplayName("targetOrder가 임시보관함 크기와 똑같은 값이고, 끝 ScheduleIndex 범위가 안전하면 맨 뒤로 이동한다.")
+            @DisplayName("targetOrder가 임시보관함 크기와 똑같은 값이고, 끝 ScheduleIndex 범위가 안전 -> 맨 뒤로 이동")
             @Test
             public void when_targetOrder_isEqualTo_temporaryStorageSize_and_tail_scheduleIndex_isSafe_schedule_move_to_Tail() {
                 Long tripId = 1L;
@@ -1296,7 +1300,7 @@ public class TripTest {
                 assertThat(scheduleMoveDto.isPositionChanged()).isEqualTo(true);
             }
 
-            @DisplayName("targetOrder가 임시보관함 크기와 똑같은 값이고, 끝 ScheduleIndex 범위가 안전하지 않으면 ScheduleIndexRangeException 발생")
+            @DisplayName("targetOrder가 임시보관함 크기와 똑같은 값이고, 끝 ScheduleIndex 범위가 안전하지 않음 -> ScheduleIndexRangeException 발생")
             @Test
             public void when_targetOrder_isEqualTo_temporaryStorageSize_and_tail_scheduleIndex_is_unSafe_it_throws_ScheduleIndexRangeException() {
                 Long tripId = 1L;
@@ -1317,7 +1321,7 @@ public class TripTest {
             }
 
 
-            @DisplayName("targetOrder가 0이고, 맨 앞 ScheduleIndex 범위가 안전하면 맨 앞으로 이동한다.")
+            @DisplayName("targetOrder가 0이고, 맨 앞 ScheduleIndex 범위가 안전 -> 맨 앞으로 이동")
             @Test
             public void when_targetOrder_isEqualTo_Zero_and_Head_scheduleIndex_isSafe_schedule_move_to_Head() {
                 Long tripId = 1L;
@@ -1348,7 +1352,7 @@ public class TripTest {
                 assertThat(scheduleMoveDto.isPositionChanged()).isEqualTo(true);
             }
 
-            @DisplayName("targetOrder가 0이고, 맨 앞 ScheduleIndex 범위가 안전하지 않으면 ScheduleIndexRangeException 발생")
+            @DisplayName("targetOrder가 0이고, 맨 앞 ScheduleIndex 범위가 안전하지 않음 -> ScheduleIndexRangeException 발생")
             @Test
             public void when_targetOrder_isEqualTo_Zero_and_Head_scheduleIndex_is_unSafe_it_throws_ScheduleIndexRangeException() {
                 Long tripId = 1L;
@@ -1368,7 +1372,7 @@ public class TripTest {
                         .isInstanceOf(ScheduleIndexRangeException.class);
             }
 
-            @DisplayName("targetOrder가 다른 일정의 순서이고, 해당 순서 앞과 간격이 충분하면 중간 인덱스가 부여된다.")
+            @DisplayName("targetOrder가 다른 일정의 최대-최소 사이 순서이고, 해당 순서 앞과 간격이 충분 -> 중간 삽입")
             @Test
             public void testMiddleInsert_Success() {
                 Long tripId = 1L;
@@ -1400,7 +1404,7 @@ public class TripTest {
                 assertThat(scheduleMoveDto.isPositionChanged()).isEqualTo(true);
             }
 
-            @DisplayName("targetOrder가 다른 일정의 순서이고, 해당 순서 앞과 간격이 충분하지 않으면 MidScheduleIndexConflictException 발생")
+            @DisplayName("targetOrder가 다른 일정의 최대-최소 사이 순서이고, 해당 순서 앞과 간격이 충분하지 않음 -> MidScheduleIndexConflictException 발생")
             @Test
             public void testMiddleInsert_Failure() {
                 Long tripId = 1L;

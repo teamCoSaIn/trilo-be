@@ -31,6 +31,9 @@ public class DayRepositoryImplTest extends RepositoryTest {
     @Autowired
     private DayRepositoryImpl dayRepository;
 
+    /**
+     * Day를 여행과 함께 가져오는 기능을 테스트합니다.
+     */
     @Test
     @DisplayName("findBYWithTripTest - 같이 가져온 Trip이 실제 Trip 클래스인지 함께 검증")
     public void findByIdWithTripTest() {
@@ -38,25 +41,21 @@ public class DayRepositoryImplTest extends RepositoryTest {
         Long tripperId = setupTripperId();
         LocalDate startDate = LocalDate.of(2023, 3, 1);
         LocalDate endDate = LocalDate.of(2023, 3, 1);
-        Trip trip = TripFixture.decided_nullId(tripperId, startDate, endDate);
-        em.persist(trip);
 
+        Trip trip = setupDecidedTrip(tripperId, startDate, endDate); // 여행 및 Day 생성, 저장
         Day day = trip.getDays().get(0);
-        em.persist(day);
-
-        em.flush();
-        em.clear();
+        flushAndClear();
 
         // when
-        Day findDay = dayRepository.findByIdWithTrip(day.getId()).get();
+        Day findDay = dayRepository.findByIdWithTrip(day.getId()).orElseThrow(IllegalStateException::new);
 
         // then
         Trip findDayTrip = findDay.getTrip();
 
         assertThat(findDay.getId()).isEqualTo(day.getId());
         assertThat(findDay.getTripDate()).isEqualTo(day.getTripDate());
+        assertThat(findDayTrip.getClass()).isSameAs(Trip.class); //프록시 아님
         assertThat(findDayTrip.getId()).isEqualTo(trip.getId());
-        assertThat(findDayTrip.getClass()).isSameAs(Trip.class);
     }
 
     /**

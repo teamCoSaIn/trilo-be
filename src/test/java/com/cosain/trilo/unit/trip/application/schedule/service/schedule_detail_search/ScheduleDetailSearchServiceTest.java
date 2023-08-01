@@ -1,9 +1,9 @@
 package com.cosain.trilo.unit.trip.application.schedule.service.schedule_detail_search;
 
-import com.cosain.trilo.trip.application.exception.ScheduleNotFoundException;
-import com.cosain.trilo.trip.application.schedule.service.schedule_detail_search.ScheduleDetailSearchService;
-import com.cosain.trilo.trip.application.schedule.service.schedule_detail_search.ScheduleDetail;
+import com.cosain.trilo.common.exception.schedule.ScheduleNotFoundException;
 import com.cosain.trilo.trip.application.dao.ScheduleQueryDAO;
+import com.cosain.trilo.trip.application.schedule.service.schedule_detail_search.ScheduleDetail;
+import com.cosain.trilo.trip.application.schedule.service.schedule_detail_search.ScheduleDetailSearchService;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

@@ -14,6 +14,12 @@ import java.util.Optional;
  */
 public interface JpaDayRepository extends JpaRepository<Day, Long> {
 
+    /**
+     * 인자로 전달받은 식별자의 Day(속한 여행 포함)을 담은 Optional을 조회하여 반환받습니다.
+     * @param dayId Day의 id(식별자)
+     * @return 조회해온 Day(속한 Day 포함)을 담은 Optional(null 가능성 있음)
+     * @see Optional
+     */
     @Query("SELECT d " +
             "FROM Day as d JOIN FETCH d.trip " +
             "WHERE d.id = :dayId")

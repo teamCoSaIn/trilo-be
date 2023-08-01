@@ -1,6 +1,6 @@
 package com.cosain.trilo.trip.application.schedule.service.schedule_detail_search;
 
-import com.cosain.trilo.trip.application.exception.ScheduleNotFoundException;
+import com.cosain.trilo.common.exception.schedule.ScheduleNotFoundException;
 import com.cosain.trilo.trip.application.dao.ScheduleQueryDAO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

@@ -1,9 +1,9 @@
 package com.cosain.trilo.unit.trip.application.schedule.service.schedule_create;
 
+import com.cosain.trilo.common.exception.schedule.TooManyDayScheduleException;
 import com.cosain.trilo.fixture.ScheduleFixture;
 import com.cosain.trilo.fixture.TripFixture;
 import com.cosain.trilo.trip.application.exception.NoScheduleCreateAuthorityException;
-import com.cosain.trilo.trip.application.exception.TooManyDayScheduleException;
 import com.cosain.trilo.trip.application.exception.TooManyTripScheduleException;
 import com.cosain.trilo.trip.application.schedule.service.schedule_create.ScheduleCreateCommand;
 import com.cosain.trilo.trip.application.schedule.service.schedule_create.ScheduleCreateService;

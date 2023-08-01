@@ -1,9 +1,9 @@
 package com.cosain.trilo.unit.trip.application.schedule.service.schedule_update;
 
+import com.cosain.trilo.common.exception.schedule.ScheduleNotFoundException;
 import com.cosain.trilo.fixture.ScheduleFixture;
 import com.cosain.trilo.fixture.TripFixture;
 import com.cosain.trilo.trip.application.exception.NoScheduleUpdateAuthorityException;
-import com.cosain.trilo.trip.application.exception.ScheduleNotFoundException;
 import com.cosain.trilo.trip.application.schedule.service.schedule_update.ScheduleUpdateCommand;
 import com.cosain.trilo.trip.application.schedule.service.schedule_update.ScheduleUpdateService;
 import com.cosain.trilo.trip.domain.entity.Schedule;
