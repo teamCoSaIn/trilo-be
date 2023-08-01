@@ -64,6 +64,7 @@ public class TripPeriodUpdateServiceTest {
      * </ul>
      */
     @Test
+    @DisplayName("기간이 정해진 여행을 다른 날짜의 기간으로 수정 -> 성공")
     public void testDecidedTripPeriodToOtherTripPeriod() throws Exception {
         // given
         long tripId = 1L;

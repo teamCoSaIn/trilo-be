@@ -9,6 +9,9 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowableOfType;
 
+/**
+ * ScheduleMoveCommand의 테스트입니다.
+ */
 @DisplayName("ScheduleMoveCommand 테스트")
 public class ScheduleMoveCommandTest {
 
