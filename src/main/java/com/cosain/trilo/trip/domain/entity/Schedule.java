@@ -73,6 +73,23 @@ public class Schedule {
     @Embedded
     private ScheduleIndex scheduleIndex;
 
+    /**
+     * 일정을 생성합니다.
+     * <p>이 객체는 {@link Trip#createSchedule} 메서드를 통해 생성되어야 하므로 디폴트 접근제어자가 걸려있습니다.</p>
+     * <p>명시적으로 전달된 파라미터 외의 필드들은 다음과 같이 초기화됩니다.</p>
+     * <ul>
+     *     <li>id : null (리포지토리에 저장 후 발급받아서 초기화해야합니다.)</li>
+     *     <li>scheduleContent : {@link ScheduleContent#defaultContent()}</li>
+     *     <li>scheduleTime : {@link ScheduleTime#defaultTime()}</li>
+     * </ul>
+     * @param day 일정이 속한 Day(null 일 경우 임시보관함)
+     * @param trip 일정이 속한 여행
+     * @param scheduleTitle 일정 제목
+     * @param place 장소
+     * @param scheduleIndex 일정의 {@link ScheduleIndex}
+     * @return 일정
+     * @see Trip#createSchedule
+     */
     static Schedule create(Day day, Trip trip, ScheduleTitle scheduleTitle, Place place, ScheduleIndex scheduleIndex) {
         return Schedule.builder()
                 .day(day)

@@ -225,16 +225,29 @@ public class Trip {
         return newDays;
     }
 
-    public Schedule createSchedule(Day day, ScheduleTitle scheduleTitle, Place place) {
+    /**
+     * <p>일정을 생성합니다.</p>
+     * <p>임시보관함에 생성시 맨 앞에, Day에 생성시 맨 뒤에 생성됩니다.</p>
+     * @param day           일정을이 생성될 Day(null 일 경우 임시보관함)
+     * @param scheduleTitle 일정의 제목
+     * @param place         장소
+     * @return 일정
+     * @throws InvalidTripDayException     Day가 이 Trip의 여행이 아닐 때
+     * @throws ScheduleIndexRangeException 새로 생성되는 ScheduleIndex가 범위를 벗어날 때(정상흐름 변경 가능)
+     */
+    public Schedule createSchedule(Day day, ScheduleTitle scheduleTitle, Place place) throws InvalidTripDayException, ScheduleIndexRangeException {
+        // 여행의 Day 인지 검증
         validateTripDayRelationShip(day);
+
         return (day == null)
-                ? makeTemporaryStorageSchedule(scheduleTitle, place)
-                : day.createSchedule(scheduleTitle, place);
+                ? makeTemporaryStorageScheduleToHead(scheduleTitle, place) // 일정을 임시보관함 맨 앞에 생성
+                : day.createScheduleToTail(scheduleTitle, place); // Day의 맨 뒤에 생성
     }
 
     /**
      * Trip에 Day가 속해있는 지 검증합니다.
-     * @param day
+     *
+     * @param day Trip에 속해있는지 판별하고 싶은 Day
      * @throws InvalidTripDayException Day가 이 Trip의 여행이 아닐 때
      */
     private void validateTripDayRelationShip(Day day) throws InvalidTripDayException {
@@ -246,8 +259,18 @@ public class Trip {
         }
     }
 
-    private Schedule makeTemporaryStorageSchedule(ScheduleTitle scheduleTitle, Place place) {
+    /**
+     * 일정을 임시보관함의 맨 뒤에 생성합니다.
+     * @param scheduleTitle 일정의 제목
+     * @param place 장소
+     * @return 일정
+     * @throws ScheduleIndexRangeException 새로 생성되는 ScheduleIndex가 범위를 벗어날 때(정상흐름 변경 가능)
+     */
+    private Schedule makeTemporaryStorageScheduleToHead(ScheduleTitle scheduleTitle, Place place) throws ScheduleIndexRangeException {
+        // 일정 생성(맨 앞 ScheduleIndex 가짐)
         Schedule schedule = Schedule.create(null, this, scheduleTitle, place, generateTemporaryStorageHeadIndex());
+
+        // 임시보관함 컬렉션 맨 앞에 추가
         temporaryStorage.add(0, schedule);
         return schedule;
     }
@@ -259,13 +282,13 @@ public class Trip {
      * @param schedule    옮길 일정
      * @param targetDay   도착지 Day (null 일 경우 임시보관함)
      * @param targetOrder 해당 Day 또는 임시보관함에서 몇 번째로 옮길 지
-     * @throws InvalidTripDayException Day가 이 Trip의 여행이 아닐 때
+     * @throws InvalidTripDayException                 Day가 이 Trip의 여행이 아닐 때
      * @throws InvalidScheduleMoveTargetOrderException 요청한 대상 순서가 0보다 작거나, 허용하는 순서보다 큰 경우
-     * @throws ScheduleIndexRangeException 새로 생성되는 ScheduleIndex가 범위를 벗어날 때(정상흐름 변경 가능)
-     * @throws MidScheduleIndexConflictException 중간 삽입 과정에서 충돌이 발생했을 때(정상흐름 변경 가능)
+     * @throws ScheduleIndexRangeException             새로 생성되는 ScheduleIndex가 범위를 벗어날 때(정상흐름 변경 가능)
+     * @throws MidScheduleIndexConflictException       중간 삽입 과정에서 충돌이 발생했을 때(정상흐름 변경 가능)
      */
     public ScheduleMoveDto moveSchedule(Schedule schedule, Day targetDay, int targetOrder)
-            throws InvalidTripDayException, InvalidScheduleMoveTargetOrderException, ScheduleIndexRangeException, MidScheduleIndexConflictException  {
+            throws InvalidTripDayException, InvalidScheduleMoveTargetOrderException, ScheduleIndexRangeException, MidScheduleIndexConflictException {
 
         // Day가 이 여행의 Day인지 검증 -> 여행의 Day가 아니면 예외 발생
         validateTripDayRelationShip(targetDay);
@@ -277,11 +300,12 @@ public class Trip {
 
     /**
      * 일정을 임시보관함의 지정 순서로 이동시킵니다.
+     *
      * @param schedule    이동시킬 일정
      * @param targetOrder 임시보관함에서 몇 번째로 옮길 지
      * @throws InvalidScheduleMoveTargetOrderException 대상 순서가 0보다 작거나, 허용하는 순서보다 큰 경우
-     * @throws ScheduleIndexRangeException 새로 생성되는 ScheduleIndex가 범위를 벗어날 때(정상흐름 변경 가능)
-     * @throws MidScheduleIndexConflictException 중간 삽입 과정에서 충돌이 발생했을 때(정상흐름 변경 가능)
+     * @throws ScheduleIndexRangeException             새로 생성되는 ScheduleIndex가 범위를 벗어날 때(정상흐름 변경 가능)
+     * @throws MidScheduleIndexConflictException       중간 삽입 과정에서 충돌이 발생했을 때(정상흐름 변경 가능)
      */
     private ScheduleMoveDto moveScheduleToTemporaryStorage(Schedule schedule, int targetOrder)
             throws InvalidScheduleMoveTargetOrderException, ScheduleIndexRangeException, MidScheduleIndexConflictException {
@@ -326,6 +350,7 @@ public class Trip {
 
     /**
      * 지정 일정을 임시보관함의 제일 앞에 둡니다.
+     *
      * @param schedule 옮길 일정
      * @throws ScheduleIndexRangeException 새로 생성되는 ScheduleIndex가 범위를 벗어날 때
      */
@@ -339,6 +364,7 @@ public class Trip {
 
     /**
      * 지정 Schedule을 임시보관함의 제일 뒤에 둡니다.
+     *
      * @param schedule 옮길 일정
      * @throws ScheduleIndexRangeException 새로 생성되는 ScheduleIndex가 범위를 벗어날 때
      */
@@ -352,7 +378,8 @@ public class Trip {
 
     /**
      * 지정 Schedule을 임시보관함의 지정 순서에 중간삽입합니다. 그 순서에 있던 일정은 뒤로 밀려납니다.
-     * @param schedule 옮길 일정
+     *
+     * @param schedule    옮길 일정
      * @param targetOrder 대상 순서
      * @throws MidScheduleIndexConflictException 중간삽입 과정에서 ScheduleIndex 값 충돌이 발생했을 때
      */
@@ -375,10 +402,11 @@ public class Trip {
 
     /**
      * 임시보관함의 제일 앞 인덱스보다 한 단계 더 앞선 인덱스를 만듭니다.
+     *
      * @return 새로운 맨 앞 ScheduleIndex
      * @throws ScheduleIndexRangeException 새로 생성되는 ScheduleIndex가 범위를 벗어날 때
      */
-    private ScheduleIndex generateTemporaryStorageHeadIndex() throws ScheduleIndexRangeException{
+    private ScheduleIndex generateTemporaryStorageHeadIndex() throws ScheduleIndexRangeException {
         return (temporaryStorage.isEmpty())
                 ? ScheduleIndex.ZERO_INDEX
                 : temporaryStorage.get(0).getScheduleIndex().generateBeforeIndex();
@@ -386,6 +414,7 @@ public class Trip {
 
     /**
      * 임시보관함의 제일 맨 뒤 인덱스보다 한 단계 더 뒤의 인덱스를 만듭니다.
+     *
      * @return 새로운 맨 뒤 ScheduleIndex
      * @throws ScheduleIndexRangeException 새로 생성되는 ScheduleIndex가 범위를 벗어날 때
      */
@@ -397,6 +426,7 @@ public class Trip {
 
     /**
      * 지정 일정을 임시보관함 컬렉션에서 분리합니다.
+     *
      * @param schedule 분리할 일정
      */
     void detachScheduleFromTemporaryStorage(Schedule schedule) {
@@ -405,6 +435,7 @@ public class Trip {
 
     /**
      * 지정 일정을 임시보관함 컬렉션에 추가합니다.
+     *
      * @param schedule 추가할 일정
      */
     void attachScheduleToTemporaryStorage(Schedule schedule) {
