@@ -1,5 +1,6 @@
 DROP TABLE IF EXISTS `trilo_db_test`.`schedules`;
 DROP TABLE IF EXISTS `trilo_db_test`.`days`;
+DROP TABLE IF EXISTS `trilo_db_test`.`likes`;
 DROP TABLE IF EXISTS `trilo_db_test`.`trip`;
 DROP TABLE IF EXISTS `trilo_db_test`.`users`;
 
@@ -21,6 +22,7 @@ CREATE TABLE IF NOT EXISTS `trilo_db_test`.`trip` (
     tripper_id BIGINT NOT NULL,
     trip_title VARCHAR(20) NOT NULL,
     trip_status VARCHAR(20) NOT NULL,
+    like_count BIGINT,
     start_date DATE,
     end_date DATE,
     trip_image_file_name VARCHAR(255),
@@ -53,6 +55,13 @@ CREATE TABLE IF NOT EXISTS `trilo_db_test`.`schedules` (
     PRIMARY KEY (schedule_id)
 );
 
+CREATE TABLE IF NOT EXISTS `trilo_db_test`.`likes` (
+    id BIGINT NOT NULL AUTO_INCREMENT,
+    trip_id BIGINT NOT NULL,
+    tripper_id BIGINT NOT NULL,
+    PRIMARY KEY (id)
+);
+
 ALTER TABLE `trilo_db_test`.`trip`
 ADD FOREIGN KEY (tripper_id) REFERENCES `trilo_db_test`.`users` (user_id);
 
@@ -64,3 +73,9 @@ ADD FOREIGN KEY (trip_id) REFERENCES `trilo_db_test`.`trip` (trip_id);
 
 ALTER TABLE `trilo_db_test`.`schedules`
 ADD FOREIGN KEY (day_id) REFERENCES `trilo_db_test`.`days` (day_id);
+
+ALTER TABLE `trilo_db_test`.`likes`
+ADD FOREIGN KEY (trip_id) REFERENCES  `trilo_db_test`.`trip` (trip_id);
+
+ALTER TABLE `trilo_db_test`.`likes`
+ADD FOREIGN KEY (tripper_id) REFERENCES `trilo_db_test`.`users` (user_id);

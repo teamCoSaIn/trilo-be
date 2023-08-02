@@ -138,6 +138,7 @@ public class TripFixture {
                 .status(tripStatus)
                 .tripPeriod(tripPeriod)
                 .tripImage(TripImage.defaultImage())
+                .likeCount(0L)
                 .build();
     }
 

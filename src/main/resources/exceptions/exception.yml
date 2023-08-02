@@ -29,6 +29,12 @@ request-0005:
   message: Not Multipart request
   detail: 이 API는 Multipart 요청을 필요로 합니다. Multipart 요청으로 보내주세요.
 
+# Lock 관련
+
+lock-0001:
+  message: Lock Not Acquired
+  detail: 요청을 처리하기 위한 락을 획득하지 못했습니다. 나중에 다시 시도해주세요.
+
 # 인증/인가 관련
 
 auth-0001:
@@ -109,6 +115,14 @@ trip-0009:
 trip-0010:
   message: TripImage Upload Failed
   detail: 이미지 저장소에 여행 이미지를 저장하는데 실패했습니다.
+
+trip-0011:
+  message: LikeNotFoundException
+  detail: 해당 여행을 좋아요 하고 있지 않습니다.
+
+trip-0012:
+  message: TripAlreadyLikedException
+  detail: 여행을 이미 좋아요하고 있습니다.
 
 # Day 관련
 day-0001:

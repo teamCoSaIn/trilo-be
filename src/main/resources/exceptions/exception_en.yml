@@ -29,6 +29,11 @@ request-0005:
   message: Not Multipart request
   detail: This API requires a multipart request. Please send it as a multipart request.
 
+# Lock 관련
+
+lock-0001:
+  message: Lock Not Acquired
+  detail: The lock for the requested resource could not be acquired. Please try again later.
 
 # 인증/인가 관련
 
@@ -111,6 +116,14 @@ trip-0009:
 trip-0010:
   message: TripImage Upload Failed
   detail: Failed to save the trip image to the image repository.
+
+trip-0011:
+  message: LikeNotFoundException
+  detail: This trip is not liked. Please check again.
+
+trip-0012:
+  message: TripAlreadyLikedException
+  detail: You have already liked this trip.
 
 # Day 관련
 day-0001:
