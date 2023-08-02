@@ -1,6 +1,6 @@
 package com.cosain.trilo.unit.trip.domain.vo;
 
-import com.cosain.trilo.trip.domain.exception.InvalidScheduleTitleException;
+import com.cosain.trilo.common.exception.schedule.InvalidScheduleTitleException;
 import com.cosain.trilo.trip.domain.vo.ScheduleTitle;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

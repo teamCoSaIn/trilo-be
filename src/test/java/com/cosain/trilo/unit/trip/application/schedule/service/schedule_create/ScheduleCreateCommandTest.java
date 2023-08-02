@@ -1,9 +1,9 @@
 package com.cosain.trilo.unit.trip.application.schedule.service.schedule_create;
 
 import com.cosain.trilo.common.exception.CustomValidationException;
+import com.cosain.trilo.common.exception.place.InvalidCoordinateException;
+import com.cosain.trilo.common.exception.schedule.InvalidScheduleTitleException;
 import com.cosain.trilo.trip.application.schedule.service.schedule_create.ScheduleCreateCommand;
-import com.cosain.trilo.trip.domain.exception.InvalidCoordinateException;
-import com.cosain.trilo.trip.domain.exception.InvalidScheduleTitleException;
 import com.cosain.trilo.trip.domain.vo.Coordinate;
 import com.cosain.trilo.trip.domain.vo.Place;
 import com.cosain.trilo.trip.domain.vo.ScheduleTitle;

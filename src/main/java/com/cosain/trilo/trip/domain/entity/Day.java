@@ -106,8 +106,18 @@ public class Day {
         return tripPeriod.contains(tripDate);
     }
 
-    Schedule createSchedule(ScheduleTitle scheduleTitle, Place place) {
+    /**
+     * 일정을 Day의 맨 뒤에 생성합니다.
+     * @param scheduleTitle 일정 제목
+     * @param place 여행
+     * @return 일정
+     * @throws ScheduleIndexRangeException 새로 생성되는 ScheduleIndex가 범위를 벗어날 때(정상흐름 변경 가능)
+     */
+    Schedule createScheduleToTail(ScheduleTitle scheduleTitle, Place place) throws ScheduleIndexRangeException {
+        // 일정 생성 (맨 뒤 ScheduleIndex 부여)
         Schedule schedule = Schedule.create(this, trip, scheduleTitle, place, generateSchedulesTailIndex());
+
+        // 컬렉션의 맨 뒤에 추가
         schedules.add(schedule);
         return schedule;
     }

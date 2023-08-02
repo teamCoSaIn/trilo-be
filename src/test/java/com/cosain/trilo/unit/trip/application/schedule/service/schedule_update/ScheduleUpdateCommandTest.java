@@ -1,10 +1,10 @@
 package com.cosain.trilo.unit.trip.application.schedule.service.schedule_update;
 
 import com.cosain.trilo.common.exception.CustomValidationException;
+import com.cosain.trilo.common.exception.schedule.InvalidScheduleTitleException;
 import com.cosain.trilo.trip.application.schedule.service.schedule_update.ScheduleUpdateCommand;
 import com.cosain.trilo.trip.domain.exception.InvalidScheduleContentException;
 import com.cosain.trilo.trip.domain.exception.InvalidScheduleTimeException;
-import com.cosain.trilo.trip.domain.exception.InvalidScheduleTitleException;
 import com.cosain.trilo.trip.domain.vo.ScheduleContent;
 import com.cosain.trilo.trip.domain.vo.ScheduleTime;
 import com.cosain.trilo.trip.domain.vo.ScheduleTitle;
