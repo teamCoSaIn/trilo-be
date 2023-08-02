@@ -49,6 +49,12 @@ public class Trip {
     private Long tripperId;
 
     /**
+     * 좋아요 수
+     */
+    @Column(name = "like_count")
+    private Long likeCount;
+
+    /**
      * 여행의 제목
      *
      * @see TripTitle
@@ -125,6 +131,7 @@ public class Trip {
                 .status(TripStatus.UNDECIDED)
                 .tripImage(TripImage.defaultImage())
                 .tripPeriod(TripPeriod.empty())
+                .likeCount(0L)
                 .build();
     }
 
@@ -132,7 +139,7 @@ public class Trip {
      * 테스트의 편의성을 위해 Builder accessLevel = PUBLIC 으로 설정
      */
     @Builder(access = AccessLevel.PUBLIC)
-    private Trip(Long id, Long tripperId, TripTitle tripTitle, TripStatus status, TripPeriod tripPeriod, TripImage tripImage, List<Day> days, List<Schedule> temporaryStorage) {
+    private Trip(Long id, Long tripperId, TripTitle tripTitle, TripStatus status, TripPeriod tripPeriod, TripImage tripImage, List<Day> days, List<Schedule> temporaryStorage, Long likeCount) {
         this.id = id;
         this.tripperId = tripperId;
         this.tripTitle = tripTitle;
@@ -145,6 +152,7 @@ public class Trip {
         if (temporaryStorage != null) {
             this.temporaryStorage.addAll(temporaryStorage);
         }
+        this.likeCount = likeCount;
     }
 
     /**
@@ -409,5 +417,13 @@ public class Trip {
      */
     void attachScheduleToTemporaryStorage(Schedule schedule) {
         this.temporaryStorage.add(schedule);
+    }
+
+    public void increaseLikeCount(){
+        this.likeCount += 1;
+    }
+
+    public void decreaseLikeCount(){
+        this.likeCount -= 1;
     }
 }
